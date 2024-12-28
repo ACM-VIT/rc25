@@ -20,7 +20,6 @@ const disqualified = false;
 
 export default async function RootLayout({
   children,
-  portal,
   team,
   admin,
   landing,

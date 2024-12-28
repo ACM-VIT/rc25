@@ -1,9 +1,11 @@
-import React from 'react';
+import type React from 'react';
 
-export default function Home() {
-    return (
-        <div className='text-red-500'>
-            hmm
-        </div>
-    );
-}
+const Page: React.FC = () => {
+  return (
+    <div>
+      <h1>PORTAL</h1>
+    </div>
+  );
+};
+
+export default Page;

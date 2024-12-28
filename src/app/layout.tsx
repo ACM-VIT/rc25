@@ -1,7 +1,8 @@
 import CountdownTimer from "@/components/countdown-timer";
 import DetailsForm from "@/components/details-form";
+import Disqualified from "@/components/disqualifed";
 import EliminationScreen from "@/components/elimination-screen";
-import TeamMembersAndLeaveButton from "@/components/team-leave";
+import TeamMembersAndLeaveButton from "@/components/team-dashboard";
 import Winners from "@/components/winners";
 import type React from "react";
 
@@ -11,10 +12,11 @@ const isAdmin = false; // true --> admin
 const detailsFilled = true;
 const teamJoined = true;
 const teamCheckedIn = true;
-const roundIsActive = false; // true --> portal
+const roundIsActive = true; // true --> portal
 const memberOfActiveRound = true; // false --> elimination
 const winnersAnnounced = true;
 const noPendingRound = true;
+const disqualified = false;
 
 export default async function RootLayout({
   children,
@@ -68,11 +70,18 @@ export default async function RootLayout({
     );
   }
 
+  if (disqualified) {
+    return (
+      <html lang="en">
+        <body><Disqualified/></body>
+      </html>
+    );
+  }
   if (roundIsActive) {
     if (memberOfActiveRound) {
       return (
         <html lang="en">
-          <body>{portal}</body>
+          <body>{children}</body>
         </html>
       );
     }

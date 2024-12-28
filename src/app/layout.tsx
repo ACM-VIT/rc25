@@ -25,7 +25,6 @@ export default async function RootLayout({
   landing,
 }: {
   children: React.ReactNode;
-  portal: React.ReactNode;
   team: React.ReactNode;
   admin: React.ReactNode;
   landing: React.ReactNode;

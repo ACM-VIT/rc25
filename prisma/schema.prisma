@@ -1,0 +1,167 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "cockroachdb"
+    url      = env("DATABASE_URL")
+}
+
+model Account {
+    id                String  @id @default(cuid())
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    refresh_token     String? @db.String
+    access_token      String? @db.String
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String? @db.String
+    session_state     String?
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([provider, providerAccountId])
+}
+
+model Session {
+    id           String   @id @default(cuid())
+    sessionToken String   @unique
+    userId       String
+    expires      DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+    id            String       @id @default(cuid())
+    name          String?
+    email         String?      @unique
+    emailVerified DateTime?
+    image         String?
+    accounts      Account[]
+    sessions      Session[]
+    Team          Team?        @relation("TeamMembers", fields: [teamId], references: [id])
+    teamId        String?
+    phone         String?
+    gender        Gender?
+    Submission    Submission[]
+    Admin         Admin[]
+}
+
+enum Gender {
+    male
+    female
+    others
+}
+
+// registration list received from dsw (yantra portal)
+model UniReg {
+    id        String   @id @default(cuid())
+    email     String   @unique
+    name      String
+    regNo     String
+    phone     String
+    injected  Boolean  @default(false)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+// team created on rsvp page
+model Team {
+    id         String      @id @default(uuid())
+    name       String      @unique
+    shortCode  String      @unique
+    checkedIn  Boolean     @default(false)
+    score      Int         @default(0)
+    disqualify Boolean     @default(false)
+    members    User[]      @relation("TeamMembers")
+    TeamRound  TeamRound[]
+    createdAt  DateTime    @default(now())
+    updatedAt  DateTime    @updatedAt()
+}
+
+// rows for each team in each round - r1 added by registration desk, r2 added by admin on selection
+model TeamRound {
+    id     String @id @default(cuid())
+    teamId String
+    team   Team   @relation(fields: [teamId], references: [id])
+
+    round   Round @relation(fields: [roundId], references: [number])
+    roundId Int
+
+    @@unique([teamId, roundId])
+}
+
+// seeded by research peeps through a page for them
+model Problem {
+    id          String       @id @default(cuid())
+    title       String
+    nickname    String
+    description String
+    difficulty  Difficulty
+    maxScore    Int
+    round       Round        @relation(fields: [roundNumber], references: [number])
+    lin_dl      String
+    win_dl      String
+    mac_dl      String
+    web_code    String       @db.String
+    submissions Submission[]
+    Testcase    Testcase[]
+    roundNumber Int
+}
+
+model Testcase {
+    id        String  @id @default(cuid())
+    weight    Int     @default(1)
+    input     String
+    output    String
+    problemId String
+    problem   Problem @relation(fields: [problemId], references: [id])
+}
+
+// submissions by the teams
+model Submission {
+    id   String @id @default(cuid())
+    code String @db.String
+
+    problemId String
+    problem   Problem @relation(fields: [problemId], references: [id])
+
+    userId String
+    user   User   @relation(fields: [userId], references: [id])
+
+    score           Int
+    testcasespassed Boolean[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+enum Difficulty {
+    EASY
+    MEDIUM
+    HARD
+}
+
+model Round {
+    number   Int         @id
+    start    DateTime
+    end      DateTime
+    result   DateTime
+    teams    TeamRound[]
+    problems Problem[]
+}
+
+model Admin {
+    id               String   @id @default(cuid())
+    superAdmin       Boolean  @default(false)
+    checkin_access   Boolean  @default(false)
+    anticheat_access Boolean  @default(false)
+    edit_access      Boolean  @default(false)
+    userId           String
+    user             User     @relation(fields: [userId], references: [id])
+    createdAt        DateTime @default(now())
+    updatedAt        DateTime @updatedAt
+}

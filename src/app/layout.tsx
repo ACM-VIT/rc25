@@ -5,9 +5,9 @@ import EliminationScreen from "@/components/elimination-screen";
 import TeamMembersAndLeaveButton from "@/components/team-dashboard";
 import Winners from "@/components/winners";
 import type React from "react";
+import { auth } from "./(auth)/auth";
 
 // till auth is implemeneted basic routing for now
-const isAuthenticated = true; // false -->landing
 const isAdmin = false; // true --> admin
 const detailsFilled = true;
 const teamJoined = true;
@@ -29,7 +29,8 @@ export default async function RootLayout({
   admin: React.ReactNode;
   landing: React.ReactNode;
 }) {
-  if (!isAuthenticated) {
+  const session = await auth();
+  if (!session?.user?.email) {
     return (
       <html lang="en">
         <body>{landing}</body>

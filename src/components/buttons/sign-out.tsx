@@ -2,13 +2,11 @@ import SignOut from "@/app/(auth)/authactions/signout"
 
 export default function SignOutButton() {
   return (
-    <form
-      action={async () => {
+    
+      <button onClick={async()=>{
         "use server"
         await SignOut()
-      }}
-    >
-      <button type="submit">SignOut</button>
-    </form>
+      }} type="submit">SignOut</button>
+
   )
 }

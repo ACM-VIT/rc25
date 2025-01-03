@@ -26,12 +26,11 @@ export default function Team() {
             setError(res?.error?.code ?? 0);
         });
     }, [mode, inputValue]);
-  
 
     const toggleMode = () => {
         setMode((prevMode) => (prevMode === "CREATE" ? "JOIN" : "CREATE"));
-        setInputValue(""); 
-        setError(0); 
+        setInputValue("");
+        setError(0);
     };
 
     return (
@@ -74,7 +73,7 @@ export default function Team() {
                                   }.`
                                 : null}
                             {error === 6 ? "Invalid Team Code" : null}
-                            {error === 7 ? "Team Name too longggg" : null}
+                            {error === 7 ? "Team Name too long" : null}
                             {error === 8 ? "Team Name too short" : null}
                             {error === 9
                                 ? "Team Name contains invalid characters"
@@ -91,11 +90,6 @@ export default function Team() {
                 >
                     {pending ? "Submitting..." : "Submit"}
                 </button>
-                {mode === "CREATE" && randomCode && (
-                    <p className="mt-4 text-green-500 text-center">
-                        Your team code: <strong>{randomCode}</strong>
-                    </p>
-                )}
                 <div className="text-center text-gray-400 mt-4">OR</div>
                 <button
                     onClick={toggleMode}

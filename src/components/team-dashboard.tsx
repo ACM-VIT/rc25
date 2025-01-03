@@ -1,11 +1,11 @@
 import React from 'react';
 
-const TeamMembersAndLeaveButton = () => {
+const TeamDashboard = () => {
   return (
     <div>
-      <p>TeamMembersAndLeaveButton.</p>
+      <p>TeamDashboard.</p>
     </div>
   );
 };
 
-export default TeamMembersAndLeaveButton;
+export default TeamDashboard;

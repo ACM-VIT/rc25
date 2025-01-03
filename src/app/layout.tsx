@@ -2,18 +2,20 @@ import CountdownTimer from "@/components/countdown-timer";
 import DetailsForm from "@/components/details-form";
 import Disqualified from "@/components/disqualifed";
 import EliminationScreen from "@/components/elimination-screen";
-import TeamMembersAndLeaveButton from "@/components/team-dashboard";
+import TeamMembersAndLeaveButton from "@/components/team-dashboard/team-dashboard";
 import Winners from "@/components/winners";
 import type React from "react";
 import { auth } from "./(auth)/auth";
+import TeamDashboard from "@/components/team-dashboard";
+import "./globals.css"
 
 // till auth is implemeneted basic routing for now
-const isAdmin = false; // true --> admin
+const isAdmin = false;
 const detailsFilled = true;
 const teamJoined = true;
-const teamCheckedIn = true;
-const roundIsActive = true; // true --> portal
-const memberOfActiveRound = true; // false --> elimination
+const teamCheckedIn = false;
+const roundIsActive = false;
+const memberOfActiveRound = true;
 const winnersAnnounced = true;
 const noPendingRound = true;
 const disqualified = false;
@@ -64,7 +66,7 @@ export default async function RootLayout({
   if (!teamCheckedIn) {
     return (
       <html lang="en">
-        <body><TeamMembersAndLeaveButton/></body>
+        <body><TeamMembersAndLeaveButton /></body>
       </html>
     );
   }

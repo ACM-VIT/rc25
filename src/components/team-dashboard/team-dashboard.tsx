@@ -41,4 +41,4 @@ async function getTeamMembers() {
 export default async function TeamMembersAndLeaveButton() {
 	const teamMembers = await getTeamMembers();
 	return <TeamMembersClient teamMembers={teamMembers} />;
-}
+} 

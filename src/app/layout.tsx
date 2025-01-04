@@ -6,11 +6,11 @@ import TeamMembersAndLeaveButton from "@/components/team-dashboard";
 import Winners from "@/components/winners";
 import type React from "react";
 import { auth } from "./(auth)/auth";
+import {prisma} from "@/utils/prisma";
 import './globals.css';
 
 
 // till auth is implemeneted basic routing for now
-const isAdmin = false; // true --> admin
 const detailsFilled = true;
 const teamJoined = false;
 const teamCheckedIn = true;
@@ -40,7 +40,15 @@ export default async function RootLayout({
     );
   }
 
-  if (isAdmin) {
+  const adminUser = await prisma.admin.findFirst({
+    where: {
+      user: {
+        email: session.user.email
+      }
+    }
+  });
+
+  if (adminUser) {
     return (
       <html lang="en">
         <body>{admin}</body>

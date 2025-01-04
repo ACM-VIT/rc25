@@ -9,10 +9,13 @@ import { auth } from "./(auth)/auth";
 import "./globals.css";
 import { Plus_Jakarta_Sans } from "next/font/google";
 const plus_jakarta_sans = Plus_Jakarta_Sans({ subsets: ["latin"] });
+
+
+
 // till auth is implemeneted basic routing for now
 const isAdmin = true; // true --> admin
 const detailsFilled = true;
-const teamJoined = true;
+const teamJoined = false;
 const teamCheckedIn = true;
 const roundIsActive = true; // true --> portal
 const memberOfActiveRound = true; // false --> elimination

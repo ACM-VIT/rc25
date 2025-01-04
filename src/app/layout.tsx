@@ -3,8 +3,9 @@ import DetailsForm from "@/components/details-form";
 import Disqualified from "@/components/disqualifed";
 import EliminationScreen from "@/components/elimination-screen";
 import Winners from "@/components/winners";
-import React, { ReactNode } from 'react'
+import React, { type ReactNode } from 'react'
 import { auth } from "./(auth)/auth";
+import {prisma} from "@/utils/prisma";
 import "./globals.css";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import Image from "next/image";
@@ -17,9 +18,10 @@ import Navbar from "@/components/Navbar";
 
 const plus_jakarta_sans = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
-// Configuration flags
-const isAdmin = false;
-const detailsFilled = false;
+
+
+// till auth is implemeneted basic routing for now
+const detailsFilled = true;
 const teamJoined = false;
 const teamCheckedIn = false;
 const roundIsActive = false;
@@ -84,16 +86,21 @@ export default async function RootLayout({
     );
   }
 
-  if (isAdmin) {
-    return (
-      <html lang="en">
-        <body className={plus_jakarta_sans.className}>
-          <BackgroundTemplate>{admin}</BackgroundTemplate>
-        </body>
-      </html>
-    );
-  }
+  const adminUser = await prisma.admin.findFirst({
+    where: {
+      user: {
+        email: session.user.email
+      }
+    }
+  });
 
+	if (adminUser) {
+		return (
+			<html lang="en">
+				<body className={plus_jakarta_sans.className}>{admin}</body>
+			</html>
+		);
+	}
 
   if (!detailsFilled) {
     return (

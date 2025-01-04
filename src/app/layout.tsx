@@ -6,11 +6,13 @@ import TeamMembersAndLeaveButton from "@/components/team-dashboard";
 import Winners from "@/components/winners";
 import type React from "react";
 import { auth } from "./(auth)/auth";
+import './globals.css';
+
 
 // till auth is implemeneted basic routing for now
 const isAdmin = false; // true --> admin
 const detailsFilled = true;
-const teamJoined = true;
+const teamJoined = false;
 const teamCheckedIn = true;
 const roundIsActive = true; // true --> portal
 const memberOfActiveRound = true; // false --> elimination

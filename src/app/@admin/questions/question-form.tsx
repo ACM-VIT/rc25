@@ -28,6 +28,7 @@ interface QuestionFormProps {
 	isDialog?: boolean;
 	onClose?: () => void;
 	open?: boolean;
+	rounds?: { number: number }[];
 }
 
 export function QuestionForm({
@@ -36,6 +37,7 @@ export function QuestionForm({
 	isDialog = false,
 	onClose,
 	open,
+	rounds = [],
 }: QuestionFormProps) {
 	const router = useRouter();
 	const [loading, setLoading] = useState(false);
@@ -210,9 +212,12 @@ export function QuestionForm({
 								<SelectValue placeholder="Select round" />
 							</SelectTrigger>
 							<SelectContent>
-								{[1, 2, 3, 4].map((round) => (
-									<SelectItem key={round} value={round.toString()}>
-										Round {round}
+								{rounds.map((round) => (
+									<SelectItem
+										key={round.number}
+										value={round.number.toString()}
+									>
+										Round {round.number}
 									</SelectItem>
 								))}
 							</SelectContent>

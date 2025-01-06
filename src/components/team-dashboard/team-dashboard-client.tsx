@@ -1,13 +1,11 @@
-"use client";
-
 import { LeaveButton } from "@/components/buttons/leave";
 import type { User } from "@prisma/client";
 
-interface TeamMembersClientProps {
+interface TeamMembersProps {
   teamMembers: User[];
 }
 
-export function TeamMembersClient({ teamMembers }: TeamMembersClientProps) {
+export function TeamMembers({ teamMembers }: TeamMembersProps) {
     return (
       <div className="container mx-auto p-6">
         <div className="space-y-6">

@@ -7,10 +7,7 @@ export function LeaveButton() {
     try {
       const result = await leaveTeam();
 
-      if (result.success) {
-        alert(result.message);
-        window.location.reload();
-      } else {
+      if (!result.success) {
         alert(result.message);
       }
     } catch (error) {

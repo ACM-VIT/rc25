@@ -11,13 +11,11 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 const plus_jakarta_sans = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
 
-import TeamDashboard from "@/components/team-dashboard";
-
 // till auth is implemeneted basic routing for now
-const isAdmin = true; // true --> admin
+const isAdmin = false; // true --> admin
 const detailsFilled = true;
-const teamJoined = false;
-const teamCheckedIn = true;
+const teamJoined = true;
+const teamCheckedIn = false;
 const roundIsActive = true; // true --> portal
 const memberOfActiveRound = true; // false --> elimination
 const winnersAnnounced = true;

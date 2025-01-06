@@ -2,6 +2,7 @@
 
 import { PrismaClient } from "@prisma/client";
 import { auth } from "@/app/(auth)/auth";
+import { revalidatePath } from "next/cache";
 
 export async function leaveTeam() {
   const prisma = new PrismaClient();
@@ -45,6 +46,7 @@ export async function leaveTeam() {
       data: { teamId: null },
     });
 
+    revalidatePath("/");
     return { success: true, message: "You have successfully left the team." };
   } catch (error) {
     console.error("Error leaving team:", error);

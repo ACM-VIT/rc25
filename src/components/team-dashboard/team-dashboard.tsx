@@ -1,8 +1,6 @@
-"use server";
-
 import { PrismaClient } from "@prisma/client";
 import { auth } from "@/app/(auth)/auth";
-import { TeamMembersClient } from "./team-dashboard-client";
+import { TeamMembers } from "./team-dashboard-client";
 
 async function getTeamMembers() {
 	const session = await auth();
@@ -40,5 +38,5 @@ async function getTeamMembers() {
 
 export default async function TeamMembersAndLeaveButton() {
 	const teamMembers = await getTeamMembers();
-	return <TeamMembersClient teamMembers={teamMembers} />;
+	return <TeamMembers teamMembers={teamMembers} />;
 } 

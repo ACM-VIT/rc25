@@ -12,7 +12,7 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ name }) => {
     const [isDropdownOpen, setIsDropdownOpen] = React.useState<boolean>(false);
-    const dropdownRef = useRef<HTMLDivElement>(null);
+    const dropdownRef = useRef<HTMLLIElement>(null);
 
     const toggleDropdown = () => {
         setIsDropdownOpen((prev) => !prev);

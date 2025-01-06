@@ -8,7 +8,6 @@ import type React from "react";
 import { auth } from "./(auth)/auth";
 import "./globals.css";
 import { Plus_Jakarta_Sans } from "next/font/google";
-import Navbar from "@/components/Navbar";
 const plus_jakarta_sans = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
 

@@ -67,7 +67,6 @@ export default async function RootLayout({
 		return (
 			<html lang="en">
 				<body>
-					<Navbar name={session.user.name!} />
 					{team}
 				</body>
 			</html>

@@ -8,15 +8,16 @@ import type React from "react";
 import { auth } from "./(auth)/auth";
 import "./globals.css";
 import { Plus_Jakarta_Sans } from "next/font/google";
+import Navbar from "@/components/Navbar";
 const plus_jakarta_sans = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
 
 
 // till auth is implemeneted basic routing for now
-const isAdmin = true; // true --> admin
+const isAdmin = false; // true --> admin
 const detailsFilled = true;
 const teamJoined = false;
-const teamCheckedIn = true;
+const teamCheckedIn = false;
 const roundIsActive = true; // true --> portal
 const memberOfActiveRound = true; // false --> elimination
 const winnersAnnounced = true;
@@ -38,7 +39,9 @@ export default async function RootLayout({
 	if (!session?.user?.email) {
 		return (
 			<html lang="en">
-				<body>{landing}</body>
+				<body>
+          {landing}
+        </body>
 			</html>
 		);
 	}
@@ -54,7 +57,7 @@ export default async function RootLayout({
 	if (!detailsFilled) {
 		return (
 			<html lang="en">
-				<body>
+        	<body>
 					<DetailsForm />
 				</body>
 			</html>
@@ -63,20 +66,23 @@ export default async function RootLayout({
 	if (!teamJoined) {
 		return (
 			<html lang="en">
-				<body>{team}</body>
-			</html>
-		);
-	}
-
-	if (!teamCheckedIn) {
-		return (
-			<html lang="en">
 				<body>
-					<TeamMembersAndLeaveButton />
+					<Navbar name={session.user.name!} />
+					{team}
 				</body>
 			</html>
 		);
 	}
+
+  if (!teamCheckedIn) {
+    return (
+      <html lang="en">
+        <body>
+          <TeamMembersAndLeaveButton/>
+        </body>
+      </html>
+    );
+  }
 
 	if (disqualified) {
 		return (

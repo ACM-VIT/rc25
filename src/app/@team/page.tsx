@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useCallback, useTransition } from "react";
 import { teamAction } from "@/app/actions/team";
+import Navbar from "@/components/Navbar";
 
 export default function Team() {
     const [mode, setMode] = useState<"CREATE" | "JOIN">("CREATE");

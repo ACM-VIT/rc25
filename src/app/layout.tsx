@@ -13,7 +13,7 @@ const plus_jakarta_sans = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
 
 // till auth is implemeneted basic routing for now
-const isAdmin = true; // true --> admin
+const isAdmin = false; // true --> admin
 const detailsFilled = true;
 const teamJoined = false;
 const teamCheckedIn = true;

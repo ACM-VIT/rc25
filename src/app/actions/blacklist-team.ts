@@ -8,10 +8,7 @@ export async function searchTeams(query: string) {
 	try {
 		const teams = await prisma.team.findMany({
 			where: {
-				OR: [
-					{ name: { contains: query, mode: "insensitive" } },
-					{ shortCode: { contains: query, mode: "insensitive" } },
-				],
+				OR: [{ name: { contains: query, mode: "insensitive" } }],
 			},
 			include: {
 				members: true,

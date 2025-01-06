@@ -1,4 +1,4 @@
-import vm from "vm";
+import vm from "node:vm";
 
 let buffer = "";
 let output = "";
@@ -7,7 +7,7 @@ function cin(type: string) {
   if (!buffer) return null;
 
   switch (type) {
-    case "int":
+    case "int": {
       let integer = "";
       buffer = buffer.replace(/^\s+/g, "");
       if (buffer[0] === "-") {
@@ -16,7 +16,7 @@ function cin(type: string) {
       }
       while (
         buffer.length > 0 &&
-        !isNaN(parseInt(buffer[0], 10)) &&
+        !Number.isNaN(Number.parseInt(buffer[0], 10)) &&
         buffer[0] !== " " &&
         buffer[0] !== "\n"
       ) {
@@ -24,9 +24,10 @@ function cin(type: string) {
         buffer = buffer.substring(1);
       }
       if (buffer.startsWith("\n")) buffer = buffer.substring(1);
-      return parseInt(integer, 10) ?? null;
+      return Number.parseInt(integer, 10) ?? null;
+    }
 
-    case "string":
+    case "string": {
       buffer = buffer.replace(/^\s+/g, "");
       let str = "";
       while (
@@ -39,8 +40,9 @@ function cin(type: string) {
       }
       if (buffer.startsWith("\n")) buffer = buffer.substring(1);
       return str;
+    }
 
-    case "line":
+    case "line": {
       let line = "";
       while (buffer.length > 0 && buffer[0] !== "\n") {
         line += buffer[0];
@@ -48,8 +50,9 @@ function cin(type: string) {
       }
       if (buffer.startsWith("\n")) buffer = buffer.substring(1);
       return line;
+    }
 
-    case "vector":
+    case "vector": {
       let vector = [];
       let vectorLine = "";
       while (buffer.length > 0 && buffer[0] !== "\n") {
@@ -57,21 +60,23 @@ function cin(type: string) {
         buffer = buffer.substring(1);
       }
       if (buffer.startsWith("\n")) buffer = buffer.substring(1);
-      vector = vectorLine.trim().split(/\s+/).map(n => parseInt(n, 10));
+      vector = vectorLine.trim().split(/\s+/).map(n => Number.parseInt(n, 10));
       return vector;
+    }
 
     default:
       throw new Error(`Unsupported type: ${type}`);
   }
 }
 
-function cout(...args: any[]) {
+// Fix any type:
+function cout(...args: (string | number)[]) {
   output += args.join(" ");
 }
 
 export default function validateIO() {
   return {
-    validate: function(code: string, stdin: string, expectedOutput: string): boolean {
+    validate: (code: string, stdin: string, expectedOutput: string): boolean => {
       try {
         // Reset globals
         buffer = stdin;

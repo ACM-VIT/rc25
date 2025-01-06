@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import addTestCase from './action/addcase'
+import addTestCase from '../../../actions/upsert-case'
 import { validateCode } from './validate'
 
 interface AddTestCaseModalProps {
@@ -33,8 +33,9 @@ export default function AddTestCaseModal({ problemId, webCode, isOpen, onClose, 
       )
       onSuccess()
       onClose()
-    } catch (err) {
-      setError('Failed to add test case')
+    } catch (error) {
+      console.error('Add test case error:', error); // Log the error
+      setError('Failed to add test case');
     } finally {
       setLoading(false)
     }
@@ -65,16 +66,17 @@ export default function AddTestCaseModal({ problemId, webCode, isOpen, onClose, 
         <form onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <label className="block mb-1 text-black">Weight</label>
+              <label htmlFor="weight" className="block mb-1 text-black">Weight</label>
               <input
                 type="number"
+                id="weight"
                 name="weight"
                 required
                 className="w-full border p-2 rounded text-black"
               />
             </div>
             <div>
-              <label className="block mb-1 text-black">Input</label>
+              <label htmlFor="input" className="block mb-1 text-black">Input</label>
               <textarea
                 name="input"
                 required
@@ -82,7 +84,7 @@ export default function AddTestCaseModal({ problemId, webCode, isOpen, onClose, 
               />
             </div>
             <div>
-              <label className="block mb-1 text-black">Output</label>
+              <label htmlFor="output" className="block mb-1 text-black">Output</label>
               <textarea
                 name="output"
                 required

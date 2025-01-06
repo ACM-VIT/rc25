@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import addTestCase from './action/addcase';
+import addTestCase from '../../../actions/upsert-case';
 import { validateCode } from './validate';
 
 interface EditTestCaseDialogProps {
@@ -50,24 +50,27 @@ export default function EditTestCaseDialog({ problemId, webCode, testCase, isOpe
         <form onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-black">Input</label>
+              <label htmlFor="input" className="block text-sm font-medium text-black">Input</label>
               <textarea
+                id="input"
                 className="mt-1 w-full rounded-md border-gray-300 shadow-sm text-black"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-black">Output</label>
+              <label htmlFor="output" className="block text-sm font-medium text-black">Output</label>
               <textarea
+                id="output"
                 className="mt-1 w-full rounded-md border-gray-300 shadow-sm text-black"
                 value={output}
                 onChange={(e) => setOutput(e.target.value)}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-black">Weight</label>
+              <label htmlFor="weight" className="block text-sm font-medium text-black">Weight</label>
               <input
+                id="weight"
                 type="number"
                 className="mt-1 w-full rounded-md border-gray-300 shadow-sm text-black"
                 value={weight}

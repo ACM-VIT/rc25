@@ -9,6 +9,7 @@ interface ValidateButtonProps {
 export default function ValidateButton({ onValidate, isValidating, className }: ValidateButtonProps) {
   return (
     <button
+      type="button"
       onClick={onValidate}
       disabled={isValidating}
       className={className}

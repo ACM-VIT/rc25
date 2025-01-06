@@ -31,7 +31,7 @@ const Page = () => {
 				<DashboardCard
 					title="Question Management"
 					description="Manage and organize questions"
-					href="/questions"
+					href="/problems"
 				/>
 				<DashboardCard
 					title="Blacklist"

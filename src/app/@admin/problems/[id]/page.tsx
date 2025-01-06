@@ -1,4 +1,4 @@
-import ViewProblem from './quiestionDisplay';
+import ViewProblem from './QuestionDisplay';
 import { prisma } from "@/utils/prisma";
 import { notFound } from "next/navigation";
 

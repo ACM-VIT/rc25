@@ -99,7 +99,7 @@ export function QuestionForm({
 			await onSubmit(formDataToSend);
 
 			if (!isDialog) {
-				router.push("/questions");
+				router.push("/problems");
 				router.refresh();
 			}
 		} catch (error) {

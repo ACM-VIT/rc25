@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import addTestCase from './action/addcase';
+import addTestCase from '../../../actions/upsert-case';
 
 // Add custom type declaration for webkitdirectory
 declare module 'react' {
@@ -16,6 +16,12 @@ interface UploadFolderProps {
   onSuccess?: () => void;
 }
 
+interface TestCaseFiles {
+  input: File | undefined;
+  output: File | undefined;
+  weight: File | undefined;
+}
+
 export default function UploadFolder({ problemId, onSuccess }: UploadFolderProps) {
   const [isUploading, setIsUploading] = useState(false);
 
@@ -26,23 +32,25 @@ export default function UploadFolder({ problemId, onSuccess }: UploadFolderProps
       if (!files) return;
 
       // Create a map to store test cases
-      const testCases = new Map<
-        string,
-        { input: File; output: File; weight: File }
-      >();
+      const testCases = new Map<string, TestCaseFiles>();
 
       // Group files by test case
       for (const file of Array.from(files)) {
         const path = file.webkitRelativePath;
-        const [_, type, testCaseFolder, fileName] = path.split('/');
+        const [, type, testCaseFolder, fileName] = path.split('/');
         
         if (!testCaseFolder || !fileName) continue;
         
-        if (!testCases.has(type + '_' + testCaseFolder)) {
-          testCases.set(type + '_' + testCaseFolder, {} as any);
+        if (!testCases.has(`${type}_${testCaseFolder}`)) {
+          testCases.set(`${type}_${testCaseFolder}`, {
+            input: undefined,
+            output: undefined,
+            weight: undefined
+          });
         }
         
-        const testCase = testCases.get(type + '_' + testCaseFolder)!;
+        const testCase = testCases.get(`${type}_${testCaseFolder}`);
+        if (!testCase) continue;
         if (fileName === 'input.txt') testCase.input = file;
         if (fileName === 'output.txt') testCase.output = file;
         if (fileName === 'weightage.txt') testCase.weight = file;
@@ -50,19 +58,34 @@ export default function UploadFolder({ problemId, onSuccess }: UploadFolderProps
 
       // Process each test case
       for (const [key, files] of testCases) {
+        // Validate required files exist
+        if (!files.input || !files.output || !files.weight) {
+          console.error(`Missing required files for test case: ${key}`);
+          continue;
+        }
+
         const isEdge = key.startsWith('edge');
         
-        const input = await files.input.text();
-        const output = await files.output.text();
-        const weight = parseInt(await files.weight.text());
+        try {
+          const input = await files.input.text();
+          const output = await files.output.text();
+          const weight = Number.parseInt(await files.weight.text());
 
-        await addTestCase(
-          problemId,
-          weight,
-          input,
-          output,
-          isEdge
-        );
+          if (Number.isNaN(weight)) {
+            console.error(`Invalid weight for test case: ${key}`);
+            continue;
+          }
+
+          await addTestCase(
+            problemId,
+            weight,
+            input,
+            output,
+            isEdge
+          );
+        } catch (error) {
+          console.error(`Error processing test case ${key}:`, error);
+        }
       }
 
       alert('Test cases uploaded successfully');
@@ -94,6 +117,7 @@ export default function UploadFolder({ problemId, onSuccess }: UploadFolderProps
         className={`${commonButtonStyle} ${isUploading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
       >
         <svg className="mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <title>Upload Icon</title>
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
         </svg>
         {isUploading ? 'Uploading...' : 'Upload Test Cases'}

@@ -1,0 +1,361 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import type { Problem, Difficulty } from "@prisma/client";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
+
+interface QuestionFormProps {
+	initialData?: Problem | null;
+	onSubmit: (formData: FormData) => Promise<void>;
+	isDialog?: boolean;
+	onClose?: () => void;
+	open?: boolean;
+	rounds?: { number: number }[];
+}
+
+export function QuestionForm({
+	initialData,
+	onSubmit,
+	isDialog = false,
+	onClose,
+	open,
+	rounds = [],
+}: QuestionFormProps) {
+	const router = useRouter();
+	const [loading, setLoading] = useState(false);
+	const [formData, setFormData] = useState<Partial<Problem>>({
+		title: "",
+		nickname: "",
+		description: "",
+		difficulty: "EASY" as Difficulty,
+		roundNumber: 1,
+		maxScore: 0,
+		web_code: "",
+	});
+	const [files, setFiles] = useState({
+		win_dl: null as File | null,
+		mac_dl: null as File | null,
+		lin_dl: null as File | null,
+	});
+	const [currentFiles, setCurrentFiles] = useState({
+		win_dl: "",
+		mac_dl: "",
+		lin_dl: "",
+	});
+
+	useEffect(() => {
+		if (initialData) {
+			setFormData({
+				...initialData,
+				roundNumber: initialData.roundNumber || 1,
+			});
+			setCurrentFiles({
+				win_dl: initialData.win_dl || "",
+				mac_dl: initialData.mac_dl || "",
+				lin_dl: initialData.lin_dl || "",
+			});
+		}
+	}, [initialData]);
+
+	const handleSubmit = async (e: React.FormEvent) => {
+		e.preventDefault();
+		setLoading(true);
+
+		try {
+			const formDataToSend = new FormData();
+
+			for (const [key, value] of Object.entries(formData)) {
+				if (
+					value !== null &&
+					value !== undefined &&
+					!["win_dl", "mac_dl", "lin_dl"].includes(key)
+				) {
+					formDataToSend.append(key, value.toString());
+				}
+			}
+
+			if (files.win_dl) formDataToSend.append("windows", files.win_dl);
+			if (files.mac_dl) formDataToSend.append("mac", files.mac_dl);
+			if (files.lin_dl) formDataToSend.append("linux", files.lin_dl);
+
+			await onSubmit(formDataToSend);
+
+			if (!isDialog) {
+				router.push("/questions");
+				router.refresh();
+			}
+		} catch (error) {
+			console.error("Error submitting question:", error);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	const handleFileChange = (
+		e: React.ChangeEvent<HTMLInputElement>,
+		field: keyof typeof files,
+	) => {
+		if (e.target.files?.[0]) {
+			setFiles((prev) => ({
+				...prev,
+				[field]: e.target.files?.[0],
+			}));
+		}
+	};
+
+	const FormContent = (
+		<form onSubmit={handleSubmit} className="space-y-8">
+			<div className="grid gap-6">
+				<div className="grid gap-4 sm:grid-cols-2">
+					<div className="space-y-2">
+						<Label htmlFor="title">Title</Label>
+						<Input
+							id="title"
+							placeholder="Question title"
+							value={formData.title}
+							onChange={(e) =>
+								setFormData((prev) => ({ ...prev, title: e.target.value }))
+							}
+						/>
+					</div>
+					<div className="space-y-2">
+						<Label htmlFor="nickname">Nickname</Label>
+						<Input
+							id="nickname"
+							placeholder="Internal reference name"
+							value={formData.nickname || ""}
+							onChange={(e) =>
+								setFormData((prev) => ({ ...prev, nickname: e.target.value }))
+							}
+						/>
+					</div>
+				</div>
+
+				<div className="space-y-2">
+					<Label htmlFor="description">Description</Label>
+					<Textarea
+						id="description"
+						placeholder="Question description"
+						className="min-h-[100px]"
+						value={formData.description || ""}
+						onChange={(e) =>
+							setFormData((prev) => ({ ...prev, description: e.target.value }))
+						}
+					/>
+				</div>
+
+				<div className="space-y-2">
+					<Label htmlFor="javascript">JavaScript Code</Label>
+					<Textarea
+						id="javascript"
+						placeholder="Enter JavaScript code here..."
+						className="min-h-[200px] font-mono"
+						value={formData.web_code || ""}
+						onChange={(e) =>
+							setFormData((prev) => ({ ...prev, web_code: e.target.value }))
+						}
+					/>
+				</div>
+
+				<div className="grid gap-4 sm:grid-cols-3">
+					<div className="space-y-2">
+						<Label>Difficulty</Label>
+						<Select
+							value={formData.difficulty}
+							onValueChange={(value: Difficulty) =>
+								setFormData((prev) => ({ ...prev, difficulty: value }))
+							}
+						>
+							<SelectTrigger>
+								<SelectValue placeholder="Select difficulty" />
+							</SelectTrigger>
+							<SelectContent>
+								{["EASY", "MEDIUM", "HARD"].map((difficulty) => (
+									<SelectItem key={difficulty} value={difficulty}>
+										{difficulty}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+					</div>
+
+					<div className="space-y-2">
+						<Label>Round</Label>
+						<Select
+							value={formData.roundNumber?.toString()}
+							onValueChange={(value) =>
+								setFormData((prev) => ({
+									...prev,
+									roundNumber: Number.parseInt(value),
+								}))
+							}
+						>
+							<SelectTrigger>
+								<SelectValue placeholder="Select round" />
+							</SelectTrigger>
+							<SelectContent>
+								{rounds.map((round) => (
+									<SelectItem
+										key={round.number}
+										value={round.number.toString()}
+									>
+										Round {round.number}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+					</div>
+
+					<div className="space-y-2">
+						<Label htmlFor="maxScore">Max Score</Label>
+						<Input
+							id="maxScore"
+							type="number"
+							min="0"
+							value={formData.maxScore}
+							onChange={(e) =>
+								setFormData((prev) => ({
+									...prev,
+									maxScore: Number.parseInt(e.target.value) || 0,
+								}))
+							}
+						/>
+					</div>
+				</div>
+
+				<div className="grid gap-4 sm:grid-cols-3">
+					<div className="space-y-2">
+						<Label htmlFor="win_dl">Windows Executable</Label>
+						{currentFiles.win_dl && (
+							<div className="text-sm text-green-500 mb-2">
+								Uploaded:
+								<a
+									href={currentFiles.win_dl}
+									target="_blank"
+									rel="noopener noreferrer"
+									className="underline text-blue-500 hover:text-blue-700"
+								>
+									{currentFiles.win_dl.split("/").pop()}
+								</a>
+							</div>
+						)}
+						<Input
+							id="win_dl"
+							type="file"
+							accept=".exe"
+							onChange={(e) => handleFileChange(e, "win_dl")}
+						/>
+					</div>
+					<div className="space-y-2">
+						<Label htmlFor="mac_dl">Mac Executable</Label>
+						{currentFiles.mac_dl && (
+							<div className="text-sm text-green-500 mb-2">
+								Uploaded:
+								<a
+									href={currentFiles.mac_dl}
+									target="_blank"
+									rel="noopener noreferrer"
+									className="underline text-blue-500 hover:text-blue-700"
+								>
+									{currentFiles.mac_dl.split("/").pop()}
+								</a>
+							</div>
+						)}
+						<Input
+							id="mac_dl"
+							type="file"
+							accept=".exe"
+							onChange={(e) => handleFileChange(e, "mac_dl")}
+						/>
+					</div>
+					<div className="space-y-2">
+						<Label htmlFor="lin_dl">Linux Executable</Label>
+						{currentFiles.lin_dl && (
+							<div className="text-sm text-green-500 mb-2">
+								Uploaded:
+								<a
+									href={currentFiles.lin_dl}
+									target="_blank"
+									rel="noopener noreferrer"
+									className="underline text-blue-500 hover:text-blue-700"
+								>
+									{currentFiles.lin_dl.split("/").pop()}
+								</a>
+							</div>
+						)}
+						<Input
+							id="lin_dl"
+							type="file"
+							accept=".lin"
+							onChange={(e) => handleFileChange(e, "lin_dl")}
+						/>
+					</div>
+				</div>
+			</div>
+
+			<div className="flex justify-end gap-4">
+				<Button
+					variant="outline"
+					onClick={() => (isDialog ? onClose?.() : router.back())}
+					type="button"
+					disabled={loading}
+				>
+					Cancel
+				</Button>
+				<Button type="submit" disabled={loading}>
+					{loading
+						? "Saving..."
+						: initialData
+							? "Save Changes"
+							: "Create Question"}
+				</Button>
+			</div>
+		</form>
+	);
+
+	if (isDialog) {
+		return (
+			<Dialog open={open} onOpenChange={() => onClose?.()}>
+				<DialogContent className="max-h-[90vh] overflow-y-auto max-w-4xl">
+					<DialogHeader>
+						<DialogTitle>
+							{initialData ? "Edit Question" : "Create Question"}
+						</DialogTitle>
+					</DialogHeader>
+					{FormContent}
+				</DialogContent>
+			</Dialog>
+		);
+	}
+
+	return (
+		<div className="container mx-auto max-w-4xl py-6">
+			<Card>
+				<CardHeader>
+					<CardTitle>
+						{initialData ? "Edit Question" : "Create Question"}
+					</CardTitle>
+				</CardHeader>
+				<CardContent>{FormContent}</CardContent>
+			</Card>
+		</div>
+	);
+}

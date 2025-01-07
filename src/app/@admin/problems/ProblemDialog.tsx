@@ -22,7 +22,7 @@ interface Problem {
   win_dl: string
   mac_dl: string
   web_code: string
-  norml_cases: number
+  normal_cases: number
   edge_cases: number
   roundNumber: number
 }

@@ -43,6 +43,16 @@ const Page = () => {
 					description="User's check-in management"
 					href="/check-in"
 				/>
+				<DashboardCard
+					title="Promotion"
+					description="Promote or demote teams"
+					href="/promotion"
+				/>
+				<DashboardCard
+					title="Rounds"
+					description="Manage rounds"
+					href="/rounds"
+				/>
 			</div>
 		</div>
 	);

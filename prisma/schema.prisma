@@ -36,7 +36,7 @@ model Session {
 model User {
     id            String       @id @default(cuid())
     name          String?
-    email         String?      @unique
+    email         String       @unique
     emailVerified DateTime?
     image         String?
     teamId        String?
@@ -77,29 +77,29 @@ model TeamRound {
     id      String @id @default(cuid())
     teamId  String
     roundId Int
-    round   Round  @relation(fields: [roundId], references: [number])
+    round   Round  @relation(fields: [roundId], references: [number], onDelete: Cascade)
     team    Team   @relation(fields: [teamId], references: [id])
 
     @@unique([teamId, roundId])
 }
 
 model Problem {
-    id          String       @id @default(cuid())
-    title       String
-    nickname    String
-    description String
-    difficulty  Difficulty
-    maxScore    Int
-    lin_dl      String
-    win_dl      String
-    mac_dl      String
-    web_code    String
-    norml_cases Int          @default(1)
-    edge_cases  Int          @default(1)
-    roundNumber Int
-    round       Round        @relation(fields: [roundNumber], references: [number])
-    submissions Submission[]
-    Testcase    Testcase[]
+    id           String       @id @default(cuid())
+    title        String
+    nickname     String
+    description  String
+    difficulty   Difficulty
+    maxScore     Int
+    lin_dl       String
+    win_dl       String
+    mac_dl       String
+    web_code     String
+    normal_cases Int          @default(1)
+    edge_cases   Int          @default(1)
+    roundNumber  Int          @default(1)
+    round        Round        @relation(fields: [roundNumber], references: [number], onDelete: SetDefault)
+    submissions  Submission[]
+    Testcase     Testcase[]
 }
 
 model Testcase {
@@ -145,7 +145,6 @@ model Admin {
 enum Gender {
     male
     female
-    others
 }
 
 enum Difficulty {

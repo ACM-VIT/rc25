@@ -17,7 +17,7 @@ interface Problem {
   maxScore: number;
   roundNumber: number;
   description: string;
-  norml_cases: number;
+  normal_cases: number;
   edge_cases: number;
   lin_dl: string;
   win_dl: string;

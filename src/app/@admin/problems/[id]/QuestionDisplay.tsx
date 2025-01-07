@@ -25,7 +25,7 @@ interface Problem {
   maxScore: number;
   roundNumber: number;
   description: string;
-  norml_cases: number;
+  normal_cases: number;
   edge_cases: number;
   lin_dl: string;
   win_dl: string;
@@ -293,7 +293,7 @@ export default function ViewProblem({ problem }: ViewProblemProps) {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <h3 className="font-semibold mb-2 text-black">Test Cases</h3>
-            <p className="text-black">Normal: {problem.norml_cases}</p>
+            <p className="text-black">Normal: {problem.normal_cases}</p>
             <p className="text-black">Edge: {problem.edge_cases}</p>
           </div>
 

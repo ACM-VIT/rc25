@@ -1,8 +1,7 @@
-import { PrismaClient } from "@prisma/client";
 import ProblemsClient from "./ProblemsClient";
+import { prisma } from "@/utils/prisma";
 
 async function getProblems() {
-  const prisma = new PrismaClient();
   try {
     return await prisma.problem.findMany({
       orderBy: { roundNumber: "asc" },
@@ -13,7 +12,6 @@ async function getProblems() {
 }
 
 async function getRounds() {
-  const prisma = new PrismaClient();
   try {
     return await prisma.round.findMany({
       orderBy: { number: "asc" },

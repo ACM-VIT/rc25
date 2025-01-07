@@ -1,4 +1,5 @@
-import vm from "node:vm";
+'use client'
+
 
 let buffer = "";
 let output = "";
@@ -82,22 +83,36 @@ export default function validateIO() {
         buffer = stdin;
         output = "";
 
-        // Create sandbox context
-        const context = {
-          cin,
-          cout,
-          console: { log: cout }
-        };
+        // Create isolated context
+        const scopedCode = `
+          return (function(cin, cout, console) {
+            "use strict";
+            ${code}
+          });
+        `;
 
-        // Run code in VM
-        const sandbox = vm.createContext(context);
-        vm.runInContext(code, sandbox);
+        // Create function with isolated scope
+        const timeoutMs = 5000; // 5 second timeout
+        const createSandbox = new Function(scopedCode);
+        const sandbox = createSandbox();
 
-        // Normalize outputs (trim whitespace, normalize line endings)
+        // Run with timeout
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('Execution timed out')), timeoutMs);
+        });
+
+        Promise.race([
+          new Promise((resolve) => {
+            sandbox(cin, cout, { log: cout });
+            resolve(true);
+          }),
+          timeoutPromise
+        ]);
+
+        // Normalize outputs
         const normalizedOutput = output.trim().replace(/\r\n/g, '\n');
         const normalizedExpected = expectedOutput.trim().replace(/\r\n/g, '\n');
 
-        // Compare outputs
         return normalizedOutput === normalizedExpected;
 
       } catch (error) {
@@ -110,8 +125,5 @@ export default function validateIO() {
 
 export function validateCode(code: string, input: string, expectedOutput: string): boolean {
   const validator = validateIO();
-  console.log('Validating code:', code);
-  console.log('Input:', input);
-  console.log('Expected output:', expectedOutput);
   return validator.validate(code, input, expectedOutput);
 }

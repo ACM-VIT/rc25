@@ -41,7 +41,7 @@ const Page = () => {
 				<DashboardCard
 					title="Check-in"
 					description="User's check-in management"
-					href="/checkin"
+					href="/check-in"
 				/>
 			</div>
 		</div>

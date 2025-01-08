@@ -2,14 +2,13 @@ import CountdownTimer from "@/components/countdown-timer";
 import DetailsForm from "@/components/details-form";
 import Disqualified from "@/components/disqualifed";
 import EliminationScreen from "@/components/elimination-screen";
+import TeamMembersAndLeaveButton from "@/components/team-dashboard";
 import Winners from "@/components/winners";
 import type React from "react";
 import { auth } from "./(auth)/auth";
 import "./globals.css";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { Toaster } from "@/components/ui/toaster";
-import Dashboard from "@/components/team-dashboard";
-import Navbar from "@/components/Navbar";
 const plus_jakarta_sans = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
 // till auth is implemeneted basic routing for now
@@ -39,7 +38,7 @@ export default async function RootLayout({
 		return (
 			<html lang="en">
 				<body>
-         	 	{landing}
+          {landing}
         </body>
 			</html>
 		);
@@ -69,9 +68,7 @@ export default async function RootLayout({
 		return (
 			<html lang="en">
 				<body>
-					<Navbar name={session.user.name!}/>
-					<Dashboard />
-					{/*{team}*/}
+					{team}
 				</body>
 			</html>
 		);
@@ -81,7 +78,7 @@ export default async function RootLayout({
     return (
       <html lang="en">
         <body>
-          <Dashboard/>
+          <TeamMembersAndLeaveButton/>
         </body>
       </html>
     );
@@ -126,17 +123,19 @@ export default async function RootLayout({
 		return (
 			<html lang="en">
 				<body>
-					<CountdownTimer />
+					<CountdownTimer getTimeUntil="" />  
 				</body>
 			</html>
+			// Add the time until the next round
 		);
 	}
 
 	return (
 		<html lang="en">
 			<body>
-				<CountdownTimer />
+				<CountdownTimer getTimeUntil=""/>
 			</body>
 		</html>
+		// Add the time until the next round
 	);
 }

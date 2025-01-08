@@ -3,8 +3,8 @@
 import { PrismaClient } from "@prisma/client";
 
 export async function getAvailableUsers() {
+	const prisma = new PrismaClient();
 	try {
-		const prisma = new PrismaClient();
 		const users = await prisma.user.findMany({
 			where: {
 				teamId: null,
@@ -15,17 +15,19 @@ export async function getAvailableUsers() {
 				email: true,
 			},
 		});
-		console.log(users);
 		return users;
 	} catch (error) {
 		console.error("Error fetching available users:", error);
 		return [];
+	} finally {
+		await prisma.$disconnect();
 	}
 }
 
 export async function createTeam(userIds: string[], name: string) {
+	const prisma = new PrismaClient();
+
 	try {
-		const prisma = new PrismaClient();
 		const shortCode = Math.random().toString(36).substring(7).toUpperCase();
 		const team = await prisma.team.create({
 			data: {
@@ -43,5 +45,7 @@ export async function createTeam(userIds: string[], name: string) {
 	} catch (error) {
 		console.error("Error creating team:", error);
 		return null;
+	} finally {
+		await prisma.$disconnect();
 	}
 }

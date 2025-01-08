@@ -39,7 +39,7 @@ export default function TeamBuilder({
 	const [teamName, setTeamName] = useState("");
 	const { toast } = useToast();
 
-	const MAX_TEAM_SIZE = 4;
+	const MAX_TEAM_SIZE = process.env.MAX_TEAM_SIZE || "4";
 
 	useEffect(() => {
 		loadUsers();
@@ -88,7 +88,7 @@ export default function TeamBuilder({
 			if (prev.includes(userId)) {
 				return prev.filter((id) => id !== userId);
 			}
-			if (prev.length >= MAX_TEAM_SIZE) {
+			if (prev.length >= Number.parseInt(MAX_TEAM_SIZE)) {
 				toast({
 					description: `Maximum team size is ${MAX_TEAM_SIZE} members`,
 					variant: "destructive",

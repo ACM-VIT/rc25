@@ -7,7 +7,7 @@ import TeamGetPayload = Prisma.TeamGetPayload;
 import UserGetPayload = Prisma.UserGetPayload;
 import { useRouter } from "next/navigation";
 import { useToast } from "./ui/use-toast";
-import GetParicipant from "@/app/actions/get-paricipant";
+import GetParicipant from "@/app/actions/get-participant";
 import AddToTeam from "@/app/actions/add-to-team";
 import Override from "@/app/actions/override";
 import CheckInTeam from "@/app/actions/check-in-team";

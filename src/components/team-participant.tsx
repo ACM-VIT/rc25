@@ -47,29 +47,4 @@ export default function TeamParticipant({
 			</div>
 		</div>
 	);
-	// return (
-	//     <div className={`table-row ${checkedIn ? "" : "bg-red-700"}`}>
-	//         <div className="table-cell">
-	//             {user.name?.slice(-9) || unireg?.regNo || 'Unavailable'}
-	//         </div>
-	//         <div className="table-cell">
-	//             {user.name?.slice(0, -10) || unireg?.name || 'Unavailable'}
-	//         </div>
-	//         <div className="table-cell">
-	//             {user.email}
-	//         </div>
-	//         <div className="table-cell">
-	//             {unireg ? 'Yes' : 'No'}
-	//         </div>
-	//         <div className="table-cell">
-	//             {team!.name}
-	//         </div>
-	//         <div className="table-cell">
-	//             {<button>Remove</button>}
-	//         </div>
-	//         <div className="table-cell">
-	//             {!unireg ? <button>Override</button> : null}
-	//         </div>
-	//     </div>
-	// );
 }

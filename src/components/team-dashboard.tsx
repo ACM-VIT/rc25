@@ -8,7 +8,7 @@ const Dashboard: React.FC = () => {
         slno: i + 1,
         questionName: `Question ${i + 1}`,
         difficulty: 'Easy',
-        casesPased:3,
+        casesPassed:3,
         totalCases:5,
     }));
 
@@ -52,29 +52,30 @@ const Dashboard: React.FC = () => {
                 </div>
 
                 <div className="w-[50vw] bg-[#39234E] pl-7 pr-7 rounded-lg ml-7">
-                    <p className="text-lg font-semibold text-center border-b-2 border-white p-2 mb-4">
+                    <p className="text-2xl font-semibold text-center border-b-2 border-white p-2 mb-4">
                         Questions
                     </p>
                     <div className="flex flex-row border-b-2 pb-2 mb-4">
-                        <h1 className="w-1/2 text-center">Sl No</h1>
-                        <h1 className=" w-1/2 text-center">Questions</h1>
-                        <h1 className="w-1/3 text-center">Difficulty</h1>
-                        <h1 className="w-2/3 text-center">Status</h1>
+                        <h1 className="w-1/6 font-bold text-center">Sl No</h1>
+                        <h1 className="w-2/6 font-bold text-center">Questions</h1>
+                        <h1 className="w-1/6 font-bold text-center">Difficulty</h1>
+                        <h1 className="w-2/6 font-bold text-center">Status</h1>
                     </div>
-                    <ScrollArea className="h-[60vh] rounded-md ">
+                    <ScrollArea className="h-[60vh] rounded-md">
                         <div className="p-4">
                             {questions.map((question) => (
                                 <div key={question.slno} className="flex flex-row text-sm space-x-4 mb-2">
-                                    <p className=" bg-amber-300 w-1/4 text-center p-2">{question.slno}</p>
-                                    <p className=" bg-amber-300 w-3/4 text-center p-2">{question.questionName}</p>
-                                    <p className="bg-amber-300 w-1/3 text-center p-2">{question.difficulty}</p>
-                                    <p className="bg-amber-300 w-1/4 text-center p-2">{question.casesPased}/{question.totalCases}</p>
+                                    <p className="bg-amber-300 w-1/6 text-center p-2">{question.slno}</p>
+                                    <p className="bg-amber-300 w-2/6 text-center p-2">{question.questionName}</p>
+                                    <p className="bg-amber-300 w-1/6 text-center p-2">{question.difficulty}</p>
+                                    <p className="bg-amber-300 w-2/6 text-center p-2">
+                                        {question.casesPassed}/{question.totalCases}
+                                    </p>
                                 </div>
                             ))}
                         </div>
                     </ScrollArea>
                 </div>
-
                 <div className="w-[35vw] bg-[#39234E] rounded-lg ml-7">
                     <p className="text-lg font-semibold text-center border-b-2 border-white p-4 mb-4">
                         Leaderboard

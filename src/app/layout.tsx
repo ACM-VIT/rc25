@@ -14,8 +14,8 @@ const plus_jakarta_sans = Plus_Jakarta_Sans({ subsets: ["latin"] });
 // till auth is implemeneted basic routing for now
 const isAdmin = false; // true --> admin
 const detailsFilled = true;
-const teamJoined = true;
-const teamCheckedIn = true;
+const teamJoined = false;
+const teamCheckedIn = false;
 const roundIsActive = true; // true --> portal
 const memberOfActiveRound = true; // false --> elimination
 const winnersAnnounced = true;

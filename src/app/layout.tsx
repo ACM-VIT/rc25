@@ -8,8 +8,8 @@ import type React from "react";
 import { auth } from "./(auth)/auth";
 import "./globals.css";
 import { Plus_Jakarta_Sans } from "next/font/google";
+import { Toaster } from "@/components/ui/toaster";
 const plus_jakarta_sans = Plus_Jakarta_Sans({ subsets: ["latin"] });
-
 
 // till auth is implemeneted basic routing for now
 const isAdmin = false; // true --> admin
@@ -37,7 +37,9 @@ export default async function RootLayout({
 	if (!session?.user?.email) {
 		return (
 			<html lang="en">
-				<body>{landing}</body>
+				<body>
+          {landing}
+        </body>
 			</html>
 		);
 	}
@@ -45,7 +47,10 @@ export default async function RootLayout({
 	if (isAdmin) {
 		return (
 			<html lang="en">
-				<body className={plus_jakarta_sans.className}>{admin}</body>
+				<body className={plus_jakarta_sans.className}>
+					{admin}
+					<Toaster />
+				</body>
 			</html>
 		);
 	}
@@ -53,7 +58,7 @@ export default async function RootLayout({
 	if (!detailsFilled) {
 		return (
 			<html lang="en">
-				<body>
+        	<body>
 					<DetailsForm />
 				</body>
 			</html>
@@ -62,20 +67,22 @@ export default async function RootLayout({
 	if (!teamJoined) {
 		return (
 			<html lang="en">
-				<body>{team}</body>
-			</html>
-		);
-	}
-
-	if (!teamCheckedIn) {
-		return (
-			<html lang="en">
 				<body>
-					<TeamMembersAndLeaveButton />
+					{team}
 				</body>
 			</html>
 		);
 	}
+
+  if (!teamCheckedIn) {
+    return (
+      <html lang="en">
+        <body>
+          <TeamMembersAndLeaveButton/>
+        </body>
+      </html>
+    );
+  }
 
 	if (disqualified) {
 		return (

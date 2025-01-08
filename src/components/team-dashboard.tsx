@@ -52,7 +52,7 @@ const Dashboard: React.FC = () => {
                 </div>
 
                 <div className="w-[50vw] bg-[#39234E] pl-7 pr-7 rounded-lg ml-7">
-                    <p className="text-2xl font-semibold text-center border-b-2 border-white p-2 mb-4">
+                    <p className="text-2xl font-semibold border-b-2 border-white p-2 mb-4">
                         Questions
                     </p>
                     <div className="flex flex-row border-b-2 pb-2 mb-4">
@@ -65,10 +65,10 @@ const Dashboard: React.FC = () => {
                         <div className="p-4">
                             {questions.map((question) => (
                                 <div key={question.slno} className="flex flex-row text-sm space-x-4 mb-2">
-                                    <p className="bg-amber-300 w-1/6 text-center p-2">{question.slno}</p>
-                                    <p className="bg-amber-300 w-2/6 text-center p-2">{question.questionName}</p>
-                                    <p className="bg-amber-300 w-1/6 text-center p-2">{question.difficulty}</p>
-                                    <p className="bg-amber-300 w-2/6 text-center p-2">
+                                    <p className=" w-1/6 text-center p-2">{question.slno}</p>
+                                    <p className=" w-2/6 text-center p-2">{question.questionName}</p>
+                                    <p className=" w-1/6 text-center p-2">{question.difficulty}</p>
+                                    <p className=" w-2/6 text-center p-2">
                                         {question.casesPassed}/{question.totalCases}
                                     </p>
                                 </div>
@@ -76,9 +76,9 @@ const Dashboard: React.FC = () => {
                         </div>
                     </ScrollArea>
                 </div>
-                <div className="w-[35vw] bg-[#39234E] rounded-lg ml-7">
-                    <p className="text-lg font-semibold text-center border-b-2 border-white p-4 mb-4">
-                        Leaderboard
+                <div className="w-[32vw] bg-[#39234E] rounded-lg pl-7 pr-7 ml-7">
+                    <p className="text-2xl font-semibold border-b-2 border-white p-2 mb-4">
+                        LeaderBoard
                     </p>
                 </div>
             </div>

@@ -3,96 +3,135 @@ import DetailsForm from "@/components/details-form";
 import Disqualified from "@/components/disqualifed";
 import EliminationScreen from "@/components/elimination-screen";
 import Winners from "@/components/winners";
-import type React from "react";
+import React, { ReactNode } from 'react'
 import { auth } from "./(auth)/auth";
 import "./globals.css";
 import { Plus_Jakarta_Sans } from "next/font/google";
-import { Toaster } from "@/components/ui/toaster";
-import Dashboard from "@/components/team-dashboard";
-import Navbar from "@/components/Navbar";
+import Image from "next/image";
+import logo from "@/app/assets/RCLogo.svg";
+import rock from "@/app/assets/rock.svg";
+import curveline from "@/app/assets/curveline.svg";
+import bracket from "@/app/assets/bracket.svg";
+
 const plus_jakarta_sans = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
-// till auth is implemeneted basic routing for now
-const isAdmin = false; // true --> admin
-const detailsFilled = true;
+// Configuration flags
+const isAdmin = false;
+const detailsFilled = false;
 const teamJoined = false;
 const teamCheckedIn = false;
-const roundIsActive = true; // true --> portal
-const memberOfActiveRound = true; // false --> elimination
-const winnersAnnounced = true;
-const noPendingRound = true;
+const roundIsActive = false;
+const memberOfActiveRound = false;
+const winnersAnnounced = false;
+const noPendingRound = false;
 const disqualified = false;
 
+interface LayoutProps {
+  children: ReactNode;
+  team: ReactNode;
+  admin: ReactNode;
+  landing: ReactNode;
+}
+
+const BackgroundTemplate = ({ children }: { children: ReactNode }) => (
+  <div className="relative w-[100vw] h-dvh bg-[#222] overflow-hidden">
+    <div className="absolute inset-0 flex flex-row h-full z-0">
+      <div className="md:w-1/4 h-full">
+        <Image
+          className="hidden md:block h-[100vh] object-cover object-center"
+          src={rock}
+          alt="Left SVG Image"
+        />
+      </div>
+      <div className="min-w-full fixed md:static md:min-w-0 md:w-1/2 h-full">
+        <Image
+          className="min-h-screen object-cover object-center"
+          src={curveline}
+          alt="Middle curve line"
+        />
+      </div>
+      <div className="w-1/4 h-full flex fixed right-3 top-0 md:static overflow-y-auto">
+        <Image
+          className="h-[15vh] md:h-[15vh] place-self-auto "
+          src={bracket}
+          alt="Right Top Bracket"
+        />
+      </div>
+    </div>
+    <div className="relative z-10">
+      {children}
+    </div>
+  </div>
+);
+
 export default async function RootLayout({
-	children,
-	team,
-	admin,
-	landing,
-}: {
-	children: React.ReactNode;
-	team: React.ReactNode;
-	admin: React.ReactNode;
-	landing: React.ReactNode;
-}) {
-	const session = await auth();
-	if (!session?.user?.email) {
-		return (
-			<html lang="en">
-				<body>
-          {landing}
-        </body>
-			</html>
-		);
-	}
+  children,
+  team,
+  admin,
+  landing,
+}: LayoutProps) {
+  const session = await auth();
 
-	if (isAdmin) {
-		return (
-			<html lang="en">
-				<body className={plus_jakarta_sans.className}>
-					{admin}
-					<Toaster />
-				</body>
-			</html>
-		);
-	}
-
-	if (!detailsFilled) {
-		return (
-			<html lang="en">
-        	<body>
-					<DetailsForm />
-				</body>
-			</html>
-		);
-	}
-	if (!teamJoined) {
-		return (
-			<html lang="en">
-				<body>
-				<Navbar name={session.user.name!}/>
-				<Dashboard/>
-				</body>
-			</html>
-		);
-	}
-
-  if (!teamCheckedIn) {
+  if (!session?.user?.email) {
     return (
       <html lang="en">
         <body>
-			<Navbar name={session.user.name!}/>
-          <Dashboard/>
+          <BackgroundTemplate>{landing}</BackgroundTemplate>
         </body>
       </html>
     );
   }
 
+  if (isAdmin) {
+    return (
+      <html lang="en">
+        <body className={plus_jakarta_sans.className}>
+          <BackgroundTemplate>{admin}</BackgroundTemplate>
+        </body>
+      </html>
+    );
+  }
+
+
+  if (!detailsFilled) {
+    return (
+      <html lang="en">
+        <body>
+          <BackgroundTemplate>
+            <DetailsForm />
+          </BackgroundTemplate>
+        </body>
+      </html>
+    );
+  }
+  if (!teamJoined) {
+    return (
+      <html lang="en">
+        <body>
+          <BackgroundTemplate>{team}</BackgroundTemplate>
+        </body>
+      </html>
+    );
+  }
+
+	if (!teamCheckedIn) {
+		return (
+			<html lang="en">
+			<body>
+			<BackgroundTemplate>
+				<TeamMembersAndLeaveButton/>
+			</BackgroundTemplate>
+			</body>
+			</html>
+		);
+	}
+
 	if (disqualified) {
 		return (
 			<html lang="en">
-				<body>
-					<Disqualified />
-				</body>
+			<body>
+			<Disqualified/>
+			</body>
 			</html>
 		);
 	}
@@ -100,15 +139,15 @@ export default async function RootLayout({
 		if (memberOfActiveRound) {
 			return (
 				<html lang="en">
-					<body>{children}</body>
+				<body>{children}</body>
 				</html>
 			);
 		}
 		return (
 			<html lang="en">
-				<body>
-					<EliminationScreen />
-				</body>
+			<body>
+			<EliminationScreen/>
+			</body>
 			</html>
 		);
 	}
@@ -117,17 +156,19 @@ export default async function RootLayout({
 		if (winnersAnnounced) {
 			return (
 				<html lang="en">
-					<body>
-						<Winners />
-					</body>
+				<body>
+				<Winners/>
+				</body>
 				</html>
 			);
 		}
 		return (
 			<html lang="en">
+
 				<body>
 					<CountdownTimer getTimeUntil="" />  
 				</body>
+
 			</html>
 			// Add the time until the next round
 		);
@@ -135,9 +176,11 @@ export default async function RootLayout({
 
 	return (
 		<html lang="en">
+
 			<body>
 				<CountdownTimer getTimeUntil=""/>
 			</body>
+
 		</html>
 		// Add the time until the next round
 	);

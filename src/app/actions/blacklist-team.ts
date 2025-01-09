@@ -17,6 +17,8 @@ export async function searchTeams(query: string) {
 		return { success: true, data: teams };
 	} catch (error) {
 		return { success: false, error: "Failed to search teams" };
+	} finally {
+		await prisma.$disconnect();
 	}
 }
 
@@ -45,5 +47,7 @@ export async function ReverseblacklistTeam(teamId: string) {
 		return { success: true };
 	} catch (error) {
 		return { success: false, error: "Failed to disqualify team" };
+	} finally {
+		await prisma.$disconnect();
 	}
 }

@@ -65,23 +65,30 @@ export default function OnboardingForm() {
                     <div className="w-full max-w-2xl px-4">
                         {/* Phone Number */}
                         <div className="mb-3">
-                            <label htmlFor="phone" className="font-subtitle font-semibold text-white text-xs block mb-1">
-                                PHONE NUMBER
-                            </label>
-                            <input
-                                type="text"
-                                name="phone"
-                                id="phone"
-                                className="w-full h-10 rounded-md p-2 bg-transparent
-                           box-border border-dashed border-[#F0F1FA] border-2 
-                           outline-none text-white"
-                                onChange={(e) => setPhone(e.target.value)}
-                                onInput={() => setPhoneError("")}
-                            />
-                            <div className="text-red-600 text-xs mt-0.5">
-                                {phoneError}&nbsp;
-                            </div>
-                        </div>
+    <label htmlFor="phone" className="font-subtitle font-semibold text-white text-xs block mb-1">
+        PHONE NUMBER
+    </label>
+    <input
+        type="tel"
+        name="phone"
+        id="phone"
+        inputMode="numeric"
+        pattern="[0-9]*"
+        className="w-full h-10 rounded-md p-2 bg-transparent
+                   box-border border-dashed border-[#F0F1FA] border-2 
+                   outline-none text-white"
+        onChange={(e) => {
+            // Update state only with numbers
+            const value = e.target.value.replace(/[^0-9]/g, ""); // Remove non-numeric characters
+            setPhone(value);
+        }}
+        value={phone} // Ensure the value is controlled
+        onInput={() => setPhoneError("")}
+    />
+    <div className="text-red-600 text-xs mt-0.5">
+        {phoneError}&nbsp;
+    </div>
+</div>
 
                         {/* Gender Selection */}
                         <div className="mb-3">

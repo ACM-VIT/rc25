@@ -4,6 +4,7 @@ import { teamAction } from "@/app/actions/team";
 import Image from "next/image";
 import create from "@/app/assets/create.png";
 import join from "@/app/assets/join.png";
+import logo from "@/app/assets/RCLogo.svg";
 
 export default function Team() {
     const [mode, setMode] = useState<"CREATE" | "JOIN">("CREATE");
@@ -37,8 +38,13 @@ export default function Team() {
     };
 
     return (
-        <div className="relative min-h-screen flex items-center justify-center bg-black text-white font-sans">
-            <div className="w-[90vw] md:w-[50vw] lg:w-[40vw] p-6 rounded-lg bg-[#1c1c1c] border-2 border-purple-700 flex flex-col md:flex-row gap-4">
+        <div className="relative min-h-screen flex items-center justify-center text-white font-sans bg-transparent">
+             <Image
+                src={logo}
+                alt="rclogo"
+                className="absolute top-4 left-8 w-auto h-[8%]" 
+            />
+            <div className="w-[90vw] md:w-[50vw] lg:w-[40vw] p-6 rounded-lg bg-transparent backdrop-blur border-2  border-purple-700 flex flex-col md:flex-row gap-4">
                 <div className="flex-shrink-0 flex justify-center items-center">
                     <Image
                         src={mode === "CREATE" ? create : join}

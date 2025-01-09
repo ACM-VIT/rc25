@@ -22,13 +22,13 @@ export default function OnboardingForm() {
             <Image
                 src={logo}
                 alt="rclogo"
-                className="absolute top-4 left-8 w-auto h-[8%]" // Adjust `top` and `right` for fine-tuning
+                className="absolute top-4 left-8 w-auto h-[8%]" 
             />
 
             <div className="w-[65vw] md:w-[55vw] lg:w-[50vw] sm:w-[75vw] phone:w-[85vw] phone:mt-[15%]
                       p-4 phone:p-3
                       flex flex-col box-border rounded-[5%] 
-                      backdrop-blur-md bg-transparent border border-[#9B51E0]">
+                      backdrop-blur-md bg-transparent border border-[#9B51E0] ">
                 <form
                     action={onboard}
                     id="form"
@@ -53,10 +53,10 @@ export default function OnboardingForm() {
                 >
                     {/* Header */}
                     <div className="w-full mb-3">
-                        <h1 className="font-bold text-center text-white text-2xl xs:text-xl phone:text-2xl">
-                            HELLO THERE!
-                        </h1>
-                        <h2 className="font-bold text-white text-center text-lg xs:text-base phone:text-base mt-2 ">
+                    <h1 className="font-bold text-center text-white text-2xl sm:text-3xl xs:text-[200%] phone:text-[200%] font-[Audiowide] mb-5">
+    HELLO THERE!
+</h1>
+                        <h2 className="font-bold text-white text-center text-lg xs:text-base phone:text-base mt-2 font-[PT Sans] ">
                             To ensure a seamless experience, please tell us more about yourself
                         </h2>
                     </div>
@@ -74,7 +74,7 @@ export default function OnboardingForm() {
                                 id="phone"
                                 className="w-full h-10 rounded-md p-2 bg-transparent
                            box-border border-dashed border-[#F0F1FA] border-2 
-                           outline-none"
+                           outline-none text-white"
                                 onChange={(e) => setPhone(e.target.value)}
                                 onInput={() => setPhoneError("")}
                             />

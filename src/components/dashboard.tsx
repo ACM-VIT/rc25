@@ -1,6 +1,7 @@
 import React from 'react';
 import { ScrollArea } from "@/components/ui/scroll-area"
 import CountdownTimer from "@/components/countdown-timer";
+import { Crown } from 'lucide-react';
 // import { Separator } from "@/components/ui/separator"
 
 
@@ -12,6 +13,27 @@ const Dashboard: React.FC = () => {
         casesPassed:3,
         totalCases:5,
     }));
+    const teams = Array.from({ length: 50 }).map((_, i) => {
+        const slno = i + 1;
+        let icon = null;
+
+        if (slno === 1) {
+            icon = <Crown color="#F8CC22" />;
+        } else if (slno === 2) {
+            icon = <Crown color="#BDBDBD" />;
+        } else if (slno === 3) {
+            icon = <Crown color="#F2994A" />;
+        }else{
+            icon=i+1;
+        }
+
+        return {
+            slno,
+            icon,
+            teamName: `Team ${slno}`,
+            pts: '89pts',
+        };
+    });
 
     return (
         <div className="flex flex-col bg-[#0B0014] min-h-screen text-white p-4">
@@ -19,7 +41,6 @@ const Dashboard: React.FC = () => {
                 <p className="font-bold text-2xl font-[Audiowide] underline underline-offset-4 decoration-white">
                     Round 1
                 </p>
-                <CountdownTimer getTimeUntil=""/>
             </div>
             <div className="flex flex-row">
                 <div className="flex flex-col w-1/4">
@@ -85,6 +106,26 @@ const Dashboard: React.FC = () => {
                     <p className="text-2xl font-semibold border-b-2 border-white p-2 mb-4">
                         LeaderBoard
                     </p>
+                    <div>
+                        <ScrollArea className="h-[60vh] rounded-md">
+                            <div className="p-4">
+                                {teams.map((team) => (
+                                    <div key={team.slno} className="flex flex-row text-sm space-x-4 mb-2">
+                                        <p className=" w-1/6 text-center p-2"> {team.icon} </p>
+                                        <p className=" w-1/2 text-center p-2">
+                                            {team.teamName}
+                                        </p>
+                                        <p className=" w-1/6 text-center p-2">
+                                            {team.pts}
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
+                        </ScrollArea>
+                        <div>
+
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

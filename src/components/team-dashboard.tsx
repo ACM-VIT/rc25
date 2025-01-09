@@ -1,5 +1,6 @@
 import React from 'react';
 import { ScrollArea } from "@/components/ui/scroll-area"
+import CountdownTimer from "@/components/countdown-timer";
 // import { Separator } from "@/components/ui/separator"
 
 
@@ -18,12 +19,13 @@ const Dashboard: React.FC = () => {
                 <p className="font-bold text-2xl font-[Audiowide] underline underline-offset-4 decoration-white">
                     Round 1
                 </p>
+                <CountdownTimer getTimeUntil=""/>
             </div>
             <div className="flex flex-row">
                 <div className="flex flex-col w-1/4">
                     <div
                         className="flex flex-col p-6 shadow-lg rounded-lg text-white  bg-[#39234E]">
-                        <div className="hidden lg:block absolute top-[30%]  left-[2.5%] rounded-full  w-[84px] h-[60px] rounded-full blur-[50px] bg-none transition duration-1000 bg-[#F8CC22]"/>
+                        <div className="hidden lg:block absolute top-[32%]  left-[2%] rounded-full  w-[84px] h-[60px] rounded-full blur-[50px] bg-none transition duration-1000 bg-[#F8CC22]"/>
                         <p className="text-lg font-semibold text-center border-b border-white pb-2 mb-3">
                             Team Name
                         </p>
@@ -48,9 +50,9 @@ const Dashboard: React.FC = () => {
                         {/*</div>*/}
                     </div>
                     <div
-                        className="flex flex-col p-4 h-[40vh] justify-center shadow-lg rounded-lg mt-4 text-white text-center bg-[radial-gradient(at_1%_1%,_#F8CC22,_#39234E_1%)]">
+                        className="flex relative flex-col p-4 h-[40vh] justify-center shadow-lg rounded-lg mt-4 text-white text-center bg-[radial-gradient(at_1%_1%,_#F8CC22,_#39234E_1%)]">
                         <p>News/Timeline</p>
-                        <div className="hidden lg:block absolute top-[98%] left-2 w-[100px] h-[50px] rounded-full blur-[30px] bg-none transition duration-1000 bg-[#F8CC22]"/>
+                        <div className="hidden lg:block absolute bottom-0 left-2 w-[100px] h-[40px] rounded-full blur-[50px] bg-none transition duration-1000 bg-[#F8CC22]"/>
                     </div>
                 </div>
 

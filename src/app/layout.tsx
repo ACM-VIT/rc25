@@ -12,6 +12,8 @@ import logo from "@/app/assets/RCLogo.svg";
 import rock from "@/app/assets/rock.svg";
 import curveline from "@/app/assets/curveline.svg";
 import bracket from "@/app/assets/bracket.svg";
+import Dashboard from "@/components/team-dashboard";
+import Navbar from "@/components/Navbar";
 
 const plus_jakarta_sans = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
@@ -97,9 +99,8 @@ export default async function RootLayout({
     return (
       <html lang="en">
         <body>
-          <BackgroundTemplate>
-            <DetailsForm />
-          </BackgroundTemplate>
+			<Navbar name={session.user.name!}/>
+          <Dashboard/>
         </body>
       </html>
     );
@@ -119,7 +120,7 @@ export default async function RootLayout({
 			<html lang="en">
 			<body>
 			<BackgroundTemplate>
-				<TeamMembersAndLeaveButton/>
+				<Dashboard/>
 			</BackgroundTemplate>
 			</body>
 			</html>

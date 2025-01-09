@@ -8,6 +8,7 @@ interface CountdownTimerProps {
 const CountdownTimer:React.FC<CountdownTimerProps> = ({getTimeUntil}) => {
 
   const [timer,setTimer]=useState<string>("00:00:00");
+
   const getTimeRemaining = (end:string) => {
     const total = Date.parse(end) - Date.now();
     if(total<0){
@@ -26,8 +27,8 @@ const CountdownTimer:React.FC<CountdownTimerProps> = ({getTimeUntil}) => {
   useEffect(()=>{
     if(isNaN((Date.parse(getTimeUntil)))){
       console.error("Invalid date format for `getTimeUntil`:", getTimeUntil);
+      console.log(Date.now())
     }
-    
     const updateTimer = () => {
       const timeRemaining = getTimeRemaining(getTimeUntil);
       setTimer(
@@ -38,10 +39,9 @@ const CountdownTimer:React.FC<CountdownTimerProps> = ({getTimeUntil}) => {
     updateTimer();
     const interval = setInterval(updateTimer, 1000);
     return () => clearInterval(interval);
-  },[getTimeUntil])
-
+  },[getTimeUntil]);
   return (
-      <div>        
+      <div>
         {timer}
       </div>
   );

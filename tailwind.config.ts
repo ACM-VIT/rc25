@@ -36,6 +36,10 @@ const config: Config = {
 				"sharp-sm": "0 2px 0 0 rgba(0,0,0,0.25)",
 				"sharp-lg": "0 4px 0 0 rgba(0,0,0,0.25)",
 			},
+			fontFamily:{
+				title: ['Audiowide'],
+				subtitle: ['PT Sans']
+			}
 		},
 	},
 	plugins: [],

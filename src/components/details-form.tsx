@@ -53,10 +53,10 @@ export default function OnboardingForm() {
                 >
                     {/* Header */}
                     <div className="w-full mb-3">
-                    <h1 className="font-bold text-center text-white text-2xl sm:text-3xl xs:text-[200%] phone:text-[200%] font-[Audiowide] mb-5">
+                    <h1 className="font-bold text-center text-white md:text-[250%] sm:text-3xl xs:text-[200%] phone:text-[200%] font-title mb-5">
     HELLO THERE!
 </h1>
-                        <h2 className="font-bold text-white text-center text-lg xs:text-base phone:text-base mt-2 font-[PT Sans] ">
+                        <h2 className=" font-subtitle text-white text-center md:text-[130%] xs:text-base phone:text-base mt-2 mb-3  ">
                             To ensure a seamless experience, please tell us more about yourself
                         </h2>
                     </div>
@@ -65,7 +65,7 @@ export default function OnboardingForm() {
                     <div className="w-full max-w-2xl px-4">
                         {/* Phone Number */}
                         <div className="mb-3">
-                            <label htmlFor="phone" className="font-semibold text-white text-xs block mb-1">
+                            <label htmlFor="phone" className="font-subtitle font-semibold text-white text-xs block mb-1">
                                 PHONE NUMBER
                             </label>
                             <input
@@ -85,13 +85,13 @@ export default function OnboardingForm() {
 
                         {/* Gender Selection */}
                         <div className="mb-3">
-                            <label className="font-semibold text-xs text-white block mb-1">GENDER</label>
+                            <label className="font-subtitle font-semibold text-xs text-white block mb-1">GENDER</label>
                             <div className="flex flex-col md:flex-row gap-3">
                                 {['male', 'female'].map((gender) => (
                                     <label key={gender} htmlFor={gender} className="flex-1">
                                         <div
                                             className={`p-2 w-full text-center box-border border-dashed 
-                    border-2 border-[#F0F1FA] font-semibold rounded-md 
+                    border-2 border-[#F0F1FA] font-subtitle font-semibold rounded-md 
                     flex items-center justify-center h-10 cursor-pointer
                     ${selectedGender === gender
                                                 ? "bg-[#f0f1fade] text-purple-700"
@@ -120,7 +120,7 @@ export default function OnboardingForm() {
 
                         {/* Status Selection */}
                         <div className="mb-3">
-                            <label className="font-semibold text-white text-xs block mb-1">
+                            <label className="font-subtitle font-semibold text-white text-xs block mb-1">
                                 PLEASE SELECT AN OPTION
                             </label>
                             <div className="flex flex-col md:flex-row gap-3">
@@ -128,7 +128,7 @@ export default function OnboardingForm() {
                                     <label key={status} htmlFor={status} className="flex-1">
                                         <div
                                             className={`p-2 w-full text-center box-border border-dashed 
-                    border-2 border-[#F0F1FA] font-semibold rounded-md 
+                    border-2 border-[#F0F1FA] font-subtitle font-semibold rounded-md 
                     flex items-center justify-center h-10 cursor-pointer
                     ${selectStatus === status
                                                 ? "bg-[#f0f1fade] text-purple-700"
@@ -173,7 +173,7 @@ function SubmitButton() {
             aria-disabled={pending}
             disabled={pending}
             className={
-                "p-4 w-[41vw] bg-[#f0f1fade] font-semibold text-purple-700 rounded-md hover:bg-gray-500"
+                "p-2 w-[45vw] bg-[#f0f1fade] text-[120%] md:text-[180%] font-title text-purple-700 rounded-md hover:bg-gray-500"
             }
         >
             {pending ? "SUBMITTING..." : "ENTER"}

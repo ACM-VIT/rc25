@@ -2,7 +2,6 @@ import CountdownTimer from "@/components/countdown-timer";
 import DetailsForm from "@/components/details-form";
 import Disqualified from "@/components/disqualifed";
 import EliminationScreen from "@/components/elimination-screen";
-import TeamMembersAndLeaveButton from "@/components/team-dashboard";
 import Winners from "@/components/winners";
 import React, { ReactNode } from 'react'
 import { auth } from "./(auth)/auth";
@@ -13,6 +12,8 @@ import logo from "@/app/assets/RCLogo.svg";
 import rock from "@/app/assets/rock.svg";
 import curveline from "@/app/assets/curveline.svg";
 import bracket from "@/app/assets/bracket.svg";
+import Dashboard from "@/components/team-dashboard";
+import Navbar from "@/components/Navbar";
 
 const plus_jakarta_sans = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
@@ -93,18 +94,17 @@ export default async function RootLayout({
     );
   }
 
+
   if (!detailsFilled) {
     return (
       <html lang="en">
         <body>
-          <BackgroundTemplate>
-            <DetailsForm />
-          </BackgroundTemplate>
+			<Navbar name={session.user.name!}/>
+          <Dashboard/>
         </body>
       </html>
     );
   }
-
   if (!teamJoined) {
     return (
       <html lang="en">
@@ -120,7 +120,7 @@ export default async function RootLayout({
 			<html lang="en">
 			<body>
 			<BackgroundTemplate>
-				<TeamMembersAndLeaveButton/>
+				<Dashboard/>
 			</BackgroundTemplate>
 			</body>
 			</html>
@@ -165,18 +165,24 @@ export default async function RootLayout({
 		}
 		return (
 			<html lang="en">
-			<body>
-			<CountdownTimer/>
-			</body>
+
+				<body>
+					<CountdownTimer getTimeUntil="" />  
+				</body>
+
 			</html>
+			// Add the time until the next round
 		);
 	}
 
 	return (
 		<html lang="en">
-		<body>
-		<CountdownTimer />
-		</body>
+
+			<body>
+				<CountdownTimer getTimeUntil=""/>
+			</body>
+
 		</html>
+		// Add the time until the next round
 	);
 }

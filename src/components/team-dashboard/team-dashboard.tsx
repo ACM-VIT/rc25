@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { auth } from "@/app/(auth)/auth";
 import { TeamMembers } from "./team-dashboard-client";
-import SignOutButton from "../buttons/sign-out";
 
 async function getTeamMembers() {
 	const session = await auth();
@@ -30,10 +29,10 @@ async function getTeamMembers() {
 				},
 			},
 		});
-		
-
-
 		return user?.Team?.members ?? [];
+	} catch (error) {
+		console.error("Error fetching team members:", error);
+		return [];
 	} finally {
 		await prisma.$disconnect();
 	}

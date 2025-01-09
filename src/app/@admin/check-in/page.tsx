@@ -23,7 +23,7 @@ export default function Page() {
 		const regNo = input;
 		startTransition(async () => {
 			const res = await GetTeam(regNo);
-			if (!res && res !== undefined && res !== null) {
+			if (!res) {
 				toast({
 					description: "No Team Found with the given participant",
 					variant: "destructive",

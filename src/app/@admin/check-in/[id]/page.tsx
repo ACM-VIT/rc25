@@ -5,10 +5,10 @@ import CheckIn from "@/components/check-in";
 
 async function Page({ params }: { params: { id: string } }) {
 	const prisma = new PrismaClient();
-	const id = await params.id;
+	const param = await params;
 	const team = await prisma.team.findUnique({
 		where: {
-			id: id,
+			id: param.id,
 		},
 		include: {
 			members: true,

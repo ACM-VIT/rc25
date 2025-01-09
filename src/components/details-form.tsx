@@ -26,7 +26,7 @@ export default function OnboardingForm() {
             />
 
             <div className="w-[65vw] md:w-[55vw] lg:w-[50vw] sm:w-[75vw] phone:w-[85vw] phone:mt-[15%]
-                      p-4 phone:p-3
+                      p-4 phone:p-3 mt-5
                       flex flex-col box-border rounded-[5%] 
                       backdrop-blur-md bg-transparent border border-[#9B51E0] ">
                 <form
@@ -53,10 +53,10 @@ export default function OnboardingForm() {
                 >
                     {/* Header */}
                     <div className="w-full mb-3">
-                    <h1 className="font-bold text-center text-white md:text-[250%] sm:text-3xl xs:text-[200%] phone:text-[200%] font-title mb-5">
+                    <h1 className="font-bold text-center text-white md:text-[200%] sm:text-3xl xs:text-[135%] phone:text-[135%] font-title mb-2">
     HELLO THERE!
 </h1>
-                        <h2 className=" font-subtitle text-white text-center md:text-[130%] xs:text-base phone:text-base mt-2 mb-3  ">
+                        <h2 className=" font-subtitle text-white text-center md:text-[120%] xs:text-[100%] phone:text-[90%] mt-2 mb-3  ">
                             To ensure a seamless experience, please tell us more about yourself
                         </h2>
                     </div>

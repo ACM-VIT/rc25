@@ -26,5 +26,4 @@ export default async function onboard(formData: FormData) {
         },
     });
     revalidatePath("/");
-    return updatedUser;
 }

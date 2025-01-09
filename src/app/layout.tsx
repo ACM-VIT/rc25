@@ -18,7 +18,7 @@ const plus_jakarta_sans = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
 // Configuration flags
 const isAdmin = false;
-const detailsFilled = true;
+const detailsFilled = false;
 const teamJoined = false;
 const teamCheckedIn = false;
 const roundIsActive = false;
@@ -51,9 +51,9 @@ const BackgroundTemplate = ({ children }: { children: ReactNode }) => (
           alt="Middle curve line"
         />
       </div>
-      <div className="w-full md:w-1/4 h-full flex justify-end overflow-y-auto">
+      <div className="w-1/4 h-full flex fixed right-3 top-0 md:static overflow-y-auto">
         <Image
-          className="h-[15vh] md:h-[15vh] place-self-end md:place-self-auto "
+          className="h-[15vh] md:h-[15vh] place-self-auto "
           src={bracket}
           alt="Right Top Bracket"
         />

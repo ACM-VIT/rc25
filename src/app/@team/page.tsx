@@ -4,6 +4,7 @@ import { teamAction } from "@/app/actions/team";
 import Image from "next/image";
 import create from "@/app/assets/create.png";
 import join from "@/app/assets/join.png";
+import logo from "@/app/assets/RCLogo.svg";
 
 export default function Team() {
     const [mode, setMode] = useState<"CREATE" | "JOIN">("CREATE");
@@ -37,8 +38,13 @@ export default function Team() {
     };
 
     return (
-        <div className="relative min-h-screen flex items-center justify-center bg-black text-white font-sans">
-            <div className="w-[90vw] md:w-[50vw] lg:w-[40vw] p-6 rounded-lg bg-[#1c1c1c] border-2 border-purple-700 flex flex-col md:flex-row gap-4">
+        <div className="relative min-h-screen flex items-center justify-center text-white font-sans bg-transparent">
+             <Image
+                src={logo}
+                alt="rclogo"
+                className="absolute top-4 left-8 w-auto h-[8%]" 
+            />
+            <div className="w-[90vw] md:w-[50vw] lg:w-[50vw] p-6 rounded-[5%] bg-transparent backdrop-blur border-2  border-purple-700 flex flex-col md:flex-row gap-4">
                 <div className="flex-shrink-0 flex justify-center items-center">
                     <Image
                         src={mode === "CREATE" ? create : join}
@@ -47,11 +53,11 @@ export default function Team() {
                     />
                 </div>
                 <div className="flex-grow">
-                    <h1 className="text-4xl font-bold mb-4 text-center md:text-left">
+                    <h1 className="text-4xl  mb-4 text-center md:text-left font-title">
                         {mode === "CREATE" ? "CREATE A TEAM!" : "JOIN A TEAM!"}
                     </h1>
                     <div className="mb-4">
-                        <label className="block font-semibold mb-2">
+                        <label className="block font-subtitle font-semibold mb-2">
                             {mode === "CREATE"
                                 ? "What’s your team’s epic name?"
                                 : "Toss in the funky code of the team you’re eager to hop into!"}
@@ -97,14 +103,14 @@ export default function Team() {
                     </div>
                     <button
                         onClick={handleSubmit}
-                        className="w-full bg-gray-400 hover:bg-gray-700 text-purple-700 py-2 rounded-md mt-4 border-2 border-purple-700 font-bold"
+                        className="w-full bg-gray-400 hover:bg-gray-700 text-purple-700 py-2 font-title rounded-md mt-4 border-2 border-purple-700 font-bold"
                     >
                         {pending ? "ENTERING..." : "ENTER"}
                     </button>
                     <div className="text-center text-gray-400 mt-4">OR</div>
                     <button
                         onClick={toggleMode}
-                        className="w-full bg-gray-400 hover:bg-gray-700 text-purple-700 py-2 rounded-md mt-4 border-2 border-purple-700 font-bold"
+                        className="w-full bg-gray-400 hover:bg-gray-700 font-title text-purple-700 py-2 rounded-md mt-4 border-2 border-purple-700 font-bold"
                     >
                         {mode === "CREATE" ? "JOIN A TEAM" : "CREATE A TEAM"}
                     </button>

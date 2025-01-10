@@ -7,7 +7,7 @@ interface Submission {
   code: string
   problemId: string
   userId: string
-  score: number
+  score: number // Ensure score is not nullable
   testcasespassed: boolean[]
   createdAt: Date
   updatedAt: Date

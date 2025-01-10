@@ -15,7 +15,10 @@ async function getSubmissions() {
         }
       }
     });
-    return submissions;
+    return submissions.map(submission => ({
+      ...submission,
+      score: submission.score ?? 0 // Ensure score is always a number
+    }));
   } finally {
     await prisma.$disconnect();
   }

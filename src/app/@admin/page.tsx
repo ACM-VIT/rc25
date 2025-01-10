@@ -53,6 +53,11 @@ const Page = () => {
 					description="Manage rounds"
 					href="/rounds"
 				/>
+				<DashboardCard
+					title="Submissions"
+					description="Manage teams"
+					href="/submissions"
+				/>
 			</div>
 		</div>
 	);

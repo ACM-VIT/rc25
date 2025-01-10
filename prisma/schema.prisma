@@ -46,7 +46,7 @@ model User {
     Admin         Admin[]
     sessions      Session[]
     Submission    Submission[]
-    Team          Team?        @relation("TeamMembers", fields: [teamId], references: [id])
+    Team          Team?        @relation("TeamMembers", fields: [teamId], references: [id], onDelete: SetNull)
 }
 
 model UniReg {
@@ -103,26 +103,38 @@ model Problem {
 }
 
 model Testcase {
-    id        String  @id @default(cuid())
-    weight    Int     @default(1)
-    input     String
-    output    String
-    problemId String
-    isEdge    Boolean @default(false)
-    problem   Problem @relation(fields: [problemId], references: [id])
+    id           String               @id @default(cuid())
+    weight       Int                  @default(1)
+    input        String
+    output       String
+    problemId    String
+    isEdge       Boolean             @default(false)
+    problem      Problem             @relation(fields: [problemId], references: [id], onDelete: Cascade)
+    submissions  TestcaseSubmission[]
 }
 
 model Submission {
-    id              String    @id @default(cuid())
+    id              String               @id @default(cuid())
     code            String
     problemId       String
     userId          String
-    score           Int
-    testcasespassed Boolean[]
-    createdAt       DateTime  @default(now())
-    updatedAt       DateTime  @updatedAt
-    problem         Problem   @relation(fields: [problemId], references: [id])
-    user            User      @relation(fields: [userId], references: [id])
+    score           Int?                 @default(0)
+    testcasespassed Boolean[]            @default([])
+    testcases       TestcaseSubmission[]
+    createdAt       DateTime             @default(now())
+    updatedAt       DateTime             @updatedAt
+    problem         Problem              @relation(fields: [problemId], references: [id], onDelete: Cascade)
+    user            User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model TestcaseSubmission {
+    testcaseId   String
+    submissionId String
+    testcase     Testcase   @relation(fields: [testcaseId], references: [id], onDelete: Cascade)
+    submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+    @@id([testcaseId, submissionId])
+    @@unique([testcaseId, submissionId])
 }
 
 model Round {

@@ -32,7 +32,7 @@ function CheckIn({
 	const [input, setInput] = useState("");
 
 	const [checkedIn, setCheckedIn] = useState<string[]>(
-		team.TeamRound.length > 0 ? team.members.map((i) => i.name!.slice(-9)) : [],
+		team.TeamRound.length > 0 ? team.members.map((i) => i.name?.slice(-9) ?? '') : [],
 	);
 
 	const [extra, setExtra] = useState<
@@ -41,9 +41,9 @@ function CheckIn({
 	const [extraUniReg, setExtraUniReg] = useState<UniReg[]>([]);
 
 	function lookup() {
-		const participant = team.members.find((i) => i.name!.slice(-9) === input);
+		const participant = team.members.find((i) => i.name?.slice(-9) === input);
 
-		if (!!participant) {
+		if (participant) {
 			if (checkedIn.includes(input)) {
 				setInput("");
 				toast({ description: "Already Checked In" });
@@ -73,7 +73,7 @@ function CheckIn({
 			return setCheckedIn((prev) => [...prev, input]);
 		}
 
-		if (extra.find((i) => i.name!.slice(-9) === input)) {
+		if (extra.find((i) => i.name?.slice(-9) === input)) {
 			setInput("");
 			toast({
 				description: "Add person to the team from extras before checking in.",
@@ -101,7 +101,7 @@ function CheckIn({
 				res.user as UserGetPayload<{ include: { Team: true } }>,
 			]);
 			setTimeout(() => {
-				if (!!res.uniReg)
+				if (res.uniReg)
 					setExtraUniReg((prev) => [...prev, res.uniReg as UniReg]);
 			}, 300);
 			setInput("");
@@ -110,7 +110,14 @@ function CheckIn({
 
 	function removeParticipant(userId: string) {
 		startTransition(async () => {
-			const user = team.members.find((i) => i.id === userId)!;
+			const user = team.members.find((i) => i.id === userId);
+			if (!user) {
+				toast({
+					description: "User not found in team.",
+					variant: "destructive",
+				});
+				return;
+			}
 			const res = await RemoveFromTeam(userId, team.id);
 
 			if (!res) {
@@ -121,18 +128,19 @@ function CheckIn({
 				return;
 			}
 
-			setCheckedIn((prev) => prev.filter((i) => i !== user.name!.slice(-9)));
-			setExtraUniReg((prev) => [
-				...prev,
-				uniReg.find((i) => i?.regNo === user.name!.slice(-9))!,
-			]);
+			setCheckedIn((prev) => prev.filter((i) => i !== (user.name?.slice(-9) ?? '')));
+			setExtraUniReg((prev) => {
+				const foundReg = uniReg.find((i) => i?.regNo === user.name?.slice(-9));
+				return foundReg ? [...prev, foundReg] : prev;
+			});
 			setExtra((prev) => [...prev, { ...user, teamId: null, Team: null }]);
 		});
 	}
 
 	function addParticipant(userId: string) {
 		startTransition(async () => {
-			const user = extra.find((i) => i.id === userId)!;
+			const user = extra.find((i) => i.id === userId);
+			if (!user) return;
 			const res = await AddToTeam(userId, team.id);
 
 			if (res === false) {
@@ -149,7 +157,7 @@ function CheckIn({
 
 			setExtra((prev) => prev.filter((i) => i.id !== userId));
 			setExtraUniReg((prev) =>
-				prev.filter((i) => i?.regNo !== user.name!.slice(-9)),
+				prev.filter((i) => i?.regNo !== (user.name?.slice(-9) ?? '')),
 			);
 		});
 	}
@@ -171,7 +179,7 @@ function CheckIn({
 	function checkInTeam() {
 		startTransition(async () => {
 			if (
-				team.members.length < parseInt(process.env.MIN_TEAM_CAPACITY || "2")
+				team.members.length < Number.parseInt(process.env.MIN_TEAM_CAPACITY || "2")
 			) {
 				toast({
 					description: "Insufficient members in team.",
@@ -190,7 +198,7 @@ function CheckIn({
 
 			if (
 				team.members
-					.map((i) => checkedIn.includes(i.name!.slice(-9)))
+					.map((i) => checkedIn.includes(i.name?.slice(-9) ?? ''))
 					.includes(false)
 			) {
 				toast({
@@ -202,7 +210,7 @@ function CheckIn({
 
 			const res = await CheckInTeam(team.id);
 
-			if (res === false) {
+			if (res.success === false) {
 				toast({
 					description: "Insufficient members in team.",
 					variant: "destructive",
@@ -221,7 +229,7 @@ function CheckIn({
 
 	function reverseCheckIn() {
 		startTransition(async () => {
-			const res = await ReverseCheckIn(team.id);
+			await ReverseCheckIn(team.id);
 		});
 	}
 
@@ -286,14 +294,14 @@ function CheckIn({
 							<TeamParticipant
 								participant={{
 									unireg:
-										uniReg?.find((i) => i?.regNo === member.name!.slice(-9)) ??
+										uniReg?.find((i) => i?.regNo === member.name?.slice(-9)) ??
 										null,
 									user: member,
 								}}
 								remove={removeParticipant}
 								override={overrideParticipant}
 								teamCheckedIn={team.TeamRound.length > 0}
-								checkedIn={checkedIn.includes(member.name!.slice(-9))}
+								checkedIn={checkedIn.includes(member.name?.slice(-9) ?? '')}
 								key={member.id}
 							/>
 						))
@@ -316,7 +324,7 @@ function CheckIn({
 							participant={{
 								unireg:
 									extraUniReg?.find(
-										(i) => i?.regNo === member.name!.slice(-9),
+										(i) => i?.regNo === (member.name?.slice(-9) ?? ''),
 									) ?? null,
 								user: member,
 							}}

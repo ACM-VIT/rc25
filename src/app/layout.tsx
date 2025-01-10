@@ -1,5 +1,5 @@
 import CountdownTimer from "@/components/countdown-timer";
-import DetailsForm from "@/components/details-form";
+//import DetailsForm from "@/components/details-form";
 import Disqualified from "@/components/disqualifed";
 import EliminationScreen from "@/components/elimination-screen";
 import TeamMembersAndLeaveButton from "@/components/team-dashboard/team-dashboard";
@@ -10,7 +10,7 @@ import { prisma } from "@/utils/prisma";
 import "./globals.css";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import Image from "next/image";
-import logo from "@/app/assets/RCLogo.svg";
+//import logo from "@/app/assets/RCLogo.svg";
 import rock from "@/app/assets/rock.svg";
 import curveline from "@/app/assets/curveline.svg";
 import bracket from "@/app/assets/bracket.svg";
@@ -121,7 +121,7 @@ export default async function RootLayout({
     return (
       <html lang="en">
         <body>
-			<Navbar name={session.user.name!}/>
+      <Navbar name={session.user.name ?? "User"}/>
           <Dashboard/>
         </body>
       </html>

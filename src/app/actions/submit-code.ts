@@ -1,5 +1,11 @@
 "use server";
 
+import { Redis } from "@upstash/redis";
+
+const redis = Redis.fromEnv();
+
+const SUBMISSION_TOKENS_KEY = "submission"; // Prefix for submission IDs
+
 import {
   SUPPORTED_LANGUAGES,
   type SupportedLanguage,
@@ -46,15 +52,13 @@ export async function getSubmission(
   }
 }
 
-export async function submitSolution(
+export async function judgeSolution(
   code: string,
-  problemId: string,
-  language = "python",
-  _expectedOutput = "hello",
-  stdin = ""
+  language: SupportedLanguage,
+  stdin: string,
+  submissionId: string
 ) {
   const encodedCode = Buffer.from(code).toString("base64");
-  const encodedExpectedOutput = Buffer.from(_expectedOutput).toString("base64");
   const encodedStdin = Buffer.from(stdin).toString("base64");
   const postUrl =
     "https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=true&wait=false&fields=*";
@@ -70,7 +74,6 @@ export async function submitSolution(
       language_id: SUPPORTED_LANGUAGES[language as SupportedLanguage].id,
       source_code: encodedCode,
       stdin: encodedStdin,
-      expected_output: encodedExpectedOutput,
     }),
   };
 
@@ -81,19 +84,28 @@ export async function submitSolution(
       return { success: false, error: "No submission token received" };
     }
 
-    let result: SubmissionResult;
-    do {
-      await new Promise((r) => setTimeout(r, 2000));
-      result = await getSubmission(postResult.token);
-    } while (
-      result.status?.id === STATUS.IN_QUEUE ||
-      result.status?.id === STATUS.PROCESSING
-    );
-    console.log(result);
-    const decodedOutput = Buffer.from(result.stdout || "", "base64").toString(
-      "utf-8"
-    );
-    console.log(decodedOutput);
+    // Store token with submission ID as key
+    const existingSubmissions = await redis.get(SUBMISSION_TOKENS_KEY) || "[]";
+    const submissionsArray = JSON.parse(existingSubmissions as string);
+    submissionsArray.push([submissionId, postResult.token]);
+    await redis.set(SUBMISSION_TOKENS_KEY, JSON.stringify(submissionsArray));
+
+
+    return {
+      success: true,
+      token: postResult.token
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: `Submission failed: ${(error as Error).name}`,
+    };
+  }
+}
+
+export async function checkSubmissionStatus(token: string) {
+  try {
+    const result = await getSubmission(token);    
     return {
       success: result.status?.id === STATUS.ACCEPTED,
       status: result.status,
@@ -103,7 +115,7 @@ export async function submitSolution(
   } catch (error) {
     return {
       success: false,
-      error: `Submission failed: ${(error as Error).name}`,
+      error: `Status check failed: ${(error as Error).name}`,
     };
   }
 }

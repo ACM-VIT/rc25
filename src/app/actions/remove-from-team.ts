@@ -6,7 +6,7 @@ import {revalidatePath} from "next/cache";
 export default async function RemoveFromTeam(userId: string, teamId: string){
     const prisma = new PrismaClient();
 
-    const updated = await prisma.user.update({
+    await prisma.user.update({
         where:{
             id: userId
         },

@@ -23,7 +23,7 @@ export default async function ReverseCheckIn(teamId: string) {
 		return false;
 	}
 
-	const TeamRound = await prisma.teamRound.delete({
+	await prisma.teamRound.delete({
 		where: {
 			teamId_roundId: {
 				teamId: teamId,

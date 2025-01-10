@@ -1,28 +1,28 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import DeleteQuestionDialog from './DeleteQuestionDialog'
-import { deleteQuestion } from '@/app/actions/delete-question'
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import DeleteQuestionDialog from "./DeleteQuestionDialog";
+import { deleteQuestion } from "@/app/actions/delete-question";
 
 interface DeleteButtonProps {
-  problemId: string
-  title: string
+  problemId: string;
+  title: string;
 }
 
 export default function DeleteButton({ problemId, title }: DeleteButtonProps) {
-  const [isOpen, setIsOpen] = useState(false)
-  const router = useRouter()
+  const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
 
   const handleDelete = async () => {
     try {
-      await deleteQuestion(problemId)
-      setIsOpen(false)
-      router.refresh()
+      await deleteQuestion(problemId);
+      setIsOpen(false);
+      router.refresh();
     } catch (error) {
-      console.error('Error deleting question:', error)
+      console.error("Error deleting question:", error);
     }
-  }
+  };
 
   return (
     <>
@@ -40,5 +40,5 @@ export default function DeleteButton({ problemId, title }: DeleteButtonProps) {
         title={title}
       />
     </>
-  )
+  );
 }

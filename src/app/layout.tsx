@@ -8,12 +8,13 @@ import { auth } from "./(auth)/auth";
 import "./globals.css";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import Image from "next/image";
-import logo from "@/app/assets/RCLogo.svg";
+// import logo from "@/app/assets/RCLogo.svg";
 import rock from "@/app/assets/rock.svg";
 import curveline from "@/app/assets/curveline.svg";
 import bracket from "@/app/assets/bracket.svg";
 import Dashboard from "@/components/dashboard";
 import Navbar from "@/components/Navbar";
+import TeamSubmissions from "@/components/team-submissions";
 
 const plus_jakarta_sans = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
@@ -99,8 +100,7 @@ export default async function RootLayout({
     return (
       <html lang="en">
         <body>
-			<Navbar name={session.user.name!}/>
-        	<Dashboard/>
+			<TeamSubmissions/>
         </body>
       </html>
     );
@@ -146,9 +146,9 @@ export default async function RootLayout({
 		}
 		return (
 			<html lang="en">
-			<body>
-			<EliminationScreen/>
-			</body>
+				<body>
+				<EliminationScreen/>
+				</body>
 			</html>
 		);
 	}

@@ -88,7 +88,7 @@ const Dashboard: React.FC = () => {
                         <h1 className="w-2/6 font-bold text-center">Status</h1>
                     </div>
                     <ScrollArea className="h-[60vh] rounded-md">
-                        <div className="p-4">
+                        <div className="p-0">
                             {questions.map((question) => (
                                 <div key={question.slno} className="flex flex-row text-sm space-x-4 mb-2">
                                     <p className=" w-1/6 text-center p-2">{question.slno}</p>
@@ -108,7 +108,7 @@ const Dashboard: React.FC = () => {
                     </p>
                     <div>
                         <ScrollArea className="h-[60vh] rounded-md">
-                            <div className="p-4">
+                            <div className="pr-4">
                                 {teams.map((team) => (
                                     <div key={team.slno} className="flex flex-row text-sm space-x-4 mb-2">
                                         <p className=" w-1/6 text-center p-2"> {team.icon} </p>
@@ -123,7 +123,7 @@ const Dashboard: React.FC = () => {
                             </div>
                         </ScrollArea>
                         <div>
-
+                            {/*TODO: Add user team details*/}
                         </div>
                     </div>
                 </div>

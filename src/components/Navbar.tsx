@@ -58,10 +58,18 @@ const Navbar: React.FC<NavbarProps> = ({ name }) => {
                     </li>
                     <li>
                         <a
-                            href="#"
+                            href="/"
                             className="block py-2 px-4 text-white font-bold text-sm md:text-base hover:text-[#39234E] hover:underline"
                         >
                             Submissions
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="#"
+                            className="block py-2 px-4 text-white font-bold text-sm md:text-base hover:text-[#39234E] hover:underline"
+                        >
+                            Instructions
                         </a>
                     </li>
                     <li>
@@ -77,10 +85,11 @@ const Navbar: React.FC<NavbarProps> = ({ name }) => {
                             className="flex items-center gap-2 bg-[#39234E] py-2 px-4 rounded-full"
                             onClick={toggleDropdown}
                         >
-                            <AvatarIcon size={20} className="text-white" />
+                            <AvatarIcon size={20} className="text-white"/>
                         </button>
                         {isDropdownOpen && (
-                            <div className="absolute top-full mt-2 right-0 bg-[#1E1E24] text-white rounded-lg shadow-lg py-2 w-48">
+                            <div
+                                className="absolute top-full mt-2 right-0 bg-[#1E1E24] text-white rounded-lg shadow-lg py-2 w-48">
                                 <a
                                     href="#profile"
                                     className="block px-4 py-2 hover:bg-[#39234E]"

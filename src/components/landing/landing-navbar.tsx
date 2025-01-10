@@ -14,7 +14,6 @@ const LandingNavbar: React.FC = () => {
             }}
         >
             <div className="flex flex-wrap justify-between items-center mx-auto px-4 sm:px-6 md:px-8 max-w-7xl">
-                {/* Logo Section */}
                 <div className="flex-shrink-0">
                     <Image
                         src={RCLogo}
@@ -22,7 +21,6 @@ const LandingNavbar: React.FC = () => {
                         className="w-[100px] sm:w-[150px] h-auto"
                     />
                 </div>
-                {/* Navigation Links */}
                 <ul className="flex flex-row gap-2 sm:gap-4 md:gap-6 list-none items-center mt-2 sm:mt-0">
                     <li>
                         <a

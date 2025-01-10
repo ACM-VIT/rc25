@@ -27,7 +27,7 @@ export default function LandOne() {
       </div>
 
       {/* Scroll to Register Section - Positioned at the bottom */}
-      <div className="absolute bottom-0 flex justify-center items-center sm:block hidden">
+      <div className="absolute bottom-0 flex justify-center items-center sm:block hidden z-10">
         <a className="text-xl text-white font-outfit" style={{ color: '#F0F1FA' }}>
           Scroll To Register
         </a>

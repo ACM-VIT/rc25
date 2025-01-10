@@ -2,6 +2,7 @@ import CountdownTimer from "@/components/countdown-timer";
 import DetailsForm from "@/components/details-form";
 import Disqualified from "@/components/disqualifed";
 import EliminationScreen from "@/components/elimination-screen";
+import TeamMembersAndLeaveButton from "@/components/team-dashboard/team-dashboard";
 import Winners from "@/components/winners";
 import React, { type ReactNode } from 'react'
 import { auth } from "./(auth)/auth";
@@ -50,7 +51,7 @@ interface LayoutProps {
 }
 
 const BackgroundTemplate = ({ children }: { children: ReactNode }) => (
-  <div className="relative w-[100vw] h-dvh bg-[#222] overflow-hidden">
+  <div className="relative w-[100vw] h-dvh bg-[#222]">
     <div className="absolute inset-0 flex flex-row h-full z-0">
       <div className="md:w-1/4 h-full">
         <Image
@@ -92,7 +93,7 @@ export default async function RootLayout({
     return (
       <html lang="en">
         <body>
-          <BackgroundTemplate>{landing}</BackgroundTemplate>
+       {landing}
         </body>
       </html>
     );

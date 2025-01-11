@@ -28,19 +28,19 @@ const noPendingRound = true;
 const disqualified = false;
 
 async function getUserStatus(email: string) {
-  const user = await prisma.user.findUnique({
-    where: { email },
-    select: {
-      phone: true,
-      gender: true,
-      teamId: true
-    }
-  });
+    const user = await prisma.user.findUnique({
+        where: { email },
+        select: {
+            phone: true,
+            gender: true,
+            teamId: true
+        }
+    });
 
-  return {
-    detailsFilled: Boolean(user?.phone && user?.gender),
-    teamJoined: Boolean(user?.teamId)
-  };
+    return {
+        detailsFilled: Boolean(user?.phone && user?.gender),
+        teamJoined: Boolean(user?.teamId)
+    };
 }
 
 interface LayoutProps {
@@ -51,29 +51,33 @@ interface LayoutProps {
 }
 
 const BackgroundTemplate = ({ children }: { children: ReactNode }) => (
-  <div className="relative w-[100vw] h-dvh bg-[#222]">
-    <div className="absolute inset-0 flex flex-row h-full z-0">
-      <div className="md:w-1/4 h-full">
-        <Image
-          className="hidden md:block h-[100vh] object-cover object-center"
-          src={rock}
-          alt="Left SVG Image"
-        />
-      </div>
-      <div className="min-w-full fixed md:static md:min-w-0 md:w-1/2 h-full">
-        <Image
-          className="min-h-screen object-cover object-center"
-          src={curveline}
-          alt="Middle curve line"
-        />
-      </div>
-      <div className="w-1/4 h-full flex fixed right-3 top-0 md:static overflow-y-auto">
-        <Image
-          className="h-[15vh] md:h-[15vh] place-self-auto "
-          src={bracket}
-          alt="Right Top Bracket"
-        />
-      </div>
+    <div className="relative w-[100vw] h-dvh bg-[#222]">
+        <div className="absolute inset-0 flex flex-row h-full z-0">
+            <div className="md:w-1/4 h-full">
+                <Image
+                    className="hidden md:block h-[100vh] object-cover object-center"
+                    src={rock}
+                    alt="Left SVG Image"
+                />
+            </div>
+            <div className="min-w-full fixed md:static md:min-w-0 md:w-1/2 h-full">
+                <Image
+                    className="min-h-screen object-cover object-center"
+                    src={curveline}
+                    alt="Middle curve line"
+                />
+            </div>
+            <div className="w-1/4 h-full flex fixed right-3 top-0 md:static overflow-y-auto">
+                <Image
+                    className="h-[15vh] md:h-[15vh] place-self-auto "
+                    src={bracket}
+                    alt="Right Top Bracket"
+                />
+            </div>
+        </div>
+        <div className="relative z-10">
+            {children}
+        </div>
     </div>
 );
 
@@ -88,29 +92,38 @@ export default async function RootLayout({
     if (!session?.user?.email) {
         return (
             <html lang="en">
-                <body>
-                    <BackgroundTemplate>{landing}</BackgroundTemplate>
+                <body className={`${outfit.className} antialiased`}>
+                    {landing}
                 </body>
             </html>
         );
     }
 
-    if (isAdmin) {
+    const adminUser = await prisma.admin.findFirst({
+        where: {
+            user: {
+                email: session.user.email,
+            },
+        },
+    });
+
+    if (adminUser) {
         return (
             <html lang="en">
                 <body className={`${outfit.className} antialiased`}>
-                    <BackgroundTemplate>{admin}</BackgroundTemplate>
+                    {admin}
                 </body>
             </html>
         );
     }
 
+    const { detailsFilled, teamJoined } = await getUserStatus(session.user.email);
 
     if (!detailsFilled) {
         return (
             <html lang="en">
                 <body className={`${outfit.className} antialiased`}>
-                    <Navbar name={session.user.name!} />
+                    <Navbar name={session.user.name ?? "User"} />
                     <Dashboard />
                 </body>
             </html>
@@ -160,6 +173,7 @@ export default async function RootLayout({
         return (
             <html lang="en">
                 <body className={`${outfit.className} antialiased`}>
+                    {children}
                     <EliminationScreen />
                 </body>
             </html>
@@ -189,120 +203,13 @@ export default async function RootLayout({
     }
 
     return (
-      <html lang="en">
-        <body>
-       {landing}
-        </body>
-      </html>
+        <html lang="en">
+
+            <body>
+                <CountdownTimer getTimeUntil="" />
+            </body>
+
+        </html>
+        // Add the time until the next round
     );
-  }
-
-  const adminUser = await prisma.admin.findFirst({
-    where: {
-      user: {
-        email: session.user.email,
-      },
-    },
-  });
-
-	if (adminUser) {
-		return (
-			<html lang="en">
-				<body className={plus_jakarta_sans.className}>{admin}</body>
-			</html>
-		);
-	}
-
-  const { detailsFilled, teamJoined } = await getUserStatus(session.user.email);
-
-  if (!detailsFilled) {
-    return (
-      <html lang="en">
-        <body>
-      <Navbar name={session.user.name ?? "User"}/>
-          <Dashboard/>
-        </body>
-      </html>
-    );
-  }
-  if (!teamJoined) {
-    return (
-      <html lang="en">
-        <body>
-          <BackgroundTemplate>{team}</BackgroundTemplate>
-        </body>
-      </html>
-    );
-  }
-
-	if (!teamCheckedIn) {
-		return (
-			<html lang="en">
-			<body>
-			<BackgroundTemplate>
-				<Dashboard/>
-			</BackgroundTemplate>
-			</body>
-			</html>
-		);
-	}
-
-	if (disqualified) {
-		return (
-			<html lang="en">
-			<body>
-			<Disqualified/>
-			</body>
-			</html>
-		);
-	}
-	if (roundIsActive) {
-		if (memberOfActiveRound) {
-			return (
-				<html lang="en">
-				<body>{children}</body>
-				</html>
-			);
-		}
-		return (
-			<html lang="en">
-			<body>
-			<EliminationScreen/>
-			</body>
-			</html>
-		);
-	}
-
-	if (noPendingRound) {
-		if (winnersAnnounced) {
-			return (
-				<html lang="en">
-				<body>
-				<Winners/>
-				</body>
-				</html>
-			);
-		}
-		return (
-			<html lang="en">
-
-				<body>
-					<CountdownTimer getTimeUntil="" />  
-				</body>
-
-			</html>
-			// Add the time until the next round
-		);
-	}
-
-	return (
-		<html lang="en">
-
-			<body>
-				<CountdownTimer getTimeUntil=""/>
-			</body>
-
-		</html>
-		// Add the time until the next round
-	);
 }

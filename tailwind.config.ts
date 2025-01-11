@@ -35,7 +35,10 @@ const config: Config = {
                 primary: "#9B52E0",
                 rcgrey: "#808080",
                 secondary: "#3F2A54",
-                accent: "#F8CC22"
+                accent: "#F8CC22",
+                rcred: "#EA5757",
+                rcgreen: "#27AE60",
+                rcorange: "#F2994A",
 			},
             backgroundImage: {
                 'background-gradient': 'radial-gradient(110.8% 70.71% at 50% 50%, #0B0014 55.41%, #18181B 100%)',

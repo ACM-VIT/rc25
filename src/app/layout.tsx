@@ -87,7 +87,7 @@ export default async function RootLayout({
     if (isAdmin) {
         return (
             <html lang="en">
-                <body className={outfit.className}>
+                <body className={`${outfit.className} antialiased`}>
                     <BackgroundTemplate>{admin}</BackgroundTemplate>
                 </body>
             </html>
@@ -98,7 +98,7 @@ export default async function RootLayout({
     if (!detailsFilled) {
         return (
             <html lang="en">
-                <body className={outfit.className}>
+                <body className={`${outfit.className} antialiased`}>
                     <Navbar name={session.user.name!} />
                     <Dashboard />
                 </body>
@@ -108,7 +108,7 @@ export default async function RootLayout({
     if (!teamJoined) {
         return (
             <html lang="en">
-                <body>
+                <body className={`${outfit.className} antialiased`}>
                     <BackgroundTemplate>{team}</BackgroundTemplate>
                 </body>
             </html>
@@ -118,7 +118,7 @@ export default async function RootLayout({
     if (!teamCheckedIn) {
         return (
             <html lang="en">
-                <body className={outfit.className}>
+                <body className={`${outfit.className} antialiased`}>
                     <BackgroundTemplate>
                         <Dashboard />
                     </BackgroundTemplate>
@@ -130,7 +130,7 @@ export default async function RootLayout({
     if (disqualified) {
         return (
             <html lang="en">
-                <body className={outfit.className}>
+                <body className={`${outfit.className} antialiased`}>
                     <Disqualified />
                 </body>
             </html>
@@ -140,7 +140,7 @@ export default async function RootLayout({
         if (memberOfActiveRound) {
             return (
                 <html lang="en">
-                    <body className={outfit.className}>
+                    <body className={`${outfit.className} antialiased`}>
                         {children}
                     </body>
                 </html>
@@ -148,7 +148,7 @@ export default async function RootLayout({
         }
         return (
             <html lang="en">
-                <body className={outfit.className}>
+                <body className={`${outfit.className} antialiased`}>
                     <EliminationScreen />
                 </body>
             </html>
@@ -159,7 +159,7 @@ export default async function RootLayout({
         if (winnersAnnounced) {
             return (
                 <html lang="en">
-                    <body className={outfit.className}>
+                    <body className={`${outfit.className} antialiased`}>
                         <Winners />
                     </body>
                 </html>
@@ -168,7 +168,7 @@ export default async function RootLayout({
         return (
             <html lang="en">
 
-                <body className={outfit.className}>
+                <body className={`${outfit.className} antialiased`}>
                     <CountdownTimer getTimeUntil="" />
                 </body>
 
@@ -180,7 +180,7 @@ export default async function RootLayout({
     return (
         <html lang="en">
 
-            <body>
+            <body className={`${outfit.className} antialiased`}>
                 <CountdownTimer getTimeUntil="" />
             </body>
 

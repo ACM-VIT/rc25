@@ -31,7 +31,16 @@ const config: Config = {
 			colors: {
 				background: "var(--background)",
 				foreground: "var(--foreground)",
+                text: "#FEFEFE",
+                primary: "#9B52E0",
+                rcgrey: "#808080",
+                secondary: "#3F2A54",
+                accent: "#F8CC22"
 			},
+            backgroundImage: {
+                'background-gradient': 'radial-gradient(110.8% 70.71% at 50% 50%, #0B0014 55.41%, #18181B 100%)',
+            },
+
 			boxShadow: {
 				"sharp-sm": "0 2px 0 0 rgba(0,0,0,0.25)",
 				"sharp-lg": "0 4px 0 0 rgba(0,0,0,0.25)",

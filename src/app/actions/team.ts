@@ -23,7 +23,7 @@ export async function teamAction(inputValue: string, createMode: boolean) {
                         name: inputValue,
                         shortCode,
                         members: {
-                            connect: { email: session.user.email! },
+                            connect: { email: session.user.email ?? "" },
                         },
                     },
                 });
@@ -46,11 +46,11 @@ export async function teamAction(inputValue: string, createMode: boolean) {
         if (!team) {
             return { error: { code: 1 } };
         }
-        if (team.members.length >= parseInt(process.env.TEAM_CAPACITY || "4")) {
+        if (team.members.length >= Number.parseInt(process.env.TEAM_CAPACITY || "4")) {
             return { error: { code: 4 } };
         }
         await prisma.user.update({
-            where: { email: session.user.email! },
+            where: { email: session.user.email ?? "" },
             data: { teamId: team.id },
         });
         revalidatePath("/");

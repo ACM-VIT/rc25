@@ -31,7 +31,7 @@ const Page = () => {
 				<DashboardCard
 					title="Question Management"
 					description="Manage and organize questions"
-					href="/questions"
+					href="/problems"
 				/>
 				<DashboardCard
 					title="Blacklist"
@@ -42,6 +42,21 @@ const Page = () => {
 					title="Check-in"
 					description="User's check-in management"
 					href="/check-in"
+				/>
+				<DashboardCard
+					title="Promotion"
+					description="Promote or demote teams"
+					href="/promotion"
+				/>
+				<DashboardCard
+					title="Rounds"
+					description="Manage rounds"
+					href="/rounds"
+				/>
+				<DashboardCard
+					title="Submissions"
+					description="Manage teams"
+					href="/submissions"
 				/>
 			</div>
 		</div>

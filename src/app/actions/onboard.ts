@@ -12,14 +12,15 @@ export default async function onboard(formData: FormData) {
         return;
     }
 
+    const phoneNumber = parsePhoneNumber(formData.get('phone')?.toString() as string, 'IN');
     const rawData = {
-        phone: parsePhoneNumber(formData.get('phone')?.toString() as string, 'IN')!.format('INTERNATIONAL'),
+        phone: phoneNumber?.format('INTERNATIONAL') ?? '',
         gender: formData.get("gender") as "male" | "female",
     };
 
-    const updatedUser = await prisma.user.update({
+    await prisma.user.update({
         where: {
-            email: session.user.email!,
+            email: session.user.email ?? '',
         },
         data: {
             ...rawData,

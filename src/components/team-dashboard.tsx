@@ -1,6 +1,7 @@
 import React from 'react';
 import { ScrollArea } from "@/components/ui/scroll-area"
 import CountdownTimer from "@/components/countdown-timer";
+import DashboardBox from './DashboardBox';
 // import { Separator } from "@/components/ui/separator"
 
 
@@ -9,51 +10,49 @@ const Dashboard: React.FC = () => {
         slno: i + 1,
         questionName: `Question ${i + 1}`,
         difficulty: 'Easy',
-        casesPassed:3,
-        totalCases:5,
+        casesPassed: 3,
+        totalCases: 5,
     }));
 
     return (
-        <div className="flex flex-col bg-[#0B0014] min-h-screen text-white p-4">
+        <div className="flex flex-col bg-background-gradient min-h-screen text-text p-4">
             <div className="p-2 justify-center items-center mb-4">
-                <p className="font-bold text-2xl font-[Audiowide] underline underline-offset-4 decoration-white">
+                <p className="text-2xl font-[Audiowide] underline underline-offset-4 decoration-white">
                     Round 1
                 </p>
-                <CountdownTimer getTimeUntil=""/>
+                <CountdownTimer getTimeUntil="" />
             </div>
-            <div className="flex flex-row">
-                <div className="flex flex-col w-1/4">
-                    <div
-                        className="flex flex-col p-6 shadow-lg rounded-lg text-white  bg-[#39234E]">
-                        <div className="hidden lg:block absolute top-[32%]  left-[2%] rounded-full  w-[84px] h-[60px] rounded-full blur-[50px] bg-none transition duration-1000 bg-[#F8CC22]"/>
-                        <p className="text-lg font-semibold text-center border-b border-white pb-2 mb-3">
-                            Team Name
+            <div className="flex flex-row gap-4">
+                <div className="flex flex-col w-1/4 gap-4">
+                    <DashboardBox className='flex flex-col relative gap-4 h-auto'>
+                        <div className="absolute top-0 left-0 w-8 h-8 rounded-full blur-2xl bg-accent" />
+                        <p className="text-2xl font-bold border-b border-b-rcgrey/20 pb-2">
+                            &lt;Team Name&gt;
                         </p>
-                        <ul className="space-y-3">
-                            <li className="flex justify-between">
+                        <ul className="space-y-3 text-lg px-4">
+                            <li className="flex justify-between items-center">
                                 <p>Team Member 1 </p>
-                                <p>99 pts</p>
+                                <p className='text-sm'>99 pts</p>
                             </li>
-                            <li className="flex justify-between">
+                            <li className="flex justify-between items-center">
                                 <p>Team Member 2</p>
-                                <p>99 pts</p>
+                                <p className='text-sm'>99 pts</p>
                             </li>
-                            <li className="flex justify-between">
+                            <li className="flex justify-between items-center">
                                 <p>Team Member 3</p>
-                                <p>99 pts</p>
+                                <p className='text-sm'>99 pts</p>
                             </li>
-                            <li className="flex justify-between">
+                            <li className="flex justify-between items-center">
                                 <p>Team Member 4</p>
-                                <p>99 pts</p>
+                                <p className='text-sm'>99 pts</p>
                             </li>
                         </ul>
                         {/*</div>*/}
-                    </div>
-                    <div
-                        className="flex relative flex-col p-4 h-[40vh] justify-center shadow-lg rounded-lg mt-4 text-white text-center bg-[radial-gradient(at_1%_1%,_#F8CC22,_#39234E_1%)]">
+                    </DashboardBox>
+                    <DashboardBox className='flex-1 flex flex-col relative overflow-hidden overflow-y-scroll'>
+                        <div className="absolute bottom-0 left-0 w-8 h-8 rounded-full blur-2xl bg-accent" />
                         <p>News/Timeline</p>
-                        <div className="hidden lg:block absolute bottom-0 left-2 w-[100px] h-[40px] rounded-full blur-[50px] bg-none transition duration-1000 bg-[#F8CC22]"/>
-                    </div>
+                    </DashboardBox>
                 </div>
 
                 <div className="w-[50vw] bg-[#39234E] pl-7 pr-7 rounded-lg ml-7">

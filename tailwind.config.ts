@@ -42,7 +42,7 @@ const config: Config = {
                 rcorange: "#F2994A",
 			},
             backgroundImage: {
-                'background-gradient': 'radial-gradient(110.8% 70.71% at 50% 50%, #0B0014 55.41%, #18181B 100%)',
+                'background-gradient': 'radial-gradient(110.8% 70.71% at 50% 50%, #0B0014 35.41%, #18181B 100%)',
             },
 
 			boxShadow: {

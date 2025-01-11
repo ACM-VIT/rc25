@@ -7,7 +7,16 @@ import mac from '@/components/problems/assets/mac.png';
 import linux from '@/components/problems/assets/linux.png';
 import { Button } from '../ui/button';
 
-export default function QuestionDisplay({ problem }: { problem: any }) {
+interface Problem {
+    difficulty: string;
+    maxScore: number;
+    description: string;
+    mac_dl: string;
+    lin_dl: string;
+    win_dl: string;
+}
+
+export default function QuestionDisplay({ problem }: { problem: Problem }) {
     return (
         <div
             className="h-[78vh] w-[72%] mt-2 ml-20 rounded-[10px]"

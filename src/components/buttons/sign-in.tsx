@@ -1,6 +1,5 @@
-'use client';
-
-import Signin from "../../app/(auth)/authactions/signin"
+"use client";
+import Signin  from "../../app/(auth)/authactions/signin"
 
 export default function SignInButton() {
   const handleSignIn = async () => {

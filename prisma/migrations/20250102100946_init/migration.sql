@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "Gender" AS ENUM ('male', 'female');
+CREATE TYPE "Gender" AS ENUM ('male', 'female', 'others');
 
 -- CreateEnum
 CREATE TYPE "Difficulty" AS ENUM ('EASY', 'MEDIUM', 'HARD');
@@ -95,6 +95,8 @@ CREATE TABLE "Problem" (
     "win_dl" STRING NOT NULL,
     "mac_dl" STRING NOT NULL,
     "web_code" STRING NOT NULL,
+    "norml_cases" INT4 NOT NULL DEFAULT 1,
+    "edge_cases" INT4 NOT NULL DEFAULT 1,
     "roundNumber" INT4 NOT NULL,
 
     CONSTRAINT "Problem_pkey" PRIMARY KEY ("id")
@@ -107,6 +109,7 @@ CREATE TABLE "Testcase" (
     "input" STRING NOT NULL,
     "output" STRING NOT NULL,
     "problemId" STRING NOT NULL,
+    "isEdge" BOOL NOT NULL DEFAULT false,
 
     CONSTRAINT "Testcase_pkey" PRIMARY KEY ("id")
 );
@@ -138,10 +141,6 @@ CREATE TABLE "Round" (
 -- CreateTable
 CREATE TABLE "Admin" (
     "id" STRING NOT NULL,
-    "superAdmin" BOOL NOT NULL DEFAULT false,
-    "checkin_access" BOOL NOT NULL DEFAULT false,
-    "anticheat_access" BOOL NOT NULL DEFAULT false,
-    "edit_access" BOOL NOT NULL DEFAULT false,
     "userId" STRING NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,

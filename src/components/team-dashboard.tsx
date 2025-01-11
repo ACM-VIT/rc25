@@ -15,7 +15,7 @@ const Dashboard: React.FC = () => {
     }));
 
     return (
-        <div className="flex flex-col bg-background-gradient text-text py-4 px-16 min-h-screen">
+        <div className="flex flex-col text-text py-4 px-16 min-h-screen">
             <div className="p-2 justify-center items-center mb-4">
                 <p className="text-2xl font-[Audiowide] underline underline-offset-4 decoration-white">
                     Round 1
@@ -51,7 +51,9 @@ const Dashboard: React.FC = () => {
                     </DashboardBox>
                     <DashboardBox className='flex-1 flex flex-col relative overflow-hidden overflow-y-scroll'>
                         <div className="absolute bottom-0 left-0 w-8 h-8 rounded-full blur-2xl bg-accent" />
-                        <p>News/Timeline</p>
+                        <p className="text-2xl font-bold border-b border-b-rcgrey/20 pb-2">
+                            Notifications
+                        </p>
                     </DashboardBox>
                 </div>
 
@@ -86,10 +88,12 @@ const Dashboard: React.FC = () => {
                         </table>
                     </ScrollArea>
                 </DashboardBox>
-                <DashboardBox className="w-1/3">
+                <DashboardBox className="w-1/3 relative">
                     <p className="text-2xl font-semibold border-b-2 border-white p-2 mb-4">
                         LeaderBoard
                     </p>
+                    <div className="absolute top-0 right-0 w-8 h-8 rounded-full blur-2xl bg-accent" />
+                    <div className="absolute bottom-0 right-0 w-8 h-8 rounded-full blur-2xl bg-accent" />
                 </DashboardBox>
             </div>
         </div>

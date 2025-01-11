@@ -5,9 +5,25 @@ import Image from "next/image";
 import RCLogo from "@/app/assets/RCLogo.svg";
 import { User as AvatarIcon } from "lucide-react";
 import SignOut from "@/app/(auth)/authactions/signout";
+import Link from "next/link";
 
 interface NavbarProps {
     name: string;
+}
+
+function NavbarItem({ href, children }: { href: string, children: React.ReactNode }) {
+    return (
+        <li>
+            <Link
+                href={href}
+                className="block py-2 px-4 text-sm md:text-base group"
+            >
+                {children}
+                <span className="block text-center max-w-0 group-hover:max-w-full transition-all duration-200 h-0.5 bg-primary"></span>
+            </Link>
+        </li>
+    );
+
 }
 
 const Navbar: React.FC<NavbarProps> = ({ name }) => {
@@ -37,67 +53,48 @@ const Navbar: React.FC<NavbarProps> = ({ name }) => {
     }, [isDropdownOpen]);
 
     return (
-        <nav
-            className="pt-1 pb-1"
-            style={{
-                background: "radial-gradient(circle, #18181B 55%, #08000F 100%)",
-            }}
-        >
-            <div className="flex flex-row justify-between items-center mx-auto px-4 sm:px-6 md:px-8 max-w-7xl">
-                <div>
-                    <Image src={RCLogo} alt="LOGO" className="w-18 h-[10vh]" />
-                </div>
-                <ul className="flex flex-row gap-4 sm:gap-6 md:gap-8 list-none items-center">
-                    <li>
-                        <a
-                            href="#"
-                            className="block py-2 px-4 text-white font-bold text-sm md:text-base hover:text-[#39234E] hover:underline"
-                        >
-                            Dashboard
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="#"
-                            className="block py-2 px-4 text-white font-bold text-sm md:text-base hover:text-[#39234E] hover:underline"
-                        >
-                            Submissions
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="#"
-                            className="block py-2 px-4 text-white font-bold text-sm md:text-base hover:text-[#39234E] hover:underline"
-                        >
-                            FAQ
-                        </a>
-                    </li>
-                    <li className="relative z-10" ref={dropdownRef}>
-                        <button
-                            className="flex items-center gap-2 bg-[#39234E] py-2 px-4 rounded-full"
-                            onClick={toggleDropdown}
-                        >
-                            <AvatarIcon size={20} className="text-white" />
-                        </button>
-                        {isDropdownOpen && (
-                            <div className="absolute top-full mt-2 right-0 bg-[#1E1E24] text-white rounded-lg shadow-lg py-2 w-48">
-                                <a
-                                    href="#profile"
-                                    className="block px-4 py-2 hover:bg-[#39234E]"
-                                >
-                                    {name}
-                                </a>
-                                <button
-                                    onClick={SignOut}
-                                    className="block px-4 py-2 w-[15vw] hover:bg-[#39234E]"
-                                >
-                                    Logout
-                                </button>
-                            </div>
-                        )}
-                    </li>
-                </ul>
+        <nav className="bg-black/40 border-b-2 border-rcgrey/20 text-text flex flex-row justify-between items-center mx-auto px-4 w-full">
+            <div>
+                <Image src={RCLogo} alt="LOGO" className="w-4/5" />
             </div>
+            <ul className="flex flex-row gap-4 md:gap-6 list-none items-center">
+                <NavbarItem href="#">
+                    Dashboard
+                </NavbarItem>
+                <NavbarItem href="#">
+                    Submissions
+                </NavbarItem>
+                <NavbarItem href="#">
+                    Instructions
+                </NavbarItem>
+                <NavbarItem href="#">
+                    FAQ
+                </NavbarItem>
+                <li className="relative z-10" ref={dropdownRef}>
+                    <button
+                        className="flex items-center gap-2 bg-primary py-2 px-2 rounded-full"
+                        onClick={toggleDropdown}
+                    >
+                        <AvatarIcon size={20} className="text-text" />
+                    </button>
+                    {isDropdownOpen && (
+                        <div className="absolute top-full mt-2 right-0 bg-[#1E1E24] rounded-lg shadow-lg py-2 w-48">
+                            <a
+                                href="#profile"
+                                className="block px-4 py-2 hover:bg-[#39234E]"
+                            >
+                                {name}
+                            </a>
+                            <button
+                                onClick={SignOut}
+                                className="block px-4 py-2 w-[15vw] hover:bg-[#39234E]"
+                            >
+                                Logout
+                            </button>
+                        </div>
+                    )}
+                </li>
+            </ul>
         </nav>
     );
 };

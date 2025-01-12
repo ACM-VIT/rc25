@@ -33,11 +33,11 @@ const Page: React.FC = () => {
   ];
 
   return (
-    <div className='bg-black min-h-screen text-white'>
+    <div className='overflow-x-hidden bg-black min-h-screen text-white'>
       <LandingNavbar/>
       <LandOne />
       <HowItWorks />
-      {/* <Timeline data={timelineData} /> */}
+      <Timeline data={timelineData} />
     </div>
   );
 };

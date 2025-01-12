@@ -18,12 +18,12 @@ export default async function Override(regNo: string, teamId: string) {
         return null;
     }
 
-    const uniReg = await prisma.uniReg.create({
+    await prisma.uniReg.create({
         data: {
             regNo,
-            name: user.name!.slice(0, -10),
-            email: user.email!,
-            phone: user.phone!,
+            name: user.name?.slice(0, -10) ?? '',
+            email: user.email ?? '',
+            phone: user.phone ?? '',
             injected: true,
         }
     })

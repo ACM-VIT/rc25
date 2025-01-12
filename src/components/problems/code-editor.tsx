@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import Editor from '@monaco-editor/react';
-import { Prisma } from '@prisma/client';
 import { FiChevronDown, FiChevronUp } from 'react-icons/fi'; 
-import ProblemGetPayload = Prisma.ProblemGetPayload;
 
-export default function QuestionDisplay({ problem }: { problem: any }) {
+interface Problem {
+    id: string;
+    title: string;
+    description: string;
+}
+
+export default function QuestionDisplay({ problem: _problem }: { problem: Problem }) {
     const [code, setCode] = useState('');
     const [language, setLanguage] = useState('C');
     const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -37,7 +41,10 @@ export default function QuestionDisplay({ problem }: { problem: any }) {
                 <div className="flex items-center space-x-3 relative">
                     <div className="relative">
                         <button
+                            type="button"
                             onClick={() => setDropdownOpen(!dropdownOpen)}
+                            onKeyUp={(e) => e.key === 'Enter' && setDropdownOpen(!dropdownOpen)}
+                            onKeyDown={(e) => e.key === ' ' && setDropdownOpen(!dropdownOpen)}
                             className="text-xs rounded-md px-2 py-1 flex items-center justify-between text-white focus:outline-none focus:ring-0"
                             style={{
                                 background: "radial-gradient(circle, #241F2A 80%, #39234E 110%)",
@@ -59,21 +66,25 @@ export default function QuestionDisplay({ problem }: { problem: any }) {
                                 }}
                             >
                                 {languages.map((lang) => (
-                                    <li
+                                    <button
                                         key={lang.value}
                                         onClick={() => {
                                             setLanguage(lang.value);
                                             setDropdownOpen(false);
                                         }}
-                                        className="px-2 py-1 text-white cursor-pointer hover:bg-gray-700"
+                                        onKeyUp={(e) => e.key === 'Enter' && setLanguage(lang.value)}
+                                        onKeyDown={(e) => e.key === ' ' && setLanguage(lang.value)}
+                                        className="px-2 py-1 text-white cursor-pointer hover:bg-gray-700 w-full text-left"
+                                        type="button"
                                     >
                                         {lang.label}
-                                    </li>
+                                    </button>
                                 ))}
                             </ul>
                         )}
                     </div>
                     <button
+                        type="button"
                         onClick={handleSubmit}
                         className="px-3 py-1 rounded-md text-xs font-semibold bg-black text-white border-2 border-yellow-500 hover:bg-[#262626]"
                     >

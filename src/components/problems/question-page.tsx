@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { FiArrowLeft, FiArrowRight, FiChevronLeft, FiChevronRight } from 'react-icons/fi'; // Import arrow icons
+import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'; // Import arrow icons
 import CodeEditor from './code-editor';
 import QuestionDisplay from './question-display';
 import Navbar from '../Navbar';
@@ -8,7 +8,7 @@ import WebRunner from './web-runner';
 
 const testProblems = [
     {
-        id: 1,
+        id: '1',
         title: 'Question 1',
         description: 'This is the description for Question 1.',
         round: 1,
@@ -19,7 +19,7 @@ const testProblems = [
         difficulty: 'Easy',
     },
     {
-        id: 2,
+        id: '2',
         title: 'Question 2',
         description: 'This is the description for Question 2.',
         round: 2,
@@ -30,7 +30,7 @@ const testProblems = [
         difficulty: 'Medium',
     },
     {
-        id: 3,
+        id: '3',
         title: 'Question 3',
         description: 'This is the description for Question 3.',
         round: 3,
@@ -41,7 +41,7 @@ const testProblems = [
         difficulty: 'Hard',
     },
     {
-        id: 4,
+        id: '4',
         title: 'Question 4',
         description: 'This is the description for Question 4.',
         round: 3,
@@ -86,6 +86,7 @@ export default function QuestionPage() {
 
                     <div className="flex gap-2 absolute right-2 items-center">
                         <button
+                            type="button"
                             onClick={handlePrevious}
                             disabled={currentIndex === 0}
                             className={`px-3 py-1 rounded-md text-xs border-2 border-[#9B52E0] bg-black text-white ${currentIndex === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-700'}`}
@@ -96,7 +97,7 @@ export default function QuestionPage() {
                         <div className="flex gap-2">
                             {testProblems.slice(0, 3).map((_, index) => (
                                 <div
-                                    key={index}
+                                    key={_.id}
                                     className={`px-3 py-1 rounded-md text-xs border-2 text-white font-bold ${currentIndex === index ? 'border-yellow-500' : 'border-[#9B52E0]'}`}
                                 >
                                     {index + 1}
@@ -112,6 +113,7 @@ export default function QuestionPage() {
                         </div>
 
                         <button
+                            type="button"
                             onClick={handleNext}
                             disabled={currentIndex === testProblems.length - 1}
                             className={`px-3 py-1 rounded-md text-xs font-semibold border-[#9B52E0] border-2 text-white ${currentIndex === testProblems.length - 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-700'}`}

@@ -1,6 +1,7 @@
 import type React from 'react';
 import LandOne from '@/components/landing/landone';
 import LandingNavbar from '@/components/landing/landing-navbar';
+import HowItWorks from '@/components/landing/howitworks';
 import { Timeline } from '@/components/landing/timeline';
 
 const Page: React.FC = () => {
@@ -35,6 +36,7 @@ const Page: React.FC = () => {
     <div className='bg-black min-h-screen text-white'>
       <LandingNavbar/>
       <LandOne />
+      <HowItWorks />
       {/* <Timeline data={timelineData} /> */}
     </div>
   );

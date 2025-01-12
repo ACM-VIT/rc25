@@ -1,33 +1,47 @@
 import CountdownTimer from "@/components/countdown-timer";
-import DetailsForm from "@/components/details-form";
+//import DetailsForm from "@/components/details-form";
 import Disqualified from "@/components/disqualifed";
 import EliminationScreen from "@/components/elimination-screen";
 import TeamMembersAndLeaveButton from "@/components/team-dashboard/team-dashboard";
 import Winners from "@/components/winners";
-import React, { ReactNode } from 'react'
+import React, { type ReactNode } from "react";
 import { auth } from "./(auth)/auth";
+import { prisma } from "@/utils/prisma";
 import "./globals.css";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
 import Image from "next/image";
-import logo from "@/app/assets/RCLogo.svg";
+//import logo from "@/app/assets/RCLogo.svg";
 import rock from "@/app/assets/rock.svg";
 import curveline from "@/app/assets/curveline.svg";
 import bracket from "@/app/assets/bracket.svg";
 import Dashboard from "@/components/team-dashboard";
 import Navbar from "@/components/Navbar";
 
+const outfit = Outfit({ subsets: ["latin"] });
 const plus_jakarta_sans = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
-// Configuration flags
-const isAdmin = false;
-const detailsFilled = false;
-const teamJoined = false;
-const teamCheckedIn = false;
-const roundIsActive = false;
-const memberOfActiveRound = false;
-const winnersAnnounced = false;
-const noPendingRound = false;
+const teamCheckedIn = true;
+const roundIsActive = true; // true --> portal
+const memberOfActiveRound = true; // false --> elimination
+const winnersAnnounced = true;
+const noPendingRound = true;
 const disqualified = false;
+
+async function getUserStatus(email: string) {
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: {
+      phone: true,
+      gender: true,
+      teamId: true,
+    },
+  });
+
+  return {
+    detailsFilled: Boolean(user?.phone && user?.gender),
+    teamJoined: Boolean(user?.teamId),
+  };
+}
 
 interface LayoutProps {
   children: ReactNode;
@@ -61,9 +75,7 @@ const BackgroundTemplate = ({ children }: { children: ReactNode }) => (
         />
       </div>
     </div>
-    <div className="relative z-10">
-      {children}
-    </div>
+    <div className="relative z-10">{children}</div>
   </div>
 );
 
@@ -78,30 +90,43 @@ export default async function RootLayout({
   if (!session?.user?.email) {
     return (
       <html lang="en">
-        <body>
-       {landing}
-        </body>
+        <body>{landing}</body>
       </html>
     );
   }
 
-  if (isAdmin) {
+  const adminUser = await prisma.admin.findFirst({
+    where: {
+      user: {
+        email: session.user.email,
+      },
+    },
+  });
+
+  if (adminUser) {
     return (
       <html lang="en">
-        <body className={plus_jakarta_sans.className}>
-          <BackgroundTemplate>{admin}</BackgroundTemplate>
-        </body>
+        <body className={plus_jakarta_sans.className}>{admin}</body>
       </html>
     );
   }
 
+  const { detailsFilled, teamJoined } = await getUserStatus(session.user.email);
 
   if (!detailsFilled) {
     return (
       <html lang="en">
-        <body>
-			<Navbar name={session.user.name!}/>
-          <Dashboard/>
+        <body
+          style={{
+            background:
+              "radial-gradient(50% 98.88% at 50% 50%, #0B0014 55.41%, #18181B 100%)",
+          }}
+          className="h-dvh"
+        >
+          <div className="h-full w-full flex flex-col items-center justify-center">
+            <Navbar name={session.user.name ?? "User"} />
+            <Dashboard />
+          </div>
         </body>
       </html>
     );
@@ -116,74 +141,70 @@ export default async function RootLayout({
     );
   }
 
-	if (!teamCheckedIn) {
-		return (
-			<html lang="en">
-			<body>
-			<BackgroundTemplate>
-				<Dashboard/>
-			</BackgroundTemplate>
-			</body>
-			</html>
-		);
-	}
+  if (!teamCheckedIn) {
+    return (
+      <html lang="en">
+        <body>
+          <BackgroundTemplate>
+            <Dashboard />
+          </BackgroundTemplate>
+        </body>
+      </html>
+    );
+  }
 
-	if (disqualified) {
-		return (
-			<html lang="en">
-			<body>
-			<Disqualified/>
-			</body>
-			</html>
-		);
-	}
-	if (roundIsActive) {
-		if (memberOfActiveRound) {
-			return (
-				<html lang="en">
-				<body>{children}</body>
-				</html>
-			);
-		}
-		return (
-			<html lang="en">
-			<body>
-			<EliminationScreen/>
-			</body>
-			</html>
-		);
-	}
+  if (disqualified) {
+    return (
+      <html lang="en">
+        <body>
+          <Disqualified />
+        </body>
+      </html>
+    );
+  }
+  if (roundIsActive) {
+    if (memberOfActiveRound) {
+      return (
+        <html lang="en">
+          <body>{children}</body>
+        </html>
+      );
+    }
+    return (
+      <html lang="en">
+        <body>
+          <EliminationScreen />
+        </body>
+      </html>
+    );
+  }
 
-	if (noPendingRound) {
-		if (winnersAnnounced) {
-			return (
-				<html lang="en">
-				<body>
-				<Winners/>
-				</body>
-				</html>
-			);
-		}
-		return (
-			<html lang="en">
+  if (noPendingRound) {
+    if (winnersAnnounced) {
+      return (
+        <html lang="en">
+          <body>
+            <Winners />
+          </body>
+        </html>
+      );
+    }
+    return (
+      <html lang="en">
+        <body>
+          <CountdownTimer getTimeUntil="" />
+        </body>
+      </html>
+      // Add the time until the next round
+    );
+  }
 
-				<body>
-					<CountdownTimer getTimeUntil="" />  
-				</body>
-
-			</html>
-			// Add the time until the next round
-		);
-	}
-
-	return (
-		<html lang="en">
-
-			<body>
-				<CountdownTimer getTimeUntil=""/>
-			</body>
-
-		</html>
-		// Add the time until the next round
-	);
+  return (
+    <html lang="en">
+      <body>
+        <CountdownTimer getTimeUntil="" />
+      </body>
+    </html>
+    // Add the time until the next round
+  );
 }

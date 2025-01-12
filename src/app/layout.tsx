@@ -16,7 +16,7 @@ import curveline from "@/app/assets/curveline.svg";
 import bracket from "@/app/assets/bracket.svg";
 import Dashboard from "@/components/team-dashboard";
 import Navbar from "@/components/Navbar";
-import TeamLeaderboard from "@/components/TeamLeaderboard";
+import SignOutButton from "@/components/buttons/sign-out";
 
 const plus_jakarta_sans = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
@@ -107,7 +107,10 @@ export default async function RootLayout({
   if (adminUser) {
     return (
       <html lang="en">
-        <body className={plus_jakarta_sans.className}>{admin}</body>
+        <body className={plus_jakarta_sans.className}>
+          {admin}
+          <SignOutButton />
+        </body>
       </html>
     );
   }
@@ -125,7 +128,8 @@ export default async function RootLayout({
           className="h-dvh"
         >
           <div className="h-full w-full flex flex-col items-center justify-center">
-            {/* <Navbar name={session.user.name ?? "User"} /> */}
+            {/* <Navbar name={session.user.name ?? "User"} />
+            <Dashboard /> */}
             <DetailsForm />
           </div>
         </body>
@@ -281,10 +285,7 @@ export default async function RootLayout({
               <Winners />
             ) : hasNextRound ? (
               <div className="flex flex-col items-center gap-8 p-4">
-                <TeamLeaderboard />
-                <CountdownTimer
-                  getTimeUntil={nextRound?.start.toISOString() ?? ""}
-                />
+                <Dashboard />
               </div>
             ) : (
               <div className="flex items-center justify-center h-full">

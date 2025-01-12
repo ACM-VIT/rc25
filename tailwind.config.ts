@@ -49,12 +49,19 @@ const config: Config = {
 				"sharp-sm": "0 2px 0 0 rgba(0,0,0,0.25)",
 				"sharp-lg": "0 4px 0 0 rgba(0,0,0,0.25)",
 			},
-			fontFamily:{
-				title: ['Audiowide'],
-				subtitle: ['PT Sans']
-			}
+			keyframes: {
+				float: {
+				  '0%, 100%': { transform: 'translateY(0)' },
+				  '50%': { transform: 'translateY(-28px)' },
+				},
+			  },
+			  animation: {
+				float: 'float 1.5s ease-in-out infinite',
+			  },
 		},
-	},
+
+		},
+	
   plugins: [nextui()],
 };
 export default config;

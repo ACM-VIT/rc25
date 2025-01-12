@@ -1,7 +1,7 @@
 import React from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import CountdownTimer from "@/components/countdown-timer";
-import DashboardBox from './DashboardBox';
+import DashboardBox from "./DashboardBox";
 // import { Separator } from "@/components/ui/separator"
 
 const Dashboard: React.FC = () => {
@@ -33,7 +33,7 @@ const Dashboard: React.FC = () => {
                     </p>
                 </div>
                 <div className="flex flex-row gap-5 w-[95%] h-[85%]">
-                    <div className="flex flex-col w-1/4 h-full justify-between">
+                    <div className="flex flex-col h-full justify-between">
                         <div
                             style={{
                                 background: `linear-gradient(0deg, rgba(57, 35, 78, 0.25), rgba(57, 35, 78, 0.25)),
@@ -73,92 +73,112 @@ const Dashboard: React.FC = () => {
                         </div>
                     </div>
 
-                    <div
-                        style={{
-                            background: `linear-gradient(0deg, rgba(57, 35, 78, 0.25), rgba(57, 35, 78, 0.25)),
-                 linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03))`,
-                        }}
-                        className="w-[50vw] p-7 pt-0 rounded-lg overflow-y-hidden overflow-x-auto"
-                    >
-                        <p className="text-2xl font-semibold border-b-2 border-white p-2 py-4 mb-4">
-                            Questions
-                        </p>
-                        <div className="flex flex-row border-b-2 pb-4 w-full">
-                            <h1 className="w-1/6 text-xs md:text-sm font-bold text-center">
-                                Sr. No
-                            </h1>
-                            <h1 className="w-2/6 text-xs md:text-sm font-bold text-center">
-                                Question Name
-                            </h1>
-                            <h1 className="w-1/6 text-xs md:text-sm font-bold text-center">
-                                Difficulty
-                            </h1>
-                            <h1 className="w-2/6 text-xs md:text-sm font-bold text-center">
-                                Status
-                            </h1>
-                        </div>
-                        <ScrollArea className="h-[60vh] rounded-md">
-                            <div className="p-4">
-                                {questions.map((question) => (
-                                    <div
-                                        key={question.slno}
-                                        className="flex flex-row text-sm space-x-4 mb-2"
-                                    >
-                                        <p className=" w-1/6 text-center p-2">
-                                            {question.slno}
-                                        </p>
-                                        <p className=" w-2/6 text-center p-2">
-                                            {question.questionName}
-                                        </p>
-                                        <p
-                                            className="w-1/6 text-center p-2"
-                                            style={{
-                                                color:
-                                                    question.difficulty ===
-                                                    "Easy"
-                                                        ? "#27AE60"
-                                                        : question.difficulty ===
-                                                          "Medium"
-                                                        ? "#F2994A"
-                                                        : "#EB5757",
-                                            }}
-                                        >
-                                            {question.difficulty}
-                                        </p>
-                                        <p
-                                            className="w-2/6 text-center p-2"
-                                            style={{
-                                                color: (() => {
-                                                    const percentage =
-                                                        (question.casesPassed /
-                                                            question.totalCases) *
-                                                        100;
-                                                    if (percentage <= 40)
-                                                        return "#EB5757";
-                                                    if (percentage < 100)
-                                                        return "#F2994A";
-                                                    return "#27AE60";
-                                                })(),
-                                            }}
-                                        >
-                                            {question.casesPassed}/
-                                            {question.totalCases}
-                                        </p>
-                                    </div>
-                                ))}
+                    <div className="flex w-full flex-col lg:flex-row lg:space-x-4 space-y-4 lg:space-y-0">
+                        <div
+                            style={{
+                                background: `linear-gradient(0deg, rgba(57, 35, 78, 0.25), rgba(57, 35, 78, 0.25)),
+             linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03))`,
+                            }}
+                            className="w-full lg:w-[70%] p-7 pt-0 rounded-lg overflow-y-hidden overflow-x-auto"
+                        >
+                            <p className="text-2xl font-semibold border-b-2 border-white p-2 py-4 mb-4">
+                                Questions
+                            </p>
+                            <div className="flex flex-row border-b-2 pb-4 w-full">
+                                <h1 className="w-1/6 text-xs md:text-sm font-bold text-center">
+                                    Sr. No
+                                </h1>
+                                <h1 className="w-2/6 text-xs md:text-sm font-bold text-center">
+                                    Question Name
+                                </h1>
+                                <h1 className="w-1/6 text-xs md:text-sm font-bold text-center">
+                                    Difficulty
+                                </h1>
+                                <h1 className="w-2/6 text-xs md:text-sm font-bold text-center">
+                                    Status
+                                </h1>
                             </div>
-                        </ScrollArea>
-                    </div>
-                    <div
-                        style={{
-                            background: `linear-gradient(0deg, rgba(57, 35, 78, 0.25), rgba(57, 35, 78, 0.25)),
-                 linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03))`,
-                        }}
-                        className="w-[32vw] rounded-lg pl-7 pr-7"
-                    >
-                        <p className="text-2xl font-semibold border-b-2 border-white p-2 py-4 mb-4">
-                            Leaderboard
-                        </p>
+                            <ScrollArea className="h-[60vh] rounded-md">
+                                <div className="p-4">
+                                    {questions.map((question) => (
+                                        <div
+                                            key={question.slno}
+                                            className="flex flex-row text-sm space-x-4 mb-2"
+                                        >
+                                            <p className=" w-1/6 text-center p-2">
+                                                {question.slno}
+                                            </p>
+                                            <p className=" w-2/6 text-center p-2">
+                                                {question.questionName}
+                                            </p>
+                                            <p
+                                                className="w-1/6 text-center p-2"
+                                                style={{
+                                                    color:
+                                                        question.difficulty ===
+                                                        "Easy"
+                                                            ? "#27AE60"
+                                                            : question.difficulty ===
+                                                              "Medium"
+                                                            ? "#F2994A"
+                                                            : "#EB5757",
+                                                }}
+                                            >
+                                                {question.difficulty}
+                                            </p>
+                                            <p
+                                                className="w-2/6 text-center p-2"
+                                                style={{
+                                                    color: (() => {
+                                                        const percentage =
+                                                            (question.casesPassed /
+                                                                question.totalCases) *
+                                                            100;
+                                                        if (percentage <= 40)
+                                                            return "#EB5757";
+                                                        if (percentage < 100)
+                                                            return "#F2994A";
+                                                        return "#27AE60";
+                                                    })(),
+                                                }}
+                                            >
+                                                {question.casesPassed}/
+                                                {question.totalCases}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </ScrollArea>
+                        </div>
+                        <div
+                            style={{
+                                background: `linear-gradient(0deg, rgba(57, 35, 78, 0.25), rgba(57, 35, 78, 0.25)),
+             linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03))`,
+                            }}
+                            className="w-full max-h-[40%] overflow-y-auto lg:w-[30%] lg:max-h-full rounded-lg pl-7 pr-7"
+                        >
+                            <p className="text-2xl font-semibold border-b-2 border-white p-2 py-4 mb-4">
+                                Leaderboard
+                            </p>
+                            <ul className="space-y-3 pt-4 px-1">
+                                <li className="flex justify-between">
+                                    <p>Team 1 </p>
+                                    <p>99 pts</p>
+                                </li>
+                                <li className="flex justify-between">
+                                    <p>Team 2</p>
+                                    <p>99 pts</p>
+                                </li>
+                                <li className="flex justify-between">
+                                    <p>Team 3</p>
+                                    <p>99 pts</p>
+                                </li>
+                                <li className="flex justify-between">
+                                    <p>Team 4</p>
+                                    <p>99 pts</p>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>

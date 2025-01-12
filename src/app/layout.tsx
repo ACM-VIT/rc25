@@ -8,7 +8,7 @@ import React, { type ReactNode } from "react";
 import { auth } from "./(auth)/auth";
 import { prisma } from "@/utils/prisma";
 import "./globals.css";
-import { Outfit } from "next/font/google";
+import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
 import Image from "next/image";
 //import logo from "@/app/assets/RCLogo.svg";
 import rock from "@/app/assets/rock.svg";
@@ -18,6 +18,7 @@ import Dashboard from "@/components/team-dashboard";
 import Navbar from "@/components/Navbar";
 
 const outfit = Outfit({ subsets: ["latin"] });
+const plus_jakarta_sans = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
 const teamCheckedIn = true;
 const roundIsActive = true; // true --> portal

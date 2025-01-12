@@ -49,7 +49,7 @@ const TeamSubmissions= ()=>{
                         <div className="pr-4">
                             {teamdetails.map((team) => (
                                 <div key={team.slno} className="flex flex-row text-sm space-x-4 mb-2">
-                                    <p className=" w-1/6 text-center p-2">
+                                    <p className=" w-1/6 text-center p-2 pl-3">
                                         {team.slno}
                                     </p>
                                     <p className=" w-1/6 text-center p-2">

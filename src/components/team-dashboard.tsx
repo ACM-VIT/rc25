@@ -25,7 +25,7 @@ const Dashboard: React.FC = () => {
                 <div className="flex flex-col w-1/4">
                     <div
                         className="flex flex-col p-6 shadow-lg rounded-lg text-white  bg-[#39234E]">
-                        <div className="hidden lg:block absolute top-[32%]  left-[2%] r  w-[84px] h-[60px] rounded-full blur-[50px] bg-none transition duration-1000 bg-[#F8CC22]"/>
+                        <div className="hidden lg:block absolute top-[32%]  left-[2%] rounded-full  w-[84px] h-[60px] rounded-full blur-[50px] bg-none transition duration-1000 bg-[#F8CC22]"/>
                         <p className="text-lg font-semibold text-center border-b border-white pb-2 mb-3">
                             Team Name
                         </p>

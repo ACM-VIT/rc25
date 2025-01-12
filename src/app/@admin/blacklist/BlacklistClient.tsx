@@ -1,6 +1,9 @@
 "use client";
 
-import { blacklistTeam, ReverseblacklistTeam } from "@/app/actions/blacklist-team";
+import {
+  blacklistTeam,
+  ReverseblacklistTeam,
+} from "@/app/actions/blacklist-team";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -9,26 +12,45 @@ import { Shield, ShieldAlert, SearchIcon } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import type { Team } from "@prisma/client";
 import { useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface BlacklistClientProps {
   initialTeams: Team[];
 }
 
-export default function BlacklistClient({ initialTeams }: BlacklistClientProps) {
+export default function BlacklistClient({
+  initialTeams,
+}: BlacklistClientProps) {
   const [query, setQuery] = useState("");
   const [teams, setTeams] = useState<Team[]>(initialTeams);
   const { toast } = useToast();
+  const [statusFilter, setStatusFilter] = useState<
+    "all" | "active" | "disqualified"
+  >("all");
 
-  const filteredTeams = query 
-    ? teams.filter(team => 
-        team.name.toLowerCase().includes(query.toLowerCase()) ||
-        team.shortCode.toLowerCase().includes(query.toLowerCase())
-      )
-    : teams;
+  const filteredTeams = teams.filter((team) => {
+    const matchesQuery =
+      !query ||
+      team.name.toLowerCase().includes(query.toLowerCase()) ||
+      team.shortCode.toLowerCase().includes(query.toLowerCase());
+
+    const matchesStatus =
+      statusFilter === "all" ||
+      (statusFilter === "active" && !team.disqualify) ||
+      (statusFilter === "disqualified" && team.disqualify);
+
+    return matchesQuery && matchesStatus;
+  });
 
   const handleDisqualify = async (teamId: string) => {
     const confirm = window.confirm(
-      "Are you sure you want to disqualify this team?",
+      "Are you sure you want to disqualify this team?"
     );
     if (!confirm) return;
 
@@ -36,8 +58,8 @@ export default function BlacklistClient({ initialTeams }: BlacklistClientProps) 
     if (result.success) {
       setTeams(
         teams.map((team) =>
-          team.id === teamId ? { ...team, disqualify: true } : team,
-        ),
+          team.id === teamId ? { ...team, disqualify: true } : team
+        )
       );
       toast({
         title: "Team Disqualified",
@@ -55,7 +77,7 @@ export default function BlacklistClient({ initialTeams }: BlacklistClientProps) 
 
   const handleReverseDisqualify = async (teamId: string) => {
     const confirm = window.confirm(
-      "Are you sure you want to reverse the disqualification of this team?",
+      "Are you sure you want to reverse the disqualification of this team?"
     );
     if (!confirm) return;
 
@@ -63,8 +85,8 @@ export default function BlacklistClient({ initialTeams }: BlacklistClientProps) 
     if (result.success) {
       setTeams(
         teams.map((team) =>
-          team.id === teamId ? { ...team, disqualify: false } : team,
-        ),
+          team.id === teamId ? { ...team, disqualify: false } : team
+        )
       );
       toast({
         title: "Team Reinstated",
@@ -91,9 +113,42 @@ export default function BlacklistClient({ initialTeams }: BlacklistClientProps) 
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Filter teams..."
-              className="pl-9"
+              className="pl-9 h-10"
             />
           </div>
+          <Select
+            value={statusFilter}
+            onValueChange={(value: "all" | "active" | "disqualified") =>
+              setStatusFilter(value)
+            }
+          >
+            <SelectTrigger className="w-[180px] h-10">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all" className="focus:bg-gray-100">
+                All Teams
+              </SelectItem>
+              <SelectItem
+                value="active"
+                className="text-emerald-700 focus:bg-emerald-50 focus:text-emerald-700"
+              >
+                <div className="flex items-center gap-2">
+                  <Shield className="h-4 w-4" />
+                  Active
+                </div>
+              </SelectItem>
+              <SelectItem
+                value="disqualified"
+                className="text-red-700 focus:bg-red-50 focus:text-red-700"
+              >
+                <div className="flex items-center gap-2">
+                  <ShieldAlert className="h-4 w-4" />
+                  Disqualified
+                </div>
+              </SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </CardHeader>
 

@@ -106,7 +106,7 @@ export default async function RootLayout({
   if (adminUser) {
     return (
       <html lang="en">
-        <body>{admin}</body>
+        <body className={plus_jakarta_sans.className}>{admin}</body>
       </html>
     );
   }

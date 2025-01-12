@@ -4,7 +4,7 @@ import Disqualified from "@/components/disqualifed";
 import EliminationScreen from "@/components/elimination-screen";
 import TeamMembersAndLeaveButton from "@/components/team-dashboard/team-dashboard";
 import Winners from "@/components/winners";
-import React, { type ReactNode } from 'react'
+import React, { type ReactNode } from "react";
 import { auth } from "./(auth)/auth";
 import { prisma } from "@/utils/prisma";
 import "./globals.css";
@@ -19,7 +19,6 @@ import Navbar from "@/components/Navbar";
 
 const outfit = Outfit({ subsets: ["latin"] });
 
-
 const teamCheckedIn = true;
 const roundIsActive = true; // true --> portal
 const memberOfActiveRound = true; // false --> elimination
@@ -33,13 +32,13 @@ async function getUserStatus(email: string) {
         select: {
             phone: true,
             gender: true,
-            teamId: true
-        }
+            teamId: true,
+        },
     });
 
     return {
         detailsFilled: Boolean(user?.phone && user?.gender),
-        teamJoined: Boolean(user?.teamId)
+        teamJoined: Boolean(user?.teamId),
     };
 }
 
@@ -92,9 +91,7 @@ export default async function RootLayout({
     if (!session?.user?.email) {
         return (
             <html lang="en">
-                <body className={`${outfit.className} antialiased`}>
-                    {landing}
-                </body>
+                <body>{landing}</body>
             </html>
         );
     }
@@ -110,21 +107,29 @@ export default async function RootLayout({
     if (adminUser) {
         return (
             <html lang="en">
-                <body className={`${outfit.className} antialiased`}>
-                    {admin}
-                </body>
+                <body className={plus_jakarta_sans.className}>{admin}</body>
             </html>
         );
     }
 
-    const { detailsFilled, teamJoined } = await getUserStatus(session.user.email);
+    const { detailsFilled, teamJoined } = await getUserStatus(
+        session.user.email
+    );
 
     if (!detailsFilled) {
         return (
             <html lang="en">
-                <body className={`${outfit.className} antialiased bg-background-gradient`}>
-                    <Navbar name={session.user.name ?? "User"} />
-                    <Dashboard />
+                <body
+                    style={{
+                        background:
+                            "radial-gradient(50% 98.88% at 50% 50%, #0B0014 55.41%, #18181B 100%)",
+                    }}
+                    className="h-dvh"
+                >
+                    <div className="h-full w-full flex flex-col items-center justify-center">
+                        <Navbar name={session.user.name ?? "User"} />
+                        <Dashboard />
+                    </div>
                 </body>
             </html>
         );
@@ -132,7 +137,7 @@ export default async function RootLayout({
     if (!teamJoined) {
         return (
             <html lang="en">
-                <body className={`${outfit.className} antialiased bg-background-gradient`}>
+                <body>
                     <BackgroundTemplate>{team}</BackgroundTemplate>
                 </body>
             </html>
@@ -142,7 +147,7 @@ export default async function RootLayout({
     if (!teamCheckedIn) {
         return (
             <html lang="en">
-                <body className={`${outfit.className} antialiased bg-background-gradient`}>
+                <body>
                     <BackgroundTemplate>
                         <Dashboard />
                     </BackgroundTemplate>
@@ -154,7 +159,7 @@ export default async function RootLayout({
     if (disqualified) {
         return (
             <html lang="en">
-                <body className={`${outfit.className} antialiased bg-background-gradient`}>
+                <body>
                     <Disqualified />
                 </body>
             </html>
@@ -164,16 +169,13 @@ export default async function RootLayout({
         if (memberOfActiveRound) {
             return (
                 <html lang="en">
-                    <body className={`${outfit.className} antialiased bg-background-gradient`}>
-                        {children}
-                    </body>
+                    <body>{children}</body>
                 </html>
             );
         }
         return (
             <html lang="en">
-                <body className={`${outfit.className} antialiased bg-background-gradient`}>
-                    {children}
+                <body>
                     <EliminationScreen />
                 </body>
             </html>
@@ -184,7 +186,7 @@ export default async function RootLayout({
         if (winnersAnnounced) {
             return (
                 <html lang="en">
-                    <body className={`${outfit.className} antialiased bg-background-gradient`}>
+                    <body>
                         <Winners />
                     </body>
                 </html>
@@ -192,11 +194,9 @@ export default async function RootLayout({
         }
         return (
             <html lang="en">
-
-                <body className={`${outfit.className} antialiased bg-background-gradient`}>
+                <body>
                     <CountdownTimer getTimeUntil="" />
                 </body>
-
             </html>
             // Add the time until the next round
         );
@@ -204,11 +204,9 @@ export default async function RootLayout({
 
     return (
         <html lang="en">
-
             <body>
                 <CountdownTimer getTimeUntil="" />
             </body>
-
         </html>
         // Add the time until the next round
     );

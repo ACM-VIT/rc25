@@ -1,5 +1,5 @@
 import CountdownTimer from "@/components/countdown-timer";
-//import DetailsForm from "@/components/details-form";
+import DetailsForm from "@/components/details-form";
 import Disqualified from "@/components/disqualifed";
 import EliminationScreen from "@/components/elimination-screen";
 import TeamMembersAndLeaveButton from "@/components/team-dashboard/team-dashboard";
@@ -8,7 +8,7 @@ import React, { type ReactNode } from "react";
 import { auth } from "./(auth)/auth";
 import { prisma } from "@/utils/prisma";
 import "./globals.css";
-import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import Image from "next/image";
 //import logo from "@/app/assets/RCLogo.svg";
 import rock from "@/app/assets/rock.svg";
@@ -16,11 +16,10 @@ import curveline from "@/app/assets/curveline.svg";
 import bracket from "@/app/assets/bracket.svg";
 import Dashboard from "@/components/team-dashboard";
 import Navbar from "@/components/Navbar";
+import TeamLeaderboard from "@/components/TeamLeaderboard";
 
-const outfit = Outfit({ subsets: ["latin"] });
 const plus_jakarta_sans = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
-const teamCheckedIn = true;
 const roundIsActive = true; // true --> portal
 const memberOfActiveRound = true; // false --> elimination
 const winnersAnnounced = true;
@@ -85,7 +84,9 @@ export default async function RootLayout({
   admin,
   landing,
 }: LayoutProps) {
-  const session = await auth();
+  const session = (await auth()) as {
+    user: { email: string; teamId?: string; name: string };
+  };
 
   if (!session?.user?.email) {
     return (
@@ -124,8 +125,8 @@ export default async function RootLayout({
           className="h-dvh"
         >
           <div className="h-full w-full flex flex-col items-center justify-center">
-            <Navbar name={session.user.name ?? "User"} />
-            <Dashboard />
+            {/* <Navbar name={session.user.name ?? "User"} /> */}
+            <DetailsForm />
           </div>
         </body>
       </html>
@@ -141,17 +142,27 @@ export default async function RootLayout({
     );
   }
 
+  const teamIn = await prisma.team.findUnique({
+    where: {
+      id: session.user.teamId,
+    },
+  });
+  const teamCheckedIn = Boolean(teamIn?.checkedIn);
+
   if (!teamCheckedIn) {
     return (
       <html lang="en">
         <body>
           <BackgroundTemplate>
-            <Dashboard />
+            <TeamMembersAndLeaveButton />
+            {/* <Dashboard /> */}
           </BackgroundTemplate>
         </body>
       </html>
     );
   }
+
+  const disqualified = Boolean(teamIn?.disqualify);
 
   if (disqualified) {
     return (
@@ -162,6 +173,32 @@ export default async function RootLayout({
       </html>
     );
   }
+
+  const curRound = await prisma.round.findFirst({
+    where: {
+      start: {
+        lte: new Date(),
+      },
+      end: {
+        gte: new Date(),
+      },
+    },
+    orderBy: {
+      start: "asc",
+    },
+  });
+
+  const roundIsActive = Boolean(curRound);
+
+  const memberOfActiveRound = Boolean(
+    await prisma.teamRound.findFirst({
+      where: {
+        teamId: session.user.teamId,
+        roundId: curRound?.number,
+      },
+    })
+  );
+
   if (roundIsActive) {
     if (memberOfActiveRound) {
       return (
@@ -179,6 +216,40 @@ export default async function RootLayout({
     );
   }
 
+  const noPendingRound = Boolean(
+    await prisma.round.findFirst({
+      where: {
+        start: {
+          gt: new Date(),
+        },
+      },
+    })
+  );
+
+  const winnersAnnounced = Boolean(
+    await prisma.round.findFirst({
+      where: {
+        result: {
+          lte: new Date(),
+        },
+      },
+      orderBy: {
+        start: "desc",
+      },
+    })
+  );
+
+  const nextRound = await prisma.round.findFirst({
+    where: {
+      start: {
+        gt: new Date(),
+      },
+    },
+    orderBy: {
+      start: "asc",
+    },
+  });
+
   if (noPendingRound) {
     if (winnersAnnounced) {
       return (
@@ -192,17 +263,46 @@ export default async function RootLayout({
     return (
       <html lang="en">
         <body>
-          <CountdownTimer getTimeUntil="" />
+          <CountdownTimer getTimeUntil={nextRound?.start.toISOString() ?? ""} />
         </body>
       </html>
       // Add the time until the next round
     );
   }
 
+  if (!roundIsActive) {
+    const hasNextRound = Boolean(nextRound);
+
+    return (
+      <html lang="en">
+        <body>
+          <BackgroundTemplate>
+            {winnersAnnounced ? (
+              <Winners />
+            ) : hasNextRound ? (
+              <div className="flex flex-col items-center gap-8 p-4">
+                <TeamLeaderboard />
+                <CountdownTimer
+                  getTimeUntil={nextRound?.start.toISOString() ?? ""}
+                />
+              </div>
+            ) : (
+              <div className="flex items-center justify-center h-full">
+                <h1 className="text-2xl text-white">
+                  No upcoming rounds scheduled
+                </h1>
+              </div>
+            )}
+          </BackgroundTemplate>
+        </body>
+      </html>
+    );
+  }
+
   return (
     <html lang="en">
       <body>
-        <CountdownTimer getTimeUntil="" />
+        <CountdownTimer getTimeUntil={nextRound?.start.toISOString() ?? ""} />
       </body>
     </html>
     // Add the time until the next round

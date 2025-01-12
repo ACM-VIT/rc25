@@ -8,7 +8,7 @@ import React, { type ReactNode } from "react";
 import { auth } from "./(auth)/auth";
 import { prisma } from "@/utils/prisma";
 import "./globals.css";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Outfit } from "next/font/google";
 import Image from "next/image";
 //import logo from "@/app/assets/RCLogo.svg";
 import rock from "@/app/assets/rock.svg";
@@ -17,7 +17,7 @@ import bracket from "@/app/assets/bracket.svg";
 import Dashboard from "@/components/team-dashboard";
 import Navbar from "@/components/Navbar";
 
-const plus_jakarta_sans = Plus_Jakarta_Sans({ subsets: ["latin"] });
+const outfit = Outfit({ subsets: ["latin"] });
 
 const teamCheckedIn = true;
 const roundIsActive = true; // true --> portal
@@ -74,7 +74,9 @@ const BackgroundTemplate = ({ children }: { children: ReactNode }) => (
                 />
             </div>
         </div>
-        <div className="relative z-10">{children}</div>
+        <div className="relative z-10">
+            {children}
+        </div>
     </div>
 );
 

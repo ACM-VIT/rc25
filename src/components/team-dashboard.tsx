@@ -1,6 +1,7 @@
 import React from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import CountdownTimer from "@/components/countdown-timer";
+import DashboardBox from './DashboardBox';
 // import { Separator } from "@/components/ui/separator"
 
 const Dashboard: React.FC = () => {

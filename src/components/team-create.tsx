@@ -14,7 +14,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { X } from "lucide-react";
 import { createTeam, getAvailableUsers } from "@/app/actions/create-team";
 
 interface TeamBuilderProps {
@@ -30,7 +29,6 @@ interface User {
 
 export default function TeamBuilder({
 	onTeamCreated,
-	initialRegNo,
 }: TeamBuilderProps) {
 	const [availableUsers, setAvailableUsers] = useState<User[]>([]);
 	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
@@ -76,7 +74,7 @@ export default function TeamBuilder({
 			}
 		} catch (error) {
 			toast({
-				description: "Failed to create team",
+				description: `Failed to create team: ${error instanceof Error ? error.message : 'Unknown error'}`,
 				variant: "destructive",
 			});
 		}

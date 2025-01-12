@@ -1,10 +1,14 @@
 import React, { useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '../ui/seperator';
-import { Prisma } from '@prisma/client';
-import ProblemGetPayload = Prisma.ProblemGetPayload;
 
-export default function QuestionDisplay({ problem }: { problem: any }) {
+interface Problem {
+    id: string;
+    title: string;
+    description: string;
+}
+
+export default function QuestionDisplay({ problem: _problem }: { problem: Problem }) {
     const [pending, startTransition] = useTransition();
     const [input, setInput] = React.useState('');
     const [output, setOutput] = React.useState('');

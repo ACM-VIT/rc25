@@ -1,8 +1,8 @@
-import { PrismaClient } from "@prisma/client";
 import { QuestionForm } from "../question-form";
 import { handleQuestionSubmit } from "@/app/actions/upsert-question";
+import { prisma } from "@/utils/prisma";
+
 async function getRounds() {
-	const prisma = new PrismaClient();
 	try {
 		const rounds = await prisma.round.findMany({
 			orderBy: {

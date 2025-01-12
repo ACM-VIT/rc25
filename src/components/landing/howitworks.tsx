@@ -3,6 +3,20 @@
 import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import rock2 from "@/app/assets/rock2.svg";
+import { Audiowide } from "next/font/google";
+import { Outfit } from "next/font/google";
+
+const audiowide = Audiowide({
+    subsets: ['latin'], 
+    weight: ['400'] ,
+    display: 'swap',
+  });
+
+const outfit= Outfit({
+    subsets: ['latin'], 
+    weight: ['400'] ,
+    display: 'swap',
+  });
 
 export default function HowItWorks() {
   const [isMainVisible, setIsMainVisible] = useState(false); // For the first section
@@ -57,7 +71,7 @@ export default function HowItWorks() {
     <div className="flex flex-col min-h-screen w-full bg-black overflow-x-hidden">
       {/* Header Section */}
       <div className="flex h-full items-center justify-center">
-        <div className="bg-gradient-to-b from-[#F0F1FA] to-[#ACADB5] bg-clip-text text-transparent font-title text-center phone:text-[4rem] xs:text-[6rem] sm:text-[8rem] md:text-[9rem] lg:text-[10rem] overflow-y-auto">
+        <div className={`bg-gradient-to-b from-[#F0F1FA] to-[#ACADB5] bg-clip-text text-transparent text-center phone:text-[4rem] xs:text-[6rem] sm:text-[8rem] md:text-[9rem] lg:text-[10rem] overflow-y-auto ${audiowide.className}`}>
           HOW IT WORKS?
         </div>
       </div>
@@ -71,28 +85,28 @@ export default function HowItWorks() {
 >
   {/* Main Content */}
   <div className="flex flex-col w-full md:w-auto md:ml-[40%] lg:ml-[38%] border-r-8 py-8 border-white px-4 sm:px-6 lg:px-8">
-    <p className="text-white text-center phone:text-right xs:text-right text-base phone:text-[80%] xs:text-lg md:text-xl lg:text-2xl xl:text-3xl font-para whitespace-nowrap ">
+    <p className={`text-white text-center phone:text-right xs:text-right text-base phone:text-[80%] xs:text-lg md:text-xl lg:text-2xl xl:text-3xl font-para whitespace-nowrap ${outfit.className}`}>
       Participants are given runnable files that
     </p>
-    <p className="text-white text-center phone:text-right xs:text-right text-base phone:text-[80%] xs:text-lg md:text-xl lg:text-2xl xl:text-3xl  font-para whitespace-nowrap ">
+    <p className={`text-white text-center phone:text-right xs:text-right text-base phone:text-[80%] xs:text-lg md:text-xl lg:text-2xl xl:text-3xl  font-para whitespace-nowrap ${outfit.className}`}>
       display input-output
     </p>
-    <p className="text-white text-center phone:text-right xs:text-right text-base phone:text-[80%] xs:text-lg md:text-xl lg:text-2xl xl:text-3xl font-para whitespace-nowrap  mb-6 lg:mb-10">
+    <p className={`text-white text-center phone:text-right xs:text-right text-base phone:text-[80%] xs:text-lg md:text-xl lg:text-2xl xl:text-3xl font-para whitespace-nowrap  mb-6 lg:mb-10${outfit.className}`}>
       test cases.
     </p>
-    <p className="text-white text-center phone:text-right xs:text-right text-base phone:text-[80%] xs:text-lg md:text-xl lg:text-2xl xl:text-3xl font-para whitespace-nowrap ">
+    <p className={`text-white text-center phone:text-right xs:text-right text-base phone:text-[80%] xs:text-lg md:text-xl lg:text-2xl xl:text-3xl font-para whitespace-nowrap ${outfit.className}`}>
       After deciphering the logic based on these input-
     </p>
-    <p className="text-white text-center phone:text-right xs:text-right text-base phone:text-[80%] xs:text-lg md:text-xl lg:text-2xl xl:text-3xl font-para whitespace-nowrap ">
+    <p className={`text-white text-center phone:text-right xs:text-right text-base phone:text-[80%] xs:text-lg md:text-xl lg:text-2xl xl:text-3xl font-para whitespace-nowrap ${outfit.className}`}>
       output patterns, they need to come up with a code
     </p>
-    <p className="text-white text-center phone:text-right xs:text-right text-base phone:text-[80%] xs:text-lg md:text-xl lg:text-2xl xl:text-3xl font-para whitespace-nowrap  mb-6 lg:mb-10">
+    <p className={`text-white text-center phone:text-right xs:text-right text-base phone:text-[80%] xs:text-lg md:text-xl lg:text-2xl xl:text-3xl font-para whitespace-nowrap  mb-6 lg:mb-10${outfit.className}`}>
       that will fulfil some hidden test cases.
     </p>
-    <p className="text-white text-center phone:text-right xs:text-right text-base phone:text-[80%] xs:text-lg md:text-xl lg:text-2xl xl:text-3xl font-para whitespace-nowrap ">
+    <p className={`text-white text-center phone:text-right xs:text-right text-base phone:text-[80%] xs:text-lg md:text-xl lg:text-2xl xl:text-3xl font-para whitespace-nowrap ${outfit.className}`}>
       The fifteen best-performing teams of Round
     </p>
-    <p className="text-white text-center phone:text-right xs:text-right text-base phone:text-[80%] xs:text-lg md:text-xl lg:text-2xl xl:text-3xl font-para whitespace-nowrap">
+    <p className={`text-white text-center phone:text-right xs:text-right text-base phone:text-[80%] xs:text-lg md:text-xl lg:text-2xl xl:text-3xl font-para whitespace-nowrap${outfit.className}`}>
       One advance to Round Two.
     </p>
   </div>
@@ -100,7 +114,7 @@ export default function HowItWorks() {
   {/* Vertical Text */}
   <div className="w-[10%] flex items-center justify-center mt-8 phone:mt-[-2%] xs:mt-[1%] sm:mt-[-2%] md:mt-[1%] lg:mt-[0%] xl:mt-[1%]">
       <p 
-        className="text-[85%] phone:text-[70%] sm:text-[95%] md:text-[95%] lg:text-[110%] xl:text-[110%] tracking-[0.2em] uppercase font-title -rotate-90 whitespace-nowrap transform origin-center"
+        className={`text-[85%] phone:text-[70%] sm:text-[95%] md:text-[95%] lg:text-[110%] xl:text-[110%] tracking-[0.2em] uppercase  -rotate-90 whitespace-nowrap transform origin-center ${audiowide.className}`}
         style={{
           color: 'transparent',
           WebkitTextStroke: '1px white',
@@ -132,7 +146,7 @@ export default function HowItWorks() {
   <div className="flex flex-row mb-20">
     {/* Vertical Text */}
     <div className="absolute top-1/2 left-0  transform -translate-y-1/2 w-[2%] phone:top-[15%] xs:top-[14%] sm:top-[7%] xl:top-[8%] md:top-[10%]">
-      <p className="text-white outline-4 phone:text-[80%] xs:text-[95%] sm:text-[90%] md:text-[100%] lg:text-[110%] xl:text-[120%] tracking-[0.2em] uppercase font-title rotate-90 whitespace-nowrap origin-center"
+      <p className={`text-white outline-4 phone:text-[80%] xs:text-[95%] sm:text-[90%] md:text-[100%] lg:text-[110%] xl:text-[120%] tracking-[0.2em] uppercase rotate-90 whitespace-nowrap origin-center ${audiowide.className}`}
        style={{
         color: 'transparent',
         WebkitTextStroke: '1px white',

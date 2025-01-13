@@ -112,7 +112,7 @@ export default function HowItWorks() {
   </div>
 
   {/* Vertical Text */}
-  <div className="w-[10%] flex items-center justify-center mt-8 phone:mt-[-2%] xs:mt-[1%] sm:mt-[-2%] md:mt-[1%] lg:mt-[0%] xl:mt-[1%]">
+  <div className="w-[10%] flex items-center justify-center mt-8 phone:mt-[-2%] xs:mt-[1%] sm:mt-[-2%] md:mt-[1%] lg:mt-[-1%] xl:mt-[1%]">
       <p 
         className={`text-[85%] phone:text-[70%] sm:text-[95%] md:text-[95%] lg:text-[110%] xl:text-[110%] tracking-[0.2em] uppercase  -rotate-90 whitespace-nowrap transform origin-center ${audiowide.className}`}
         style={{

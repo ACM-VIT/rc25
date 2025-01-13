@@ -16,7 +16,7 @@ export default function LandOne() {
       {/* Main Section */}
       <div className="w-full mx-auto min-h-screen flex items-center justify-center relative">
         {/* Decorative Left Rock */}
-        <div className="absolute hidden lg:block left-0 top-1/2 transform -translate-y-[35vh]">
+        <div className="absolute hidden lg:block left-0 top-1/2 transform -translate-y-[35vh] animate-float">
           <Image
             src="/leftrock.svg"
             alt="Left Rock"
@@ -38,7 +38,7 @@ export default function LandOne() {
         </div>
 
         {/* Decorative Right Rock */}
-        <div className="absolute hidden lg:block right-0 top-1/2 transform -translate-y-[48vh]">
+        <div className="absolute hidden lg:block right-0 top-1/2 transform -translate-y-[48vh] animate-float mt-[-30%]">
           <Image
             src="/rightrock.svg"
             alt="Right Rock"

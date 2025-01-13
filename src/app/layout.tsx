@@ -14,8 +14,9 @@ import Image from "next/image";
 import rock from "@/app/assets/rock.svg";
 import curveline from "@/app/assets/curveline.svg";
 import bracket from "@/app/assets/bracket.svg";
-import Dashboard from "@/components/team-dashboard";
+import Dashboard from "@/components/dashboard";
 import Navbar from "@/components/Navbar";
+import TeamSubmissions from "@/components/team-submissions";
 
 const outfit = Outfit({ subsets: ["latin"] });
 const plus_jakarta_sans = Plus_Jakarta_Sans({ subsets: ["latin"] });
@@ -85,7 +86,146 @@ export default async function RootLayout({
   admin,
   landing,
 }: LayoutProps) {
-  const session = await auth();
+    const session = await auth();
+
+    if (!session?.user?.email) {
+        return (
+            <html lang="en">
+                <body>{landing}</body>
+            </html>
+        );
+    }
+
+    const adminUser = await prisma.admin.findFirst({
+        where: {
+            user: {
+                email: session.user.email,
+            },
+        },
+    });
+
+    if (adminUser) {
+        return (
+            <html lang="en">
+                <body className={plus_jakarta_sans.className}>{admin}</body>
+            </html>
+        );
+    }
+
+    const { detailsFilled, teamJoined } = await getUserStatus(
+        session.user.email
+    );
+
+    if (!detailsFilled) {
+        return (
+            <html lang="en">
+                <body
+                    style={{
+                        background:
+                            "radial-gradient(50% 98.88% at 50% 50%, #0B0014 55.41%, #18181B 100%)",
+                    }}
+                    className="h-dvh"
+                >
+                    <div className="h-full w-full flex flex-col items-center justify-center">
+                        <Navbar name={session.user.name ?? "User"} />
+                        <Dashboard />
+                    </div>
+                </body>
+            </html>
+        );
+    }
+    if (!teamJoined) {
+        return (
+            <html lang="en">
+                <body>
+                    <BackgroundTemplate>{team}</BackgroundTemplate>
+                </body>
+            </html>
+        );
+    }
+
+    if (!teamCheckedIn) {
+        return (
+            <html lang="en">
+                <body>
+                    <BackgroundTemplate>
+                        <Dashboard />
+                    </BackgroundTemplate>
+                </body>
+            </html>
+        );
+    }
+
+    if (disqualified) {
+        return (
+            <html lang="en">
+                <body>
+                    <Disqualified />
+                </body>
+            </html>
+        );
+    }
+    if (roundIsActive) {
+        if (memberOfActiveRound) {
+            return (
+                <html lang="en">
+                    <body>{children}</body>
+                </html>
+            );
+        }
+        return (
+            <html lang="en">
+                <body>
+                    <EliminationScreen />
+                </body>
+            </html>
+        );
+    }
+	if (disqualified) {
+		return (
+			<html lang="en">
+			<body>
+			<Disqualified/>
+			</body>
+			</html>
+		);
+	}
+	if (roundIsActive) {
+		if (memberOfActiveRound) {
+			return (
+				<html lang="en">
+				<body>{children}</body>
+				</html>
+			);
+		}
+		return (
+			<html lang="en">
+				<body>
+				<EliminationScreen/>
+				</body>
+			</html>
+		);
+	}
+
+    if (noPendingRound) {
+        if (winnersAnnounced) {
+            return (
+                <html lang="en">
+                    <body>
+                        <Winners />
+                    </body>
+                </html>
+            );
+        }
+        return (
+            <html lang="en">
+                <body>
+                    <CountdownTimer getTimeUntil="" />
+                </body>
+            </html>
+            // Add the time until the next round
+        );
+    }
 
   if (!session?.user?.email) {
     return (

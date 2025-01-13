@@ -14,9 +14,10 @@ import Image from "next/image";
 import rock from "@/app/assets/rock.svg";
 import curveline from "@/app/assets/curveline.svg";
 import bracket from "@/app/assets/bracket.svg";
-import Dashboard from "@/components/team-dashboard";
+import Dashboard from "@/components/dashboard";
 import Navbar from "@/components/Navbar";
 import SignOutButton from "@/components/buttons/sign-out";
+import TeamSubmissions from "@/components/team-submissions";
 
 const plus_jakarta_sans = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
@@ -84,10 +85,8 @@ export default async function RootLayout({
   admin,
   landing,
 }: LayoutProps) {
-  const session = (await auth()) as {
-    user: { email: string; teamId?: string; name: string };
-  };
 
+  const session = await auth()
   if (!session?.user?.email) {
     return (
       <html lang="en">

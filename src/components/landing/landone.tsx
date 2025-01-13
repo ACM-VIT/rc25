@@ -1,40 +1,60 @@
-import React from 'react';
-import Image from 'next/image';
+import React from "react";
+import Image from "next/image";
 
 export default function LandOne() {
   return (
-    <div className="overflow-y-auto min-h-screen h-full text-white flex items-center justify-center bg-black">
-      
-      <div className="absolute top-[100px] sm:top-[120px] md:top-[140px] w-full flex justify-center text-center z-[0] px-4 sm:px-8">
-        <p className="text-base sm:text-large md:text-xl lg:text-2xl font-outfit leading-relaxed">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do <br className="hidden sm:block" /> 
+    <div className="h-screen bg-black text-white relative overflow-hidden">
+      {/* Header Section */}
+      <div className="absolute top-16 xl:top-28 w-full text-center z-10 px-4">
+        <p className="text-lg sm:text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl 3xl:text-5xl 4xl:text-6xl font-outfit leading-relaxed">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do{" "}
+          <br className="hidden sm:block" />
           eiusmod tempor incididunt ut labore et dolore magna aliqua.
         </p>
       </div>
-      
-      <div className='overflow-y-hidden flex flex-row justify-center items-center bg-black text-white min-h-screen h-full z-index:2'>
-        <div className="hidden md:flex justify-start items-center w-3/9" style={{ transform: 'translateY(15%)' }}>
-          <Image src="/leftrock.svg" alt="Left Rock" width={400} height={200} />
-        </div>
-        
-        <div className="flex justify-center items-center w-4/9 md:w-4/27 p-5 max-w-[80%]"  style={{ transform: 'translateY(-30%)' }}>
-          <Image src="/revcod.svg" alt="Reverse Coding" width={600} height={200} />
+
+      {/* Main Section */}
+      <div className="w-full mx-auto min-h-screen flex items-center justify-center relative">
+        {/* Decorative Left Rock */}
+        <div className="absolute hidden lg:block left-0 top-1/2 transform -translate-y-[35vh] animate-float">
+          <Image
+            src="/leftrock.svg"
+            alt="Left Rock"
+            width={200}
+            height={200}
+            className="w-[30vh] lg:w-[50vh]"
+          />
         </div>
 
-        <div className="hidden md:flex justify-end items-center w-2/9" style={{ transform: 'translateY(-15%)' }}>
-          <Image src="/rightrock.svg" alt="Right Rock" width={400} height={200} />
+        {/* Central Logo */}
+        <div className="w-2/3 sm:w-1/2 lg:w-[30%] mx-auto z-10">
+          <Image
+            src="/revcod.svg"
+            alt="Reverse Coding"
+            width={300}
+            height={300}
+            className="w-full h-auto"
+          />
+        </div>
+
+        {/* Decorative Right Rock */}
+        <div className="absolute hidden lg:block right-0 top-1/2 transform -translate-y-[48vh] animate-float mt-[-30%]">
+          <Image
+            src="/rightrock.svg"
+            alt="Right Rock"
+            width={500}
+            height={500}
+            className="w-[50vh]"
+          />
         </div>
       </div>
 
-      {/* Scroll to Register Section - Positioned at the bottom */}
-      <div className="absolute bottom-0 flex justify-center items-center sm:block hidden z-10">
-        <a className="text-xl text-white font-outfit" style={{ color: '#F0F1FA' }}>
+      {/* Scroll to Register */}
+      <div className="absolute bottom-4 w-full flex justify-center">
+        <a className="sm:text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl 3xl:text-5xl 4xl:text-6xl font-outfit text-gray-200">
           Scroll To Register
         </a>
       </div>
-
-
-
     </div>
   );
 }

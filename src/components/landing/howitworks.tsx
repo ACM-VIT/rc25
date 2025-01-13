@@ -70,8 +70,8 @@ export default function HowItWorks() {
   return (
     <div className="flex flex-col min-h-screen w-full bg-black overflow-x-hidden">
       {/* Header Section */}
-      <div className="flex h-full items-center justify-center">
-        <div className={`bg-gradient-to-b from-[#F0F1FA] to-[#ACADB5] bg-clip-text text-transparent text-center phone:text-[4rem] xs:text-[6rem] sm:text-[8rem] md:text-[9rem] lg:text-[10rem] overflow-y-auto ${audiowide.className}`}>
+      <div className="flex h-full items-center justify-center pt-16">
+        <div className={`bg-gradient-to-b from-[rgba(254,254,254,1)] to-[rgba(254,254,254,0.3)] bg-clip-text text-transparent text-center phone:text-[4rem] xs:text-[6rem] sm:text-[8rem] md:text-[9rem] lg:text-[10rem] overflow-y-auto ${audiowide.className} leading-[1]`}>
           HOW IT WORKS?
         </div>
       </div>

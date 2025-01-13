@@ -54,13 +54,15 @@ const config: Config = {
 				  '0%, 100%': { transform: 'translateY(0)' },
 				  '50%': { transform: 'translateY(-28px)' },
 				},
-			  },
-			  animation: {
+			},
+			animation: {
 				float: 'float 1.5s ease-in-out infinite',
-			  },
+			},
 		},
-
-		},
+		plugins: [
+			require('tailwindcss-motion'), // add this line to include the motion plugin
+		],
+	},
 	
   plugins: [nextui()],
 };

@@ -96,22 +96,6 @@ export default async function RootLayout({
         );
     }
 
-    const adminUser = await prisma.admin.findFirst({
-        where: {
-            user: {
-                email: session.user.email,
-            },
-        },
-    });
-
-    if (adminUser) {
-        return (
-            <html lang="en">
-                <body className={plus_jakarta_sans.className}>{admin}</body>
-            </html>
-        );
-    }
-
     const { detailsFilled, teamJoined } = await getUserStatus(
         session.user.email
     );
@@ -250,8 +234,6 @@ export default async function RootLayout({
       </html>
     );
   }
-
-  const { detailsFilled, teamJoined } = await getUserStatus(session.user.email);
 
   if (!detailsFilled) {
     return (

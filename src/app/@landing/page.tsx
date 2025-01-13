@@ -4,6 +4,7 @@ import LandingNavbar from '@/components/landing/landing-navbar';
 import HowItWorks from '@/components/landing/howitworks';
 import PrizePool from '@/components/landing/prizepool';
 import { Timeline } from '@/components/landing/timeline';
+import FaqRegister from '@/components/landing/faqregister';
 
 const Page: React.FC = () => {
   const timelineData = [
@@ -39,6 +40,7 @@ const Page: React.FC = () => {
       <LandOne />
       <HowItWorks />
       <Timeline data={timelineData} />
+      <FaqRegister />
     </div>
   );
 };

@@ -39,7 +39,7 @@ async function getUserStatus(email: string) {
 
   return {
     detailsFilled: Boolean(user?.phone && user?.gender),
-    teamJoined: Boolean(user?.teamId),
+    teamId: user?.teamId || null,
   };
 }
 
@@ -80,10 +80,10 @@ const BackgroundTemplate = ({ children }: { children: ReactNode }) => (
 );
 
 export default async function RootLayout({
-  children,
-  team,
-  admin,
-  landing,
+    children,
+    team,
+    admin,
+    landing,
 }: LayoutProps) {
 
   const session = await auth()
@@ -114,7 +114,8 @@ export default async function RootLayout({
     );
   }
 
-  const { detailsFilled, teamJoined } = await getUserStatus(session.user.email);
+  const { detailsFilled, teamId } = await getUserStatus(session.user.email);
+  const validTeamId = teamId ?? undefined;
 
   if (!detailsFilled) {
     return (
@@ -135,7 +136,7 @@ export default async function RootLayout({
       </html>
     );
   }
-  if (!teamJoined) {
+  if (!Boolean(teamId)) {
     return (
       <html lang="en">
         <body>
@@ -147,7 +148,7 @@ export default async function RootLayout({
 
   const teamIn = await prisma.team.findUnique({
     where: {
-      id: session.user.teamId,
+      id: validTeamId,
     },
   });
   const teamCheckedIn = Boolean(teamIn?.checkedIn);
@@ -196,7 +197,7 @@ export default async function RootLayout({
   const memberOfActiveRound = Boolean(
     await prisma.teamRound.findFirst({
       where: {
-        teamId: session.user.teamId,
+        teamId: validTeamId,
         roundId: curRound?.number,
       },
     })

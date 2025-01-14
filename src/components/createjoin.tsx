@@ -38,7 +38,7 @@ export default function Team() {
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-black text-white font-sans">
+    <div className="relative min-h-screen flex items-center justify-center text-white font-sans">
       <div className="w-[90vw] md:w-[50vw] lg:w-[40vw] p-6 rounded-lg bg-[#1c1c1c] border-2 border-purple-700 flex flex-col md:flex-row gap-4">
         <div className="flex-shrink-0 flex justify-center items-center">
           <Image

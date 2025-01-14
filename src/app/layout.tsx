@@ -52,7 +52,7 @@ interface LayoutProps {
 
 const BackgroundTemplate = ({ children }: { children: ReactNode }) => (
   <div className="relative w-[100vw] h-dvh bg-[#222]">
-    <div className="absolute inset-0 flex flex-row h-full z-0">
+    <div className="absolute inset-0 flex flex-row h-full z-0 overflow-hidden">
       <div className="md:w-1/4 h-full">
         <Image
           className="hidden md:block h-[100vh] object-cover object-center"
@@ -158,7 +158,7 @@ export default async function RootLayout({
       <html lang="en">
         <body>
           <BackgroundTemplate>
-            <TeamMembersAndLeaveButton />
+            <Team />
             {/* <Dashboard /> */}
           </BackgroundTemplate>
         </body>

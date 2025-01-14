@@ -68,7 +68,7 @@ const Navbar: React.FC<NavbarProps> = ({ name }) => {
                 borderBottom: "2px solid rgba(128, 128, 128, 0.3)",
             }}
         >
-            <div className="flex h-full flex-row justify-between items-center mx-auto px-4 sm:px-6 md:px-4 max-w-7xl">
+            <div className="flex h-full flex-row justify-between items-center mx-auto px-4 sm:px-6 md:px-4 max-w-9xl mb-3">
                 <div className="h-full">
                     <Image
                         src={RCLogo}
@@ -102,13 +102,14 @@ const Navbar: React.FC<NavbarProps> = ({ name }) => {
                         >
                             Instructions
                         </a>
+                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
                     </li>
-                    <li>
+                    <li className="group relative">
                         <a
                             href="#"
-                            className="block py-2 px-4 text-white font-bold text-sm md:text-base hover:text-[#39234E] hover:underline"
+                            className="block py-2 px-4 text-white font-bold text-sm md:text-base hover:text-primary transition-colors duration-300"
                         >
-                            FAQ
+                            FAQs
                         </a>
                         <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
                     </li>

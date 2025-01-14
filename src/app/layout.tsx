@@ -21,11 +21,11 @@ import Team from "@/components/createjoin";
 
 const plus_jakarta_sans = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
-const roundIsActive = false; // true --> portal
-const memberOfActiveRound = false; // false --> elimination
+const roundIsActive = true; // true --> portal
+const memberOfActiveRound = true; // false --> elimination
 const winnersAnnounced = true;
 const noPendingRound = true;
-const disqualified = false;
+const disqualified = true;
 
 async function getUserStatus(email: string) {
   const user = await prisma.user.findUnique({
@@ -80,10 +80,10 @@ const BackgroundTemplate = ({ children }: { children: ReactNode }) => (
 );
 
 export default async function RootLayout({
-    children,
-    team,
-    admin,
-    landing,
+  children,
+  team,
+  admin,
+  landing,
 }: LayoutProps) {
 
   const session = await auth()
@@ -140,7 +140,7 @@ export default async function RootLayout({
     return (
       <html lang="en">
         <body>
-          <BackgroundTemplate><Team/></BackgroundTemplate>
+          <BackgroundTemplate><Team /></BackgroundTemplate>
         </body>
       </html>
     );
@@ -151,35 +151,35 @@ export default async function RootLayout({
       id: validTeamId,
     },
   });
-  //const teamCheckedIn = Boolean(teamIn?.checkedIn);
+  const teamCheckedIn = Boolean(teamIn?.checkedIn);
 
-  //if (!teamCheckedIn) {
-    //return (
-      //<html lang="en">
-      //<body>
-        //  <BackgroundTemplate>
-          //  <TeamMembersAndLeaveButton />
-            //{/* <Dashboard /> */}
-          //</BackgroundTemplate>
-        //</body>
-      //</html>
-    //);
- // }
+  if (!teamCheckedIn) {
+    return (
+      <html lang="en">
+        <body>
+          <BackgroundTemplate>
+            <TeamMembersAndLeaveButton />
+            {/* <Dashboard /> */}
+          </BackgroundTemplate>
+        </body>
+      </html>
+    );
+  }
 
-  //const disqualified = Boolean(teamIn?.disqualify);
+  const disqualified = Boolean(teamIn?.disqualify);
 
   if (disqualified) {
     return (
       <html lang="en">
         <body>
-        <div className="bg-[radial-gradient(110.8%_70.71%_at_50%_50%,_#0B0014_55.41%,_#18181B_100%)] min-h-screen">
-        <Navbar name={session.user.name!}/>
-        <Disqualified />
-        </div>
+          <div className="bg-[radial-gradient(110.8%_70.71%_at_50%_50%,_#0B0014_55.41%,_#18181B_100%)] min-h-screen">
+            <Navbar name={session.user.name!} />
+            <Disqualified />
+          </div>
         </body>
       </html>
     );
- }
+  }
 
   const curRound = await prisma.round.findFirst({
     where: {
@@ -216,9 +216,9 @@ export default async function RootLayout({
     }
     return (
       <html lang="en">
-       <div className="bg-[radial-gradient(110.8%_70.71%_at_50%_50%,_#0B0014_55.41%,_#18181B_100%)] min-h-screen">
-        <Navbar name={session.user.name!}/>
-        <EliminationScreen />
+        <div className="bg-[radial-gradient(110.8%_70.71%_at_50%_50%,_#0B0014_55.41%,_#18181B_100%)] min-h-screen">
+          <Navbar name={session.user.name!} />
+          <EliminationScreen />
         </div>
       </html>
     );
@@ -263,10 +263,7 @@ export default async function RootLayout({
       return (
         <html lang="en">
           <body>
-          <div className="bg-[radial-gradient(110.8%_70.71%_at_50%_50%,_#0B0014_55.41%,_#18181B_100%)] min-h-screen">
-        <Navbar name={session.user.name!}/>
-        <EliminationScreen />
-        </div>
+            <Winners />
           </body>
         </html>
       );

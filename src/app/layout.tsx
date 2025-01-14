@@ -25,7 +25,7 @@ const roundIsActive = true; // true --> portal
 const memberOfActiveRound = true; // false --> elimination
 const winnersAnnounced = true;
 const noPendingRound = true;
-const disqualified = false;
+const disqualified = true;
 
 async function getUserStatus(email: string) {
   const user = await prisma.user.findUnique({
@@ -156,9 +156,9 @@ export default async function RootLayout({
   if (!teamCheckedIn) {
     return (
       <html lang="en">
-        <body>
+      <body>
           <BackgroundTemplate>
-            <Team />
+            <TeamMembersAndLeaveButton />
             {/* <Dashboard /> */}
           </BackgroundTemplate>
         </body>
@@ -172,11 +172,14 @@ export default async function RootLayout({
     return (
       <html lang="en">
         <body>
-          <Disqualified />
+        <div className="bg-[radial-gradient(110.8%_70.71%_at_50%_50%,_#0B0014_55.41%,_#18181B_100%)] min-h-screen">
+        <Navbar name={session.user.name!}/>
+        <Disqualified />
+        </div>
         </body>
       </html>
     );
-  }
+ }
 
   const curRound = await prisma.round.findFirst({
     where: {

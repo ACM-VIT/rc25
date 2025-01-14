@@ -21,11 +21,11 @@ import Team from "@/components/createjoin";
 
 const plus_jakarta_sans = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
-const roundIsActive = true; // true --> portal
-const memberOfActiveRound = true; // false --> elimination
+const roundIsActive = false; // true --> portal
+const memberOfActiveRound = false; // false --> elimination
 const winnersAnnounced = true;
 const noPendingRound = true;
-const disqualified = true;
+const disqualified = false;
 
 async function getUserStatus(email: string) {
   const user = await prisma.user.findUnique({
@@ -151,22 +151,22 @@ export default async function RootLayout({
       id: validTeamId,
     },
   });
-  const teamCheckedIn = Boolean(teamIn?.checkedIn);
+  //const teamCheckedIn = Boolean(teamIn?.checkedIn);
 
-  if (!teamCheckedIn) {
-    return (
-      <html lang="en">
-      <body>
-          <BackgroundTemplate>
-            <TeamMembersAndLeaveButton />
-            {/* <Dashboard /> */}
-          </BackgroundTemplate>
-        </body>
-      </html>
-    );
-  }
+  //if (!teamCheckedIn) {
+    //return (
+      //<html lang="en">
+      //<body>
+        //  <BackgroundTemplate>
+          //  <TeamMembersAndLeaveButton />
+            //{/* <Dashboard /> */}
+          //</BackgroundTemplate>
+        //</body>
+      //</html>
+    //);
+ // }
 
-  const disqualified = Boolean(teamIn?.disqualify);
+  //const disqualified = Boolean(teamIn?.disqualify);
 
   if (disqualified) {
     return (
@@ -216,9 +216,10 @@ export default async function RootLayout({
     }
     return (
       <html lang="en">
-        <body>
-          <EliminationScreen />
-        </body>
+       <div className="bg-[radial-gradient(110.8%_70.71%_at_50%_50%,_#0B0014_55.41%,_#18181B_100%)] min-h-screen">
+        <Navbar name={session.user.name!}/>
+        <EliminationScreen />
+        </div>
       </html>
     );
   }
@@ -262,7 +263,10 @@ export default async function RootLayout({
       return (
         <html lang="en">
           <body>
-            <Winners />
+          <div className="bg-[radial-gradient(110.8%_70.71%_at_50%_50%,_#0B0014_55.41%,_#18181B_100%)] min-h-screen">
+        <Navbar name={session.user.name!}/>
+        <EliminationScreen />
+        </div>
           </body>
         </html>
       );

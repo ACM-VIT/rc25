@@ -62,11 +62,7 @@ const Navbar: React.FC<NavbarProps> = ({ name }) => {
 
     return (
         <nav
-            className="w-full h-[15%] hidden md:block"
-            style={{
-                background: "rgba(0, 0, 0, 0.4)",
-                borderBottom: "2px solid rgba(128, 128, 128, 0.3)",
-            }}
+            className="w-full h-[15%] hidden md:block bg-[radial-gradient(110.8%_70.71%_at_50%_50%,_#0B0014_55.41%,_#18181B_100%)] border-b-[2px] border-gray-400/30"
         >
             <div className="flex h-full flex-row justify-between items-center mx-auto px-4 sm:px-6 md:px-4 max-w-9xl mb-3">
                 <div className="h-full">
@@ -118,11 +114,12 @@ const Navbar: React.FC<NavbarProps> = ({ name }) => {
                             className="flex items-center gap-2 bg-primary hover:bg-[#39234E] py-2 px-4 rounded-full transition-colors duration-300"
                             onClick={toggleDropdown}
                         >
-                            <AvatarIcon size={20} className="text-white"/>
+                            <AvatarIcon size={20} className="text-white" />
                         </button>
                         {isDropdownOpen && (
                             <div
-                                className="absolute top-full mt-2 right-0 bg-[#1E1E24] text-white rounded-lg shadow-lg py-2 w-48">
+                                className="absolute top-full mt-2 right-0 bg-[#1E1E24] text-white rounded-lg shadow-lg py-2 w-48"
+                            >
                                 <a
                                     href="#profile"
                                     className="block px-4 py-2 text-center w-full hover:bg-[#39234E]"

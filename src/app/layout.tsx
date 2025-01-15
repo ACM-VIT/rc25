@@ -10,14 +10,14 @@ import { prisma } from "@/utils/prisma";
 import "./globals.css";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import Image from "next/image";
-//import logo from "@/app/assets/RCLogo.svg";
 import rock from "@/app/assets/rock.svg";
 import curveline from "@/app/assets/curveline.svg";
 import bracket from "@/app/assets/bracket.svg";
 import Dashboard from "@/components/dashboard";
 import Navbar from "@/components/Navbar";
 import SignOutButton from "@/components/buttons/sign-out";
-import TeamSubmissions from "@/components/team-submissions";
+import Team from "@/components/createjoin";
+
 
 const plus_jakarta_sans = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
@@ -25,7 +25,7 @@ const roundIsActive = true; // true --> portal
 const memberOfActiveRound = true; // false --> elimination
 const winnersAnnounced = true;
 const noPendingRound = true;
-const disqualified = false;
+const disqualified = true;
 
 async function getUserStatus(email: string) {
   const user = await prisma.user.findUnique({
@@ -52,7 +52,7 @@ interface LayoutProps {
 
 const BackgroundTemplate = ({ children }: { children: ReactNode }) => (
   <div className="relative w-[100vw] h-dvh bg-[#222]">
-    <div className="absolute inset-0 flex flex-row h-full z-0">
+    <div className="absolute inset-0 flex flex-row h-full z-0 overflow-hidden">
       <div className="md:w-1/4 h-full">
         <Image
           className="hidden md:block h-[100vh] object-cover object-center"
@@ -80,10 +80,10 @@ const BackgroundTemplate = ({ children }: { children: ReactNode }) => (
 );
 
 export default async function RootLayout({
-    children,
-    team,
-    admin,
-    landing,
+  children,
+  team,
+  admin,
+  landing,
 }: LayoutProps) {
 
   const session = await auth()
@@ -140,7 +140,7 @@ export default async function RootLayout({
     return (
       <html lang="en">
         <body>
-          <BackgroundTemplate>{team}</BackgroundTemplate>
+          <BackgroundTemplate><Team /></BackgroundTemplate>
         </body>
       </html>
     );
@@ -172,7 +172,10 @@ export default async function RootLayout({
     return (
       <html lang="en">
         <body>
-          <Disqualified />
+          <div className="bg-[radial-gradient(110.8%_70.71%_at_50%_50%,_#0B0014_55.41%,_#18181B_100%)] min-h-screen">
+            <Navbar name={session.user.name!} />
+            <Disqualified />
+          </div>
         </body>
       </html>
     );
@@ -213,9 +216,10 @@ export default async function RootLayout({
     }
     return (
       <html lang="en">
-        <body>
+        <div className="bg-[radial-gradient(110.8%_70.71%_at_50%_50%,_#0B0014_55.41%,_#18181B_100%)] min-h-screen">
+          <Navbar name={session.user.name!} />
           <EliminationScreen />
-        </body>
+        </div>
       </html>
     );
   }

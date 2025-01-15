@@ -1,7 +1,6 @@
 "use-client";
 
 import Image from "next/image";
-import Navbar from "../../components/Navbar";
 import instrock from "@/app/assets/instrock.png"; 
 
 export default function Instructions() {
@@ -50,20 +49,19 @@ export default function Instructions() {
 
     return (
         <div className="bg-[radial-gradient(110.8%_70.71%_at_50%_50%,_#0B0014_55.41%,_#18181B_100%)] min-h-screen relative">
-            <Navbar name="John Doe" />
             <div className="p-6 text-white">
                 <h1 className="text-5xl font-bold mb-8 underline">Instructions</h1>
             </div>
             <div className="flex items-center justify-center mt-19 relative">
                 <div className="text-white bg-[#2d1c3d] bg-opacity-70 w-[75vw] h-[72vh] rounded-lg p-6 overflow-y-auto">
                     <ol className="list-decimal pl-6 text-xl">
-                        {instructions.map((instruction, index) => (
-                            <li key={index}>
+                        {instructions.map((instruction) => (
+                            <li key={instruction.title}>
                                 <h3 className="text-xl font-bold mt-4">{instruction.title}</h3>
                                 <p className="mt-2 text-sm">
                                     <ul className="list-inside">
                                         {instruction.description.split("\n").map((line, idx) => (
-                                            <li key={idx}>{line}</li>
+                                            <li key={`${instruction.title}-${idx}`}>{line}</li>
                                         ))}
                                     </ul>
                                 </p>

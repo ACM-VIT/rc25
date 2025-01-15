@@ -13,19 +13,19 @@ import Image from "next/image";
 import rock from "@/app/assets/rock.svg";
 import curveline from "@/app/assets/curveline.svg";
 import bracket from "@/app/assets/bracket.svg";
-import Dashboard from "@/components/dashboard";
+// import Dashboard from "@/components/dashboard";
 import Navbar from "@/components/Navbar";
 import SignOutButton from "@/components/buttons/sign-out";
 import Team from "@/components/createjoin";
-
+// import TeamSubmissions from "@/components/team-submissions";
 
 const plus_jakarta_sans = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
-const roundIsActive = true; // true --> portal
-const memberOfActiveRound = true; // false --> elimination
-const winnersAnnounced = true;
-const noPendingRound = true;
-const disqualified = true;
+// const roundIsActive = true; // true --> portal
+// const memberOfActiveRound = true; // false --> elimination
+// const winnersAnnounced = true;
+// const noPendingRound = true;
+// const disqualified = false;
 
 async function getUserStatus(email: string) {
   const user = await prisma.user.findUnique({
@@ -81,7 +81,7 @@ const BackgroundTemplate = ({ children }: { children: ReactNode }) => (
 
 export default async function RootLayout({
   children,
-  team,
+  // team,
   admin,
   landing,
 }: LayoutProps) {
@@ -136,7 +136,7 @@ export default async function RootLayout({
       </html>
     );
   }
-  if (!Boolean(teamId)) {
+  if (!teamId) {
     return (
       <html lang="en">
         <body>
@@ -173,7 +173,7 @@ export default async function RootLayout({
       <html lang="en">
         <body>
           <div className="bg-[radial-gradient(110.8%_70.71%_at_50%_50%,_#0B0014_55.41%,_#18181B_100%)] min-h-screen">
-            <Navbar name={session.user.name!} />
+            <Navbar name={session.user.name ?? "User"} />
             <Disqualified />
           </div>
         </body>
@@ -197,27 +197,30 @@ export default async function RootLayout({
 
   const roundIsActive = Boolean(curRound);
 
-  const memberOfActiveRound = Boolean(
-    await prisma.teamRound.findFirst({
-      where: {
-        teamId: validTeamId,
-        roundId: curRound?.number,
-      },
-    })
-  );
+  const teamRound = await prisma.teamRound.findFirst({
+    where: {
+      teamId: validTeamId,
+      roundId: curRound?.number,
+    },
+  });
+
+  const memberOfActiveRound = Boolean(teamRound);
 
   if (roundIsActive) {
     if (memberOfActiveRound) {
       return (
         <html lang="en">
-          <body>{children}</body>
+          <body className={plus_jakarta_sans.className}>
+            <Navbar name={session.user.name ?? "User"} />
+            {children}
+          </body>
         </html>
       );
     }
     return (
       <html lang="en">
         <div className="bg-[radial-gradient(110.8%_70.71%_at_50%_50%,_#0B0014_55.41%,_#18181B_100%)] min-h-screen">
-          <Navbar name={session.user.name!} />
+          <Navbar name={session.user.name ?? "User"} />
           <EliminationScreen />
         </div>
       </html>
@@ -289,7 +292,6 @@ export default async function RootLayout({
               <Winners />
             ) : hasNextRound ? (
               <div className="flex flex-col items-center gap-8 p-4">
-                <Dashboard />
               </div>
             ) : (
               <div className="flex items-center justify-center h-full">

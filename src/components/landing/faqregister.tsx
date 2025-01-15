@@ -24,33 +24,39 @@ const outfit = Outfit({
 export default function FaqRegister() {
   const faqItems = [
     {
+      id: 1,
       question: "Lorem ipsum dolor sit amet",
       answer: "consectetur adipiscing elit, sed do"
     },
     {
+      id: 2,
       question: "Lorem ipsum dolor sit amet",
       answer: "consectetur adipiscing elit, sed do consectetur adipiscing elit, sed do consectetur adipiscing elit, sed do consectetur adipiscing elit, sed do"
     },
     {
+      id: 3,
       question: "Lorem ipsum dolor sit amet",
       answer: "consectetur adipiscing elit, sed do consectetur adipiscing elit, sed do consectetur adipiscing elit, sed do consectetur adipiscing elit, sed do"
     },
     {
+      id: 4,
       question: "Lorem ipsum dolor sit amet",
       answer: "consectetur adipiscing elit, sed do"
     },
     {
+      id: 5,
       question: "Lorem ipsum dolor sit amet",
       answer: "consectetur adipiscing elit, sed do"
     },
     {
+      id: 6,
       question: "Lorem ipsum dolor sit amet",
       answer: "consectetur adipiscing elit, sed do Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet"
     }
   ];
 
   return (
-    <div className="min-h-screen bg-black text-white relative w-full pt-10 pb-10 z-[10]">
+    <div className="min-h-screen bg-black text-white relative w-full pt-10 pb-10 z-[10]" id="faq">
       <div className="flex flex-col h-full">
         {/* FAQ Title */}
         <div className="flex justify-start pl-10 lg:pl-14 md:pl-10 sm:pl-8 xs:pl-8 phone:pl-6">
@@ -61,9 +67,9 @@ export default function FaqRegister() {
 
         {/* FAQ Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-28 gap-y-12 lg:gap-x-28 lg:gap-y-16 lg:px-28 md:gap-x-16 md:gap-y-8 md:px-16 p-10 sm:px-16 sm:gap-y-8 xs:px-12 xs:gap-8 phone:px-8 phone:gap-4 phone:p-4">
-          {faqItems.map((item, index) => (
+          {faqItems.map((item, _) => (
             <div
-              key={index}
+              key={item.id}
               /* the motion isn't working :(((( */
               className="relative group motion-opacity-in-0 motion-translate-y-in-100 motion-blur-in-md motion-duration-700" 
             >
@@ -90,7 +96,7 @@ export default function FaqRegister() {
 
       </div>
 
-      {/* <div className="absolute right-0 bottom-0 z-[2] animate-spin-slow">
+      <div className="absolute right-0 bottom-0 z-[2] animate-spin-slow">
         <Image
           className="hidden md:block h-auto"
           src={yellowround}
@@ -104,7 +110,7 @@ export default function FaqRegister() {
           src={whiteround}
           alt="White Circle"
         />
-      </div> */}
+      </div>
 
       <div className="absolute justify-start bottom-0 z-[0]">
             <Image

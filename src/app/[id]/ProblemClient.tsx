@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import createSubmission from '@/app/actions/create-submission';
-import { checkSubmissionStatus } from '@/app/actions/submit-code';
+// import { checkSubmissionStatus } from '@/app/actions/submit-code';
 import parse from 'html-react-parser';
+import { submissionStatusEmitter } from "@/utils/eventEmitter";
 
 
 // Initialize DOMPurify only on client side
@@ -27,7 +28,6 @@ interface SubmissionResult {
     problemId: string;
     userId: string;
     testcasespassed: boolean[];
-    // Add other relevant fields if needed
   };
   token?: string;
   error?: string;
@@ -56,20 +56,48 @@ export default function ViewProblem({ problem, session }: ViewProblemProps) {
     }
   }, [problem.description]);
 
-  const checkStatus = async (token: string) => {
-    const status = await checkSubmissionStatus(token);
-    
-    if (status.success) {
-      setSubmissionStatus('Accepted');
-      setResult(status);
-    } else if (status.error) {
-      setSubmissionStatus('Failed');
-      setError(status.error);
-    } else {
-      // Keep checking if still processing
-      setTimeout(() => checkStatus(token), 2000);
+  useEffect(() => {
+    if (result?.submission?.id) {
+      const eventSource = new EventSource("/api/submissions/status");
+      
+      eventSource.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (result.submission && data.submissionId === result.submission.id) {
+          setSubmissionStatus(data.status);
+          setResult(prev => {
+            if (!prev || !prev.submission) return prev;
+            const updatedResult: SubmissionResult = {
+              success: prev.success,
+              submission: {
+                ...prev.submission,
+                testcasespassed: data.testcasespassed
+              },
+              token: prev.token,
+              error: prev.error
+            };
+            return updatedResult;
+          });
+        }
+      };
+
+      return () => eventSource.close();
     }
-  };
+  }, [result]);
+
+  // const checkStatus = async (token: string) => {
+  //   const status = await checkSubmissionStatus(token);
+    
+  //   if (status.success) {
+  //     setSubmissionStatus('Accepted');
+  //     setResult(status);
+  //   } else if (status.error) {
+  //     setSubmissionStatus('Failed');
+  //     setError(status.error);
+  //   } else {
+  //     // Keep checking if still processing
+  //     setTimeout(() => checkStatus(token), 2000);
+  //   }
+  // };
 
   const handleSubmit = async () => {
 
@@ -92,10 +120,8 @@ export default function ViewProblem({ problem, session }: ViewProblemProps) {
       });
 
 
-      if (submissionResult.success && submissionResult.token) {
-        setSubmissionStatus('Processing...');
-        setResult(submissionResult); // Update the result state
-        checkStatus(submissionResult.token);
+      if (submissionResult.success) {
+        setResult(submissionResult);
       } else {
         setError(submissionResult.error || 'Submission failed');
       }
@@ -163,6 +189,21 @@ export default function ViewProblem({ problem, session }: ViewProblemProps) {
       >
         {isSubmitting ? 'Submitting...' : 'Submit Solution'}
       </button>
+      {result?.submission?.id && (
+        <div>
+          {/* Emit status update */}
+          {(() => {
+            const submissionId = result.submission.id;
+            submissionStatusEmitter.emit('statusUpdate', {
+              submissionId,
+              status: 'completed',
+              testcasespassed: result.submission.testcasespassed,
+              scoreChange: 0, // Replace with actual score change if available
+            });
+            return null;
+          })()}
+        </div>
+      )}
     </div>
   );
 }

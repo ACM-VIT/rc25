@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import addTestCase from '../../../actions/upsert-case';
-import { validateCode } from './validate';
+import { useState } from "react";
+import addTestCase from "../../../actions/upsert-case";
+import { validateCode } from "./validate";
 
 interface EditTestCaseDialogProps {
   problemId: string;
-  webCode: string;  // Add this
+  webCode: string; // Add this
   testCase: {
     id: string;
     input: string;
@@ -19,12 +19,21 @@ interface EditTestCaseDialogProps {
   onSuccess: () => void;
 }
 
-export default function EditTestCaseDialog({ problemId, webCode, testCase, isOpen, onClose, onSuccess }: EditTestCaseDialogProps) {
+export default function EditTestCaseDialog({
+  problemId,
+  webCode,
+  testCase,
+  isOpen,
+  onClose,
+  onSuccess,
+}: EditTestCaseDialogProps) {
   const [input, setInput] = useState(testCase.input);
   const [output, setOutput] = useState(testCase.output);
   const [weight, setWeight] = useState(testCase.weight);
   const [isEdge, setIsEdge] = useState(testCase.isEdge);
-  const [validationResult, setValidationResult] = useState<boolean | null>(null);
+  const [validationResult, setValidationResult] = useState<boolean | null>(
+    null
+  );
 
   if (!isOpen) return null;
 
@@ -46,11 +55,18 @@ export default function EditTestCaseDialog({ problemId, webCode, testCase, isOpe
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
       <div className="bg-white p-6 rounded-lg w-96">
-        <h3 className="text-lg font-semibold mb-4 text-black">Edit Test Case</h3>
+        <h3 className="text-lg font-semibold mb-4 text-black">
+          Edit Test Case
+        </h3>
         <form onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <label htmlFor="input" className="block text-sm font-medium text-black">Input</label>
+              <label
+                htmlFor="input"
+                className="block text-sm font-medium text-black"
+              >
+                Input
+              </label>
               <textarea
                 id="input"
                 className="mt-1 w-full rounded-md border-gray-300 shadow-sm text-black"
@@ -59,7 +75,12 @@ export default function EditTestCaseDialog({ problemId, webCode, testCase, isOpe
               />
             </div>
             <div>
-              <label htmlFor="output" className="block text-sm font-medium text-black">Output</label>
+              <label
+                htmlFor="output"
+                className="block text-sm font-medium text-black"
+              >
+                Output
+              </label>
               <textarea
                 id="output"
                 className="mt-1 w-full rounded-md border-gray-300 shadow-sm text-black"
@@ -68,7 +89,12 @@ export default function EditTestCaseDialog({ problemId, webCode, testCase, isOpe
               />
             </div>
             <div>
-              <label htmlFor="weight" className="block text-sm font-medium text-black">Weight</label>
+              <label
+                htmlFor="weight"
+                className="block text-sm font-medium text-black"
+              >
+                Weight
+              </label>
               <input
                 id="weight"
                 type="number"
@@ -88,8 +114,14 @@ export default function EditTestCaseDialog({ problemId, webCode, testCase, isOpe
               </label>
             </div>
             {validationResult !== null && (
-              <div className={`p-2 rounded ${validationResult ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                {validationResult ? 'Test case passed!' : 'Test case failed!'}
+              <div
+                className={`p-2 rounded ${
+                  validationResult
+                    ? "bg-green-100 text-green-800"
+                    : "bg-red-100 text-red-800"
+                }`}
+              >
+                {validationResult ? "Test case passed!" : "Test case failed!"}
               </div>
             )}
           </div>

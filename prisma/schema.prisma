@@ -103,14 +103,14 @@ model Problem {
 }
 
 model Testcase {
-    id           String               @id @default(cuid())
-    weight       Int                  @default(1)
-    input        String
-    output       String
-    problemId    String
-    isEdge       Boolean             @default(false)
-    problem      Problem             @relation(fields: [problemId], references: [id], onDelete: Cascade)
-    submissions  TestcaseSubmission[]
+    id          String               @id @default(cuid())
+    weight      Int                  @default(1)
+    input       String
+    output      String
+    problemId   String
+    isEdge      Boolean              @default(false)
+    problem     Problem              @relation(fields: [problemId], references: [id], onDelete: Cascade)
+    submissions TestcaseSubmission[]
 }
 
 model Submission {

@@ -39,7 +39,7 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
       // Calculate total height from first item top to last item bottom
       const firstItem = items[0].getBoundingClientRect();
       const lastItem = items[items.length - 1].getBoundingClientRect();
-      const containerTop = timelineRef.current.getBoundingClientRect().top;
+      // const containerTop = timelineRef.current.getBoundingClientRect().top;
       
       // Account for the container's position and add padding
       const totalHeight = (lastItem.bottom - firstItem.top) + 40; // Added padding

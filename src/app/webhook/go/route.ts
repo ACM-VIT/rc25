@@ -1,16 +1,17 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/utils/prisma";
+import { submissionEmitter } from "@/utils/eventEmitter";
 
 interface WebhookBody {
   submissionId: string;
   stdout: string;
-  status: string;
+  status?: string;
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { submissionId, stdout, status }: WebhookBody = body;  
+    const { submissionId, stdout }: WebhookBody = body;  
 
 
     const submission = await prisma.submission.findUnique({
@@ -51,6 +52,13 @@ export async function POST(request: NextRequest) {
       const actualOutput = outputs[index]?.trim() || "";
       return expectedOutput === actualOutput;
     });
+
+    const invidualSubmissionScore = testcasespassed.reduce((acc, isPassed, index) => {
+      if (isPassed) {
+        return acc + submission.testcases[index].testcase.weight;
+      }
+      return acc;
+    }, 0)
 
     // Get user's team
     const user = await prisma.user.findUnique({
@@ -93,7 +101,6 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    console.log(teamSubmissions)
 
     // Combine all test results (true if any team member passed)
     const teamTestResults = submission.testcases.map((_, index) => {
@@ -120,6 +127,7 @@ export async function POST(request: NextRequest) {
         where: { id: submissionId },
         data: {
           testcasespassed: finalTestCasesPassed,
+          score: invidualSubmissionScore,
         },
       }),
       prisma.team.update({
@@ -131,6 +139,13 @@ export async function POST(request: NextRequest) {
         },
       }),
     ]);
+
+    // Emit event after successful update
+    submissionEmitter.emit('submissionUpdate', {
+      submissionId,
+      testcasespassed: finalTestCasesPassed,
+      scoreChange,
+    });
 
     return NextResponse.json(
       {

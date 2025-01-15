@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/utils/prisma";
-import type { SupportedLanguage } from "@/utils/judge0-langs";
+import type {  SupportedLanguage } from '@/utils/judge0-langs';
 import { judgeSolution } from "./submit-code";
 import { pythonFunction, cFunction, cppFunction, javaFunction, jsFunction, goFunction } from "@/utils/funcconvert";
 
@@ -14,6 +14,42 @@ const languageTemplates = {
   'javascript': jsFunction,
   'go': goFunction
 } as const;
+
+// Add this helper to remove duplicated imports from final code
+function removeDuplicateImports(code: string, language: SupportedLanguage): string {
+  // Use a simple approach to handle both the user's code and template code
+  const importPatterns: Partial<Record<SupportedLanguage, RegExp[]>> = {
+    'cpp': [/#include\s*<[^>]+>/g],
+    'java': [/import\s+[^;]+;/g],
+    'python': [/^from\s+[\w.]+\s+import\s+.*$/gm, /^import\s+.*$/gm],
+    'go': [/^import\s*\([^)]*\)/gm, /^import\s+".*?"$/gm],
+  };
+
+  if (!importPatterns[language]) return code;
+
+  const patterns = importPatterns[language] || [];
+  const allImports = new Set<string>();
+  
+  // Collect imports and remove them from code
+  let cleanCode = code;
+  for (const pattern of patterns) {
+    const matches = cleanCode.match(pattern) || [];
+    for (const match of matches) {
+      allImports.add(match.trim());
+    }
+    cleanCode = cleanCode.replace(pattern, '');
+  }
+
+  // Re-append unique imports
+  let importSection = '';
+  if (language === 'go' && allImports.size > 0) {
+    importSection = `import (\n  ${Array.from(allImports).join('\n  ')}\n)\n`;
+  } else if (allImports.size > 0) {
+    importSection = `${Array.from(allImports).join('\n')}\n`;
+  }
+  
+  return importSection + cleanCode.trim();
+}
 
 export default async function createSubmission(data: {
   code: string;
@@ -98,7 +134,10 @@ export default async function createSubmission(data: {
 
     // Transform code using appropriate template
     const templateFunction = languageTemplates[data.language];
-    const transformedCode = templateFunction(data.code, numTestcases, delimiter);
+    let transformedCode = templateFunction(data.code, numTestcases, delimiter);
+
+    // Remove duplicated imports from the final code
+    transformedCode = removeDuplicateImports(transformedCode, data.language);
 
     console.log(transformedCode)
 

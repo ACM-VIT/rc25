@@ -1,7 +1,6 @@
 export function pythonFunction(code: string, testcases: number, delimiter: string): string {
-    const template = `def solve():
-    # Original function code here
-    return
+    const template = `
+# Original function code here
 
 if __name__ == "__main__":
     for _ in range(${testcases}):
@@ -20,10 +19,7 @@ export function cFunction(code: string, testcases: number, delimiter: string): s
 #include <limits.h>
 #include <ctype.h>
 
-int solve() {
-    // Original function code here
-    return 0;
-}
+// Original function code here
 
 int main() {
     int t = ${testcases};
@@ -41,10 +37,7 @@ export function cppFunction(code: string, testcases: number, delimiter: string):
     const template = `#include <bits/stdc++.h>
 using namespace std;
 
-int solve() {
-    // Original function code here
-    return 0;
-}
+// Original function code here
 
 int main() {
     int t = ${testcases};
@@ -61,16 +54,15 @@ int main() {
 export function javaFunction(code: string, testcases: number, delimiter: string): string {
     const template = `import java.util.*;
 
-public class Solution {
-    public static int solve() {
-        // Original function code here
-        return 0;
-    }
-    
+// Original function code here
+
+
+public class Main {
     public static void main(String[] args) {
+        Solution solution = new Solution();
         int t = ${testcases};
         while(t-- > 0) {
-            solve();
+            solution.solve();
             System.out.print("${delimiter}");
         }
     }
@@ -78,12 +70,8 @@ public class Solution {
 
     return template.replace('// Original function code here', code);
 }
-
 export function jsFunction(code: string, testcases: number, delimiter: string): string {
-    const template = `function solve() {
-    // Original function code here
-    return 0;
-}
+    const template = `// Original function code here
 
 for(let i = 0; i < ${testcases}; i++) {
     solve();
@@ -97,20 +85,10 @@ export function goFunction(code: string, testcases: number, delimiter: string): 
     const template = `package main
 
 import (
-    "bufio"
-    "cmp"
     "fmt"
-    "math"
-    "os"
-    "slices"
-    "strconv"
-    "time"
 )
 
-func solve() int {
-    // Original function code here
-    return 0
-}
+// Original function code here
 
 func main() {
     for i := 0; i < ${testcases}; i++ {

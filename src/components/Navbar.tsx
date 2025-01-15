@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import RCLogo from "@/app/assets/RCLogo.svg";
 import { User as AvatarIcon } from "lucide-react";
@@ -11,26 +11,6 @@ interface NavbarProps {
     name: string;
 }
 
-function NavbarItem({
-    href,
-    children,
-}: {
-    href: string;
-    children: React.ReactNode;
-}) {
-    return (
-        <li>
-            <Link
-                href={href}
-                className="block py-2 px-4 text-sm md:text-base group"
-            >
-                {children}
-                <span className="block text-center max-w-0 group-hover:max-w-full transition-all duration-200 h-0.5 bg-primary"></span>
-            </Link>
-        </li>
-    );
-}
-
 const Navbar: React.FC<NavbarProps> = ({ name }) => {
     const [isDropdownOpen, setIsDropdownOpen] = React.useState<boolean>(false);
     const dropdownRef = useRef<HTMLLIElement>(null);
@@ -39,14 +19,14 @@ const Navbar: React.FC<NavbarProps> = ({ name }) => {
         setIsDropdownOpen((prev) => !prev);
     };
 
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = useCallback((event: MouseEvent) => {
         if (
             dropdownRef.current &&
             !dropdownRef.current.contains(event.target as Node)
         ) {
             setIsDropdownOpen(false);
         }
-    };
+    }, []);
 
     useEffect(() => {
         if (isDropdownOpen) {
@@ -58,7 +38,7 @@ const Navbar: React.FC<NavbarProps> = ({ name }) => {
         return () => {
             document.removeEventListener("click", handleClickOutside);
         };
-    }, [isDropdownOpen]);
+    }, [handleClickOutside, isDropdownOpen]);
 
     return (
         <nav
@@ -74,43 +54,44 @@ const Navbar: React.FC<NavbarProps> = ({ name }) => {
                 </div>
                 <ul className="flex flex-row gap-4 sm:gap-6 md:gap-8 list-none justify-center items-center">
                     <li className="group relative">
-                        <a
-                            href="#"
+                        <Link
+                            href="/"
                             className="block py-2 px-4 text-white font-bold text-sm md:text-base hover:text-primary transition-colors duration-300"
                         >
                             Dashboard
-                        </a>
-                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+                        </Link>
+                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
                     </li>
                     <li className="group relative">
-                        <a
-                            href="#"
+                        <Link
+                            href="/submissions"
                             className="block py-2 px-4 text-white font-bold text-sm md:text-base hover:text-primary transition-colors duration-300"
                         >
                             Submissions
-                        </a>
-                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+                        </Link>
+                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
                     </li>
                     <li className="group relative">
-                        <a
-                            href="#"
+                        <Link
+                            href="/instructions"
                             className="block py-2 px-4 text-white font-bold text-sm md:text-base hover:text-primary transition-colors duration-300"
                         >
                             Instructions
-                        </a>
-                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+                        </Link>
+                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
                     </li>
                     <li className="group relative">
-                        <a
-                            href="#"
-                            className="block py-2 px-4 text-white font-bold text-sm md:text-base hover:text-primary transition-colors duration-300"
+                        <Link
+                            href="/portalfaqs"
+                            className="block py-2 px-4 text-white font-bold text-sm md:text-base hover:text-[#39234E] hover:underline"
                         >
-                            FAQs
-                        </a>
-                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+                            FAQ
+                        </Link>
+                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
                     </li>
                     <li className="relative z-10" ref={dropdownRef}>
                         <button
+                            type="button"
                             className="flex items-center gap-2 bg-primary hover:bg-[#39234E] py-2 px-4 rounded-full transition-colors duration-300"
                             onClick={toggleDropdown}
                         >
@@ -118,15 +99,15 @@ const Navbar: React.FC<NavbarProps> = ({ name }) => {
                         </button>
                         {isDropdownOpen && (
                             <div
-                                className="absolute top-full mt-2 right-0 bg-[#1E1E24] text-white rounded-lg shadow-lg py-2 w-48"
-                            >
-                                <a
-                                    href="#profile"
+                                className="absolute top-full mt-2 right-0 bg-[#1E1E24] text-white rounded-lg shadow-lg py-2 w-48">
+                                <Link
+                                    href="/profile"
                                     className="block px-4 py-2 text-center w-full hover:bg-[#39234E]"
                                 >
                                     {name}
-                                </a>
+                                </Link>
                                 <button
+                                    type="button"
                                     onClick={SignOut}
                                     className="block px-4 py-2 w-full hover:bg-[#39234E]"
                                 >

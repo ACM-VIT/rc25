@@ -35,15 +35,13 @@ export default function HowItWorks() {
       { threshold: 0.1 }
     );
 
-    const currentTextSection = textSectionRef.current;
-
-    if (currentTextSection) {
-      observer.observe(currentTextSection);
+    if (textSectionRef.current) {
+      observer.observe(textSectionRef.current);
     }
 
     return () => {
-      if (currentTextSection) {
-        observer.unobserve(currentTextSection);
+      if (textSectionRef.current) {
+        observer.unobserve(textSectionRef.current);
       }
     };
   }, []);
@@ -58,15 +56,13 @@ export default function HowItWorks() {
       { threshold: 0.1 }
     );
 
-    const currentLastSection = lastSectionRef.current;
-
-    if (currentLastSection) {
-      observer.observe(currentLastSection);
+    if (lastSectionRef.current) {
+      observer.observe(lastSectionRef.current);
     }
 
     return () => {
-      if (currentLastSection) {
-        observer.unobserve(currentLastSection);
+      if (lastSectionRef.current) {
+        observer.unobserve(lastSectionRef.current);
       }
     };
   }, []);
@@ -74,8 +70,8 @@ export default function HowItWorks() {
   return (
     <div className="flex flex-col min-h-screen w-full bg-black overflow-x-hidden">
       {/* Header Section */}
-      <div className="flex h-full items-center justify-center pt-16">
-        <div className={`bg-gradient-to-b from-[rgba(254,254,254,1)] to-[rgba(254,254,254,0.3)] bg-clip-text text-transparent text-center phone:text-[4rem] xs:text-[6rem] sm:text-[8rem] md:text-[9rem] lg:text-[10rem] overflow-y-auto ${audiowide.className} leading-[1]`}>
+      <div className="flex h-full items-center justify-center">
+        <div className={`bg-gradient-to-b from-[#F0F1FA] to-[#ACADB5] bg-clip-text text-transparent text-center phone:text-[4rem] xs:text-[6rem] sm:text-[8rem] md:text-[9rem] lg:text-[10rem] overflow-y-auto ${audiowide.className}`}>
           HOW IT WORKS?
         </div>
       </div>
@@ -83,7 +79,7 @@ export default function HowItWorks() {
       {/* Main Content Section */}
       <div
   ref={textSectionRef}
-  className={`mt-[10%] md:ml-[20%]  flex flex-row justify-end w-full md:w-3/4 items-center transition-transform duration-[1000ms] ease-out ${
+  className={`mt-[5%] md:ml-[20%]  flex flex-row justify-end w-full md:w-3/4 items-center transition-transform duration-[1000ms] ease-out ${
     isMainVisible ? "translate-x-0 opacity-100" : "translate-x-[50%] opacity-0"
   } overflow-x-hidden relative`}
 >
@@ -98,10 +94,10 @@ export default function HowItWorks() {
     <p className={`text-white text-center phone:text-right xs:text-right text-base phone:text-[80%] xs:text-lg md:text-xl lg:text-2xl xl:text-3xl font-para whitespace-nowrap  mb-6 lg:mb-10${outfit.className}`}>
       test cases.
     </p>
-    <p className={`text-white text-center phone:text-right xs:text-right text-base phone:text-[80%] xs:text-lg md:text-xl lg:text-2xl xl:text-3xl font-para whitespace-nowrap ${outfit.className}`}>
+    <p className={`text-white text-center phone:text-right xs:text-right text-base phone:text-[80%] xs:text-lg md:text-xl lg:text-2xl xl:text-3xl font-para xs:whitespace-nowrap ${outfit.className}`}>
       After deciphering the logic based on these input-
     </p>
-    <p className={`text-white text-center phone:text-right xs:text-right text-base phone:text-[80%] xs:text-lg md:text-xl lg:text-2xl xl:text-3xl font-para whitespace-nowrap ${outfit.className}`}>
+    <p className={`text-white text-center phone:text-right xs:text-right text-base phone:text-[80%] xs:text-lg md:text-xl lg:text-2xl xl:text-3xl font-para xs:whitespace-nowrap ${outfit.className}`}>
       output patterns, they need to come up with a code
     </p>
     <p className={`text-white text-center phone:text-right xs:text-right text-base phone:text-[80%] xs:text-lg md:text-xl lg:text-2xl xl:text-3xl font-para whitespace-nowrap  mb-6 lg:mb-10${outfit.className}`}>
@@ -125,14 +121,14 @@ export default function HowItWorks() {
           textShadow: 'none'
         }}
       >
-        &ldquo;It works on my machine.&rdquo;
+        "It works on my machine."
       </p>
     </div>
 </div>
 
 
       {/* Static Rock Image */}
-      <div className="flex h-full justify-start ml-[-12%]">
+      <div className="flex h-full justify-start ml-[-12%] mt-[-5%]">
         <Image
           className="hidden md:block h-auto max-h-[80vh] animate-float"
           src={rock2}
@@ -143,7 +139,7 @@ export default function HowItWorks() {
       {/* Last Section with Sliding Effect */}
       <div
   ref={lastSectionRef}
-  className={`flex flex-row justify-end phone:ml-[5%] mt-[10%] md:mt-[-6%] ml-[5%] md:ml-[10%]  lg:ml-[8%] w-full md:w-3/4 transition-transform duration-[1000ms] ease-out ${
+  className={`flex flex-row justify-end phone:ml-[5%] mt-[10%] md:mt-[-6%] ml-[5%] md:ml-[10%]  lg:ml-[10%] w-full md:w-3/4 transition-transform duration-[1000ms] ease-out ${
     isLastVisible ? "translate-x-0 opacity-100" : "translate-x-[-50%] opacity-0"
   }`}
 >
@@ -156,7 +152,7 @@ export default function HowItWorks() {
         WebkitTextStroke: '1px white',
         textShadow: 'none'
       }}>
-        &ldquo;NullPointerException.&rdquo;
+        "NullPointerException."
       </p>
     </div>
 

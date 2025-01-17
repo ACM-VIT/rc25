@@ -1,5 +1,3 @@
-'use client';
-
 interface DeleteQuestionDialogProps {
   isOpen: boolean;
   onClose: () => void;

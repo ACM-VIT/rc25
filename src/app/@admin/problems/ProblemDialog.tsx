@@ -1,5 +1,3 @@
-'use client'
-
 import { QuestionForm } from "./question-form"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import type { Difficulty } from "@prisma/client"
@@ -47,7 +45,7 @@ export function ProblemDialog({
       <DialogContent className="max-h-[90vh] overflow-y-auto max-w-4xl">
         <QuestionForm
           initialData={initialData}
-          onSubmit={onSubmit}
+          onSubmitAction={onSubmit}
           isDialog
           onClose={onClose}
           open={isOpen}

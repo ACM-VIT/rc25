@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import type { Problem, Difficulty } from "@prisma/client";
 import { Button } from "@/components/ui/button";
@@ -24,7 +24,7 @@ import {
 
 interface QuestionFormProps {
 	initialData?: Problem | null;
-	onSubmit: (formData: FormData) => Promise<void>;
+	onSubmitAction: (formData: FormData) => Promise<void>;
 	isDialog?: boolean;
 	onClose?: () => void;
 	open?: boolean;
@@ -33,7 +33,7 @@ interface QuestionFormProps {
 
 export function QuestionForm({
 	initialData,
-	onSubmit,
+	onSubmitAction,
 	isDialog = false,
 	onClose,
 	open,
@@ -96,7 +96,7 @@ export function QuestionForm({
 			if (files.mac_dl) formDataToSend.append("mac", files.mac_dl);
 			if (files.lin_dl) formDataToSend.append("linux", files.lin_dl);
 
-			await onSubmit(formDataToSend);
+			await onSubmitAction(formDataToSend);
 
 			if (!isDialog) {
 				router.push("/problems");

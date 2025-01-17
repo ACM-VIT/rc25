@@ -1,5 +1,3 @@
-'use client';
-
 interface DeleteConfirmationDialogProps {
   isOpen: boolean;
   onClose: () => void;

@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import addTestCase from "../../../actions/upsert-case";
 import { validateCode } from "./validate";

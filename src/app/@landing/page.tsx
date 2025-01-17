@@ -2,9 +2,11 @@ import type React from 'react';
 import LandOne from '@/components/landing/landone';
 import LandingNavbar from '@/components/landing/landing-navbar';
 import HowItWorks from '@/components/landing/howitworks';
-// import PrizePool from '@/components/landing/prizepool';
+import PrizePool from '@/components/landing/prizepool';
 import { Timeline } from '@/components/landing/timeline';
 import FaqRegister from '@/components/landing/faqregister';
+import SponsorsSection from '@/components/landing/sponsors';
+import Footer from '@/components/landing/footer';
 
 const Page: React.FC = () => {
   const timelineData = [
@@ -40,7 +42,10 @@ const Page: React.FC = () => {
       <LandOne />
       <HowItWorks />
       <Timeline data={timelineData} />
+      <PrizePool />
+      <SponsorsSection />
       <FaqRegister />
+      {/* <Footer /> */}
     </div>
   );
 };

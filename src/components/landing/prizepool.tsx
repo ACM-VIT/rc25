@@ -41,29 +41,24 @@ export default function PrizePool() {
     handleResize();
     window.addEventListener('resize', handleResize);
 
-    // Create intersection observer
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            // Trigger animations when component comes into view
             setIsSpread(true);
             setTimeout(() => {
               setFlipped([true, true, true, true]);
             }, 1000);
-            
-            // Disconnect observer after triggering
             observer.disconnect();
           }
         });
       },
       {
-        threshold: 0.3, // Trigger when 30% of the component is visible
+        threshold: 0.8,
         rootMargin: '0px'
       }
     );
 
-    // Start observing
     if (containerRef.current) {
       observer.observe(containerRef.current);
     }
@@ -83,10 +78,10 @@ export default function PrizePool() {
       return index % 2 === 0 ? '25%' : '75%';
     } else {
       switch(index) {
-        case 0: return '10%';
-        case 1: return '35%';
-        case 2: return '60%';
-        case 3: return '85%';
+        case 0: return '15%';
+        case 1: return '38%';
+        case 2: return '61%';
+        case 3: return '84%';
         default: return '0%';
       }
     }
@@ -94,24 +89,28 @@ export default function PrizePool() {
 
   const getVerticalPosition = (index: number) => {
     if (screenSize === 'phone') {
+      // Adjusted vertical spacing for better gaps on phone screens
       switch(index) {
-        case 0: return '-150%';
-        case 1: return '-30%';
-        case 2: return '90%';
-        case 3: return '210%';
+        case 0: return '-240%';  // Move first card up more
+        case 1: return '-130%';   // More space between 1st and 2nd
+        case 2: return '-20%';    // More space between 3rd and 4th
+        case 3: return '100%';   // Push last card down more
         default: return '0%';
       }
-    } else if (screenSize === 'small' || screenSize === 'medium') {
-      return index < 2 ? '-80%' : '40%';
+    } else if (screenSize === 'small') {
+      // Adjusted vertical spacing for small screens - 2x2 grid
+      return index < 2 ? '-87%' : '3%';  // Increased gap between rows
+    } else if (screenSize === 'medium') {
+      return index < 2 ? '-80%' : '12%';
     } else {
-      return '-90%';
+      return '-50%';
     }
   };
 
   return (
-    <div className="min-h-screen bg-black flex flex-col items-center justify-center p-4 relative overflow-y-auto md:overflow-hidden">
-      {/* Top right rock */}
-      <div className="absolute top-[-25%] hidden md:block right-[-55%] xs:right-[-130%] sm:right-[-100%] md:right-[-73%] lg:right-[-55%] xl:right-[-45%] z-0">
+    <div className="min-h-screen bg-black flex flex-col items-center justify-center p-4 relative overflow-hidden">
+      {/* Rock decorations */}
+      <div className="absolute top-[-20%] hidden md:block right-[-55%] xs:right-[-130%] sm:right-[-100%] md:right-[-73%] lg:right-[-55%] xl:right-[-45%] z-0 animate-float">
         <Image
           src={rock}
           alt="Rock decoration"
@@ -122,8 +121,7 @@ export default function PrizePool() {
         />
       </div>
 
-      {/* Bottom left rock */}
-      <div className="absolute bottom-[-25%] hidden md:block left-[-45%] sm:left-[-30%] md:left-[-20%] lg:left-[-15%] xl:left-[-10%] z-0">
+      <div className="absolute bottom-[-25%] hidden md:block left-[-45%] sm:left-[-30%] md:left-[-20%] lg:left-[-15%] xl:left-[-10%] z-0 animate-float">
         <Image
           src={rock}
           alt="Rock decoration bottom"
@@ -134,16 +132,21 @@ export default function PrizePool() {
         />
       </div>
 
-      <h1 className={`text-4xl xs:text-[4rem] sm:text-[5rem] phone:mt-[-25%] md:text-[6.5rem] sm:mt-[-10%] md:mt-[5%] lg:text-[8rem] xl:text-[9rem] text-white lg:mb-[-2%] xl:mb-16 ${audiowide.className} relative z-10 whitespace-nowrap`}>
+      {/* Adjusted title positioning for small/phone screens */}
+      <h1 className={`text-4xl xs:text-[3.5rem] sm:text-[4rem] phone:mt-0 md:text-[6.5rem] sm:mt-0 md:mt-[2%] lg:text-[7rem] xl:text-[8rem] text-white mb-4 ${audiowide.className} relative z-10 whitespace-nowrap`}>
         PRIZE POOL
       </h1>
       
-      <div ref={containerRef} className="relative w-full mt-[10%] max-w-[95%] ml-[5%] h-[70vh] md:h-[80vh] z-10">
+      {/* Adjusted container height for better card distribution */}
+      <div ref={containerRef} className="relative w-full mt-[2%] max-w-[90%] mx-auto h-[85vh] xs:h-[90vh] sm:h-[85vh] md:h-[80vh] z-10">
         {prizes.map((prize, index) => (
           <motion.div
             key={index}
             className={`absolute top-1/2 ${
-              screenSize === 'phone' ? 'w-[45%] aspect-square' : screenSize === 'small' || screenSize === 'medium' ? 'w-[40%] aspect-[3/4]' : 'w-[22%] md:w-[22%] lg:w-[20%] xl:w-[19%] aspect-[3/4]'
+              screenSize === 'phone' ? 'w-[30%] h-[22%] aspect-[2/3]' : // Adjusted aspect ratio for phone
+              screenSize === 'small' ? 'w-[40%] aspect-[2/3]' : // Adjusted aspect ratio for small
+              screenSize === 'medium' ? 'w-[33%] aspect-[3/4]' : 
+              'w-[18%] aspect-[3/4]'
             }`}
             initial={{ 
               x: '-50%',
@@ -160,25 +163,27 @@ export default function PrizePool() {
             }}
           >
             <motion.div 
-              className="w-full h-full"
+              className="w-full h-full mb-[30%]"
               initial={false}
               animate={{ rotateY: flipped[index] ? 180 : 0 }}
               transition={{ duration: 0.6 }}
               style={{ transformStyle: 'preserve-3d' }}
             >
-              <div className="absolute w-full h-full rounded-xl shadow-xl border-4 border-purple-700 flex flex-col items-center justify-center p-2" style={{
+              {/* Card front */}
+              <div className="absolute w-full h-full rounded-xl shadow-xl border-4 border-purple-700 flex flex-col items-center justify-center p-2 " style={{
                 backfaceVisibility: 'hidden',
                 backgroundImage: "url('/paper.png')",
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
               }}>
-                <h2 className={`text-[4rem] sm:text-[6rem] md:text-[10rem] lg:text-[15rem] ${audiowide.className} mb-1 md:mb-2 text-center`} style={{
-                  color: '[#22222]',
+                <h2 className={`text-[2.5rem] xs:text-[10rem] sm:text-[10rem] md:text-[8rem] lg:text-[10rem] ${audiowide.className} mb-1 md:mb-2 text-center`} style={{
+                  color: '#222222',
                   WebkitTextStroke: '1px purple',
                   textShadow: 'xl'
                 }}>?</h2>
               </div>
+              {/* Card back */}
               <div className="absolute w-full h-full rounded-xl border-4 border-purple-700 shadow-xl shadow-purple-500 flex flex-col items-center justify-center p-2 [transform:rotateY(180deg)]" style={{
                 backfaceVisibility: 'hidden',
                 backgroundImage: "url('/paper.png')",
@@ -186,13 +191,13 @@ export default function PrizePool() {
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
               }}>
-                <h2 className={`text-md sm:text-[200%] md:text-[300%] lg:text-[350%] sm:mb-6 text-center ${audiowide.className}`} style={{
-                  color: '#22222',
+                <h2 className={`text-sm xs:text-[280%] sm:text-[270%] md:text-[250%] lg:text-[300%] mb-4 xs:mb-5 text-center ${audiowide.className}`} style={{
+                  color: '#222222',
                   WebkitTextStroke: '1px purple',
                   textShadow: 'none'
                 }}>{prize.title}</h2>
-                <p className={`text-md sm:text-lg md:text-xl lg:text-2xl mb-1 ${audiowide.className}`} style={{
-                  color: '#22222',
+                <p className={`text-xs xs:text-xl sm:text-xl md:text-lg lg:text-xl ${audiowide.className}`} style={{
+                  color: '#222222',
                   WebkitTextStroke: '1px purple',
                   textShadow: 'none'
                 }}>{prize.amount}</p>
@@ -200,6 +205,13 @@ export default function PrizePool() {
             </motion.div>
           </motion.div>
         ))}
+      </div>
+      <div className={`hidden md:block  md:text-[3rem] lg:text-[4rem] xl:text-[5rem] mt-4 ${audiowide.className}`} style={{
+        color: 'black',
+        WebkitTextStroke: '1px white',
+        textShadow: 'none'
+      }}>
+        <h1>while (true)&#123;&#125;</h1>
       </div>
     </div>
   );

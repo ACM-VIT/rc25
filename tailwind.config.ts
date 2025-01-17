@@ -29,6 +29,7 @@ const config: Config = {
 			// => @media (min-width: 1536px) { ... }
 		},
 		extend: {
+			
 			colors: {
 				background: "var(--background)",
 				foreground: "var(--foreground)",
@@ -64,6 +65,7 @@ const config: Config = {
 				  },
 			},
 			animation: {
+				'spin-slow': 'spin 15s linear infinite',
 				float: 'float 1.5s ease-in-out infinite',
 				"accordion-down": "accordion-down 0.2s ease-out",
 				"accordion-up": "accordion-up 0.2s ease-out",

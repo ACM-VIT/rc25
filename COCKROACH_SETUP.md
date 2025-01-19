@@ -25,7 +25,7 @@ Once connected, execute the following SQL command to create the changefeed. Repl
 ```bash
 CREATE CHANGEFEED FOR TABLE "Team"
 INTO 'webhook-<WEBHOOK_URL>/api/changefeed'
-WITH resolved = '20s', updated;
+WITH resolved = '10s', updated;
 ```
 3. Verify the Configuration
 Confirm your changefeed setup by running:

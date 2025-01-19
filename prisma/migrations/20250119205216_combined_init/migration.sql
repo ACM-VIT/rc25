@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "Gender" AS ENUM ('male', 'female', 'others');
+CREATE TYPE "Gender" AS ENUM ('male', 'female');
 
 -- CreateEnum
 CREATE TYPE "Difficulty" AS ENUM ('EASY', 'MEDIUM', 'HARD');
@@ -36,7 +36,7 @@ CREATE TABLE "Session" (
 CREATE TABLE "User" (
     "id" STRING NOT NULL,
     "name" STRING,
-    "email" STRING,
+    "email" STRING NOT NULL,
     "emailVerified" TIMESTAMP(3),
     "image" STRING,
     "teamId" STRING,
@@ -78,7 +78,7 @@ CREATE TABLE "Team" (
 CREATE TABLE "TeamRound" (
     "id" STRING NOT NULL,
     "teamId" STRING NOT NULL,
-    "roundId" INT4 NOT NULL,
+    "roundId" STRING NOT NULL,
 
     CONSTRAINT "TeamRound_pkey" PRIMARY KEY ("id")
 );
@@ -95,9 +95,9 @@ CREATE TABLE "Problem" (
     "win_dl" STRING NOT NULL,
     "mac_dl" STRING NOT NULL,
     "web_code" STRING NOT NULL,
-    "norml_cases" INT4 NOT NULL DEFAULT 1,
-    "edge_cases" INT4 NOT NULL DEFAULT 1,
-    "roundNumber" INT4 NOT NULL,
+    "normal_cases" INT4 NOT NULL,
+    "edge_cases" INT4 NOT NULL,
+    "roundId" STRING NOT NULL,
 
     CONSTRAINT "Problem_pkey" PRIMARY KEY ("id")
 );
@@ -120,8 +120,8 @@ CREATE TABLE "Submission" (
     "code" STRING NOT NULL,
     "problemId" STRING NOT NULL,
     "userId" STRING NOT NULL,
-    "score" INT4 NOT NULL,
-    "testcasespassed" BOOL[],
+    "score" INT4 DEFAULT 0,
+    "testcasespassed" BOOL[] DEFAULT ARRAY[]::BOOL[],
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -129,13 +129,22 @@ CREATE TABLE "Submission" (
 );
 
 -- CreateTable
+CREATE TABLE "TestcaseSubmission" (
+    "testcaseId" STRING NOT NULL,
+    "submissionId" STRING NOT NULL,
+
+    CONSTRAINT "TestcaseSubmission_pkey" PRIMARY KEY ("testcaseId","submissionId")
+);
+
+-- CreateTable
 CREATE TABLE "Round" (
+    "id" STRING NOT NULL,
     "number" INT4 NOT NULL,
     "start" TIMESTAMP(3) NOT NULL,
     "end" TIMESTAMP(3) NOT NULL,
     "result" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Round_pkey" PRIMARY KEY ("number")
+    CONSTRAINT "Round_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -169,6 +178,15 @@ CREATE UNIQUE INDEX "Team_shortCode_key" ON "Team"("shortCode");
 -- CreateIndex
 CREATE UNIQUE INDEX "TeamRound_teamId_roundId_key" ON "TeamRound"("teamId", "roundId");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "TestcaseSubmission_testcaseId_submissionId_key" ON "TestcaseSubmission"("testcaseId", "submissionId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Round_number_key" ON "Round"("number");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Admin_userId_key" ON "Admin"("userId");
+
 -- AddForeignKey
 ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -179,22 +197,28 @@ ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId"
 ALTER TABLE "User" ADD CONSTRAINT "User_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "TeamRound" ADD CONSTRAINT "TeamRound_roundId_fkey" FOREIGN KEY ("roundId") REFERENCES "Round"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "TeamRound" ADD CONSTRAINT "TeamRound_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TeamRound" ADD CONSTRAINT "TeamRound_roundId_fkey" FOREIGN KEY ("roundId") REFERENCES "Round"("number") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Problem" ADD CONSTRAINT "Problem_roundId_fkey" FOREIGN KEY ("roundId") REFERENCES "Round"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Problem" ADD CONSTRAINT "Problem_roundNumber_fkey" FOREIGN KEY ("roundNumber") REFERENCES "Round"("number") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Testcase" ADD CONSTRAINT "Testcase_problemId_fkey" FOREIGN KEY ("problemId") REFERENCES "Problem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Testcase" ADD CONSTRAINT "Testcase_problemId_fkey" FOREIGN KEY ("problemId") REFERENCES "Problem"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Submission" ADD CONSTRAINT "Submission_problemId_fkey" FOREIGN KEY ("problemId") REFERENCES "Problem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Submission" ADD CONSTRAINT "Submission_problemId_fkey" FOREIGN KEY ("problemId") REFERENCES "Problem"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Submission" ADD CONSTRAINT "Submission_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Submission" ADD CONSTRAINT "Submission_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "TestcaseSubmission" ADD CONSTRAINT "TestcaseSubmission_testcaseId_fkey" FOREIGN KEY ("testcaseId") REFERENCES "Testcase"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "TestcaseSubmission" ADD CONSTRAINT "TestcaseSubmission_submissionId_fkey" FOREIGN KEY ("submissionId") REFERENCES "Submission"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Admin" ADD CONSTRAINT "Admin_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

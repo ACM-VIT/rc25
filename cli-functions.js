@@ -1,0 +1,230 @@
+import * as readline from "node:readline/promises";
+import { PrismaClient } from "@prisma/client";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+
+const prisma = new PrismaClient();
+const adminTeamId = process.env.ADMIN_TEAM_ID;
+
+if (!adminTeamId) {
+    throw new Error("Set ADMIN_TEAM_ID in .env");
+}
+
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+});
+
+async function createRound({ start, end, result }) {
+    try {
+        const round = await prisma.$transaction(async (prisma) => {
+            const createdRound = await prisma.round.create({
+                data: { start, end, result, number: 999 },
+            });
+
+            await prisma.teamRound.create({
+                data: {
+                    teamId: adminTeamId,
+                    roundId: createdRound.id,
+                },
+            });
+
+            const rounds = await prisma.round.findMany({
+                select: {
+                    id: true,
+                    start: true,
+                },
+                orderBy: {
+                    start: 'asc',
+                },
+            });
+
+            const updatePromises = rounds.map((r, index) => {
+                if (r.id === createdRound.id) {
+                    createdRound.number = index + 1;
+                }
+                return prisma.round.update({
+                    where: { id: r.id },
+                    data: { number: index + 1 }, // Set the round number in sequence starting from 1
+                });
+            });
+
+            // Wrap the updates in a transaction to ensure atomicity
+            await Promise.all(updatePromises);
+
+
+            return createdRound;
+        });
+
+        console.log(`Round #${round.number} inserted successfully with admin team round.`);
+    } catch (e) {
+        console.error("Error creating round:", e);
+    }
+}
+
+async function deleteRound(roundId) {
+    try {
+        await prisma.$transaction(async (prisma) => {
+            await prisma.teamRound.deleteMany({ where: { roundId } });
+            await prisma.round.delete({ where: { number: roundId } });
+        });
+
+        const rounds = await prisma.round.findMany({
+            select: {
+                id: true,
+                start: true,
+            },
+            orderBy: {
+                start: 'asc',
+            },
+        });
+
+        const updatePromises = rounds.map((round, index) => {
+            return prisma.round.update({
+                where: { id: round.id },
+                data: { number: index + 1 }, // Set the round number in sequence starting from 1
+            });
+        });
+
+        // Wrap the updates in a transaction to ensure atomicity
+        await prisma.$transaction(updatePromises);
+
+        console.log(`Round #${roundId} and associated team rounds deleted successfully.`);
+    } catch (e) {
+        console.error("Error deleting round:", e);
+    }
+}
+
+async function createAdmin({ email }) {
+    if (!email) {
+        throw new Error("Provide an email as a CLI argument.");
+    }
+
+    try {
+        await prisma.$transaction([
+            prisma.admin.create({
+                data: {
+                    user: { connect: { email } },
+                },
+            }),
+            prisma.user.update({
+                where: { email },
+                data: {
+                    Team: { connect: { id: adminTeamId } },
+                },
+            }),
+        ]);
+        console.log(`Admin with email ${email} successfully created.`);
+    } catch (e) {
+        if (e instanceof PrismaClientKnownRequestError) {
+            if (e.code === "P2002") {
+                return console.error("Admin already exists.");
+            }
+            if (e.code === "P2025") {
+                return console.error("User not found.");
+            }
+        }
+        console.error("An unexpected error occurred:", e);
+    }
+}
+
+async function deleteAdmin({ email }) {
+    if (!email) {
+        throw new Error("Provide an email as a CLI argument.");
+    }
+
+    try {
+        const admin = await prisma.admin.findFirstOrThrow({
+            where: { user: { email } },
+        });
+
+        if (!admin) {
+            return console.error("Admin not found.");
+        }
+
+        await prisma.$transaction([
+            prisma.admin.delete({ where: { id: admin.id } }),
+            prisma.user.update({
+                where: { email },
+                data: { Team: { disconnect: true } },
+            }),
+        ]);
+        console.log(`Admin with email ${email} successfully deleted.`);
+    } catch (e) {
+        console.error("An error occurred:", e);
+    }
+}
+
+async function main() {
+    const args = process.argv.slice(2);
+    const action = args[0];
+    const email = args[1];
+
+    if (!action) {
+        console.log("No action specified. Choose an option:");
+        console.log("1. Add Round");
+        console.log("2. Delete Round");
+        console.log("3. Add Admin");
+        console.log("4. Delete Admin");
+
+        const choice = await rl.question("Enter your choice (1-4): ");
+
+        if (choice === "1") {
+            const start = new Date(await rl.question("Enter round start date (YYYY-MM-DD): "));
+            const end = new Date(await rl.question("Enter round end date (YYYY-MM-DD): "));
+            const result = new Date(await rl.question("Enter round result date (YYYY-MM-DD): "));
+
+            await createRound({ start, end, result });
+        } else if (choice === "2") {
+            const roundId = parseInt(await rl.question("Enter round ID to delete: "), 10);
+
+            if (isNaN(roundId)) {
+                console.error("Invalid round ID.");
+                return;
+            }
+
+            await deleteRound(roundId);
+        } else if (choice === "3") {
+            const emailInput = await rl.question("Enter email: ");
+            await createAdmin({ email: emailInput });
+        } else if (choice === "4") {
+            const emailInput = await rl.question("Enter email: ");
+            await deleteAdmin({ email: emailInput });
+        } else {
+            console.log("Invalid choice.");
+        }
+    } else if (action === "round_add") {
+        const start = new Date(await rl.question("Enter round start date (YYYY-MM-DD): "));
+        const end = new Date(await rl.question("Enter round end date (YYYY-MM-DD): "));
+        const result = new Date(await rl.question("Enter round result date (YYYY-MM-DD): "));
+
+        await createRound({ start, end, result });
+    } else if (action === "round_delete") {
+        const roundId = parseInt(await rl.question("Enter round ID to delete: "), 10);
+
+        if (isNaN(roundId)) {
+            console.error("Invalid round ID.");
+            return;
+        }
+
+        await deleteRound(roundId);
+    } else if (action === "admin_add" && email) {
+        await createAdmin({ email });
+    } else if (action === "admin_delete" && email) {
+        await deleteAdmin({ email });
+    } else {
+        console.error(
+            "Invalid command. Use:\n  ROUND \"round_add\" - to add a round\n  \"round_delete\" - to delete a round\n  \"admin_add\" <email> - to add admin\n  \"admin_delete\" <email> - to delete admin"
+        );
+    }
+}
+
+main()
+    .then(() => {
+        prisma.$disconnect();
+        rl.close();
+    })
+    .catch((e) => {
+        console.error("An error occurred during execution:", e);
+        prisma.$disconnect();
+        rl.close();
+    });

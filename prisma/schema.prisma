@@ -1,166 +1,167 @@
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "cockroachdb"
-    url      = env("DATABASE_URL")
+  provider = "cockroachdb"
+  url      = env("DATABASE_URL")
 }
 
 model Account {
-    id                String  @id @default(cuid())
-    userId            String
-    type              String
-    provider          String
-    providerAccountId String
-    refresh_token     String?
-    access_token      String?
-    expires_at        Int?
-    token_type        String?
-    scope             String?
-    id_token          String?
-    session_state     String?
-    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@unique([provider, providerAccountId])
+  @@unique([provider, providerAccountId])
 }
 
 model Session {
-    id           String   @id @default(cuid())
-    sessionToken String   @unique
-    userId       String
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model User {
-    id            String       @id @default(cuid())
-    name          String?
-    email         String       @unique
-    emailVerified DateTime?
-    image         String?
-    teamId        String?
-    phone         String?
-    gender        Gender?
-    accounts      Account[]
-    Admin         Admin[]
-    sessions      Session[]
-    Submission    Submission[]
-    Team          Team?        @relation("TeamMembers", fields: [teamId], references: [id], onDelete: SetNull)
+  id            String       @id @default(cuid())
+  name          String?
+  email         String       @unique
+  emailVerified DateTime?
+  image         String?
+  teamId        String?
+  phone         String?
+  gender        Gender?
+  accounts      Account[]
+  Admin         Admin?
+  sessions      Session[]
+  Submission    Submission[]
+  Team          Team?        @relation("TeamMembers", fields: [teamId], references: [id], onDelete: SetNull)
 }
 
 model UniReg {
-    id        String   @id @default(cuid())
-    email     String   @unique
-    name      String
-    regNo     String
-    phone     String
-    injected  Boolean  @default(false)
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  regNo     String
+  phone     String
+  injected  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Team {
-    id         String      @id @default(uuid())
-    name       String      @unique
-    shortCode  String      @unique
-    checkedIn  Boolean     @default(false)
-    score      Int         @default(0)
-    disqualify Boolean     @default(false)
-    createdAt  DateTime    @default(now())
-    updatedAt  DateTime    @updatedAt
-    TeamRound  TeamRound[]
-    members    User[]      @relation("TeamMembers")
+  id         String      @id @default(uuid())
+  name       String      @unique
+  shortCode  String      @unique
+  checkedIn  Boolean     @default(false)
+  score      Int         @default(0)
+  disqualify Boolean     @default(false)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  TeamRound  TeamRound[]
+  members    User[]      @relation("TeamMembers")
 }
 
 model TeamRound {
-    id      String @id @default(cuid())
-    teamId  String
-    roundId Int
-    round   Round  @relation(fields: [roundId], references: [number], onDelete: Cascade)
-    team    Team   @relation(fields: [teamId], references: [id])
-
-    @@unique([teamId, roundId])
+  id      String @id @default(cuid())
+  teamId  String
+  roundId String
+  round   Round  @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  team    Team   @relation(fields: [teamId], references: [id])
+  //  checkedIn Boolean @default(false)
+  @@unique([teamId, roundId])
 }
 
 model Problem {
-    id           String       @id @default(cuid())
-    title        String
-    nickname     String
-    description  String
-    difficulty   Difficulty
-    maxScore     Int
-    lin_dl       String
-    win_dl       String
-    mac_dl       String
-    web_code     String
-    normal_cases Int          @default(1)
-    edge_cases   Int          @default(1)
-    roundNumber  Int          @default(1)
-    round        Round        @relation(fields: [roundNumber], references: [number], onDelete: SetDefault)
-    submissions  Submission[]
-    Testcase     Testcase[]
+  id           String       @id @default(cuid())
+  title        String
+  nickname     String
+  description  String
+  difficulty   Difficulty
+  maxScore     Int
+  lin_dl       String
+  win_dl       String
+  mac_dl       String
+  web_code     String
+  normal_cases Int
+  edge_cases   Int
+  roundId      String
+  round        Round        @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  submissions  Submission[]
+  Testcase     Testcase[]
 }
 
 model Testcase {
-    id          String               @id @default(cuid())
-    weight      Int                  @default(1)
-    input       String
-    output      String
-    problemId   String
-    isEdge      Boolean              @default(false)
-    problem     Problem              @relation(fields: [problemId], references: [id], onDelete: Cascade)
-    submissions TestcaseSubmission[]
+  id          String               @id @default(cuid())
+  weight      Int                  @default(1)
+  input       String
+  output      String
+  problemId   String
+  isEdge      Boolean              @default(false)
+  problem     Problem              @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  submissions TestcaseSubmission[]
 }
 
 model Submission {
-    id              String               @id @default(cuid())
-    code            String
-    problemId       String
-    userId          String
-    score           Int?                 @default(0)
-    testcasespassed Boolean[]            @default([])
-    testcases       TestcaseSubmission[]
-    createdAt       DateTime             @default(now())
-    updatedAt       DateTime             @updatedAt
-    problem         Problem              @relation(fields: [problemId], references: [id], onDelete: Cascade)
-    user            User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id              String               @id @default(cuid())
+  code            String
+  problemId       String
+  userId          String
+  score           Int?                 @default(0)
+  testcasespassed Boolean[]            @default([])
+  testcases       TestcaseSubmission[]
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  problem         Problem              @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  user            User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model TestcaseSubmission {
-    testcaseId   String
-    submissionId String
-    testcase     Testcase   @relation(fields: [testcaseId], references: [id], onDelete: Cascade)
-    submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  testcaseId   String
+  submissionId String
+  testcase     Testcase   @relation(fields: [testcaseId], references: [id], onDelete: Cascade)
+  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
 
-    @@id([testcaseId, submissionId])
-    @@unique([testcaseId, submissionId])
+  @@id([testcaseId, submissionId])
+  @@unique([testcaseId, submissionId])
 }
 
 model Round {
-    number   Int         @id
-    start    DateTime
-    end      DateTime
-    result   DateTime
-    problems Problem[]
-    teams    TeamRound[]
+  id       String      @id @default(cuid())
+  number   Int         @unique
+  start    DateTime
+  end      DateTime
+  result   DateTime
+  problems Problem[]
+  teams    TeamRound[]
 }
 
 model Admin {
-    id        String   @id @default(cuid())
-    userId    String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    user      User     @relation(fields: [userId], references: [id])
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 enum Gender {
-    male
-    female
+  male
+  female
 }
 
 enum Difficulty {
-    EASY
-    MEDIUM
-    HARD
+  EASY
+  MEDIUM
+  HARD
 }

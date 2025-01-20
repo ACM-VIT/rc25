@@ -1,9 +1,11 @@
 import React from "react";
+import Image from "next/image";
+import Newlandone from "./newlandone";
 
 const Landing: React.FC = () => {
   return (
     <div>
-      <h1>Hello, World! All the best for the next 24 hrs</h1>
+      <Newlandone />
     </div>
   );
 };

@@ -1,6 +1,6 @@
-import { auth } from "@/app/(auth)/auth";
-import { prisma } from "@/utils/prisma";
-import type { TeamRound } from "@prisma/client";
+import {auth} from "@/app/(auth)/auth";
+import {prisma} from "@/utils/prisma";
+import type {TeamRound} from "@prisma/client";
 
 export async function getTeamRound(): Promise<TeamRound | null> {
   const session = await auth();
@@ -26,12 +26,10 @@ export async function getTeamRound(): Promise<TeamRound | null> {
   if (!curRound) return null;
 
   // Get team round
-  const teamRound = await prisma.teamRound.findFirst({
+  return prisma.teamRound.findFirst({
     where: {
       teamId: user.teamId,
-      roundId: curRound.number
+      roundId: curRound.id
     }
   });
-
-  return teamRound;
 }

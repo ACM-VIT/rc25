@@ -6,7 +6,6 @@ import PrizePool from '@/components/landing/prizepool';
 import { Timeline } from '@/components/landing/timeline';
 import FaqRegister from '@/components/landing/faqregister';
 import SponsorsSection from '@/components/landing/sponsors';
-import Footer from '@/components/landing/footer';
 
 const Page: React.FC = () => {
   const timelineData = [

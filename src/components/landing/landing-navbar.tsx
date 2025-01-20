@@ -2,7 +2,6 @@
 
 import React from "react";
 import Image from "next/image";
-import  rock  from "@/app/assets/rock.svg";
 import RCLogo from "@/app/assets/RCLogo.svg";
 import SignIn from "@/app/(auth)/authactions/signin";
 

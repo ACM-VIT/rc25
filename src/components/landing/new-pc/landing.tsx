@@ -4,11 +4,8 @@ import Newlandone from "./newlandone";
 
 const Landing: React.FC = () => {
   return (
-    <div className="w-[100vw]">
-     
-
+    <div>
       <Newlandone />
-
     </div>
   );
 };

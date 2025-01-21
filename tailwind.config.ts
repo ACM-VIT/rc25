@@ -32,7 +32,8 @@ const config: Config = {
 		},
 		extend: {
 			fontFamily: {
-				custom: ['deathstar', 'sans-serif'], // Register your custom font
+				custom: ['deathstar', 'sans-serif'],
+				aurebesh: ['aurebesh', 'sans-serif'],
 			  },
 			colors: {
 				background: "var(--background)",

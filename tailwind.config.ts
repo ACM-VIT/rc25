@@ -1,5 +1,6 @@
 import {nextui} from '@nextui-org/theme';
 import type { Config } from "tailwindcss";
+import tailwindcssMotion from "tailwindcss-motion";
 
 const config: Config = {
 	darkMode: ["class"],
@@ -80,11 +81,8 @@ const config: Config = {
 				fadeIn: "fadeIn 1.5s ease-in-out",
 			},
 		},
-		plugins: [
-			require('tailwindcss-motion'), 
-		],
 	},
 	
-  plugins: [nextui()],
+  plugins: [nextui(), tailwindcssMotion],
 };
 export default config;

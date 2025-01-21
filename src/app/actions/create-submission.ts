@@ -90,6 +90,8 @@ export default async function createSubmission(data: {
       return shuffled.slice(0, n);
     };
 
+    console.log(problem.normal_cases, problem.edge_cases)
+
     // Select required number of cases
     const selectedNormalCases = getRandomElements(
       normalCases,
@@ -126,6 +128,8 @@ export default async function createSubmission(data: {
     // Combine selected inputs with newlines
     const combinedInput = selectedTestcases.map((tc) => tc.input).join("\n");
 
+    console.log("combinedInput: ",combinedInput)
+
     // Get number of testcases
     const numTestcases = selectedTestcases.length;
     
@@ -139,7 +143,7 @@ export default async function createSubmission(data: {
     // Remove duplicated imports from the final code
     transformedCode = removeDuplicateImports(transformedCode, data.language);
 
-    console.log(transformedCode)
+    console.log("code: \n",transformedCode)
 
     // Submit to Judge0
     const judgeResult = await judgeSolution(
@@ -148,6 +152,8 @@ export default async function createSubmission(data: {
       combinedInput,
       submission.id
     );
+
+    console.log("judge submit",judgeResult)
 
     if (!judgeResult.success) {
       return {

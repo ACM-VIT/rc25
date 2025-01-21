@@ -26,6 +26,14 @@ export async function upsertRound(data: {
       throw new Error("Invalid time sequence. Start < End < Result required");
     }
 
+    const formattedData = {
+      number: data.number,
+      start: start,
+      end, 
+      result,
+    };
+
+
     const conflictingRound = await prisma.round.findFirst({
       where: {
         NOT: { number: data.number },
@@ -42,15 +50,10 @@ export async function upsertRound(data: {
       throw new Error(`Time conflict with Round ${conflictingRound.number}`);
     }
 
-    const formattedData = {
-      number: data.number,
-      start,
-      end,
-      result,
-    };
+    console.log(formattedData);
 
     await prisma.round.upsert({
-      where: { number: data.number },
+      where: { number: formattedData.number },
       create: formattedData,
       update: formattedData,
     });

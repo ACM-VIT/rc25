@@ -3,7 +3,13 @@ import { PrismaClient } from "@prisma/client";
 import { notFound } from "next/navigation";
 import CheckIn from "@/components/check-in";
 
-async function Page({ params }: { params: { id: string } }) {
+interface PageParams {
+	params: Promise<{
+	  id: string;
+	}>;
+  }
+
+export default async function Page({ params }: PageParams) {
 	const prisma = new PrismaClient();
 	const param = await params;
 	const team = await prisma.team.findUnique({
@@ -23,7 +29,9 @@ async function Page({ params }: { params: { id: string } }) {
 	const uniregs = await prisma.uniReg.findMany({
 		where: {
 			regNo: {
-				in: team.members.map((member) => member.name!.split(" ").pop()!),
+				in: team.members
+					.filter((member): member is typeof team.members[number] => member.name !== null && member.name !== undefined)
+					.map((member) => member.name?.split(" ").pop() || ''),
 			},
 		},
 	});
@@ -31,5 +39,3 @@ async function Page({ params }: { params: { id: string } }) {
 
 	return <CheckIn uniReg={uniregs} team={team} />;
 }
-
-export default Page;

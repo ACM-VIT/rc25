@@ -1,20 +1,23 @@
-import { doc, setDoc } from 'firebase/firestore';
-import { db } from '@/config/firebase';
-import type { LeaderboardTeam } from '@/types/leaderboard';
+import { initializeApp, getApps } from 'firebase/app';
+import { getFirestore, doc, setDoc } from 'firebase/firestore';
+// import type { LeaderboardTeam } from '@/types/leaderboard';
 
-export class FirestoreService {
-  private static COLLECTION_NAME = 'leaderboard';
+const firebaseConfig = {
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.FIREBASE_APP_ID
+};
 
-  static async updateTeam(team: LeaderboardTeam): Promise<void> {
-    try {
-      const docRef = doc(db, this.COLLECTION_NAME, team.id);
-      await setDoc(docRef, {
-        ...team,
-      });
-      console.log(`Updated team ${team.id} in Firestore`);
-    } catch (error) {
-      console.error(`Error updating team ${team.id}:`, error);
-      throw error;
-    }
+// Initialize Firebase
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+const db = getFirestore(app);
+
+export const firestoreService = {
+  async updateTeam({ id, name, score }: { id: string; name: string; score: number }) {
+    const teamRef = doc(db, 'teams', id);
+    await setDoc(teamRef, { name, score }, { merge: true });
   }
-}
+};

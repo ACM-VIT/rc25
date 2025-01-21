@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import createSubmission from '@/app/actions/create-submission';
 // import { checkSubmissionStatus } from '@/app/actions/submit-code';
 import parse from 'html-react-parser';
-import { submissionStatusEmitter } from "@/utils/eventEmitter";
 
 
 // Initialize DOMPurify only on client side
@@ -189,21 +188,6 @@ export default function ViewProblem({ problem, session }: ViewProblemProps) {
       >
         {isSubmitting ? 'Submitting...' : 'Submit Solution'}
       </button>
-      {result?.submission?.id && (
-        <div>
-          {/* Emit status update */}
-          {(() => {
-            const submissionId = result.submission.id;
-            submissionStatusEmitter.emit('statusUpdate', {
-              submissionId,
-              status: 'completed',
-              testcasespassed: result.submission.testcasespassed,
-              scoreChange: 0, // Replace with actual score change if available
-            });
-            return null;
-          })()}
-        </div>
-      )}
     </div>
   );
 }

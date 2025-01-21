@@ -2,7 +2,14 @@
 
 import { Redis } from "@upstash/redis";
 
-const redis = Redis.fromEnv();
+// Add error handling for Redis initialization
+let redis: Redis;
+try {
+  redis = Redis.fromEnv();
+} catch (error) {
+  console.error("Redis initialization error:", error);
+  throw new Error("Failed to initialize Redis connection");
+}
 
 const SUBMISSION_TOKENS_KEY = "submission"; // Prefix for submission IDs
 
@@ -32,6 +39,44 @@ const STATUS = {
   TIME_LIMIT: 5,
   COMPILATION_ERROR: 6,
 };
+
+async function storeSubmissionToken(submissionId: string, token: string) {
+  try {
+    const isConnected = await redis.ping();
+    console.log("Redis detailed status:", {
+      connected: isConnected === "PONG",
+      url: process.env.UPSTASH_REDIS_REST_URL ? "Set" : "Missing",
+      token: process.env.UPSTASH_REDIS_REST_TOKEN ? "Set" : "Missing"
+    });
+
+    // Store as list item
+    const submissionData = `${submissionId}:${token}`;
+    const pushResult = await redis.rpush(SUBMISSION_TOKENS_KEY, submissionData);
+    console.log("Redis push result:", pushResult);
+
+    // Optional: Trim list to keep last N items
+    await redis.ltrim(SUBMISSION_TOKENS_KEY, -1000, -1);
+    
+    return true;
+  } catch (error) {
+    console.error("Redis operation failed:", error);
+    return false;
+  }
+}
+
+// // Add helper function to get submissions
+// async function getSubmissionTokens() {
+//   try {
+//     const submissions = await redis.lrange(SUBMISSION_TOKENS_KEY, 0, -1);
+//     return submissions.map(item => {
+//       const [id, token] = item.split(':');
+//       return { id, token };
+//     });
+//   } catch (error) {
+//     console.error("Failed to get submissions:", error);
+//     return [];
+//   }
+// }
 
 export async function getSubmission(
   submissionId: string
@@ -77,28 +122,32 @@ export async function judgeSolution(
     }),
   };
 
+  console.log(language)
+
   try {
     const postResponse = await fetch(postUrl, postOptions);
     const postResult = await postResponse.json();
+    console.log("postResult: ",postResult)
     if (!postResult.token) {
       return { success: false, error: "No submission token received" };
     }
 
-    // Store token with submission ID as key
-    const existingSubmissions = await redis.get(SUBMISSION_TOKENS_KEY) || "[]";
-    const submissionsArray = JSON.parse(existingSubmissions as string);
-    submissionsArray.push([submissionId, postResult.token]);
-    await redis.set(SUBMISSION_TOKENS_KEY, JSON.stringify(submissionsArray));
+    console.log("postResultWithToken: ",postResult)
 
+    const redisSuccess = await storeSubmissionToken(submissionId, postResult.token);
+    if (!redisSuccess) {
+      return { success: false, error: "Failed to store submission in Redis" };
+    }
 
     return {
       success: true,
       token: postResult.token
     };
   } catch (error) {
+    console.error("Submission error:", error);
     return {
       success: false,
-      error: `Submission failed: ${(error as Error).name}`,
+      error: `Submission failed: ${(error as Error).message}`,
     };
   }
 }

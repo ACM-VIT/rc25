@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import type React from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import type { Problem, Difficulty } from "@prisma/client";
 import { Button } from "@/components/ui/button";
@@ -28,7 +29,7 @@ interface QuestionFormProps {
 	isDialog?: boolean;
 	onClose?: () => void;
 	open?: boolean;
-	rounds?: { number: number }[];
+	rounds?: { id: string; number: number }[];
 }
 
 export function QuestionForm({
@@ -46,9 +47,11 @@ export function QuestionForm({
 		nickname: "",
 		description: "",
 		difficulty: "EASY" as Difficulty,
-		roundNumber: 1,
+		roundId: "",
 		maxScore: 0,
 		web_code: "",
+		normal_cases: 0,
+		edge_cases: 0,
 	});
 	const [files, setFiles] = useState({
 		win_dl: null as File | null,
@@ -65,7 +68,7 @@ export function QuestionForm({
 		if (initialData) {
 			setFormData({
 				...initialData,
-				roundNumber: initialData.roundNumber || 1,
+				roundId: (initialData.roundId || "1").toString(),
 			});
 			setCurrentFiles({
 				win_dl: initialData.win_dl || "",
@@ -200,30 +203,29 @@ export function QuestionForm({
 					<div className="space-y-2">
 						<Label>Round</Label>
 						<Select
-							value={formData.roundNumber?.toString()}
+							value={formData.roundId}
 							onValueChange={(value) =>
-								setFormData((prev) => ({
-									...prev,
-									roundNumber: Number.parseInt(value),
-								}))
+							setFormData((prev) => ({
+								...prev,
+								roundId: value
+							}))
 							}
 						>
 							<SelectTrigger>
-								<SelectValue placeholder="Select round" />
+							<SelectValue placeholder="Select round" />
 							</SelectTrigger>
 							<SelectContent>
-								{rounds.map((round) => (
-									<SelectItem
-										key={round.number}
-										value={round.number.toString()}
-									>
-										Round {round.number}
-									</SelectItem>
-								))}
+							{rounds.map((round) => (
+								<SelectItem
+								key={round.id}
+								value={round.id}
+								>
+								Round {round.number}
+								</SelectItem>
+							))}
 							</SelectContent>
 						</Select>
-					</div>
-
+					</div>					
 					<div className="space-y-2">
 						<Label htmlFor="maxScore">Max Score</Label>
 						<Input

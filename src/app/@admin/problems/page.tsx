@@ -4,8 +4,19 @@ import { prisma } from "@/utils/prisma";
 async function getProblems() {
   try {
     return await prisma.problem.findMany({
-      orderBy: { roundNumber: "asc" },
-    });
+      orderBy: { roundId: "asc" },
+      include: {
+        round: {
+          select: {
+            number: true
+          }
+        },
+        Testcase: true
+      }
+    }).then(problems => problems.map(problem => ({
+      ...problem,
+      roundNumber: problem.round.number
+    })));
   } finally {
     await prisma.$disconnect();
   }

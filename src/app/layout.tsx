@@ -104,6 +104,7 @@ export default async function RootLayout({
 
     const cookieStore = await cookies()
     const mode = cookieStore.get('mode')?.value !== 'user'
+    console.log(mode)
 
     if (isAdmin && mode) {
         return (

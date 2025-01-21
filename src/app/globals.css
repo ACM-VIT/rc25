@@ -84,5 +84,15 @@
     }
   }
   
+  @font-face {
+    font-family: 'Death Star';
+    src: url('/fonts/death-star.otf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  body {
+    font-family: 'Death Star', sans-serif;
+  }  
 
 }

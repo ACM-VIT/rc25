@@ -1,6 +1,7 @@
 import type React from "react";
 import NewLandOne from "../../components/landing/new-pc/newlandone";
 import HowItWorks from "../../components/landing/new-pc/howItWorks";
+import Allies from "../../components/landing/new-pc/allies";
 
 const Layout: React.FC = () => {
   return (
@@ -14,6 +15,9 @@ const Layout: React.FC = () => {
         </div>
         <div className="flex-none w-screen h-full">
           <HowItWorks />
+        </div>
+        <div className="flex-none w-screen h-full">
+          <Allies />
         </div>
       </div>
     </div>

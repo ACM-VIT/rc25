@@ -88,6 +88,11 @@
     src: url('/fonts/DeathStar.otf') format('opentype'); /* Path to your font file */
     font-weight: normal;
     font-style: normal;
+
+    font-family: 'aurebesh'; /* Name of the font */
+    src: url('/fonts/Aurebesh.otf') format('opentype'); 
+    font-weight: normal;
+    font-style: normal;
 }
 
 }

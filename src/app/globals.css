@@ -83,7 +83,12 @@
       animation: slideLeft 12s linear infinite;
     }
   }
-  
+  @font-face {
+    font-family: 'deathstar'; /* The name you'll use in CSS */
+    src: url('/fonts/DeathStar.otf') format('opentype'); /* Path to your font file */
+    font-weight: normal;
+    font-style: normal;
+}
 
 }
 @font-face {

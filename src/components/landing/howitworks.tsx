@@ -38,10 +38,11 @@ export default function HowItWorks() {
     if (textSectionRef.current) {
       observer.observe(textSectionRef.current);
     }
+    const o = textSectionRef.current
 
     return () => {
-      if (textSectionRef.current) {
-        observer.unobserve(textSectionRef.current);
+      if (o) {
+        observer.unobserve(o);
       }
     };
   }, []);
@@ -60,9 +61,10 @@ export default function HowItWorks() {
       observer.observe(lastSectionRef.current);
     }
 
+    const l = lastSectionRef.current;
     return () => {
-      if (lastSectionRef.current) {
-        observer.unobserve(lastSectionRef.current);
+      if (l) {
+        observer.unobserve(l);
       }
     };
   }, []);
@@ -121,7 +123,7 @@ export default function HowItWorks() {
           textShadow: 'none'
         }}
       >
-        "It works on my machine."
+        &#34;It works on my machine.&#34;
       </p>
     </div>
 </div>
@@ -152,7 +154,7 @@ export default function HowItWorks() {
         WebkitTextStroke: '1px white',
         textShadow: 'none'
       }}>
-        "NullPointerException."
+        &#34;NullPointerException.&#34;
       </p>
     </div>
 

@@ -13,13 +13,13 @@ export default async function Page() {
 
   // Round info
   const roundInfo = await prisma.round.findFirst({
-    where: { number: teamRound.roundId },
-    select: { number: true, end: true },
+    where: { id: teamRound.roundId },
+    select: { number: true, end: true, id: true },
   });
 
   // Questions
   const problems = roundInfo ? await prisma.problem.findMany({
-    where: { roundNumber: roundInfo.number },
+    where: { roundId: roundInfo.id },
     orderBy: { id: "asc" },
     include: {
       submissions: {

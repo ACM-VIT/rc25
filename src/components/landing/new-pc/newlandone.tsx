@@ -95,7 +95,7 @@ export default function NewLandOne() {
             src={earthone}
             alt="earth"
             className="w-[200%] sm:w-[170%] md:w-[140%] lg:w-[120%] xl:w-[100%] 
-                       phone:mt-[58%] xs:mt-[45%] sm:mt-[15%] md:mt-[8%] lg:mt-[-10%] xl:mt-[-15%] 2xl:mt-[-15%] animate-spin-slow"
+                       phone:mt-[10%] xs:mt-[20%] sm:mt-[-5%] md:mt-[-8%] lg:mt-[-10%] xl:mt-[-13%] 2xl:mt-[-15%] animate-spin-slow"
           />
         </div>
       </div>

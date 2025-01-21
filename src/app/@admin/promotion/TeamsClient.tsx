@@ -7,12 +7,12 @@ interface Team {
   id: string
   name: string
   points: number
-  currentRound: number | undefined
+  currentRound: string | undefined
 }
 
 interface TeamsClientProps {
   teams: Team[]
-  nextRoundId: number | undefined
+  nextRoundId: string | undefined
 }
 
 export default function TeamsClient({ teams, nextRoundId }: TeamsClientProps) {
@@ -38,7 +38,7 @@ export default function TeamsClient({ teams, nextRoundId }: TeamsClientProps) {
   }, [teams, search, sortBy, sortOrder])
 
   const handleSelection = () => {
-    const eligibleTeams = filteredAndSortedTeams.filter(team => team.currentRound !== -1)
+    const eligibleTeams = filteredAndSortedTeams.filter(team => team.currentRound !== undefined)
     const totalEligibleTeams = eligibleTeams.length
     const count = selectionUnit === 'count' 
       ? selectionValue 
@@ -162,12 +162,12 @@ export default function TeamsClient({ teams, nextRoundId }: TeamsClientProps) {
         </thead>
         <tbody>
           {filteredAndSortedTeams.map(team => (
-            <tr key={team.id} className={team.currentRound === -1 ? 'opacity-50' : ''}>
+            <tr key={team.id} className={team.currentRound === undefined ? 'opacity-50' : ''}>
               <td className="border p-2">
                 <input 
                   type="checkbox"
                   checked={selectedTeams.includes(team.id)}
-                  disabled={team.currentRound === -1}
+                  disabled={team.currentRound === '-1'}
                   onChange={(e) => {
                     if (e.target.checked) {
                       setSelectedTeams([...selectedTeams, team.id])
@@ -179,7 +179,7 @@ export default function TeamsClient({ teams, nextRoundId }: TeamsClientProps) {
               </td>
               <td className="border p-2">{team.name}</td>
               <td className="border p-2">{team.points}</td>
-              <td className="border p-2">{team.currentRound === -1 ? 'Not checked in' : team.currentRound}</td>
+              <td className="border p-2">{team.currentRound === '-1' ? 'Not checked in' : team.currentRound}</td>
             </tr>
           ))}
         </tbody>

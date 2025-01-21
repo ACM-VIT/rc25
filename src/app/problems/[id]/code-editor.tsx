@@ -57,6 +57,7 @@ export default function CodeEditor({ problem, session }: CodeEditorProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [submissionStatus, setSubmissionStatus] = useState('');
+    // const [streamData, setStreamData] = useState(""); // Add this state
 
     useEffect(() => {
         const snippets: CodeSnippets = JSON.parse(localStorage.getItem(CODE_STORAGE_KEY) || '{}');
@@ -90,9 +91,39 @@ export default function CodeEditor({ problem, session }: CodeEditorProps) {
                 language
             });
 
-            if (result.success) {
+            console.log("result: ",result);
+
+
+            if (result.success && result.submission) {
                 setSubmissionStatus('Submitted successfully!');
-            } else {
+                const finalResult = await fetch(`/edge?submissionId=${result.submission.id}&token=${result.token}`, {
+                    method: 'GET'
+                });
+
+                const reader = finalResult.body?.getReader();
+                const decoder = new TextDecoder();
+
+                if (reader) {
+                    try {
+                        while (true) {
+                            const { done, value } = await reader.read();
+                            if (done) break;
+                            const chunk = decoder.decode(value);
+                            console.log('Received chunk:', chunk);
+                            // setStreamData(prev => prev + chunk);
+                        }
+                    } catch (error) {
+                        console.error('Error reading stream:', error);
+                    } finally {
+                        reader.releaseLock();
+                    }
+                }
+
+                
+
+                console.log('Final result');
+            }
+            if (!result.success) {
                 setError(result.error || 'Submission failed');
             }
         } catch (err) {

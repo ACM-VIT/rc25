@@ -26,6 +26,7 @@ export default function HowItWorks() {
 
   // Use IntersectionObserver to trigger animation for both sections
   useEffect(() => {
+    const currentRef = textSectionRef.current; // Store ref in variable
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -35,8 +36,8 @@ export default function HowItWorks() {
       { threshold: 0.1 }
     );
 
-    if (textSectionRef.current) {
-      observer.observe(textSectionRef.current);
+    if (currentRef) {
+      observer.observe(currentRef);
     }
     const o = textSectionRef.current
 
@@ -48,6 +49,7 @@ export default function HowItWorks() {
   }, []);
 
   useEffect(() => {
+    const currentRef = lastSectionRef.current; // Store ref in variable
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -57,8 +59,8 @@ export default function HowItWorks() {
       { threshold: 0.1 }
     );
 
-    if (lastSectionRef.current) {
-      observer.observe(lastSectionRef.current);
+    if (currentRef) {
+      observer.observe(currentRef);
     }
 
     const l = lastSectionRef.current;

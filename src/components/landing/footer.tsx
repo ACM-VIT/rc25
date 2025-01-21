@@ -4,7 +4,7 @@ import acm from '@/app/assets/acm.svg'
 import { Outfit } from 'next/font/google'
 import { FaFacebookF, FaLinkedin, FaYoutube, FaInstagram } from "react-icons/fa"
 import { FaXTwitter, FaHashnode } from "react-icons/fa6"
-import rclogo from '@/app/assets/rclogo.svg'
+import rclogo from '@/app/assets/RCLogo.svg'
 import Link from 'next/link';
 
 const outfit = Outfit({

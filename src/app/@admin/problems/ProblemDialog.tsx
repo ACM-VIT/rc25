@@ -1,36 +1,18 @@
-import { QuestionForm } from "./question-form"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
-import type { Difficulty } from "@prisma/client"
+import { QuestionForm } from "./question-form";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import type { Testcase, Round } from "@prisma/client";
+import type { Problem as PrismaBaseProblem } from "@prisma/client";
 
-interface Round {
-  number: number
-  start: Date
-  end: Date
-  result: Date
-}
-
-interface Problem {
-  id: string
-  title: string
-  nickname: string
-  description: string
-  difficulty: Difficulty
-  maxScore: number
-  lin_dl: string
-  win_dl: string
-  mac_dl: string
-  web_code: string
-  normal_cases: number
-  edge_cases: number
-  roundNumber: number
+interface Problem extends PrismaBaseProblem {
+  Testcase: Testcase[];
 }
 
 interface ProblemDialogProps {
-  isOpen: boolean
-  onClose: () => void
-  initialData: Problem | null
-  onSubmit: (formData: FormData) => Promise<void>
-  rounds: Round[]
+  isOpen: boolean;
+  onClose: () => void;
+  initialData: Problem | null;
+  onSubmit: (formData: FormData) => Promise<void>;
+  rounds: Round[];
 }
 
 export function ProblemDialog({
@@ -38,7 +20,7 @@ export function ProblemDialog({
   onClose,
   initialData,
   onSubmit,
-  rounds
+  rounds,
 }: ProblemDialogProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -53,5 +35,5 @@ export function ProblemDialog({
         />
       </DialogContent>
     </Dialog>
-  )
+  );
 }

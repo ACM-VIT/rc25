@@ -2,6 +2,7 @@ import QuestionPage from "./question-page";
 import { prisma } from "@/utils/prisma";
 import { notFound } from "next/navigation";
 import { auth } from "@/app/(auth)/auth"; // Import your auth
+import type { Round } from "@prisma/client";
 
 interface PageParams {
   params: Promise<{
@@ -24,6 +25,8 @@ export interface Problem {
   win_dl: string;
   mac_dl: string;
   Testcase: TestCase[];
+  round: Round;
+  slno?: number; // Add slno property
 }
 
 interface TestCase {
@@ -40,47 +43,34 @@ async function getProblem(id: string): Promise<Problem> {
     where: { id },
     include: {
       Testcase: true,
+      round: true, // Include round data
     }
   });
 
   if (!problem) notFound();
-  return problem;
+  return {
+    ...problem,
+    roundNumber: problem.round.number
+  };
 }
 
-async function getQuestions(roundNumber: number) {
+async function getQuestions(roundId: string) { // Change parameter type
   const problems = await prisma.problem.findMany({
-    where: { roundNumber },
-    orderBy: { id: "asc" },
-    include: {
-      submissions: {
-        orderBy: { createdAt: "desc" },
-        take: 1,
-      },
-    },
+    where: { roundId }, // Filter by roundId
+    orderBy: { id: "desc" }, // Change order to desc
   });
-
-  const questions = problems.map((problem, index) => {
-    const recentSubmission = problem.submissions[0];
-    const passedArray = recentSubmission?.testcasespassed || [];
-    const passCount = passedArray.filter(Boolean).length;
-    const total = passedArray.length;
-    const status = total > 0 ? `${passCount}/${total}` : "Not Attempted";
-    return {
-      slno: index + 1,
-      id: problem.id,
-      questionName: problem.title,
-      difficulty: problem.difficulty,
-      status,
-    };
-  });
-
-  return questions;
+  
+  // Add slno property based on array index
+  return problems.map((problem, index) => ({
+    ...problem,
+    slno: index + 1
+  }));
 }
 
 export default async function Page({ params }: PageParams) {
   const resolvedParams = await params;
   const problem = await getProblem(resolvedParams.id);
-  const questions = await getQuestions(problem.roundNumber);
+  const questions = await getQuestions(problem.round.id);
   const session = await auth();
 
   if (!session || !session.user || !session.user.id) {
@@ -89,7 +79,7 @@ export default async function Page({ params }: PageParams) {
 
   // Find the current question's slno based on the problem id
   const currentQuestion = questions.find(q => q.id === resolvedParams.id);
-  const currentSlno = currentQuestion ? currentQuestion.slno : 1;
+  const currentSlno = currentQuestion?.slno ?? 1;
 
   return <QuestionPage 
     problem={problem} 

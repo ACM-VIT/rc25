@@ -1,12 +1,15 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/utils/prisma";
-import { submissionEmitter } from "@/utils/eventEmitter";
+import { Redis } from "@upstash/redis";
 
 interface WebhookBody {
   submissionId: string;
   stdout: string;
   status?: string;
 }
+
+const REDIS_KEY_FOR_COMPLETE_SUBMISSION = "done";
+const redis = Redis.fromEnv();
 
 export async function POST(request: NextRequest) {
   try {
@@ -140,12 +143,11 @@ export async function POST(request: NextRequest) {
       }),
     ]);
 
-    // Emit event after successful update
-    submissionEmitter.emit('submissionUpdate', {
-      submissionId,
-      testcasespassed: finalTestCasesPassed,
-      scoreChange,
-    });
+    // Add submission to Redis completed list
+    await redis.rpush(REDIS_KEY_FOR_COMPLETE_SUBMISSION, submissionId);
+    console.log("Added to Redis completed list:", submissionId);
+
+    console.log("Final testcases passed:", finalTestCasesPassed);
 
     return NextResponse.json(
       {

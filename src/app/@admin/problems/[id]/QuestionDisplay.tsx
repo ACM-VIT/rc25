@@ -11,28 +11,17 @@ import UploadFolder from "./UploadFolder";
 import { useRouter } from "next/navigation";
 import DeleteQuestionDialog from "../DeleteQuestionDialog";
 import { deleteQuestion } from "@/app/actions/delete-question";
-import type { Difficulty } from "@prisma/client";
+// import type { Difficulty } from "@prisma/client";
+import type { Problem as PrismaBaseProblem } from '@prisma/client';
+
+interface Problem extends PrismaBaseProblem {
+  Testcase: TestCase[];
+}
+
 
 // Add this constant at the top of the file
 const commonButtonStyle =
   "inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm font-medium";
-
-interface Problem {
-  id: string;
-  title: string;
-  nickname: string;
-  difficulty: Difficulty;
-  maxScore: number;
-  roundNumber: number;
-  description: string;
-  normal_cases: number;
-  edge_cases: number;
-  lin_dl: string;
-  win_dl: string;
-  mac_dl: string;
-  web_code: string;
-  Testcase: TestCase[];
-}
 
 interface TestCase {
   id: string;
@@ -279,7 +268,7 @@ export default function ViewProblem({ problem }: ViewProblemProps) {
 
           <div className="bg-gray-50 p-4 rounded">
             <h3 className="font-semibold mb-2 text-black">Round Number</h3>
-            <p className="text-black">{problem.roundNumber}</p>
+            <p className="text-black">{problem.roundId}</p>
           </div>
         </div>
 

@@ -44,7 +44,7 @@ export async function handleQuestionSubmit(
     const nickname = formData.get("nickname") as string;
     const description = formData.get("description") as string;
     const difficulty = formData.get("difficulty") as "EASY" | "MEDIUM" | "HARD";
-    const roundNumber = Number.parseInt(formData.get("roundNumber") as string);
+    const roundId = formData.get("roundId") as string; // Changed from roundNumber
     const maxScore = Number.parseInt(formData.get("maxScore") as string);
     const webCode = formData.get("web_code") as string;
 
@@ -56,43 +56,28 @@ export async function handleQuestionSubmit(
     const macUrl = await uploadToGCS(macFile, `Question_${title}.mac`);
     const linUrl = await uploadToGCS(linFile, `Question_${title}.lin`);
 
+    const data = {
+      title,
+      nickname,
+      description,
+      difficulty,
+      maxScore,
+      web_code: webCode,
+      roundId,
+      lin_dl: linUrl || "",
+      mac_dl: macUrl || "",
+      win_dl: winUrl || "",
+      normal_cases: 0, // Added required field
+      edge_cases: 0, // Added required field
+    };
+
     if (questionId) {
       await prisma.problem.update({
-        where: {
-          id: questionId,
-        },
-        data: {
-          title,
-          nickname,
-          description,
-          difficulty,
-          maxScore,
-          web_code: webCode,
-          roundNumber,
-          lin_dl: linUrl,
-          mac_dl: macUrl,
-          win_dl: winUrl,
-        },
+        where: { id: questionId },
+        data
       });
     } else {
-      await prisma.problem.create({
-        data: {
-          title,
-          nickname,
-          description,
-          difficulty,
-          maxScore,
-          web_code: webCode,
-          lin_dl: linUrl,
-          mac_dl: macUrl,
-          win_dl: winUrl,
-          round: {
-            connect: {
-              number: roundNumber,
-            },
-          },
-        },
-      });
+      await prisma.problem.create({ data });
     }
   } catch (error) {
     console.error("Error handling question:", error);

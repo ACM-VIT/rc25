@@ -1,5 +1,6 @@
 import {nextui} from '@nextui-org/theme';
 import type { Config } from "tailwindcss";
+import tailwindcssMotion from "tailwindcss-motion";
 
 const config: Config = {
 	darkMode: ["class"],
@@ -17,8 +18,9 @@ const config: Config = {
 			// => @media (min-width: 640px) { ... }
 
 			'md': '768px',
+			'lg-sm':'950px',
 			// => @media (min-width: 768px) { ... }
-
+			'lg-md':"1000px",
 			'lg': '1024px',
 			// => @media (min-width: 1024px) { ... }
 
@@ -29,7 +31,10 @@ const config: Config = {
 			// => @media (min-width: 1536px) { ... }
 		},
 		extend: {
-			
+			fontFamily: {
+				custom: ['deathstar', 'sans-serif'],
+				aurebesh: ['aurebesh', 'sans-serif'],
+			  },
 			colors: {
 				background: "var(--background)",
 				foreground: "var(--foreground)",
@@ -54,7 +59,12 @@ const config: Config = {
 				float: {
 				  '0%, 100%': { transform: 'translateY(0)' },
 				  '50%': { transform: 'translateY(-28px)' },
+				  
 				},
+				fadeIn: {
+					'0%': { opacity: '0' },
+					'100%': { opacity: '1' },
+				  },
 				"accordion-down": {
 					from: { height: "0" },
 					to: { height: "var(--radix-accordion-content-height)" },
@@ -65,17 +75,15 @@ const config: Config = {
 				  },
 			},
 			animation: {
-				'spin-slow': 'spin 15s linear infinite',
+				'spin-slow': 'spin 30s linear infinite',
 				float: 'float 1.5s ease-in-out infinite',
 				"accordion-down": "accordion-down 0.2s ease-out",
 				"accordion-up": "accordion-up 0.2s ease-out",
+				fadeIn: "fadeIn 1.5s ease-in-out",
 			},
 		},
-		plugins: [
-			require('tailwindcss-motion'), 
-		],
 	},
 	
-  plugins: [nextui()],
+  plugins: [nextui(), tailwindcssMotion],
 };
 export default config;

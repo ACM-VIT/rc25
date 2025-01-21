@@ -1,21 +1,27 @@
 import type React from "react";
-import LandOne from "@/components/landing/landone";
-import LandingNavbar from "@/components/landing/landing-navbar";
-import HowItWorks from "@/components/landing/howitworks";
-import PrizePool from "@/components/landing/prizepool";
-import { Timeline } from "@/components/landing/timeline";
-import FaqRegister from "@/components/landing/faqregister";
-import SponsorsSection from "@/components/landing/sponsors";
-import Footer from "@/components/landing/footer";
-import Landing from "@/components/landing/new-pc/landing";
-import TimeLine from "@/components/landing/new-pc/timeline";
+import NewLandOne from "../../components/landing/new-pc/newlandone";
+import HowItWorks from "../../components/landing/new-pc/howItWorks";
+import Allies from "../../components/landing/new-pc/allies";
 
-const Page: React.FC = () => {
+const Layout: React.FC = () => {
   return (
-    <div className="overflow-x-hidden bg-black min-h-screen text-white">
-      <TimeLine />
+    <div className="relative w-screen h-dvh overflow-hidden">
+      <div
+        className="flex overflow-x-auto overflow-y-hidden scroll-smooth"
+        style={{ scrollBehavior: "smooth" }}
+      >
+        <div className="flex-none w-screen h-full">
+          <NewLandOne />
+        </div>
+        <div className="flex-none w-screen h-full">
+          <HowItWorks />
+        </div>
+        <div className="flex-none w-screen h-full">
+          <Allies />
+        </div>
+      </div>
     </div>
   );
 };
 
-export default Page;
+export default Layout;

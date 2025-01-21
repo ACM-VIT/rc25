@@ -13,11 +13,11 @@ async function getNextRound() {
       start: 'asc'
     },
     select: {
-      number: true
+      id: true
     }
   });
   
-  return nextRound?.number;
+  return nextRound?.id;
 }
 
 async function getTeams() {
@@ -40,7 +40,7 @@ async function getTeams() {
       id: team.id,
       name: team.name,
       points: team.score,
-      currentRound: team.TeamRound[0]?.roundId ?? -1
+      currentRound: team.TeamRound[0] ? team.TeamRound[0].roundId.toString() : '-1'
     }));
   } finally {
     await prisma.$disconnect();

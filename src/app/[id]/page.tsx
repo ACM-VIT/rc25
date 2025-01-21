@@ -2,29 +2,16 @@ import ViewProblem from './ProblemClient';
 import { prisma } from "@/utils/prisma";
 import { notFound } from "next/navigation";
 import { auth } from "@/app/(auth)/auth"; // Import your auth
+import type { Problem as PrismaBaseProblem } from '@prisma/client';
+
+interface Problem extends PrismaBaseProblem {
+  Testcase: TestCase[];
+}
 
 interface PageParams {
   params: Promise<{
     id: string;
   }>;
-}
-
-// Add interface for problem data
-export interface Problem {
-  id: string;
-  title: string;
-  nickname: string;
-  difficulty: "EASY" | "MEDIUM" | "HARD";
-  maxScore: number;
-  roundNumber: number;
-  description: string;
-  normal_cases: number;
-  edge_cases: number;
-  lin_dl: string;
-  win_dl: string;
-  mac_dl: string;
-  web_code: string;
-  Testcase: TestCase[];
 }
 
 interface TestCase {

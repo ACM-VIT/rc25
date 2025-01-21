@@ -27,7 +27,7 @@ export default async function ReverseCheckIn(teamId: string) {
 		where: {
 			teamId_roundId: {
 				teamId: teamId,
-				roundId: 1,
+				roundId: '1',
 			},
 		},
 	});

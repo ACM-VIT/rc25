@@ -1,16 +1,18 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import type { Round, Problem as PrismaProblem } from "@prisma/client";
+import type { Round, Testcase, Problem as PrismaProblem } from "@prisma/client";
 import { handleQuestionSubmit } from "@/app/actions/upsert-question";
 import { ProblemDialog } from "./ProblemDialog";
 import DeleteButton from "./DeleteButton";
 import CreateProblemButton from "./CreateProblemButton";
 import Link from "next/link";
 
-interface Problem extends PrismaProblem {
+type Problem = PrismaProblem & {
   roundNumber: number;
-}
+  Testcase: Testcase[];
+};
+
 
 interface ProblemsClientProps {
   problems: Problem[];
@@ -23,7 +25,7 @@ export default function ProblemsClient({
 }: ProblemsClientProps) {
   const [editingProblem, setEditingProblem] = useState<Problem | null>(null);
   const [isPending, startTransition] = useTransition();
-
+  
   const handleEdit = async (formData: FormData) => {
     startTransition(async () => {
       await handleQuestionSubmit(formData, editingProblem?.id);

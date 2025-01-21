@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { FirestoreService } from '@/lib/firebase-service';
+import { type NextRequest, NextResponse } from 'next/server';
+import { firestoreService } from '@/lib/firebase-service';
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
       }
 
       if (change.id && change.name && change.score) {
-        await FirestoreService.updateTeam({id: change.id, name: change.name, score: change.score});
+        await firestoreService.updateTeam({id: change.id, name: change.name, score: change.score});
       }
     }
 

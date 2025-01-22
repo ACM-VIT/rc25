@@ -36,7 +36,6 @@ export async function GET(request: Request) {
               await new Promise((resolve) => setTimeout(resolve, 2000));
               break;
             }
-            console.log("Submission ID:", id);
           }
 
           if (found) {

@@ -1,6 +1,6 @@
 import { prisma } from "@/utils/prisma";
 import Dashboard from "@/components/dashboard";
-import SignOutButton from "@/components/buttons/sign-out";
+// import SignOutButton from "@/components/buttons/sign-out";
 // import type { TeamRound } from "@prisma/client"
 import { getTeamRound } from "@/hooks/useTeamRound";
 
@@ -106,7 +106,6 @@ export default async function Page() {
           end: roundInfo?.end ?? new Date(),
         }}
       />
-      <SignOutButton />
     </>
   );
 }

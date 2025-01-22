@@ -4,13 +4,14 @@ import { notFound } from "next/navigation";
 import { auth } from "@/app/(auth)/auth"; // Import your auth
 import type { Round } from "@prisma/client";
 
+
 interface PageParams {
   params: Promise<{
     id: string;
   }>;
 }
 
-// Add interface for problem data
+
 export interface Problem {
   id: string;
   title: string;

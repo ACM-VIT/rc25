@@ -1,7 +1,7 @@
 import type React from "react"
 import Image from "next/image"
 import timelinebg from "@/app/assets/timelinebg.svg"
-import laser from "@/app/assets/laser.svg"
+// import laser from "@/app/assets/laser.svg"
 
 
 const timelineData = [

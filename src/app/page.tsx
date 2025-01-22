@@ -106,7 +106,6 @@ export default async function Page() {
           end: roundInfo?.end ?? new Date(),
         }}
       />
-      <SignOutButton />
     </>
   );
 }

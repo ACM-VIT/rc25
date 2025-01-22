@@ -28,7 +28,7 @@ const HowItWorks: React.FC = () => {
       </div>
 
       {/* Main Heading - Centered and responsive */}
-      <div className="absolute how-it-works-heading z-10 text-white text-center w-full top-[10vh] text-[60px] sm:text-[80px] md:text-[110px] lg:text-[110px] xl:text-[160px]">
+      <div className="absolute how-it-works-heading z-10 text-white text-center w-full text-[60px] sm:text-[80px] md:text-[110px] lg:text-[110px] xl:text-[160px]">
         How It Works?
       </div>
 

@@ -88,6 +88,11 @@
     src: url('/fonts/DeathStar.otf') format('opentype'); /* Path to your font file */
     font-weight: normal;
     font-style: normal;
+
+    font-family: 'aurebesh'; /* Name of the font */
+    src: url('/fonts/Aurebesh.otf') format('opentype'); 
+    font-weight: normal;
+    font-style: normal;
 }
 
 }
@@ -136,4 +141,37 @@
       0 0 15px rgba(255, 255, 255, 0.4),
       0 0 20px rgba(255, 255, 255, 0.2);
   }
+  
+  @font-face {
+    font-family: 'Death Star';
+    src: url('/fonts/death-star.otf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  body {
+    font-family: 'Death Star', sans-serif;
+  }  
+
+}
+@font-face {
+  font-family: 'Orbitron';
+  src: url('/Orbitron-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+.orbitron {
+  font-family: 'Orbitron', sans-serif;
+}
+@keyframes vertical-scroll {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(-100%);
+  }
+}
+
+.animate-vertical-scroll {
+  animation: vertical-scroll 10s linear infinite;
 }

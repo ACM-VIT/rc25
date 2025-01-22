@@ -135,7 +135,7 @@ export default function CodeEditor({ problem, session }: CodeEditorProps) {
 
     const languages = Object.entries(SUPPORTED_LANGUAGES).map(([value, data]) => ({
         value: value as SupportedLanguage,
-        label: data.name
+        label: data.name.split(' ')[0] 
     }));
 
     return (

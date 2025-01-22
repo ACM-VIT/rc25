@@ -45,24 +45,27 @@ export default function PortalFaqs() {
     ];
 
     return (
-        <div className="bg-[radial-gradient(110.8%_70.71%_at_50%_50%,_#0B0014_55.41%,_#18181B_100%)] min-h-screen relative">
+        <div
+            className="min-h-screen relative"
+            style={{ backgroundImage: "url('./submissionsbg.png')", backgroundSize: "cover" }}
+        >
             <div className="p-6 text-white">
                 <h1 className="text-5xl font-bold mb-8">FAQs</h1>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 justify-center">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10 justify-center">
                     {faqs.map((faq, index) => (
                         <div
-                        key={faq.id}
-                        className="bg-[#33273e] bg-opacity-70 rounded-lg mb-4 w-[100%] md:w-[80%] mx-auto"
+                            key={faq.id}
+                            className="mb-6 w-[100%] md:w-[80%] mx-auto"
                         >
                             <Accordion type="single" collapsible>
                                 <AccordionItem
                                     value={`question${index + 1}`}
-                                    className="rounded-lg border-none outline-none" // Ensured no borders or outlines
+                                    className="rounded-lg border border-[rgba(155,81,224,0.5)] bg-[rgba(66,66,66,0.75)] shadow-[0_0_7.7px_4px_#FFF,0_0_18.8px_14px_#7638F5] backdrop-blur-[16px]"
                                 >
-                                    <AccordionTrigger className="text-lg font-medium p-4 border-none outline-none">
+                                    <AccordionTrigger className="text-lg font-medium p-4">
                                         {faq.question}
                                     </AccordionTrigger>
-                                    <AccordionContent className="p-4 text-sm border-none outline-none">
+                                    <AccordionContent className="p-4 text-sm">
                                         {faq.answer}
                                     </AccordionContent>
                                 </AccordionItem>
@@ -71,11 +74,6 @@ export default function PortalFaqs() {
                     ))}
                 </div>
             </div>
-            <Image
-                src={yellowwhitering}
-                alt="Yellow White Ring"
-                className="absolute bottom-0 right-0 md:w-48 md:h-40"
-            />
         </div>
     );
 }

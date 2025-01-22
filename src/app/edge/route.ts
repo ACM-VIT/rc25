@@ -22,11 +22,11 @@ export async function GET(request: Request) {
         controller.enqueue(encoder.encode("Checking submission status...\n"));
 
         while (true) {
-          const submissions = await redis.lrange("submission",0,-1);
+          const submissions = await redis.lrange("done",0,-1);
 
           if (!submissions) {
             controller.enqueue(encoder.encode("No submission data found\n"));
-            break;
+            continue;
           }
           let found = false;
           for (const submission of submissions) {
@@ -39,15 +39,7 @@ export async function GET(request: Request) {
             console.log("Submission ID:", id);
           }
 
-          if (!found) {
-            // const result = await getSubmission(token);
-            // controller.enqueue(encoder.encode(`Status of answer: ${result.status?.description}\n`));
-            // if (result.status?.description === "Accepted" || 
-            //     result.status?.description === "Wrong Answer" ||
-            //     result.compile_output) {
-            //   break;
-            // }
-
+          if (found) {
             controller.enqueue(encoder.encode("Submission calculated found\n"));
             break;
           }

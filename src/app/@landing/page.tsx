@@ -1,5 +1,6 @@
 "use client";
-import React, { useEffect, useRef } from "react";
+import type React from "react";
+import { useEffect, useRef } from "react";
 // import NewLandOne from "../../components/landing/new-pc/newlandone";
 import LandingNavbar from "../../components/landing/landing-navbar";
 import HowItWorks from "../../components/landing/new-pc/howItWorks";

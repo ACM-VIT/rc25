@@ -35,7 +35,7 @@ export default function NewLandOne() {
             className="2xl:w-[30rem] xl:w-[37rem] lg:w-[34rem] md:w-[31rem] sm:w-[28rem] xs:w-[24rem] phone:w-[20rem]"
           />
           <div
-            className="2xl:text-[7rem] xl:text-[3.2rem] lg:text-[3rem] md:text-[2.8rem] sm:text-[2.4rem] xs:text-[2.1rem] phone:text-[1.7rem] mt-[2%] whitespace-nowrap justify-center items-center flex flex-col font-custom animate-fadeIn"
+            className="2xl:text-[7rem] xl:text-[3.2rem] lg:text-[3rem] md:text-[2.8rem] sm:text-[2.4rem] xs:text-[2.1rem] phone:text-[1.7rem] mt-[2%] how-it-works-heading whitespace-nowrap justify-center items-center flex flex-col font-custom animate-fadeIn"
             style={{
               color: "transparent",
               WebkitTextStroke: "1px white",

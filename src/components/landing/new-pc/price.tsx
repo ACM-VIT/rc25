@@ -54,7 +54,7 @@ const Price: React.FC = () => {
           />
           <Prizerock
             position="O(1)"
-            prize={1224}
+            prize={20000}
             height={400}
             width={400}
             positionTextSize="text-4xl lg:text-6xl"

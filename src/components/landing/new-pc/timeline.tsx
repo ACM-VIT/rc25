@@ -27,10 +27,10 @@ const TimeLine: React.FC = () => {
             writingMode: 'vertical-lr', 
             fontFamily: "Death Star, sans-serif",
             color: 'transparent',
-            WebkitTextStroke: '1px rgba(255, 255, 255, 0.8)', // White outline with 80% opacity
+            WebkitTextStroke: '1px rgba(255, 255, 255, 1)', // White outline with 80% opacity
         }}
         >
-        <span className="transform rotate-180 text-4xl tracking-wider">
+        <span className="transform text-glow how-it-works-heading rotate-180 text-4xl tracking-wider">
             TRY YOU MUST
         </span>
         </div>
@@ -41,10 +41,10 @@ const TimeLine: React.FC = () => {
               writingMode: 'vertical-rl', 
               fontFamily: "Death Star, sans-serif",
               color: 'transparent',
-              WebkitTextStroke: '1px rgba(255, 255, 255, 0.8)', // White outline with 80% opacity
+              WebkitTextStroke: '1px rgba(255, 255, 255, 1)', // White outline with 80% opacity
           }}
         >
-          <span className="transform rotate-180 text-4xl tracking-wider">
+          <span className="transform text-glow how-it-works-heading rotate-180 text-4xl  tracking-wider">
               UNTIL THE TASK IS DONE.
           </span>
         </div>
@@ -63,8 +63,8 @@ const TimeLine: React.FC = () => {
       /> */}
 
       <div className="flex flex-col relative z-10 h-full justify">
-        <div className="flex justify-center pt-8 sm:pt-12 md:pt-12 lg:pt-12 text-6xl sm:text-7xl md:text-8xl lg:text-9xl text-center">
-          <h1 style={{ fontFamily: "Death Star, sans-serif" }}>TIMELINE</h1>
+        <div className="flex how-it-works-heading text-white   justify-center pt-8 sm:pt-12 md:pt-12 lg:pt-12 text-6xl sm:text-7xl md:text-8xl lg:text-9xl text-center">
+          TIMELINE
         </div>
 
         <div className="flex h-full justify-center items-center gap-4 md:gap-8 px-28">

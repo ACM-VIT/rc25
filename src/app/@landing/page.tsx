@@ -2,6 +2,8 @@ import type React from "react";
 import NewLandOne from "../../components/landing/new-pc/newlandone";
 import HowItWorks from "../../components/landing/new-pc/howItWorks";
 import Allies from "../../components/landing/new-pc/allies";
+import TimeLine from "@/components/landing/new-pc/timeline";
+import Faq from "@/components/landing/new-pc/faq";
 
 const Layout: React.FC = () => {
   return (
@@ -18,6 +20,12 @@ const Layout: React.FC = () => {
         </div>
         <div className="flex-none w-screen h-full">
           <Allies />
+        </div>
+        <div>
+          <TimeLine />
+        </div>
+        <div>
+          <Faq />
         </div>
       </div>
     </div>

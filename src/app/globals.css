@@ -141,16 +141,5 @@
       0 0 15px rgba(255, 255, 255, 0.4),
       0 0 20px rgba(255, 255, 255, 0.2);
   }
-  
-  @font-face {
-    font-family: 'Death Star';
-    src: url('/fonts/death-star.otf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-  }
-  
-  body {
-    font-family: 'Death Star', sans-serif;
-  }  
 
 }

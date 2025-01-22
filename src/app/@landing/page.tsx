@@ -2,7 +2,7 @@ import type React from "react";
 import NewLandOne from "../../components/landing/new-pc/newlandone";
 import HowItWorks from "../../components/landing/new-pc/howItWorks";
 import Allies from "../../components/landing/new-pc/allies";
-
+import Price from "../../components/landing/new-pc/price";
 const Layout: React.FC = () => {
   return (
     <div className="relative w-screen h-dvh overflow-hidden">
@@ -18,6 +18,9 @@ const Layout: React.FC = () => {
         </div>
         <div className="flex-none w-screen h-full">
           <Allies />
+        </div>
+        <div className="flex-none w-screen h-full">
+          <Price />
         </div>
       </div>
     </div>

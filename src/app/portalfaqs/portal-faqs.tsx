@@ -2,8 +2,8 @@
 
 import React from "react";
 import { AccordionContent, AccordionItem, AccordionTrigger, Accordion } from "../../components/ui/accordion";
-import Image from "next/image";
-import yellowwhitering from "@/app/assets/yellowwhitering.png";
+// import Image from "next/image";
+// import yellowwhitering from "@/app/assets/yellowwhitering.png";
 
 export default function PortalFaqs() {
     const faqs = [

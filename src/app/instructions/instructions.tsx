@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
-import instrock from "@/app/assets/instrock.png";
+// import Image from "next/image";
+// import instrock from "@/app/assets/instrock.png";
 import DashboardBox from "@/components/DashboardBox";
 
 export default function Instructions() {

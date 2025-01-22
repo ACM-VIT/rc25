@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import createSubmission from '@/app/actions/create-submission';
+import getSubmissionResults from '@/app/actions/get-submission-results';
 import { SUPPORTED_LANGUAGES, type SupportedLanguage } from '@/utils/judge0-langs';
 
 const LANGUAGE_STORAGE_KEY = 'preferred-language' as const;
@@ -57,7 +58,7 @@ export default function CodeEditor({ problem, session }: CodeEditorProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [submissionStatus, setSubmissionStatus] = useState('');
-    // const [streamData, setStreamData] = useState(""); // Add this state
+    const [testResults, setTestResults] = useState<{passed: number, total: number} | null>(null);
 
     useEffect(() => {
         const snippets: CodeSnippets = JSON.parse(localStorage.getItem(CODE_STORAGE_KEY) || '{}');
@@ -96,6 +97,7 @@ export default function CodeEditor({ problem, session }: CodeEditorProps) {
 
             if (result.success && result.submission) {
                 setSubmissionStatus('Submitted successfully!');
+                console.log("Submission id check:", result.submission.id)
                 const finalResult = await fetch(`/edge?submissionId=${result.submission.id}&token=${result.token}`, {
                     method: 'GET'
                 });
@@ -110,7 +112,6 @@ export default function CodeEditor({ problem, session }: CodeEditorProps) {
                             if (done) break;
                             const chunk = decoder.decode(value);
                             console.log('Received chunk:', chunk);
-                            // setStreamData(prev => prev + chunk);
                         }
                     } catch (error) {
                         console.error('Error reading stream:', error);
@@ -119,9 +120,15 @@ export default function CodeEditor({ problem, session }: CodeEditorProps) {
                     }
                 }
 
-                
+                const results = await getSubmissionResults(result.submission.id);
+                const passed = results.filter(r => r === true).length;
+                setTestResults({
+                    passed,
+                    total: results.length
+                });
 
-                console.log('Final result');
+
+                console.log('Final result', results);
             }
             if (!result.success) {
                 setError(result.error || 'Submission failed');
@@ -230,6 +237,13 @@ export default function CodeEditor({ problem, session }: CodeEditorProps) {
                 language={language}
                 className="rounded-b-lg"
             />
+                        {testResults && (
+                <div className="absolute top-[8vh] w-full p-2 bg-blue-100 text-blue-700 text-sm">
+                    Test Cases: {testResults.passed}/{testResults.total} passed
+                </div>
+            )}
+
+
         </div>
     );
 }

@@ -163,3 +163,15 @@
 .orbitron {
   font-family: 'Orbitron', sans-serif;
 }
+@keyframes vertical-scroll {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(-100%);
+  }
+}
+
+.animate-vertical-scroll {
+  animation: vertical-scroll 10s linear infinite;
+}

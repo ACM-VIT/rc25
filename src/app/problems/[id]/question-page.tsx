@@ -95,8 +95,12 @@ export default function QuestionPage({ problem, session, questions, currentSlno 
               <CodeEditor problem={problem} session={session} />
             </div>
             <div className="h-[50%]">
-              <SubmissionSection/>
-            </div>
+            <SubmissionSection 
+                userId={session.user.id}
+              problemId={problem.id}
+            />
+          </div>
+
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import type React from "react";
 import Image from "next/image";
 import bg from "../../../../public/landing_new/prize_bg.png";
-import rock from "../../../../public/landing_new/rock.png";
+// import rock from "../../../../public/landing_new/rock.png";
 import Prizerock from "./rock-prize";
 const Price: React.FC = () => {
   return (

@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useRef } from "react";
-import NewLandOne from "../../components/landing/new-pc/newlandone";
+// import NewLandOne from "../../components/landing/new-pc/newlandone";
+import LandingNavbar from "../../components/landing/landing-navbar";
 import HowItWorks from "../../components/landing/new-pc/howItWorks";
 import Allies from "../../components/landing/new-pc/allies";
 import Price from "../../components/landing/new-pc/price";
@@ -79,7 +80,10 @@ const Layout: React.FC = () => {
         className="flex overflow-x-auto overflow-y-hidden"
       >
         <div className="flex-none w-screen h-full">
-          <NewLandOne />
+          {/* <NewLandOne /> */}
+          <LandingNavbar />
+
+          
         </div>
         <div className="flex-none w-screen h-full">
           <HowItWorks />

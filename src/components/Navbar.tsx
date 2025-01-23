@@ -41,9 +41,7 @@ const Navbar: React.FC<NavbarProps> = ({ name }) => {
     }, [handleClickOutside, isDropdownOpen]);
 
     return (
-        <nav
-            className="w-full h-[60px] hidden md:block bg-[radial-gradient(110.8%_70.71%_at_50%_50%,_#0B0014_55.41%,_#18181B_100%)] border-b-[2px] border-gray-400/30"
-        >
+        <nav className="w-full h-full p-2 items-center justify-center hidden md:block bg-[radial-gradient(110.8%_70.71%_at_50%_50%,_#0B0014_55.41%,_#18181B_100%)] border-b-[2px] border-gray-400/30">
             <div className="flex h-full flex-row justify-between items-center mx-auto px-4 sm:px-6 md:px-4 max-w-9xl mb-3">
                 <div className="h-full">
                     <Image
@@ -98,8 +96,7 @@ const Navbar: React.FC<NavbarProps> = ({ name }) => {
                             <AvatarIcon size={20} className="text-white" />
                         </button>
                         {isDropdownOpen && (
-                            <div
-                                className="absolute top-full mt-2 right-0 bg-[#1E1E24] text-white rounded-lg shadow-lg py-2 w-48">
+                            <div className="absolute top-full mt-2 right-0 bg-[#1E1E24] text-white rounded-lg shadow-lg py-2 w-48">
                                 <Link
                                     href="/profile"
                                     className="block px-4 py-2 text-center w-full hover:bg-[#39234E]"

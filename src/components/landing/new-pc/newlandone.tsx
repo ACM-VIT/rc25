@@ -5,6 +5,7 @@ import earthone from "@/app/assets/earthone.svg";
 import wrclogo from "@/app/assets/wrclogo.svg";
 import acm from "@/app/assets/acm.svg";
 import join from "@/app/assets/join.svg";
+import SignIn from "@/app/(auth)/authactions/signin";
 
 export default function NewLandOne() {
     return (
@@ -36,6 +37,7 @@ export default function NewLandOne() {
                     />
                     <div
                         className="2xl:text-[7rem] xl:text-[3.2rem] lg:text-[3rem] md:text-[2.8rem] sm:text-[2.4rem] xs:text-[2.1rem] phone:text-[1.7rem] mt-[2%] whitespace-nowrap justify-center items-center flex flex-col font-custom animate-fadeIn"
+
                         style={{
                             color: "transparent",
                             WebkitTextStroke: "1px white",
@@ -60,13 +62,14 @@ export default function NewLandOne() {
                 </div>
 
                 {/* Join button */}
-                <div
+                <button
                     className="absolute z-20 left-1/2 transform -translate-x-1/2
                       2xl:w-[20rem] xl:w-[18rem] lg:w-[18rem] md:w-[16rem] sm:w-[14rem] xs:w-[12rem] w-[10rem]
                       2xl:bottom-[8%] xl:bottom-[5%] lg:bottom-[2%] md:bottom-[0%] sm:bottom-[5%] xs:bottom-[2%] bottom-[0%]"
+                    onClick={SignIn}
                 >
                     <Image src={join} alt="Join" />
-                </div>
+                </button>
 
                 {/* Earth image wrapper */}
                 <div className="flex justify-center z-10">

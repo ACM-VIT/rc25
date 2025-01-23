@@ -1,6 +1,6 @@
 import {nextui} from '@nextui-org/theme';
 import type { Config } from "tailwindcss";
-import tailwindcssMotion from "tailwindcss-motion";
+
 
 const config: Config = {
 	darkMode: ["class"],
@@ -84,6 +84,10 @@ const config: Config = {
 		},
 	},
 	
-  plugins: [nextui(), tailwindcssMotion],
+	plugins: [
+		nextui(),
+		require("tailwindcss-motion") 
+	  ],
+	
 };
 export default config;

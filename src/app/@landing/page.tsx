@@ -94,26 +94,23 @@ const Layout: React.FC = () => {
                     <Price />
                 </div>
             </div>
+            <div className="flex-none w-screen h-full">
+                <HowItWorks />
+            </div>
+            <div className="flex-none w-screen h-full">
+                <Allies />
+            </div>
+            <div className="flex-none w-screen h-full">
+                <Price />
+            </div>
+            <div>
+                <TimeLine />
+            </div>
+            <div>
+                <Faq />
+            </div>
         </div>
-        <div className="flex-none w-screen h-full">
-          <HowItWorks />
-        </div>
-        <div className="flex-none w-screen h-full">
-          <Allies />
-        </div>
-        <div className="flex-none w-screen h-full">
-          <Price />
-        </div>
-        <div>
-          <TimeLine />
-        </div>
-        <div>
-          <Faq />
-        </div>
-      </div>
-    </div>
-  );
-
+    );
 };
 
 export default Layout;

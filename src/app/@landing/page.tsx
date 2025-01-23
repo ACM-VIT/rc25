@@ -5,6 +5,8 @@ import NewLandOne from "../../components/landing/new-pc/newlandone";
 import HowItWorks from "../../components/landing/new-pc/howItWorks";
 import Allies from "../../components/landing/new-pc/allies";
 import Price from "../../components/landing/new-pc/price";
+import TimeLine from "@/components/landing/new-pc/timeline";
+import Faq from "@/components/landing/new-pc/faq";
 
 const Layout: React.FC = () => {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -93,7 +95,25 @@ const Layout: React.FC = () => {
                 </div>
             </div>
         </div>
-    );
+        <div className="flex-none w-screen h-full">
+          <HowItWorks />
+        </div>
+        <div className="flex-none w-screen h-full">
+          <Allies />
+        </div>
+        <div className="flex-none w-screen h-full">
+          <Price />
+        </div>
+        <div>
+          <TimeLine />
+        </div>
+        <div>
+          <Faq />
+        </div>
+      </div>
+    </div>
+  );
+
 };
 
 export default Layout;

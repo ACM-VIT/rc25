@@ -21,14 +21,14 @@ const HowItWorks: React.FC = () => {
       </div>
 
       {/* Right Side Text - Positioned relative to viewport width */}
-      <div className="absolute right-6  translate-x-1/2 transform xl:bottom-[100px] lg:bottom-[80px] bottom-[60px] -translate-y-3/4 z-10">
+      <div className="absolute right-8 translate-x-1/2 transform xl:bottom-[100px] lg:bottom-[80px] bottom-[60px] -translate-y-3/4 z-10">
         <div className="vertical-text transform how-it-works-heading -rotate-90 text-glow font-extrabold text-[35px] sm:text-[20px] md:text-[30px] lg:text-[30px] xl:text-[45px] tracking-widest">
           RUST ENSURED
         </div>
       </div>
 
       {/* Main Heading - Centered and responsive */}
-      <div className="absolute how-it-works-heading z-10 text-white text-center w-full text-[60px] sm:text-[80px] md:text-[110px] lg:text-[110px] xl:text-[160px]">
+      <div className="absolute how-it-works-heading z-10 text-white text-center w-full sm:text-[80px] md:text-[110px] lg:text-[80px] xl:text-[115px]">
         How It Works?
       </div>
 

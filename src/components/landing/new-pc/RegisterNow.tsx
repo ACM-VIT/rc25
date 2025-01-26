@@ -23,21 +23,22 @@ const RegisterNow1: React.FC = () => {
 
       <div className="absolute inset-0 z-30 flex flex-col h-full justify-center m-8 items-start gap-10">
         {[
-          { src: v1, href: "/link1" },
-          { src: v2, href: "/link2" },
-          { src: v3, href: "/link3" },
+          { src: v1, href: "https://github.com/ACM-VIT" },
+          { src: v2, href: "https://www.instagram.com/acmvit/" },
+          { src: v3, href: "https://www.linkedin.com/company/acmvit/" },
         ].map((item, index) => (
           <a
             key={`vector-${index}`}
             href={item.href}
             className="transition-transform hover:scale-110"
+            target="_blank"
           >
             <Image
               alt={`Vector icon ${index + 1}`}
               src={item.src || "/placeholder.svg"}
               width={48}
               height={48}
-              className="transform"
+              className="scale-125 transform fix"
               priority
             />
           </a>
@@ -61,22 +62,25 @@ const RegisterNow1: React.FC = () => {
         src={logo || "/placeholder.svg"}
         width={120}
         height={120}
-        className="transform scale-150"
+        className="scale-125 transform fix"
         priority
       />
     </div>
   </div>
 
-  <div className="flex justify-center items-center w-1/4">
-    <div className="w-full flex justify-start">
+  <div className="flex  flex=coljustify-center items-center w-1/4 mb-9">
+    <div className="w-full flex justify-start content-center ">
       <Image
         alt="Reverse Coding Logo"
         src={RC || "/placeholder.svg"}
         width={120}
         height={120}
-        className="transform scale-150"
+        className="scale-125 transform fix"
         priority
       />
+    </div>
+    <div>
+      <span></span>
     </div>
   </div>
 </div>

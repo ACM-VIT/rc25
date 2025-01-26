@@ -77,7 +77,7 @@ export default function Allies() {
 
       {/* Title */}
       <div className="absolute top-[5%] w-full text-center z-10">
-        <h1 className="text-white text-4xl sm:text-6xl md:text-[7rem] lg:text-[8rem] how-it-works-heading tracking-widest uppercase">
+        <h1 className="text-white text-4xl sm:text-6xl md:text-[7rem] lg:text-[8rem] how-it-works-heading uppercase">
           Allies
         </h1>
       </div>
@@ -109,8 +109,7 @@ export default function Allies() {
               "0 0 10px rgba(128, 0, 128, 0.8), 0 0 20px rgba(128, 0, 128, 0.6)", // Purple glow
           }}
         >
-          CODE, INVERT, CONQUER &nbsp; CODE, INVERT, CONQUER &nbsp; CODE,
-          INVERT, CONQUER
+          CODE, INVERT, CONQUER
         </div>
       </div>
     </div>

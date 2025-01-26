@@ -7,110 +7,113 @@ import Allies from "../../components/landing/new-pc/allies";
 import Price from "../../components/landing/new-pc/price";
 import TimeLine from "@/components/landing/new-pc/timeline";
 import Faq from "@/components/landing/new-pc/faq";
+import RegisterNow1 from "@/components/landing/new-pc/RegisterNow";
+import NullPointException1 from "@/components/landing/new-pc/NullPointException";
 
 const Layout: React.FC = () => {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const isScrolling = useRef(false);
-    const animationFrameId = useRef<number | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isScrolling = useRef(false);
+  const animationFrameId = useRef<number | null>(null);
 
-    useEffect(() => {
-        const container = containerRef.current;
-        if (!container) return;
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
 
-        // A more "ease-out" style function
-        const easeOutQuad = (t: number) => 1 - (1 - t) * (1 - t);
+    const easeOutQuad = (t: number) => {
+      // More natural and smooth easing function
+      return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+    };
 
-        const scrollHorizontally = (delta: number) => {
-            // Cancel any ongoing animation before starting a new one
-            if (animationFrameId.current) {
-                cancelAnimationFrame(animationFrameId.current);
-            }
+    const scrollHorizontally = (delta: number) => {
+      if (animationFrameId.current) {
+        cancelAnimationFrame(animationFrameId.current);
+      }
 
-            const start = container.scrollLeft;
-            const end = start + delta * 5; // Adjust this multiplier to control "speed"
-            const duration = 500; // Adjust duration (ms) for overall "smoothness"
+      const start = container.scrollLeft;
+      const pageWidth = container.clientWidth;
+      const currentPage = Math.round(start / pageWidth);
 
-            let startTime: number | null = null;
+      const direction = Math.sign(delta);
+      const targetPage = Math.max(0, Math.min(currentPage + direction, 7));
+      const end = targetPage * pageWidth;
 
-            const animate = (time: number) => {
-                if (!startTime) startTime = time;
-                const elapsed = time - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-                const easedProgress = easeOutQuad(progress);
+      const duration = 400; // Balanced duration for smooth transition
+      let startTime: number | null = null;
 
-                container.scrollLeft = start + (end - start) * easedProgress;
+      const animate = (time: number) => {
+        if (!startTime) startTime = time;
+        const elapsed = time - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easedProgress = easeOutQuad(progress);
 
-                if (progress < 1) {
-                    animationFrameId.current = requestAnimationFrame(animate);
-                } else {
-                    animationFrameId.current = null;
-                    isScrolling.current = false;
-                }
-            };
+        container.scrollLeft = start + (end - start) * easedProgress;
 
-            animationFrameId.current = requestAnimationFrame(animate);
-        };
+        if (progress < 1) {
+          animationFrameId.current = requestAnimationFrame(animate);
+        } else {
+          animationFrameId.current = null;
+          isScrolling.current = false;
+        }
+      };
 
-        const onWheel = (event: WheelEvent) => {
-            // Only act if it's primarily a vertical scroll
-            if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
-                // Prevent the default vertical scroll behavior
-                event.preventDefault();
+      animationFrameId.current = requestAnimationFrame(animate);
+    };
 
-                // If we are already animating a scroll, ignore new wheel events
-                if (isScrolling.current) return;
+    const onWheel = (event: WheelEvent) => {
+      // More responsive scroll trigger
+      if (Math.abs(event.deltaY) > 30) {
+        event.preventDefault();
 
-                isScrolling.current = true;
-                scrollHorizontally(event.deltaY);
-            }
-        };
+        if (isScrolling.current) return;
 
-        container.addEventListener("wheel", onWheel, { passive: false });
+        isScrolling.current = true;
+        scrollHorizontally(event.deltaY);
+      }
+    };
 
-        return () => {
-            container.removeEventListener("wheel", onWheel);
-            if (animationFrameId.current) {
-                cancelAnimationFrame(animationFrameId.current);
-            }
-        };
-    }, []);
+    container.addEventListener("wheel", onWheel, { passive: false });
 
-    return (
-        <div className="relative w-screen h-dvh overflow-hidden">
-            <div
-                ref={containerRef}
-                className="flex overflow-x-auto overflow-y-hidden"
-            >
-                <div className="flex-none w-screen h-full">
-                    <NewLandOne />
-                </div>
-                <div className="flex-none w-screen h-full">
-                    <HowItWorks />
-                </div>
-                <div className="flex-none w-screen h-full">
-                    <Allies />
-                </div>
-                <div className="flex-none w-screen h-full">
-                    <Price />
-                </div>
-            </div>
-            <div className="flex-none w-screen h-full">
-                <HowItWorks />
-            </div>
-            <div className="flex-none w-screen h-full">
-                <Allies />
-            </div>
-            <div className="flex-none w-screen h-full">
-                <Price />
-            </div>
-            <div>
-                <TimeLine />
-            </div>
-            <div>
-                <Faq />
-            </div>
+    return () => {
+      container.removeEventListener("wheel", onWheel);
+      if (animationFrameId.current) {
+        cancelAnimationFrame(animationFrameId.current);
+      }
+    };
+  }, []);
+
+  return (
+    <div className="relative w-screen h-dvh overflow-hidden">
+      <div
+        ref={containerRef}
+        className="flex overflow-x-auto overflow-y-hidden scroll-smooth snap-x snap-mandatory"
+      >
+        <div className="flex-none w-screen h-full snap-center shrink-0">
+          <NewLandOne />
         </div>
-    );
+        <div className="flex-none w-screen h-full snap-center shrink-0">
+          <HowItWorks />
+        </div>
+        <div className="flex-none w-screen h-full snap-center shrink-0">
+          <NullPointException1 />
+        </div>
+        <div className="flex-none w-screen h-full snap-center shrink-0">
+          <TimeLine />
+        </div>
+        <div className="flex-none w-screen h-full snap-center shrink-0">
+          <Price />
+        </div>
+        <div className="flex-none w-screen h-full snap-center shrink-0">
+          <Allies />
+        </div>
+        <div className="flex-none w-screen h-full snap-center shrink-0">
+          <Faq />
+        </div>
+        <div className="flex-none w-screen h-full snap-center shrink-0">
+          <RegisterNow1 />
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default Layout;

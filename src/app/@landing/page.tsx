@@ -100,9 +100,11 @@ const Layout: React.FC = () => {
             <div className="flex-none w-screen h-full">
                 <Allies />
             </div>
+            {/*
             <div className="flex-none w-screen h-full">
                 <Price />
             </div>
+            */}
             <div>
                 <TimeLine />
             </div>

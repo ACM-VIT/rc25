@@ -8,6 +8,7 @@ import Price from "../../components/landing/new-pc/price";
 import TimeLine from "@/components/landing/new-pc/timeline";
 import Faq from "@/components/landing/new-pc/faq";
 import RegisterNow1 from "@/components/landing/new-pc/RegisterNow";
+import NullPointException1 from "@/components/landing/new-pc/NullPointException";
 
 const Layout: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -33,7 +34,7 @@ const Layout: React.FC = () => {
       const currentPage = Math.round(start / pageWidth);
 
       const direction = Math.sign(delta);
-      const targetPage = Math.max(0, Math.min(currentPage + direction, 6));
+      const targetPage = Math.max(0, Math.min(currentPage + direction, 7));
       const end = targetPage * pageWidth;
 
       const duration = 400; // Balanced duration for smooth transition
@@ -91,6 +92,9 @@ const Layout: React.FC = () => {
         </div>
         <div className="flex-none w-screen h-full snap-center shrink-0">
           <HowItWorks />
+        </div>
+        <div className="flex-none w-screen h-full snap-center shrink-0">
+          <NullPointException1 />
         </div>
         <div className="flex-none w-screen h-full snap-center shrink-0">
           <TimeLine />

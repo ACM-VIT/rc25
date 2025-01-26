@@ -68,7 +68,7 @@ const RegisterNow1: React.FC = () => {
     </div>
   </div>
 
-  <div className="flex  flex=coljustify-center items-center w-1/4 mb-9">
+  <div className="flex items-center w-1/4 mb-9">
     <div className="w-full flex justify-start content-center ">
       <Image
         alt="Reverse Coding Logo"

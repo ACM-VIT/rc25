@@ -11,6 +11,7 @@ import RegisterNow1 from "@/components/landing/new-pc/RegisterNow";
 import NullPointException1 from "@/components/landing/new-pc/NullPointException";
 import HowItWorksMobile from "@/components/landing/new-mobile/howitworksmobile";
 import PriceMobile from "@/components/landing/new-mobile/pricemobile";
+import TimeLineMobile from "@/components/landing/new-mobile/timelinemobile";
 
 const Layout: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -86,13 +87,19 @@ const Layout: React.FC = () => {
       {/* Mobile version - md and below */}
       <div className="lg:hidden flex flex-col h-screen bg-[#C2E6EC] dark:bg-[#0C1222] overflow-y-auto snap-y snap-mandatory">
         <div className="flex flex-col relative w-full">
+          {/* 
           <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0">
             <HowItWorksMobile />
           </div>
 
           <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0 bg-[#8DCAE9] dark:bg-[#0C1222]/20 backdrop-blur-[100px]">
             <PriceMobile />
+          </div> */}
+
+          <div>
+            <TimeLineMobile />
           </div>
+
         </div>
       </div>
 

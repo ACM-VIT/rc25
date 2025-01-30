@@ -1,5 +1,5 @@
 import CountdownTimer from "@/components/countdown-timer";
-import DetailsForm from "@/components/details-form";
+import DetailsForm from "@/components/details-formnew";
 import Disqualified from "@/components/disqualifed";
 import EliminationScreen from "@/components/elimination-screen";
 import TeamMembersAndLeaveButton from "@/components/team-dashboard/team-dashboard";
@@ -120,8 +120,9 @@ export default async function RootLayout({
         return (
             <html lang="en">
                 <body>
-                    <div className={`h-full w-full flex flex-col items-center justify-center ${outfit.className}`}>
-                        <DetailsForm name={session.user.name ?? "User"}/>
+                    <div className="h-full w-full flex flex-col items-center justify-center">
+                        
+                        <DetailsForm />
                         {isAdmin && <SwitchAdminModeButton />}
                     </div>
                 </body>

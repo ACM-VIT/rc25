@@ -64,7 +64,7 @@ const TimeLine: React.FC = () => {
           TIMELINE
         </div>
 
-        <div className="flex h-full justify-center items-center gap-4 md:gap-8 px-28">
+        <div className="flex h-full justify-center items-center gap-4 md:gap-8 px-28 lg:px-32">
           {timelineData.map((item, index) => (
             <div
               key={index}

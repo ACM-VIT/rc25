@@ -87,7 +87,8 @@ const Layout: React.FC = () => {
       {/* Mobile version - md and below */}
       <div className="lg:hidden flex flex-col h-screen bg-[#C2E6EC] dark:bg-[#0C1222] overflow-y-auto snap-y snap-mandatory">
         <div className="flex flex-col relative w-full">
-          {/* <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0">
+          {/* 
+          <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0">
             <HowItWorksMobile />
           </div>
 
@@ -98,6 +99,7 @@ const Layout: React.FC = () => {
           <div>
             <TimeLineMobile />
           </div>
+
         </div>
       </div>
 

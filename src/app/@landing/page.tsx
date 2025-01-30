@@ -12,7 +12,8 @@ import NullPointException1 from "@/components/landing/new-pc/NullPointException"
 import HowItWorksMobile from "@/components/landing/new-mobile/howitworksmobile";
 import PriceMobile from "@/components/landing/new-mobile/pricemobile";
 import RegisterNowMobile from "@/components/landing/new-mobile/RegisterNowMoblie";
-import HowItWorksMobile2 from "@/components/landing/new-mobile/NullPointException";
+import HowItWorksMobile2 from "@/components/landing/new-mobile/NullPointException";import TimeLineMobile from "@/components/landing/new-mobile/timelinemobile";
+
 const Layout: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const isScrolling = useRef(false);
@@ -87,12 +88,17 @@ const Layout: React.FC = () => {
       {/* Mobile version - md and below */}
       <div className="lg:hidden flex flex-col h-screen bg-[#C2E6EC] dark:bg-[#0C1222] overflow-y-auto snap-y snap-mandatory">
         <div className="flex flex-col relative w-full">
+          {/* 
           <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0">
             <HowItWorksMobile />
           </div>
 
           <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0 bg-[#8DCAE9] dark:bg-[#0C1222]/20 backdrop-blur-[100px]">
             <PriceMobile />
+          </div> */}
+
+          <div>
+            <TimeLineMobile />
           </div>
           <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0 bg-[#8DCAE9] dark:bg-[#0C1222]/20 backdrop-blur-[100px]">
             <HowItWorksMobile2/>
@@ -100,6 +106,7 @@ const Layout: React.FC = () => {
           <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0 bg-[#8DCAE9] dark:bg-[#0C1222]/20 backdrop-blur-[100px]">
             <RegisterNowMobile/>
           </div>
+
         </div>
       </div>
 

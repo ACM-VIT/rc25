@@ -21,10 +21,12 @@ const Prizerock = ({
   return (
     <div className="relative hover:scale-[1.05] cursor-pointer transition-transform duration-300">
       <div
-        className={`absolute top-0 left-0 right-0 font-bold z-10 text-center text-white orbitron p-4 ${positionTextSize}`}
+        className={`absolute top-0 left-0 right-0 font-bold z-10 text-center text-white orbitron lg:p-4 ${positionTextSize}`}
       >
         {position}
-        <div className={`mt-2 ${prizeTextSize}`}>₹{prize.toLocaleString()}</div>
+        <div className={`lg:mt-2 ${prizeTextSize}`}>
+          ₹{prize.toLocaleString()}
+        </div>
       </div>
       <Image src={rock} alt="rock" height={height} width={width} />
     </div>

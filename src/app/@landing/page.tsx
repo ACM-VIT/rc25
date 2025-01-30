@@ -95,36 +95,38 @@ const Layout: React.FC = () => {
       </div>
 
       {/* Desktop version - lg and above */}
-      <div
-        ref={containerRef}
-        className="hidden lg:flex overflow-x-auto overflow-y-hidden scroll-smooth snap-x snap-mandatory"
-      >
-        <div className="flex-none w-screen h-full snap-center shrink-0">
-          <NewLandOne />
-        </div>
-        <div className="flex-none w-screen h-full snap-center shrink-0">
-          <HowItWorks />
-        </div>
-        <div className="flex-none w-screen h-full snap-center shrink-0">
-          <NullPointException1 />
-        </div>
-        <div className="flex-none w-screen h-full snap-center shrink-0">
-          <TimeLine />
-        </div>
-        {/* <div className="flex-none w-screen h-full snap-center shrink-0">
-          <Price />
-        </div> */}
-        <div className="flex-none w-screen h-full snap-center shrink-0">
-          <Allies />
-        </div>
-        <div className="flex-none w-screen h-full snap-center shrink-0">
-          <Faq />
-        </div>
-        <div className="flex-none w-screen h-full snap-center shrink-0">
-          <RegisterNow1 />
+      <div className="hidden lg:block relative w-screen h-dvh overflow-hidden">
+        <div
+          ref={containerRef}
+          className="lg:flex overflow-x-auto overflow-y-hidden scroll-smooth snap-x snap-mandatory"
+        >
+          <div className="flex-none w-screen h-full snap-center shrink-0">
+            <NewLandOne />
+          </div>
+          <div className="flex-none w-screen h-full snap-center shrink-0">
+            <HowItWorks />
+          </div>
+          <div className="flex-none w-screen h-full snap-center shrink-0">
+            <NullPointException1 />
+          </div>
+          <div className="flex-none w-screen h-full snap-center shrink-0">
+            <TimeLine />
+          </div>
+          {/* <div className="flex-none w-screen h-full snap-center shrink-0">
+            <Price />
+          </div> */}
+          <div className="flex-none w-screen h-full snap-center shrink-0">
+            <Allies />
+          </div>
+          <div className="flex-none w-screen h-full snap-center shrink-0">
+            <Faq />
+          </div>
+          <div className="flex-none w-screen h-full snap-center shrink-0">
+            <RegisterNow1 />
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

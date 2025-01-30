@@ -9,7 +9,7 @@ import TimeLine from "@/components/landing/new-pc/timeline";
 import Faq from "@/components/landing/new-pc/faq";
 import RegisterNow1 from "@/components/landing/new-pc/RegisterNow";
 import NullPointException1 from "@/components/landing/new-pc/NullPointException";
-import HowItWorksMobile from "@/components/landing/new-mobile/howitworks";
+import HowItWorksMobile from "@/components/landing/new-mobile/howitworksmobile";
 
 const Layout: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -83,7 +83,7 @@ const Layout: React.FC = () => {
   return (
     <div className="relative w-screen h-dvh overflow-hidden">
       {/* Mobile version - md and below*/}
-      <div className="block lg:hidden">
+      <div className="lg:hidden">
         <div className="flex flex-col">
           <HowItWorksMobile />
         </div>

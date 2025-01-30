@@ -1,16 +1,19 @@
 import type React from "react"
 import Image from "next/image"
 import timelinebg from "@/app/assets/timelinebg.svg"
-// import laser from "@/app/assets/laser.svg"
+import upper from "@/app/assets/upperbracket.svg";
+import lower from "@/app/assets/lowerbracket.svg";
+
 
 
 const timelineData = [
-  { notation: "O(1)", value: "₹50,000" },
-  { notation: "O(logn)", value: "₹25,000" },
-  { notation: "O(n)", value: "₹10,000"},
-  { notation: "O(x^n)", value: "₹5,000"},
-  { notation: "O(x^n)", value: "₹5,000" },
-  { notation: "O(x^n)", value: "₹5,000" },
+  /* change datatatataata */
+  { notation: "8:00am", value: "Start" },
+  { notation: "9:00am", value: "Breakfast" },
+  { notation: "10:00am", value: "Nap"},
+  { notation: "11:00am", value: "Snack"},
+  { notation: "12:00pm", value: "Lunch" },
+  { notation: "1:00pm", value: "Nap" },
 ]
 
 const textGlowStyle = {
@@ -56,12 +59,6 @@ const TimeLine: React.FC = () => {
         layout="fill"
       />
 
-      {/* <Image 
-        className="relative h-4 opacity-30 items-center justify-center object-cover z-5"
-        src={laser || "/placeholder.svg"}
-        alt="background"
-      /> */}
-
       <div className="flex flex-col relative z-10 h-full justify">
         <div className="flex how-it-works-heading text-white   justify-center pt-8 sm:pt-12 md:pt-12 lg:pt-12 text-6xl sm:text-7xl md:text-8xl lg:text-9xl text-center">
           TIMELINE
@@ -78,9 +75,9 @@ const TimeLine: React.FC = () => {
                         border-[#CEB7FF] `}
             >
               {/* Corner decorations */}
-              <div className="absolute -top-2 -left-2 w-4 h-4 border-t-2 border-l-2 border-[#CEB7FF]" />
+              {/* <div className="absolute -top-2 -left-2 w-4 h-4 border-t-2 border-l-2 border-[#CEB7FF]" />
               <div className="absolute -bottom-2 -right-2 w-4 h-4 border-b-2 border-r-2 border-[#CEB7FF]" />
-
+ */}
               {/* Glow effect */}
               <div
                 className={`absolute inset-0 opacity-0 group-hover:opacity-70
@@ -89,6 +86,17 @@ const TimeLine: React.FC = () => {
                     shadow-[0_0_20px_rgba(242,236,255,0.6)]
                     group-hover:shadow-[0_0_30px_rgba(242,236,255,0.8)]`}
               />
+
+              {/* top left bracket */}
+              <div className="absolute -top-3 -left-3">
+                <Image
+                  src={upper}
+                  alt="upper bracket"
+                  width={40}
+                  height={40}
+                  className="md:w-[25px] md:h-[25px] lg:w-[25px] lg:h-[25px]"
+                />
+              </div>
 
               {/* Content */}
               <div className="relative z-10 h-full flex flex-col items-center justify-center text-black p-4 text-center">
@@ -102,6 +110,18 @@ const TimeLine: React.FC = () => {
                   {item.value}
                 </div>
               </div>
+
+              {/* bottom right bracket */}
+              <div className="absolute -bottom-3 -right-3">
+                <Image
+                  src={lower}
+                  alt="lower bracket"
+                  width={40}
+                  height={40}
+                  className="md:w-[25px] md:h-[25px] lg:w-[25px] lg:h-[25px]"
+                />
+              </div>
+
             </div>
           ))}
         </div>

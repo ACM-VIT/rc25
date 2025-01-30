@@ -13,12 +13,10 @@ const HowItWorksMobile2: React.FC = () => {
         className="z-0"
       />
 
-      {/* Main Heading - Centered and responsive */}
       <div className="absolute how-it-works-heading z-10 text-white text-center w-full text-7xl lg:text-[80px] xl:text-[115px]">
         Works?
       </div>
 
-      {/* Main Content - Responsive positioning and spacing */}
       <div className="absolute z-10 w-full h-full flex flex-col items-left justify-center px-4 sm:px-8 md:px-16 lg:px-24">
         <div className="text-white font-extrabold text-left space-y-8 sm:space-y-12 lg:space-y-16 max-w-3xl">
           <div className="flex items-start justify-start gap-4">

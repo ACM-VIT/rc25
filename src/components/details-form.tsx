@@ -8,6 +8,7 @@ import { useState } from "react";
 import Image from 'next/image'
 import logo from "@/app/assets/RCLogo.svg"
 
+
 import { Audiowide } from "next/font/google";
 import { PT_Sans } from "next/font/google";
 
@@ -40,7 +41,7 @@ export default function OnboardingForm() {
                 className="absolute top-4 left-8 w-auto h-[8%]" 
             />
 
-            <div className="w-[65vw] md:w-[55vw] lg:w-[50vw] sm:w-[75vw] phone:w-[85vw] phone:mt-[15%]
+            <div className="w-[65vw] md:w-[55vw] lg:w-[90vw] sm:w-[75vw] phone:w-[85vw] phone:mt-[15%] 
                       p-4 phone:p-3 mt-5
                       flex flex-col box-border rounded-[5%] 
                       backdrop-blur-md bg-transparent border border-[#9B51E0] ">
@@ -67,7 +68,7 @@ export default function OnboardingForm() {
                     }}
                 >
                     {/* Header */}
-                    <div className="w-full mb-3">
+                    <div className="w-full mb-3 ">
                     <h1 className={`font-bold text-center text-white md:text-[200%] sm:text-3xl xs:text-[135%] phone:text-[135%] ${audiowide.className} mb-2`}>
     HELLO THERE!
 </h1>

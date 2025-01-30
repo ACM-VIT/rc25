@@ -1,5 +1,5 @@
 import CountdownTimer from "@/components/countdown-timer";
-import DetailsForm from "@/components/details-form";
+import DetailsForm from "@/components/details-formnew";
 import Disqualified from "@/components/disqualifed";
 import EliminationScreen from "@/components/elimination-screen";
 import TeamMembersAndLeaveButton from "@/components/team-dashboard/team-dashboard";
@@ -120,7 +120,7 @@ export default async function RootLayout({
             <html lang="en">
                 <body>
                     <div className="h-full w-full flex flex-col items-center justify-center">
-                        <Navbar name={session.user.name ?? "User"} />
+                        
                         <DetailsForm />
                         {isAdmin && <SwitchAdminModeButton />}
                     </div>

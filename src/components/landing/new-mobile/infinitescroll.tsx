@@ -2,12 +2,15 @@ import React, { useEffect, useRef } from "react";
 
 interface SmoothInfiniteScrollProps {
   text: string;
-  speed?: number; // Speed parameter in pixels per frame
+  speed?: number;
+  font?: string;
+  // Speed parameter in pixels per frame
 }
 
 const SmoothInfiniteScroll: React.FC<SmoothInfiniteScrollProps> = ({
   text,
   speed = 1, // Default speed
+  font = "how-it-works-heading",
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -43,10 +46,10 @@ const SmoothInfiniteScroll: React.FC<SmoothInfiniteScrollProps> = ({
         className="inline-flex whitespace-nowrap"
         style={{ willChange: "transform" }}
       >
-        <span className="mx-4 text-5xl xs-sm:text-6xl font-extrabold text-white how-it-works-heading text-glow">
+        <span className={`mx-4 text-5xl xs-sm:text-6xl font-extrabold text-white  text-glow ${font}`}>
           {text}
         </span>
-        <span className="mx-4 text-5xl xs-sm:text-6xl font-extrabold text-white how-it-works-heading text-glow">
+        <span className={`mx-4 text-5xl xs-sm:text-6xl font-extrabold text-white  text-glow ${font}`}>
           {text}
         </span>
       </div>

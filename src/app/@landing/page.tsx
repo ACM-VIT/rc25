@@ -11,7 +11,8 @@ import RegisterNow1 from "@/components/landing/new-pc/RegisterNow";
 import NullPointException1 from "@/components/landing/new-pc/NullPointException";
 import HowItWorksMobile from "@/components/landing/new-mobile/howitworksmobile";
 import PriceMobile from "@/components/landing/new-mobile/pricemobile";
-
+import RegisterNowMobile from "@/components/landing/new-mobile/RegisterNowMoblie";
+import HowItWorksMobile2 from "@/components/landing/new-mobile/NullPointException";
 const Layout: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const isScrolling = useRef(false);
@@ -92,6 +93,12 @@ const Layout: React.FC = () => {
 
           <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0 bg-[#8DCAE9] dark:bg-[#0C1222]/20 backdrop-blur-[100px]">
             <PriceMobile />
+          </div>
+          <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0 bg-[#8DCAE9] dark:bg-[#0C1222]/20 backdrop-blur-[100px]">
+            <HowItWorksMobile2/>
+          </div>
+          <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0 bg-[#8DCAE9] dark:bg-[#0C1222]/20 backdrop-blur-[100px]">
+            <RegisterNowMobile/>
           </div>
         </div>
       </div>

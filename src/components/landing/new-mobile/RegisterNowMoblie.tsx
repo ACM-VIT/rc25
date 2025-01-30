@@ -78,7 +78,7 @@
             { src: v3, href: "https://www.linkedin.com/company/acmvit/" },
             { src: v5, href: "https://www.facebook.com/acmvitvellore/" },
             { src: v7, href: "https://x.com/ACM_VIT" },
-            { src: v8, href: "https://x.com/ACM_VIT" },
+            { src: v8, href: "https://blog.acmvit.in/" },
 
             
 

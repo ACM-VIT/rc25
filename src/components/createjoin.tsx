@@ -119,7 +119,7 @@ export default function Team({ name }: { name: string }) {
                             <input
                                 id="team-input"
                                 type="text"
-                                className="w-full h-10 p-2 bg-weirdPurple/30 outline-none text-white text-center font-bold"
+                                className="w-full h-fit p-2 md:p-6 bg-weirdPurple/30 outline-none text-white text-center font-bold md:text-xl text-base"
                                 value={inputValue}
                                 onInput={(e) => {
                                     setError(0);

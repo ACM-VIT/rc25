@@ -121,7 +121,7 @@ export default async function RootLayout({
             <html lang="en">
                 <body>
                     <div className={`h-full w-full flex flex-col items-center justify-center ${outfit.className}`}>
-                        <DetailsForm />
+                        <DetailsForm name={session.user.name ?? "User"}/>
                         {isAdmin && <SwitchAdminModeButton />}
                     </div>
                 </body>
@@ -132,9 +132,8 @@ export default async function RootLayout({
     if (!user?.Team) {
         return (
             <html lang="en">
-                <body>
-                    <Navbar name={session.user.name ?? "User"} />
-                    <Team />
+                <body className={`${outfit.className}`}>
+                    <Team name={session.user.name ?? "User"}/>
                     {isAdmin && <SwitchAdminModeButton />}
                 </body>
             </html>

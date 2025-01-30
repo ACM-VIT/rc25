@@ -8,13 +8,15 @@ import Image from 'next/image'
 import SignOut from "@/app/(auth)/authactions/signout";
 
 
-export default function OnboardingForm() {
+export default function OnboardingForm({ name }: { name: string }) {
     const [selectedGender, setSelectedGender] = useState("");
     const [phone, setPhone] = useState("");
     const [selectStatus, setSelectStatus] = useState("");
     const [phoneError, setPhoneError] = useState("");
     const [genderError, setGenderError] = useState("");
     const [statusError, setStatusError] = useState("");
+
+    name = name.split(' ')[0]
 
     return (
         <div className="flex flex-col gap-2 items-center justify-between min-h-screen w-full">
@@ -97,7 +99,7 @@ export default function OnboardingForm() {
                             </div>
                             <h1 className={`font-custom border-weirdPurple text-center text-transparent text-hollow
                                 md:text-[58px] sm:text-3xl xs:text-[135%] phone:text-[135%]`}>
-                                HELLO THERE
+                                HELLO {name}
                             </h1>
                             <div className="flex justify-center items-center gap-2 w-full">
                                 <h4 className="font-custom text-weirdPurple md:text-base text-xs">A MESSAGE FROM ACM</h4>

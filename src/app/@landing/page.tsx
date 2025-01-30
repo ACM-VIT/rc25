@@ -12,6 +12,7 @@ import NullPointException1 from "@/components/landing/new-pc/NullPointException"
 import HowItWorksMobile from "@/components/landing/new-mobile/howitworksmobile";
 import PriceMobile from "@/components/landing/new-mobile/pricemobile";
 import TimeLineMobile from "@/components/landing/new-mobile/timelinemobile";
+import FaqMobile from "@/components/landing/new-mobile/faqmobile";
 
 const Layout: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -99,6 +100,10 @@ const Layout: React.FC = () => {
           <div>
             <TimeLineMobile />
           </div>
+
+          {/* <div>
+            <FaqMobile />
+          </div> */}
 
         </div>
       </div>

@@ -9,6 +9,7 @@ import TimeLine from "@/components/landing/new-pc/timeline";
 import Faq from "@/components/landing/new-pc/faq";
 import RegisterNow1 from "@/components/landing/new-pc/RegisterNow";
 import NullPointException1 from "@/components/landing/new-pc/NullPointException";
+import HowItWorksMobile from "@/components/landing/new-mobile/howitworks";
 
 const Layout: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -20,7 +21,6 @@ const Layout: React.FC = () => {
     if (!container) return;
 
     const easeOutQuad = (t: number) => {
-      // More natural and smooth easing function
       return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
     };
 
@@ -37,7 +37,7 @@ const Layout: React.FC = () => {
       const targetPage = Math.max(0, Math.min(currentPage + direction, 7));
       const end = targetPage * pageWidth;
 
-      const duration = 400; // Balanced duration for smooth transition
+      const duration = 400;
       let startTime: number | null = null;
 
       const animate = (time: number) => {
@@ -60,7 +60,6 @@ const Layout: React.FC = () => {
     };
 
     const onWheel = (event: WheelEvent) => {
-      // More responsive scroll trigger
       if (Math.abs(event.deltaY) > 30) {
         event.preventDefault();
 
@@ -83,9 +82,17 @@ const Layout: React.FC = () => {
 
   return (
     <div className="relative w-screen h-dvh overflow-hidden">
+      {/* Mobile version - md and below*/}
+      <div className="block lg:hidden">
+        <div className="flex flex-col">
+          <HowItWorksMobile />
+        </div>
+      </div>
+
+      {/* Desktop version - lg and above */}
       <div
         ref={containerRef}
-        className="flex overflow-x-auto overflow-y-hidden scroll-smooth snap-x snap-mandatory"
+        className="hidden lg:flex overflow-x-auto overflow-y-hidden scroll-smooth snap-x snap-mandatory"
       >
         <div className="flex-none w-screen h-full snap-center shrink-0">
           <NewLandOne />
@@ -99,9 +106,9 @@ const Layout: React.FC = () => {
         <div className="flex-none w-screen h-full snap-center shrink-0">
           <TimeLine />
         </div>
-        <div className="flex-none w-screen h-full snap-center shrink-0">
+        {/* <div className="flex-none w-screen h-full snap-center shrink-0">
           <Price />
-        </div>
+        </div> */}
         <div className="flex-none w-screen h-full snap-center shrink-0">
           <Allies />
         </div>

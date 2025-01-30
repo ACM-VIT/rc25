@@ -6,6 +6,7 @@ import acm from "@/app/assets/acm.svg";
 import earthone from "@/app/assets/earthone.svg";
 import join from "@/app/assets/join.svg";
 import SignIn from "@/app/(auth)/authactions/signin";
+import scroll from "@/app/assets/scroll.svg";
 
 function LandOneMobile() {
   return (
@@ -28,7 +29,7 @@ function LandOneMobile() {
         </div>
 
         {/* RCLogo wrapper with Fade-In */}
-        <div className="flex flex-col justify-center items-center z-10  sm:mb-[65%] md:mb-[55%] phone:mb-[120%] xs:mb-[85%] animate-fadeIn">
+        <div className="flex flex-col justify-center items-center z-10 sm:mb-[65%] md:mb-[55%] phone:mb-[120%] xs:mb-[85%] animate-fadeIn">
           <Image
             src={wrclogo}
             alt="Reverse Coding"
@@ -48,9 +49,9 @@ function LandOneMobile() {
 
         {/* Join Button */}
         <button
-          className="hidden sm:block absolute z-20 left-1/2 transform -translate-x-1/2
-            md:w-[16rem] sm:w-[16rem]  w-[10rem]
-      md:bottom-[5%] sm:bottom-[5%]  bottom-[0%]"
+          className="sm:block absolute z-20 left-1/2 transform -translate-x-1/2
+            md:w-[16rem] sm:w-[16rem] phone:w-[13rem] w-[13rem]
+            md:bottom-[5%] sm:bottom-[5%] phone:bottom-[10%] xs:bottom-[10%] bottom-[0%]"
           onClick={SignIn}
         >
           <Image src={join} alt="Join" />
@@ -69,6 +70,13 @@ function LandOneMobile() {
             priority
           />
         </div>
+
+        {/* Scroll Indicator - Larger & Positioned */}
+        <div className="absolute bottom-5 right-0 z-20 
+            w-[3.5rem] phone:w-[3rem] xs:w-[2.5rem] sm:w-[3rem]">
+          <Image src={scroll} alt="Scroll" />
+        </div>
+        
       </div>
     </div>
   );

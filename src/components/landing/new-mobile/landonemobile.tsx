@@ -13,7 +13,7 @@ function LandOneMobile() {
     <div className="h-screen w-full overflow-hidden">
       <div className="h-full w-full flex flex-col justify-between items-center relative">
         {/* Background image wrapper */}
-        <div className="absolute inset-0 z-0 brightness-125">
+        <div className="absolute inset-0 z-0 brightness-200">
           <Image
             src={backgroundone}
             alt="background"

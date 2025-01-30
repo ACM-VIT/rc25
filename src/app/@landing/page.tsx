@@ -10,7 +10,8 @@ import Faq from "@/components/landing/new-pc/faq";
 import RegisterNow1 from "@/components/landing/new-pc/RegisterNow";
 import NullPointException1 from "@/components/landing/new-pc/NullPointException";
 import HowItWorksMobile from "@/components/landing/new-mobile/howitworks";
-import LandOneMobile from "@/components/landing/new-mobile/landonemobile";
+import LandOneMobile from "@/components/landing/new-mobile/landoneMobile";
+import AlliesMobile from "@/components/landing/new-mobile/alliesMobile";
 
 const Layout: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -86,7 +87,7 @@ const Layout: React.FC = () => {
       {/* Mobile version - md and below*/}
       <div className="block lg:hidden">
       <div className="flex flex-col">
-          <LandOneMobile/>
+          <AlliesMobile/>
         </div>
         <div className="flex flex-col">
           <HowItWorksMobile />

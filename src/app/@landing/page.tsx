@@ -10,6 +10,7 @@ import Faq from "@/components/landing/new-pc/faq";
 import RegisterNow1 from "@/components/landing/new-pc/RegisterNow";
 import NullPointException1 from "@/components/landing/new-pc/NullPointException";
 import HowItWorksMobile from "@/components/landing/new-mobile/howitworks";
+import LandOneMobile from "@/components/landing/new-mobile/landonemobile";
 
 const Layout: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -84,6 +85,9 @@ const Layout: React.FC = () => {
     <div className="relative w-screen h-dvh overflow-hidden">
       {/* Mobile version - md and below*/}
       <div className="block lg:hidden">
+      <div className="flex flex-col">
+          <LandOneMobile/>
+        </div>
         <div className="flex flex-col">
           <HowItWorksMobile />
         </div>

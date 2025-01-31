@@ -15,6 +15,7 @@ import SignOutButton from "@/components/buttons/sign-out";
 import Team from "@/components/createjoin";
 import { cookies } from "next/headers";
 import SwitchAdminModeButton from "@/components/switch-admin-mode-button";
+import { SessionProvider } from "next-auth/react";
 // import SwitchAdminModeButton from "@/components/switch-admin-mode-button";
 // import TeamSubmissions from "@/components/team-submissions";
 
@@ -121,8 +122,10 @@ export default async function RootLayout({
             <html lang="en">
                 <body>
                     <div className="h-full w-full flex flex-col items-center justify-center">
+                        <SessionProvider>
+                            <DetailsForm />
+                            </SessionProvider>
                         
-                        <DetailsForm />
                         {isAdmin && <SwitchAdminModeButton />}
                     </div>
                 </body>

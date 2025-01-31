@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import onboard from "../app/actions/onboard";
 import { useFormStatus } from "react-dom";
+import { useSession } from "next-auth/react"; 
 import parsePhoneNumber from "libphonenumber-js";
 import Image from "next/image";
 import logo from "@/app/assets/RCLogo.svg";
@@ -33,6 +34,8 @@ const outfit = Outfit({
 });
 export default function OnboardingForm() {
   const [selectedGender, setSelectedGender] = useState("");
+  const { data: session } = useSession();
+  const userName = session?.user?.name?.split(" ")[0];
   const [phone, setPhone] = useState("");
   const [selectStatus, setSelectStatus] = useState("");
   const [phoneError, setPhoneError] = useState("");
@@ -132,7 +135,7 @@ export default function OnboardingForm() {
       textShadow: "none",
     }}
   >
-    HELLO NAME
+    HELLO {userName}
   </h1>
 
   {/* Bottom Horizontal Line (Changes Only for `sm` and Below) */}

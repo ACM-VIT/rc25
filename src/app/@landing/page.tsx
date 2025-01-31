@@ -95,15 +95,15 @@ const Layout: React.FC = () => {
 
           <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0 bg-[#8DCAE9] dark:bg-[#0C1222]/20 backdrop-blur-[100px]">
             <PriceMobile />
-          </div> */}
+          </div>
 
           <div>
             <TimeLineMobile />
-          </div>
-
-          {/* <div>
-            <FaqMobile />
           </div> */}
+
+          <div>
+            <FaqMobile />
+          </div>
 
         </div>
       </div>

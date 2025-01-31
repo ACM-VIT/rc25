@@ -173,11 +173,11 @@ const PriceMobile: React.FC = () => {
       <div className="absolute bottom-[7vh] xs-sm:bottom-[10vh] sm:bottom-[11vh] w-full z-10 rotate-[-10deg]">
         <SmoothInfiniteScroll
           text="Try&nbsp;&nbsp;Try&nbsp;&nbsp;Try&nbsp;&nbsp;Try&nbsp;&nbsp;Try&nbsp;&nbsp;Try&nbsp;&nbsp;Try&nbsp;&nbsp;Try&nbsp;&nbsp;Try&nbsp;&nbsp;Try"
-          speed={1.4}
+          speed={0.5}
         />
         <SmoothInfiniteScroll
           text="Catch&nbsp;&nbsp;Catch&nbsp;&nbsp;Catch&nbsp;&nbsp;Catch&nbsp;&nbsp;Catch&nbsp;&nbsp;Catch&nbsp;&nbsp;Catch&nbsp;&nbsp;Catch&nbsp;&nbsp;Catch&nbsp;&nbsp;Catch"
-          speed={1.2}
+          speed={0.6}
         />
       </div>
     </div>

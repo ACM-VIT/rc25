@@ -1,9 +1,9 @@
-import React from 'react'
-import Image from 'next/image'
+import React from "react";
+import Image from "next/image";
 import backgroundone from "@/app/assets/backgroundone.svg";
 import wrclogo from "@/app/assets/wrclogo.svg";
 import acm from "@/app/assets/acm.svg";
-import earthone from "@/app/assets/earthone.svg";
+import earthone from "@/app/assets/rounded_earth.svg";
 import join from "@/app/assets/join.svg";
 import SignIn from "@/app/(auth)/authactions/signin";
 import scroll from "@/app/assets/scroll.svg";
@@ -40,7 +40,7 @@ function LandOneMobile() {
             style={{
               color: "transparent",
               WebkitTextStroke: "1px white",
-              textShadow: "none"
+              textShadow: "none",
             }}
           >
             Code, Invert, Conquer
@@ -58,9 +58,11 @@ function LandOneMobile() {
         </button>
 
         {/* Earth wrapper with controlled overflow and rotation */}
-        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 
+        <div
+          className="absolute bottom-0 left-1/2 transform -translate-x-1/2 
           sm:translate-y-1/2 xs:translate-y-[70%] phone:translate-y-[100%] 
-          sm:scale-150 xs:scale-[2] phone:scale-[3] w-full md:mb-[-18%] phone:mb-[25%] sm:mb-[-8%]">
+          sm:scale-150 xs:scale-[2] phone:scale-[3] w-full md:mb-[-18%] phone:mb-[25%] sm:mb-[-8%]"
+        >
           <Image
             src={earthone}
             alt="Earth"
@@ -72,11 +74,12 @@ function LandOneMobile() {
         </div>
 
         {/* Scroll Indicator - Larger & Positioned */}
-        <div className="absolute bottom-5 right-0 z-20 
-            w-[3.5rem] phone:w-[3rem] xs:w-[2.5rem] sm:w-[3rem]">
+        <div
+          className="absolute bottom-5 right-0 z-20 
+            w-[3.5rem] phone:w-[3rem] xs:w-[2.5rem] sm:w-[3rem]"
+        >
           <Image src={scroll} alt="Scroll" />
         </div>
-        
       </div>
     </div>
   );

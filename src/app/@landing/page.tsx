@@ -21,68 +21,62 @@ import FaqMobile from "@/components/landing/new-mobile/faqmobile";
 const Layout: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const isScrolling = useRef(false);
-  const animationFrameId = useRef<number | null>(null);
+  const lastScrollTime = useRef(Date.now());
+  const scrollTimeout = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const easeOutQuad = (t: number) => {
-      return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-    };
+    const handleScroll = (event: WheelEvent) => {
+      event.preventDefault();
 
-    const scrollHorizontally = (delta: number) => {
-      if (animationFrameId.current) {
-        cancelAnimationFrame(animationFrameId.current);
+      const now = Date.now();
+      if (now - lastScrollTime.current < 500 || isScrolling.current) {
+        return;
       }
 
-      const start = container.scrollLeft;
+      const deltaY = Math.abs(event.deltaY) > 30 ? Math.sign(event.deltaY) : 0;
+      if (deltaY === 0) return;
+
+      isScrolling.current = true;
+      lastScrollTime.current = now;
+
       const pageWidth = container.clientWidth;
-      const currentPage = Math.round(start / pageWidth);
+      const currentScroll = container.scrollLeft;
+      const currentPage = Math.round(currentScroll / pageWidth);
+      const targetPage = Math.max(0, Math.min(currentPage + deltaY, 7));
 
-      const direction = Math.sign(delta);
-      const targetPage = Math.max(0, Math.min(currentPage + direction, 7));
-      const end = targetPage * pageWidth;
+      container.scrollTo({
+        left: targetPage * pageWidth,
+        behavior: "smooth",
+      });
 
-      const duration = 400;
-      let startTime: number | null = null;
-
-      const animate = (time: number) => {
-        if (!startTime) startTime = time;
-        const elapsed = time - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        const easedProgress = easeOutQuad(progress);
-
-        container.scrollLeft = start + (end - start) * easedProgress;
-
-        if (progress < 1) {
-          animationFrameId.current = requestAnimationFrame(animate);
-        } else {
-          animationFrameId.current = null;
-          isScrolling.current = false;
-        }
-      };
-
-      animationFrameId.current = requestAnimationFrame(animate);
-    };
-
-    const onWheel = (event: WheelEvent) => {
-      if (Math.abs(event.deltaY) > 30) {
-        event.preventDefault();
-
-        if (isScrolling.current) return;
-
-        isScrolling.current = true;
-        scrollHorizontally(event.deltaY);
+      if (scrollTimeout.current) {
+        clearTimeout(scrollTimeout.current);
       }
+
+      scrollTimeout.current = setTimeout(() => {
+        isScrolling.current = false;
+      }, 500);
     };
 
-    container.addEventListener("wheel", onWheel, { passive: false });
+    // Prevent any default scroll behavior
+    const preventScroll = (e: Event) => {
+      e.preventDefault();
+    };
+
+    // Add event listeners
+    container.addEventListener("wheel", handleScroll, { passive: false });
+    document.body.style.overflow = "hidden";
+    window.addEventListener("scroll", preventScroll, { passive: false });
 
     return () => {
-      container.removeEventListener("wheel", onWheel);
-      if (animationFrameId.current) {
-        cancelAnimationFrame(animationFrameId.current);
+      container.removeEventListener("wheel", handleScroll);
+      window.removeEventListener("scroll", preventScroll);
+      document.body.style.overflow = "";
+      if (scrollTimeout.current) {
+        clearTimeout(scrollTimeout.current);
       }
     };
   }, []);
@@ -90,14 +84,14 @@ const Layout: React.FC = () => {
   return (
     <>
       {/* Mobile version - md and below */}
-      <div className="lg:hidden flex flex-col h-screen bg-[#C2E6EC] dark:bg-[#0C1222] overflow-y-auto snap-y snap-mandatory">
-        <div className="flex flex-col relative w-full">
-          {/*
+      {/* <div className="lg:hidden flex flex-col h-screen bg-[#C2E6EC] dark:bg-[#0C1222] overflow-y-auto snap-y snap-mandatory">
+        <div className="flex flex-col relative w-full"> */}
+      {/*
           <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0 bg-[#8DCAE9] dark:bg-[#0C1222]/20 backdrop-blur-[100px]">
             <PriceMobile />
           </div> 
           */}
-          <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0 bg-[#8DCAE9] dark:bg-[#0C1222]/20 backdrop-blur-[100px]">
+      {/* <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0 bg-[#8DCAE9] dark:bg-[#0C1222]/20 backdrop-blur-[100px]">
             <LandOneMobile/>
           </div>
           <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0 bg-[#8DCAE9] dark:bg-[#0C1222]/20 backdrop-blur-[100px]">
@@ -117,6 +111,34 @@ const Layout: React.FC = () => {
           </div>
           <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0 bg-[#8DCAE9] dark:bg-[#0C1222]/20 backdrop-blur-[100px]">
             <RegisterNowMobile/>
+          </div>
+        </div>
+      </div> */}
+      <div className="lg:hidden flex flex-col h-screen bg-[#C2E6EC] dark:bg-[#0C1222] overflow-y-auto snap-y snap-mandatory ease-in">
+        <div className="flex flex-col relative w-full">
+          <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0">
+            <LandOneMobile />
+          </div>
+          <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0">
+            <HowItWorksMobile />
+          </div>
+          <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0">
+            <HowItWorksMobile2 />
+          </div>
+          <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0">
+            <TimeLineMobile />
+          </div>
+          {/* <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0">
+            <PriceMobile />
+          </div> */}
+          <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0">
+            <AlliesMobile />
+          </div>
+          <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0 ">
+            <FaqMobile />
+          </div>
+          <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0">
+            <RegisterNowMobile />
           </div>
         </div>
       </div>

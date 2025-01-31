@@ -21,9 +21,9 @@ const HowItWorks: React.FC = () => {
       </div>
 
       {/* Right Side Text - Positioned relative to viewport width */}
-      <div className="absolute right-8 translate-x-1/2 transform xl:bottom-[100px] lg:bottom-[80px] bottom-[60px] -translate-y-3/4 z-10">
+      <div className="absolute right-8 translate-x-1/2 transform xl:bottom-[210px] lg:bottom-[150px] bottom-[60px] -translate-y-1/2 z-10">
         <div className="vertical-text transform how-it-works-heading -rotate-90 text-glow font-extrabold text-[35px] sm:text-[20px] md:text-[30px] lg:text-[30px] xl:text-[45px] tracking-widest">
-          RUST ENSURED
+          BUT BUGS WILL FALL!
         </div>
       </div>
 

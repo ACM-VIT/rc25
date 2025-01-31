@@ -13,8 +13,9 @@ const config: Config = {
 	theme: {
 		screens: {
 			'phone':{'min':'220px','max':'480px'},
-			'xs':'480px',
 			"xs-sm": "410px",
+			'xs':'480px',
+			
 			'sm': '640px',
 			// => @media (min-width: 640px) { ... }
 

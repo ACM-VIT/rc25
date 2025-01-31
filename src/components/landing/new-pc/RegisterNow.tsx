@@ -4,10 +4,12 @@ import type React from "react";
 import Image from "next/image";
 import RC from "../../../../public/ReverseCoding.svg";
 import logo from "../../../../public/acmlogo.svg";
-import v1 from "../../../../public/Vector.png";
-import v2 from "../../../../public/Vector(1).png";
-import v3 from "../../../../public/Vector(2).png";
-
+import v1 from "../../../../public/Vector.svg";
+import v2 from "../../../../public/Vector(1).svg";
+import v3 from "../../../../public/Vector(2).svg";
+import v5 from "../../../../public/Vector(3).svg"
+import v7 from "../../../../public/Vector(4).svg"
+import v8 from "../../../../public/Vector(5).svg"
 const RegisterNow1: React.FC = () => {
   return (
     <div className="relative h-screen w-full overflow-hidden bg-[#1a1a2e]">
@@ -21,26 +23,37 @@ const RegisterNow1: React.FC = () => {
         />
       </div>
 
-      <div className="absolute inset-0 z-30 flex flex-col h-full justify-center m-8 items-start gap-10">
-        {[
-          { src: v1, href: "/link1" },
-          { src: v2, href: "/link2" },
-          { src: v3, href: "/link3" },
-        ].map((item, index) => (
-          <a
-            key={`vector-${index}`}
-            href={item.href}
-            className="transition-transform hover:scale-110"
-          >
-            <Image
-              alt={`Vector icon ${index + 1}`}
-              src={item.src || "/placeholder.svg"}
-              width={48}
-              height={48}
-              className="transform"
-              priority
-            />
-          </a>
+      <div className="absolute inset-0 z-30 flex flex-col h-full justify-center m-6 items-start gap-7 mt-[-1%]">
+      <div className="flex  items-start">
+            <p className="rotate-180 text-3xl how-it-works-heading text-glow font-extrabold text-white/70 [writing-mode:vertical-lr] tracking-widest M-5">
+              REACH US AT
+            </p>
+          </div>
+      {[
+            { src: v2, href: "https://github.com/ACM-VIT" },
+            { src: v1, href: "https://www.instagram.com/acmvit/" },
+            { src: v5, href: "https://www.linkedin.com/company/acmvit/" },
+            { src: v3, href: "https://www.facebook.com/acmvitvellore/" },
+            { src: v7, href: "https://x.com/ACM_VIT" },
+            { src: v8, href: "https://blog.acmvit.in/" }
+
+            
+
+          ].map((item, index) => (
+            <a
+              key={`vector-${index}`}
+              href={item.href}
+              className="transition-transform hover:scale-110"
+            >
+              <Image
+                alt={`Vector icon ${index + 1}`}
+                src={item.src}
+                width={48}
+                height={48}
+                className=" scale-120 transform fix"
+                priority
+              />
+            </a>
         ))}
       </div>
 

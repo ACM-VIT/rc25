@@ -25,7 +25,7 @@
               />
             </div>
             <div className="absolute bottom-0  z-30 w-full flex flex-row justify-between">
-    <div className="relative w-20 h-20"> 
+    <div className="relative w-20 h-20 translate-y-1"> 
       <Image
         alt="ACM logo"
         src={acm}
@@ -34,7 +34,7 @@
         priority
       />
     </div>
-    <div className="relative w-20 h-20 ">
+    <div className="relative w-20 h-20  ">
       <Image
         alt="RC logo"
         src={rc}
@@ -73,12 +73,12 @@
         <p>Reach us at</p>
         <div className="flex flex-row justify-center content-center m-8 items-start gap-6">
           {[
-            { src: v1, href: "https://github.com/ACM-VIT" },
-            { src: v2, href: "https://www.instagram.com/acmvit/" },
-            { src: v3, href: "https://www.linkedin.com/company/acmvit/" },
-            { src: v5, href: "https://www.facebook.com/acmvitvellore/" },
+            { src: v2, href: "https://github.com/ACM-VIT" },
+            { src: v1, href: "https://www.instagram.com/acmvit/" },
+            { src: v5, href: "https://www.linkedin.com/company/acmvit/" },
+            { src: v3, href: "https://www.facebook.com/acmvitvellore/" },
             { src: v7, href: "https://x.com/ACM_VIT" },
-            { src: v8, href: "https://x.com/ACM_VIT" },
+            { src: v8, href: "https://blog.acmvit.in/" }
 
             
 

@@ -13,8 +13,9 @@ const config: Config = {
 	theme: {
 		screens: {
 			'phone':{'min':'220px','max':'480px'},
-			'xs':'480px',
 			"xs-sm": "410px",
+			'xs':'480px',
+			
 			'sm': '640px',
 			// => @media (min-width: 640px) { ... }
 
@@ -35,10 +36,12 @@ const config: Config = {
 			fontFamily: {
 				custom: ['deathstar', 'sans-serif'],
 				aurebesh: ['aurebesh', 'sans-serif'],
+				outfit: ['outfit', 'sans-serif'],
 			  },
 			colors: {
 				background: "var(--background)",
 				foreground: "var(--foreground)",
+                weirdPurple: "#CEB7FF",
                 text: "#FEFEFE",
                 primary: "#9B52E0",
                 rcgrey: "#808080",

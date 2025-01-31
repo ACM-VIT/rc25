@@ -16,6 +16,8 @@ import HowItWorksMobile2 from "@/components/landing/new-mobile/NullPointExceptio
 import TimeLineMobile from "@/components/landing/new-mobile/timelinemobile";
 import AlliesMobile from "@/components/landing/new-mobile/alliesMobile";
 import LandOneMobile from "@/components/landing/new-mobile/landonemobile";
+import FaqMobile from "@/components/landing/new-mobile/faqmobile";
+
 const Layout: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const isScrolling = useRef(false);
@@ -90,15 +92,12 @@ const Layout: React.FC = () => {
       {/* Mobile version - md and below */}
       <div className="lg:hidden flex flex-col h-screen bg-[#C2E6EC] dark:bg-[#0C1222] overflow-y-auto snap-y snap-mandatory">
         <div className="flex flex-col relative w-full">
-          {/* 
-          <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0">
-            <HowItWorksMobile />
-          </div>
-
+          {/*
           <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0 bg-[#8DCAE9] dark:bg-[#0C1222]/20 backdrop-blur-[100px]">
             <PriceMobile />
-          </div> */}
-         <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0 bg-[#8DCAE9] dark:bg-[#0C1222]/20 backdrop-blur-[100px]">
+          </div> 
+          */}
+          <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0 bg-[#8DCAE9] dark:bg-[#0C1222]/20 backdrop-blur-[100px]">
             <LandOneMobile/>
           </div>
           <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0 bg-[#8DCAE9] dark:bg-[#0C1222]/20 backdrop-blur-[100px]">
@@ -109,6 +108,9 @@ const Layout: React.FC = () => {
           </div>
           <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0 bg-[#8DCAE9] dark:bg-[#0C1222]/20 backdrop-blur-[100px]">
           <TimeLineMobile />
+          </div>
+          <div>
+            <FaqMobile />
           </div>
           <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0 bg-[#8DCAE9] dark:bg-[#0C1222]/20 backdrop-blur-[100px]">
             <AlliesMobile/>

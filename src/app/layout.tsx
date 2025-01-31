@@ -8,7 +8,7 @@ import React, { type ReactNode } from "react";
 import { auth } from "./(auth)/auth";
 import { prisma } from "@/utils/prisma";
 import "./globals.css";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
 // import Dashboard from "@/components/dashboard";
 import Navbar from "@/components/Navbar";
 import SignOutButton from "@/components/buttons/sign-out";
@@ -19,6 +19,7 @@ import SwitchAdminModeButton from "@/components/switch-admin-mode-button";
 // import TeamSubmissions from "@/components/team-submissions";
 
 const plus_jakarta_sans = Plus_Jakarta_Sans({ subsets: ["latin"] });
+const outfit = Outfit({ subsets: ["latin"] });
 
 // const roundIsActive = true; // true --> portal
 // const memberOfActiveRound = true; // false --> elimination
@@ -132,9 +133,8 @@ export default async function RootLayout({
     if (!user?.Team) {
         return (
             <html lang="en">
-                <body>
-                    <Navbar name={session.user.name ?? "User"} />
-                    <Team />
+                <body className={`${outfit.className}`}>
+                    <Team name={session.user.name ?? "User"}/>
                     {isAdmin && <SwitchAdminModeButton />}
                 </body>
             </html>

@@ -43,13 +43,17 @@ const SmoothInfiniteScroll: React.FC<SmoothInfiniteScrollProps> = ({
     <div className="w-full overflow-allow">
       <div
         ref={scrollRef}
-        className="inline-flex whitespace-nowrap"
+        className="inline-flex whitespace-nowrap ease-linear"
         style={{ willChange: "transform" }}
       >
-        <span className={`mx-4 text-5xl xs-sm:text-6xl font-extrabold text-white  text-glow ${font}`}>
+        <span
+          className={`mx-4 text-5xl xs-sm:text-6xl font-extrabold text-white  text-glow ${font}`}
+        >
           {text}
         </span>
-        <span className={`mx-4 text-5xl xs-sm:text-6xl font-extrabold text-white  text-glow ${font}`}>
+        <span
+          className={`mx-4 text-5xl xs-sm:text-6xl font-extrabold text-white  text-glow ${font}`}
+        >
           {text}
         </span>
       </div>

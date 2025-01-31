@@ -4,41 +4,47 @@ import faqbg from "../../../../public/landing_new/faqbg.png";
 
 const Faq: React.FC = () => {
   const contentBoxes = [
-    { 
-      defaultText: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do",
-      hoverText: "May the Force flow through your code like a mighty stream" 
+    {
+      defaultText:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do",
+      hoverText: "May the Force flow through your code like a mighty stream",
     },
-    { 
-      defaultText: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do",
-      hoverText: "Debug or debug not, there is no try-catch" 
+    {
+      defaultText:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do",
+      hoverText: "Debug or debug not, there is no try-catch",
     },
-    { 
-      defaultText: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do",
-      hoverText: "In the matrix of possibilities, a solution always exists" 
+    {
+      defaultText:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do",
+      hoverText: "In the matrix of possibilities, a solution always exists",
     },
-    { 
-      defaultText: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do",
-      hoverText: "The path to wisdom requires patience, young programmer" 
+    {
+      defaultText:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do",
+      hoverText: "The path to wisdom requires patience, young programmer",
     },
-    { 
-      defaultText: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do",
-      hoverText: "When code breaks, breathe deep and let clarity guide you" 
+    {
+      defaultText:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do",
+      hoverText: "When code breaks, breathe deep and let clarity guide you",
     },
-    { 
-      defaultText: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do",
-      hoverText: "Trust in the Force, but validate your inputs you must" 
+    {
+      defaultText:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do",
+      hoverText: "Trust in the Force, but validate your inputs you must",
     },
   ];
 
   return (
     <div className="relative w-screen h-screen bg-black overflow-y-hidden">
-      <div 
+      <div
         className="absolute left-4 top-4 h-full flex items-center z-20"
-        style={{ 
-          writingMode: 'vertical-lr', 
+        style={{
+          writingMode: "vertical-lr",
           fontFamily: "Death Star, sans-serif",
-          color: 'transparent',
-          WebkitTextStroke: '1px rgba(255, 255, 255, 1)',
+          color: "transparent",
+          WebkitTextStroke: "1px rgba(255, 255, 255, 1)",
         }}
       >
         <span className="transform text-glow how-it-works-heading rotate-180 text-4xl lg:text-5xl tracking-wider">
@@ -46,13 +52,13 @@ const Faq: React.FC = () => {
         </span>
       </div>
 
-      <div 
+      <div
         className="absolute right-4 bottom-4 flex items-center z-20"
-        style={{ 
-          writingMode: 'vertical-rl', 
+        style={{
+          writingMode: "vertical-rl",
           fontFamily: "Death Star, sans-serif",
-          color: 'transparent',
-          WebkitTextStroke: '1px rgba(255, 255, 255, 1)',
+          color: "transparent",
+          WebkitTextStroke: "1px rgba(255, 255, 255, 1)",
         }}
       >
         <span className="transform text-glow how-it-works-heading rotate-180 text-4xl lg:text-5xl tracking-wider">
@@ -78,10 +84,12 @@ const Faq: React.FC = () => {
             {contentBoxes.map((box, index) => (
               <div
                 key={index}
-                className="bg-[#222222] backdrop-blur bg-opacity-80 hover:bg-[#424242] hover:bg-opcaity-20 p-4 font-outfit rounded text-white border border-[#9B51E0] border-opacity-50 transition-all duration-200 ease-in-out hover:shadow-[0_0_6px_rgba(255,255,255,1),0_0_15px_rgba(206,183,255,0.6),0_0_25px_rgba(155,81,224,0.7)] group"
+                className="flex space-x-12 items-center justify-center h-[12vh] w-[30vw] xl:w-[35vw] bg-[#222222] backdrop-blur bg-opacity-80 hover:bg-[#424242] hover:bg-opcaity-20 p-4 font-outfit rounded text-white border border-[#9B51E0] border-opacity-50 transition-all duration-200 ease-in-out shadow-[0_0_6px_rgba(255,255,255,1),0_0_15px_rgba(206,183,255,0.6),0_0_25px_rgba(155,81,224,0.7)] group"
               >
                 <span className="group-hover:hidden">{box.defaultText}</span>
-                <span className="hidden group-hover:inline">{box.hoverText}</span>
+                <span className="hidden group-hover:inline">
+                  {box.hoverText}
+                </span>
               </div>
             ))}
           </div>

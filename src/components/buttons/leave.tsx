@@ -29,11 +29,11 @@ export function LeaveButton() {
     <button
       onClick={handleLeaveTeam}
       disabled={isPending || isLoading}
-      className={`bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 ${
+      className={`bg-transparent font-extrabold text-[#F0F1FA] px-4 py-2 rounded hover:scale-[1.05] border-2 border-[#CEB7FF] ${
         (isPending || isLoading) && "opacity-50 cursor-not-allowed"
       }`}
     >
-      {isPending || isLoading ? "Leaving..." : "Leave Team"}
+      {isPending || isLoading ? "Leaving..." : "Depart Team"}
     </button>
   );
 }

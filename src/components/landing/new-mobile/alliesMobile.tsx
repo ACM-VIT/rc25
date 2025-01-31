@@ -6,7 +6,6 @@ import upper from "@/app/assets/upperbracket.svg";
 import lower from "@/app/assets/lowerbracket.svg";
 import SmoothInfiniteScroll from "./infinitescroll";
 
-
 const ClickableBox = ({ title }: { title: string }) => (
   <div className="relative flex flex-col items-center text-white transform hover:scale-105 transition-transform duration-200 mx-6 my-4">
     {/* Top bracket */}
@@ -79,26 +78,29 @@ function AlliesMobile() {
           />
         </div>
         <div className="absolute  phone:top-[2%] w-full text-center z-10">
-        <h1 className="text-white phone:text-[5rem] xs:text-[6rem] sm:text-[7rem] how-it-works-heading uppercase">
-          Allies
-        </h1>
-      </div>
-      <div className="absolute top-[50%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full z-10">
-  <div
-    className="flex flex-col md:flex-row justify-center items-center 
+          <h1 className="text-white phone:text-[5rem] xs:text-[6rem] sm:text-[7rem] how-it-works-heading uppercase">
+            Allies
+          </h1>
+        </div>
+        <div className="absolute top-[50%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full z-10">
+          <div
+            className="flex flex-col md:flex-row justify-center items-center 
                space-y-12 sm:space-y-10  md:space-y-0 
                md:space-x-16  
                px-6 md:px-8"
-  >
-    <ClickableBox title="ORDER" />
-    <ClickableBox title="ALLIANCE" />
-    <ClickableBox title="LEGION" />
-  </div>
-</div>
-
+          >
+            <ClickableBox title="ORDER" />
+            <ClickableBox title="ALLIANCE" />
+            <ClickableBox title="LEGION" />
+          </div>
+        </div>
       </div>
-      <div className="absolute bottom-[7vh] xs-sm:bottom-[10vh] sm:bottom-[11vh] w-full z-10 rotate-[-10deg]">
-        <SmoothInfiniteScroll  text="Code Invert Conquer" speed={2.5} font="font-aurebesh" />
+      <div className="absolute bottom-[7vh] xs-sm:bottom-[10vh] sm:bottom-[11vh] w-full z-10 rotate-[-10deg] overflow-hidden">
+        <SmoothInfiniteScroll
+          text="Code Invert Conquer"
+          speed={0.5}
+          font="font-aurebesh"
+        />
       </div>
     </div>
   );

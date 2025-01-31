@@ -191,3 +191,23 @@
 .animate-vertical-scroll {
     animation: vertical-scroll 10s linear infinite;
 }
+@media (max-width: 1023px) {
+    html,
+    body {
+      overflow: hidden;
+      height: 100%;
+    }
+  
+    .sticky-container {
+      height: 100vh;
+      overflow-y: auto;
+      scroll-snap-type: y mandatory;
+    }
+  
+    .sticky-container > section {
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+    }
+  }
+  
+  

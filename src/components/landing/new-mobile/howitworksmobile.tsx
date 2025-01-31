@@ -46,10 +46,10 @@ const HowItWorksMobile: React.FC = () => {
         </div>
       </div>
       <div className="absolute bottom-[7vh] xs-sm:bottom-[10vh] sm:bottom-[11vh] w-full z-10 rotate-[-10deg]">
-        <SmoothInfiniteScroll text="Crash your code shall not" speed={1.6} />
+        <SmoothInfiniteScroll text="Crash your code shall not" speed={0.5} />
         <SmoothInfiniteScroll
-          text="Rust Ensured &nbsp; Rust Ensured"
-          speed={1.4}
+          text="Rust Ensures &nbsp; Rust Ensures"
+          speed={0.6}
         />
       </div>
     </div>

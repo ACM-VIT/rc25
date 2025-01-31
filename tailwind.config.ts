@@ -35,10 +35,12 @@ const config: Config = {
 			fontFamily: {
 				custom: ['deathstar', 'sans-serif'],
 				aurebesh: ['aurebesh', 'sans-serif'],
+				outfit: ['outfit', 'sans-serif'],
 			  },
 			colors: {
 				background: "var(--background)",
 				foreground: "var(--foreground)",
+                weirdPurple: "#CEB7FF",
                 text: "#FEFEFE",
                 primary: "#9B52E0",
                 rcgrey: "#808080",

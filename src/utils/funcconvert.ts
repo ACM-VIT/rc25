@@ -4,7 +4,7 @@ export function pythonFunction(code: string, testcases: number, delimiter: strin
 
 if __name__ == "__main__":
     for _ in range(${testcases}):
-        solve();
+        solve()
         print("${delimiter}", end="")`;
 
     return template.replace('# Original function code here', code);

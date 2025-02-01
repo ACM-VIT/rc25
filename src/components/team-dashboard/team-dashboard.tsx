@@ -39,7 +39,7 @@ async function getTeamMembers() {
 }
 async function getTeamName() {
   const session = await auth();
-  if (!session?.user?.email) return "";
+  if (!session?.user?.email) throw "No session found";
 
   const prisma = new PrismaClient();
   try {
@@ -90,6 +90,6 @@ export default async function TeamMembersAndLeaveButton() {
   const teamName = await getTeamName();
   const code = await getTeamCode();
   return (
-    <TeamMembers teamMembers={teamMembers} teamName={teamName} code={code} />
+    <TeamMembers teamMembers={teamMembers} teamName={teamName} code={code} min_team_size={parseInt(process.env.MIN_TEAM_CAPACITY || "2")} />
   );
 }

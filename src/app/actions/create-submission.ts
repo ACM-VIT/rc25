@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/utils/prisma";
-import type {  SupportedLanguage } from '@/utils/judge0-langs';
+import type { SupportedLanguage } from '@/utils/judge0-langs';
 import { judgeSolution } from "./submit-code";
 import { pythonFunction, cFunction, cppFunction, javaFunction, jsFunction, goFunction, rustFunction } from "@/utils/funcconvert";
 
@@ -24,9 +24,9 @@ function removeDuplicateImports(code: string, language: SupportedLanguage): stri
     'python': [/^from\s+[\w.]+\s+import\s+.*$/gm, /^import\s+.*$/gm],
     'go': [/^import\s*\([^)]*\)/gm, /^import\s+".*?"$/gm],
     'rust': [
-      /^use\s+[^;]+;/gm,                    // Matches: use std::io;
-      /^use\s+[^{]+\{[^}]+\};/gm,          // Matches: use std::io::{Write, Read};
-      /^use\s+[^:]+::[^;]+;/gm             // Matches: use std::collections::HashMap;
+      /^use\s+[^;]+;/gm,
+      /^use\s+[^{]+\{[^}]+\};/gm,
+      /^use\s+[^:]+::[^;]+;/gm
     ]
   };
 
@@ -35,7 +35,6 @@ function removeDuplicateImports(code: string, language: SupportedLanguage): stri
   const patterns = importPatterns[language] || [];
   const allImports = new Set<string>();
   
-  // Collect imports and remove them from code
   let cleanCode = code;
   for (const pattern of patterns) {
     const matches = cleanCode.match(pattern) || [];
@@ -45,7 +44,6 @@ function removeDuplicateImports(code: string, language: SupportedLanguage): stri
     cleanCode = cleanCode.replace(pattern, '');
   }
 
-  // Re-append unique imports
   let importSection = '';
   if (language === 'go' && allImports.size > 0) {
     importSection = `import (\n  ${Array.from(allImports).join('\n  ')}\n)\n`;
@@ -68,14 +66,53 @@ export default async function createSubmission(data: {
       where: {
         id: data.problemId,
       },
-      select: {
-        normal_cases: true,
-        edge_cases: true,
+      // Removed scalar fields from include as they are selected by default
+      include: {
+        round: {
+          select: {
+            start: true,
+            end: true,
+            number: true,
+          }
+        },
+        Testcase: {
+          where: {
+            isEdge: false
+          }
+        },
       },
     });
 
     if (!problem) {
       throw new Error("Problem not found");
+    }
+
+    const userTeam = await prisma.team.findFirst({
+      where: {
+        members: {
+          some: {
+            id: data.userId,
+          },
+        },
+      },
+    });
+
+    if (!userTeam) {
+      throw new Error("User is not part of any team");
+    }
+
+    if (userTeam.disqualify){
+      throw new Error("User's team has been disqualified");
+    }
+
+    if (userTeam.id !== process.env.ADMIN_TEAM_ID){
+      const currentTime = new Date();
+      if (currentTime < problem.round.start) {
+        throw new Error("Round has not started yet");
+      }
+      if (currentTime > problem.round.end) {
+        throw new Error("Round has ended");
+      }
     }
 
     // Get all testcases
@@ -95,9 +132,9 @@ export default async function createSubmission(data: {
       return shuffled.slice(0, n);
     };
 
-    console.log(problem.normal_cases, problem.edge_cases)
+    console.log(problem.normal_cases, problem.edge_cases);
 
-    // Select required number of cases
+    // Access scalar fields directly because they are always returned
     const selectedNormalCases = getRandomElements(
       normalCases,
       problem.normal_cases
@@ -107,11 +144,10 @@ export default async function createSubmission(data: {
     // Combine all selected testcases
     const selectedTestcases = [...selectedNormalCases, ...selectedEdgeCases];
 
-
     // Initialize testcases passed array
     const testcasespassed = selectedTestcases.map(() => false);
 
-    console.log(selectedTestcases)
+    console.log(selectedTestcases);
 
     // Create submission record
     const submission = await prisma.submission.create({
@@ -133,7 +169,7 @@ export default async function createSubmission(data: {
     // Combine selected inputs with newlines
     const combinedInput = selectedTestcases.map((tc) => tc.input).join("\n");
 
-    console.log("combinedInput: ",combinedInput)
+    console.log("combinedInput: ", combinedInput);
 
     // Get number of testcases
     const numTestcases = selectedTestcases.length;
@@ -148,7 +184,7 @@ export default async function createSubmission(data: {
     // Remove duplicated imports from the final code
     transformedCode = removeDuplicateImports(transformedCode, data.language);
 
-    console.log("code: \n",transformedCode)
+    console.log("code: \n", transformedCode);
 
     // Submit to Judge0
     const judgeResult = await judgeSolution(
@@ -158,7 +194,7 @@ export default async function createSubmission(data: {
       submission.id
     );
 
-    console.log("judge submit",judgeResult)
+    console.log("judge submit", judgeResult);
 
     if (!judgeResult.success) {
       return {

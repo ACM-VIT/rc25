@@ -66,7 +66,7 @@ const TimeLine: React.FC = () => {
             <div
               key={index}
               className={`relative group w-48 h-32 md:w-64 md:h-36 overflow-visible
-                        bg-white/40 border border-[#CEB7FF]
+                        bg-white/40 border
                         transition-all duration-300 ease-in-out
                         hover:bg-white/20
                         border-[#CEB7FF] `}

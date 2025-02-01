@@ -1,6 +1,7 @@
 "use client";
 
-import React, {useTransition} from "react";
+import type React from "react";
+import {useTransition} from "react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import type { Problem, Difficulty } from "@prisma/client";
@@ -81,6 +82,12 @@ export function QuestionForm({
 	const handleSubmit = (e: React.FormEvent) => {
 		startTransition(async ()=> {
 			e.preventDefault();
+
+			// Add validation
+			if ((formData.normal_cases ?? 0) < 0 || (formData.edge_cases ?? 0) < 0) {
+				alert("Number of cases cannot be negative");
+				return;
+			}
 
 			try {
 				const formDataToSend = new FormData();
@@ -236,6 +243,39 @@ export function QuestionForm({
 								setFormData((prev) => ({
 									...prev,
 									maxScore: Number.parseInt(e.target.value) || 0,
+								}))
+							}
+						/>
+					</div>
+				</div>
+
+				<div className="grid gap-4 sm:grid-cols-2">
+					<div className="space-y-2">
+						<Label htmlFor="normalCases">Number of Normal Cases</Label>
+						<Input
+							id="normalCases"
+							type="number"
+							min="0"
+							value={formData.normal_cases}
+							onChange={(e) =>
+								setFormData((prev) => ({
+									...prev,
+									normal_cases: Number.parseInt(e.target.value) || 0,
+								}))
+							}
+						/>
+					</div>
+					<div className="space-y-2">
+						<Label htmlFor="edgeCases">Number of Edge Cases</Label>
+						<Input
+							id="edgeCases"
+							type="number"
+							min="0"
+							value={formData.edge_cases}
+							onChange={(e) =>
+								setFormData((prev) => ({
+									...prev,
+									edge_cases: Number.parseInt(e.target.value) || 0,
 								}))
 							}
 						/>

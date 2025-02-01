@@ -3,6 +3,8 @@ import Image from "next/image";
 import bg from "../../../../public/landing_new/prize_bg.png";
 import Prizerock from "../new-pc/rock-prize";
 import SmoothInfiniteScroll from "./infinitescroll";
+import upper from "@/app/assets/upperbracket.svg";
+import lower from "@/app/assets/lowerbracket.svg";
 
 const PrizeMobile: React.FC = () => {
   return (
@@ -21,10 +23,10 @@ const PrizeMobile: React.FC = () => {
       </div>
 
       {/* Prize Rocks for different breakpoints */}
-      <div className="absolute z-10 w-full h-full flex flex-col  justify-center px-4 sm:px-8 md:px-16 lg:px-24 bottom-[2vh]">
+      {/* <div className="absolute z-10 w-full h-full flex flex-col  justify-center px-4 sm:px-8 md:px-16 lg:px-24 bottom-[2vh]">
         <div className="flex flex-col items-center justify-center">
           {/* Rocks for xs screens (up to 480px) */}
-          <div className="flex flex-col items-center justify-center space-y-2 xs-sm:hidden">
+      {/* <div className="flex flex-col items-center justify-center space-y-2 xs-sm:hidden">
             <Prizerock
               position="O(1)"
               prize={20000}
@@ -57,10 +59,10 @@ const PrizeMobile: React.FC = () => {
               positionTextSize="text-xs"
               prizeTextSize="text-xs"
             />
-          </div>
+          </div>  */}
 
-          {/* Rocks for xs-sm screens (410px - 480px) */}
-          <div className="hidden xs-sm:flex sm:hidden flex-col items-center justify-center space-y-3">
+      {/* Rocks for xs-sm screens (410px - 480px) */}
+      {/* <div className="hidden xs-sm:flex sm:hidden flex-col items-center justify-center space-y-3">
             <Prizerock
               position="O(1)"
               prize={20000}
@@ -93,10 +95,10 @@ const PrizeMobile: React.FC = () => {
               positionTextSize="text-sm"
               prizeTextSize="text-sm"
             />
-          </div>
+          </div> */}
 
-          {/* Rocks for sm screens (640px - 768px) */}
-          <div className="hidden sm:flex md:hidden flex-col items-center justify-center space-y-4">
+      {/* Rocks for sm screens (640px - 768px) */}
+      {/* <div className="hidden sm:flex md:hidden flex-col items-center justify-center space-y-4">
             <Prizerock
               position="O(1)"
               prize={20000}
@@ -129,10 +131,10 @@ const PrizeMobile: React.FC = () => {
               positionTextSize="text-sm"
               prizeTextSize="text-sm"
             />
-          </div>
+          </div> */}
 
-          {/* Rocks for md and larger screens (768px and above) */}
-          <div className="hidden md:flex flex-col items-center justify-center space-y-6">
+      {/* Rocks for md and larger screens (768px and above) */}
+      {/* <div className="hidden md:flex flex-col items-center justify-center space-y-6">
             <Prizerock
               position="O(1)"
               prize={20000}
@@ -167,18 +169,67 @@ const PrizeMobile: React.FC = () => {
             />
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Infinite Scroll */}
-      <div className="absolute bottom-[7vh] xs-sm:bottom-[10vh] sm:bottom-[11vh] w-full z-10 rotate-[-10deg]">
-        <SmoothInfiniteScroll
-          text="Try&nbsp;&nbsp;Try&nbsp;&nbsp;Try&nbsp;&nbsp;Try&nbsp;&nbsp;Try&nbsp;&nbsp;Try&nbsp;&nbsp;Try&nbsp;&nbsp;Try&nbsp;&nbsp;Try&nbsp;&nbsp;Try"
-          speed={0.5}
-        />
-        <SmoothInfiniteScroll
-          text="Catch&nbsp;&nbsp;Catch&nbsp;&nbsp;Catch&nbsp;&nbsp;Catch&nbsp;&nbsp;Catch&nbsp;&nbsp;Catch&nbsp;&nbsp;Catch&nbsp;&nbsp;Catch&nbsp;&nbsp;Catch&nbsp;&nbsp;Catch"
-          speed={0.6}
-        />
+      <div className="h-full w-full flex flex-col items-center justify-center">
+        <div className="relative flex flex-col items-center text-center justify-center h-[20vh] space-y-6 md:h-[35vh] md:w-[70vw] lg:h-[40vh] w-[50vw] text-white transform hover:scale-105 transition-transform duration-200 mx-6 my-4">
+          {/* Top bracket */}
+          <div className="absolute -top-3 -left-3">
+            <Image
+              src={upper}
+              alt="upper bracket"
+              width={40}
+              height={40}
+              className="md:w-[45px] md:h-[45px] lg:w-[50px] lg:h-[50px]"
+            />
+          </div>
+
+          {/* Text content */}
+          <div className="flex flex-col items-center space-y-1 px-4 py-2 justify-center">
+            <span
+              className=" text-4xl sm:text-6xl md:text-8xl lg:text-8xl font-custom tracking-wide"
+              style={{
+                textShadow: "0 0 5px rgba(255,255,255,0.7)",
+                WebkitTextStroke: "0.5px white",
+              }}
+            >
+              REDACTED
+            </span>
+            <span
+              className="text-base sm:text-lg md:text-xl lg:text-2xl tracking-widest"
+              style={{
+                textShadow: "0 0 5px rgba(255,255,255,0.7)",
+                WebkitTextStroke: "0.5px white",
+              }}
+            >
+              The prize awaits, hidden in the far reaches of the galaxy... stay
+              tuned, young Padawan.
+            </span>
+          </div>
+
+          {/* Bottom bracket */}
+          <div className="absolute -bottom-3 -right-3">
+            <Image
+              src={lower}
+              alt="lower bracket"
+              width={40}
+              height={40}
+              className="md:w-[45px] md:h-[45px] lg:w-[50px] lg:h-[50px]"
+            />
+            {/* </div> */}
+          </div>
+        </div>
+        <div className="absolute bottom-[7vh] xs-sm:bottom-[10vh] sm:bottom-[11vh] w-full z-10 rotate-[-10deg]">
+          <SmoothInfiniteScroll
+            text="Try&nbsp;&nbsp;Try&nbsp;&nbsp;Try&nbsp;&nbsp;Try&nbsp;&nbsp;Try&nbsp;&nbsp;Try&nbsp;&nbsp;Try&nbsp;&nbsp;Try&nbsp;&nbsp;Try&nbsp;&nbsp;Try"
+            speed={0.5}
+          />
+          <SmoothInfiniteScroll
+            text="Catch&nbsp;&nbsp;Catch&nbsp;&nbsp;Catch&nbsp;&nbsp;Catch&nbsp;&nbsp;Catch&nbsp;&nbsp;Catch&nbsp;&nbsp;Catch&nbsp;&nbsp;Catch&nbsp;&nbsp;Catch&nbsp;&nbsp;Catch"
+            speed={0.6}
+          />
+        </div>
       </div>
     </div>
   );

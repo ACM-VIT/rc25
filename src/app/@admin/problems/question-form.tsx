@@ -283,7 +283,7 @@ export function QuestionForm({
 						<Input
 							id="mac_dl"
 							type="file"
-							accept=".exe"
+							accept=".mac"
 							onChange={(e) => handleFileChange(e, "mac_dl")}
 						/>
 					</div>

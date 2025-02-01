@@ -4,7 +4,7 @@ export function pythonFunction(code: string, testcases: number, delimiter: strin
 
 if __name__ == "__main__":
     for _ in range(${testcases}):
-        solve()
+        solve();
         print("${delimiter}", end="")`;
 
     return template.replace('# Original function code here', code);
@@ -94,6 +94,23 @@ func main() {
     for i := 0; i < ${testcases}; i++ {
         solve()
         fmt.Print("${delimiter}")
+    }
+}`;
+
+    return template.replace('// Original function code here', code);
+}
+
+export function rustFunction(code: string, testcases: number, delimiter: string): string {
+    const template = `use std::io::{self, Write};
+use std::collections::*;
+
+// Original function code here
+
+fn main() {
+    for _ in 0..${testcases} {
+        solve();
+        print!("${delimiter}");
+        io::stdout().flush().unwrap();
     }
 }`;
 

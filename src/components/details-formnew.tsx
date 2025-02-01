@@ -52,7 +52,8 @@ export default function OnboardingForm() {
       />
 
       <button
-        className="absolute top-[4%] right-[5%] sm:right-[3%] px-6 py-2 border 
+        type="button"
+  className="absolute top-[4%] right-[5%] sm:right-[3%] px-6 py-2 border 
              bg-[#08000F] border-[#CEB7FF] text-[#CEB7FF] uppercase 
              hover:bg-[#CEB7FF] hover:text-black transition-all duration-300 shadow-lg mt-[-2%] md:mt-[0] mb-[10%]"
         onClick={async () => {
@@ -104,7 +105,7 @@ export default function OnboardingForm() {
                   boxShadow:
                     "0 0 10px #CEB7FF, 0 0 10px #CEB7FF, 0 0 30px #CEB7FF",
                 }}
-              ></div>
+              />
 
               {/* Text aligned next to it */}
               <div className="w-1/3 text-[#CEB7FF] lg:text-center md:text-right md:block hidden text-nowrap md:text-[85%] lg:text-[100%] how-it-works-heading uppercase">
@@ -139,7 +140,7 @@ export default function OnboardingForm() {
                   boxShadow:
                     "0 0 10px #CEB7FF, 0 0 10px #CEB7FF, 0 0 30px #CEB7FF",
                 }}
-              ></div>
+              />
             </div>
           </div>
 
@@ -183,15 +184,20 @@ export default function OnboardingForm() {
             {/* Gender Selection (Ensures correct form submission) */}
             <div className="mb-5">
               <label
+                htmlFor="gender"
                 className={`${pt_sans.className} font-semibold text-xs text-white block mb-1`}
               >
                 GENDER
               </label>
-              <div className="flex flex-col sm:flex-row gap-4">
+              <fieldset
+                className="flex flex-row gap-4 border-0 m-0 p-0"
+              >
+                <legend className="sr-only">Select your gender</legend>
                 {["male", "female"].map((gender) => (
                   <label key={gender} className="flex-1 cursor-pointer">
                     <input
                       type="radio"
+                      id="gender"
                       name="gender" // ✅ Important: Now included in form submission
                       value={gender}
                       className="hidden"
@@ -210,7 +216,7 @@ export default function OnboardingForm() {
                     </div>
                   </label>
                 ))}
-              </div>
+              </fieldset>
               <div className="text-red-600 text-xs mt-0.5">
                 {genderError}&nbsp;
               </div>
@@ -219,16 +225,22 @@ export default function OnboardingForm() {
             {/* Status Selection */}
             <div className="mb-5">
               <label
+                htmlFor="status-options"
                 className={`${pt_sans.className} font-semibold text-xs text-white block mb-1`}
               >
                 SELECT AN OPTION
               </label>
-              <div className="flex flex-col sm:flex-row gap-4">
+              <fieldset 
+                className="flex flex-col sm:flex-row gap-4" 
+                id="status-options"
+                aria-label="Status options"
+              >
+                <legend className="sr-only">Select your status</legend>
                 {["HOSTELLER", "DAY SCHOLAR"].map((status) => (
                   <button
                     key={status}
                     type="button"
-                    className={`flex-1 p-3 text-center border border-[#F0F1FA]  text-lg font-semibold
+                    className={`flex-1 p-3 text-center border border-[#F0F1FA] text-lg font-semibold
                                ${
                                  selectStatus === status
                                    ? "bg-[#CEB7FF] bg-opacity-9.5 text-white"
@@ -239,7 +251,7 @@ export default function OnboardingForm() {
                     {status}
                   </button>
                 ))}
-              </div>
+              </fieldset>
               <div className="text-red-600 text-xs mt-0.5">
                 {statusError}&nbsp;
               </div>

@@ -16,8 +16,29 @@ import Team from "@/components/createjoin";
 import { cookies } from "next/headers";
 import SwitchAdminModeButton from "@/components/switch-admin-mode-button";
 import { SessionProvider } from "next-auth/react";
+import { type Metadata } from "next";
 // import SwitchAdminModeButton from "@/components/switch-admin-mode-button";
 // import TeamSubmissions from "@/components/team-submissions";
+
+export const metadata: Metadata = {
+  title: {
+    template: "%s | Reverse Coding",
+    default: "Reverse Coding | ACM-VIT",
+  },
+  description: "ACM-VIT's premier competitive coding event",
+  openGraph: {
+    title: "Reverse Coding",
+    description: "ACM-VIT's premier competitive coding event",
+    type: "website",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  icons: {
+    icon: "/favicon.ico",
+  },
+};
 
 const plus_jakarta_sans = Plus_Jakarta_Sans({ subsets: ["latin"] });
 const outfit = Outfit({ subsets: ["latin"] });
@@ -90,13 +111,13 @@ export default async function RootLayout({
       start: "asc",
     },
     // include: {
-        //     teams: {
-        //         where: {
-        //             teamId: user?.Team?.id,
-        //         },
-        //     },
-        // },
-    });
+    //     teams: {
+    //         where: {
+    //             teamId: user?.Team?.id,
+    //         },
+    //     },
+    // },
+  });
 
   const isAdmin = !!user?.Admin;
   const detailsFilled = !!user?.phone && !!user?.gender && !!user?.phone.length;
@@ -186,7 +207,9 @@ export default async function RootLayout({
     );
   }
 
-  const memberOfRound = user.Team.TeamRound.find(tr=>tr.roundId === curOrNextRound.id)
+  const memberOfRound = user.Team.TeamRound.find(
+    (tr) => tr.roundId === curOrNextRound.id
+  );
   if (!memberOfRound) {
     return (
       <html lang="en">

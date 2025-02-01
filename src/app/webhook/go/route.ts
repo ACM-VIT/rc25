@@ -113,11 +113,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Merge results - keep true if previously passed by any team member
-    const finalTestCasesPassed = submission.testcases.map((_, index) => {
-      const wasPassedByTeam = teamTestResults[index];
-      const isPassedNow = testcasespassed[index];
-      return wasPassedByTeam ? wasPassedByTeam : isPassedNow;
-    });
+    const finalTestCasesPassed = testcasespassed;
 
     let scoreChange = 0;
     testcasespassed.forEach((isPassed, index) => {

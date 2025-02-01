@@ -171,6 +171,29 @@ export default async function RootLayout({
     );
   }
 
+  if (isAdmin) {
+    return (
+      <html lang="en">
+        <body
+          className="min-h-screen flex flex-col"
+          style={{
+            backgroundImage: "url('./dashbg.png')",
+            backgroundSize: "cover",
+            backgroundAttachment: "fixed",
+          }}
+        >
+          <div className="min-h-[20%] max-h-[20%]">
+            <Navbar name={session.user.name ?? "User"} />
+          </div>
+          <div className="min-h-[80%] max-h-[80%]">
+            {children}
+            <SwitchAdminModeButton />
+          </div>
+        </body>
+      </html>
+    );
+  }
+
   const winnerScreen = !curOrNextRound;
 
   if (winnerScreen) {

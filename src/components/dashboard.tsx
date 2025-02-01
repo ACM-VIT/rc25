@@ -5,7 +5,7 @@ import DashboardBox from "@/components/DashboardBox";
 import type { DashboardProps } from "@/types/dashboard";
 import Link from "next/link";
 import { FaCrown } from "react-icons/fa";
-
+import { FaUserGroup } from "react-icons/fa6";
 const Dashboard: React.FC<DashboardProps> = ({
     teamDetails,
     leaderboard,
@@ -15,6 +15,10 @@ const Dashboard: React.FC<DashboardProps> = ({
     const sortedLeaderboard = [...leaderboard].sort(
         (a, b) => b.score - a.score
     );
+
+    const userTeam = () => {
+        return sortedLeaderboard.find((team) => team.name === teamDetails.name);
+    };
 
     const getDifficultyColor = (difficulty: string) => {
         switch (difficulty) {
@@ -54,8 +58,8 @@ const Dashboard: React.FC<DashboardProps> = ({
                 <p className="font-bold text-2xl font-custom underline underline-offset-4 decoration-white my-4">
                     Round {roundInfo.number}
                 </p>
-                <div className="flex flex-row w-full justify-around">
-                    <div className="flex flex-col w-[20%]">
+                <div className="flex flex-row w-full justify-between space-x-4">
+                    <div className="flex flex-col w-1/4 space-y-4">
                         <DashboardBox className="flex flex-col p-6 mb-4 text-white h-[35%]">
                             <p className="text-xl font-semibold border-b-2 text-center border-white pb-4">
                                 {teamDetails.name}
@@ -81,9 +85,10 @@ const Dashboard: React.FC<DashboardProps> = ({
                                 </p>
                             </div>
                         </DashboardBox>
-
                     </div>
-                    <div className="w-[50%]">
+
+                    {/* Middle Column */}
+                    <div className="w-1/2">
                         <DashboardBox>
                             <p className="text-2xl font-semibold border-b-2 border-white p-2 py-4 mb-4">
                                 Questions
@@ -120,10 +125,9 @@ const Dashboard: React.FC<DashboardProps> = ({
                             </ScrollArea>
                         </DashboardBox>
                     </div>
-
-                    <div className="w-[25%]">
-                        <DashboardBox className="h-[93vh]">
-                            <p className="text-2xl font-semibold border-b-2 border-white py-3 mb-4">
+                    <div className="w-1/4">
+                        <DashboardBox className="h-[94vh]">
+                            <p className="text-2xl font-semibold border-b-2 border-white mb-2">
                                 Leaderboard
                             </p>
                             <ul className="space-y-3 px-1">
@@ -142,6 +146,14 @@ const Dashboard: React.FC<DashboardProps> = ({
                                     </li>
                                 ))}
                             </ul>
+                            {userTeam() && (
+                                <div className="flex flex-row text-center bg-[#ffffff1a] mr-2 mt-4 rounded-lg">
+                                    <FaUserGroup className="mr-2 text-white mx-auto" />
+                                    <p className="text-white">
+                                        {sortedLeaderboard.indexOf(userTeam()!) + 1} {userTeam()?.name}  {userTeam()?.score} pts
+                                    </p>
+                                </div>
+                            )}
                         </DashboardBox>
                     </div>
                 </div>

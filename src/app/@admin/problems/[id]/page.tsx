@@ -2,9 +2,13 @@ import ViewProblem from './QuestionDisplay';
 import { prisma } from "@/utils/prisma";
 import { notFound } from "next/navigation";
 import type { Problem as PrismaBaseProblem } from '@prisma/client';
+import SwitchAdminProblemModeButton from '@/components/switch-admin-problem-mode';
 
 interface Problem extends PrismaBaseProblem {
   Testcase: TestCase[];
+  round: {
+    number: number;
+  };
 }
 
 interface PageParams {
@@ -27,6 +31,11 @@ async function getProblem(id: string): Promise<Problem> {
     where: { id },
     include: {
       Testcase: true,
+      round: {
+        select: {
+          number: true
+        }
+      }
     }
   });
 
@@ -37,5 +46,10 @@ async function getProblem(id: string): Promise<Problem> {
 export default async function Page({ params }: PageParams) {
   const resolvedParams = await params;
   const problem = await getProblem(resolvedParams.id);
-  return <ViewProblem problem={problem} />;
+  return (
+    <>
+      <ViewProblem problem={problem} />
+      <SwitchAdminProblemModeButton problemId={problem.id} />
+    </>
+  );
 }

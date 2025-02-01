@@ -167,3 +167,10 @@ enum Difficulty {
   MEDIUM
   HARD
 }
+
+model News{
+  id        String   @id @default(cuid())
+  content   String
+  title     String
+  time      DateTime
+}

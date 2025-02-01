@@ -1,101 +1,113 @@
-import Image from "next/image";
+import { prisma } from "@/utils/prisma";
+import Dashboard from "@/components/dashboard";
+// import SignOutButton from "@/components/buttons/sign-out";
+// import type { TeamRound } from "@prisma/client"
+import { getTeamRound } from "@/hooks/useTeamRound";
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+export default async function Page() {
+    const teamRound = await getTeamRound();
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+    if (!teamRound?.roundId) {
+        return <div>No active round found</div>;
+    }
+
+    // Round info
+    const roundInfo = await prisma.round.findFirst({
+        where: { id: teamRound.roundId },
+        select: { number: true, end: true, id: true },
+    });
+
+    // Questions
+    const problems = roundInfo
+        ? await prisma.problem.findMany({
+              where: { roundId: roundInfo.id },
+              orderBy: { id: "asc" },
+              include: {
+                  submissions: {
+                      orderBy: { createdAt: "desc" },
+                      take: 1,
+                  },
+              },
+          })
+        : [];
+
+    const questions = problems.map((problem, index) => {
+        const recentSubmission = problem.submissions[0];
+        const passedArray = recentSubmission?.testcasespassed || [];
+        const passCount = passedArray.filter(Boolean).length;
+        const total = passedArray.length;
+        const status = total > 0 ? `${passCount}/${total}` : "Not Attempted";
+        return {
+            slno: index + 1,
+            id: problem.id,
+            questionName: problem.title,
+            difficulty: problem.difficulty,
+            status,
+        };
+    });
+
+    const teamData = await prisma.team.findUnique({
+        where: { id: teamRound.teamId },
+        select: {
+            id: true,
+            name: true,
+            shortCode: true,
+            score: true,
+            members: {
+                select: {
+                    id: true,
+                    name: true,
+                },
+            },
+        },
+    });
+
+    const teamDetails = teamData
+        ? {
+              id: teamData.id,
+              name: teamData.name,
+              shortCode: teamData.shortCode,
+              score: teamData.score,
+              members: teamData.members.map((member) => ({
+                  id: member.id,
+                  name: member.name,
+                  score: 0, // Adjust if you store member scores
+              })),
+          }
+        : {
+              id: "",
+              name: "",
+              shortCode: "",
+              score: 0,
+              members: [],
+          };
+
+    // Leaderboard
+    const leaderboardData = await prisma.team.findMany({
+        orderBy: { score: "desc" },
+        select: {
+            id: true,
+            name: true,
+            score: true,
+        },
+    });
+    const leaderboard = leaderboardData.map((team) => ({
+        id: team.id,
+        name: team.name,
+        score: team.score,
+    }));
+
+    return (
+        <>
+            <Dashboard
+                teamDetails={teamDetails}
+                leaderboard={leaderboard}
+                questions={questions}
+                roundInfo={{
+                    number: roundInfo?.number ?? 0,
+                    end: roundInfo?.end ?? new Date(),
+                }}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+        </>
+    );
 }

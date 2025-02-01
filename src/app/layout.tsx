@@ -44,51 +44,51 @@ const outfit = Outfit({ subsets: ["latin"] });
 // }
 
 interface LayoutProps {
-  children: ReactNode;
-  admin: ReactNode;
-  landing: ReactNode;
+    children: ReactNode;
+    admin: ReactNode;
+    landing: ReactNode;
 }
 
 export default async function RootLayout({
-  children,
-  admin,
-  landing,
+    children,
+    admin,
+    landing,
 }: LayoutProps) {
-  const session = await auth();
-  if (!session?.user?.email) {
-    return (
-      <html lang="en">
-        <body>{landing}</body>
-      </html>
-    );
-  }
+    const session = await auth();
+    if (!session?.user?.email) {
+        return (
+            <html lang="en">
+                <body>{landing}</body>
+            </html>
+        );
+    }
 
-  const user = await prisma.user.findUnique({
-    where: {
-      email: session.user.email,
-    },
-    include: {
-      Team: {
-        include: { TeamRound: true },
-      },
-      Admin: {
-        select: {
-          id: true,
+    const user = await prisma.user.findUnique({
+        where: {
+            email: session.user.email,
         },
-      },
-    },
-  });
+        include: {
+            Team: {
+                include: { TeamRound: true },
+            },
+            Admin: {
+                select: {
+                    id: true,
+                },
+            },
+        },
+    });
 
-  const curOrNextRound = await prisma.round.findFirst({
-    where: {
-      result: {
-        gte: new Date(),
-      },
-    },
-    orderBy: {
-      start: "asc",
-    },
-    // include: {
+    const curOrNextRound = await prisma.round.findFirst({
+        where: {
+            result: {
+                gte: new Date(),
+            },
+        },
+        orderBy: {
+            start: "asc",
+        },
+        // include: {
         //     teams: {
         //         where: {
         //             teamId: user?.Team?.id,
@@ -97,184 +97,158 @@ export default async function RootLayout({
         // },
     });
 
-  const isAdmin = !!user?.Admin;
-  const detailsFilled = !!user?.phone && !!user?.gender && !!user?.phone.length;
+    const isAdmin = !!user?.Admin;
+    const detailsFilled = !!user?.phone && !!user?.gender && !!user?.phone.length;
 
-  const cookieStore = await cookies();
-  const mode = cookieStore.get("mode")?.value !== "user";
-  console.log(mode);
+    const cookieStore = await cookies();
+    const mode = cookieStore.get("mode")?.value !== "user";
+    console.log(mode);
 
-  if (isAdmin && mode) {
+    if (isAdmin && mode) {
+        return (
+            <html lang="en">
+                <body className={outfit.className}>
+                    {admin}
+                    <SignOutButton />
+                </body>
+            </html>
+        );
+    }
+
+    if (!detailsFilled) {
+        return (
+            <html lang="en">
+                <body>
+                    <div className="h-full w-full flex flex-col items-center justify-center">
+                        <SessionProvider>
+                            <DetailsForm />
+                        </SessionProvider>
+
+                        {isAdmin && <SwitchAdminModeButton />}
+                    </div>
+                </body>
+            </html>
+        );
+    }
+
+    if (!user?.Team) {
+        return (
+            <html lang="en">
+                <body className={`${outfit.className}`}>
+                    <Team name={session.user.name ?? "User"} />
+                    {isAdmin && <SwitchAdminModeButton />}
+                </body>
+            </html>
+        );
+    }
+
+    const teamCheckedIn = user.Team.checkedIn;
+
+    if (!teamCheckedIn) {
+        return (
+            <html lang="en">
+                <body>
+                    <TeamMembersAndLeaveButton />
+                    {isAdmin && <SwitchAdminModeButton />}
+                </body>
+            </html>
+        );
+    }
+
+    const disqualified = Boolean(user.Team.disqualify);
+
+    if (disqualified) {
+        return (
+            <html lang="en">
+                <body>
+                    <div className="bg-[radial-gradient(110.8%_70.71%_at_50%_50%,_#0B0014_55.41%,_#18181B_100%)] min-h-screen">
+                        <Navbar name={session.user.name ?? "User"} />
+                        <Disqualified />
+                        {isAdmin && <SwitchAdminModeButton />}
+                    </div>
+                </body>
+            </html>
+        );
+    }
+
+    const winnerScreen = !curOrNextRound;
+
+    if (winnerScreen) {
+        return (
+            <html lang="en">
+                <body>
+                    <Navbar name={session.user.name ?? "User"} />
+                    <Winners />
+                    {isAdmin && <SwitchAdminModeButton />}
+                </body>
+            </html>
+        );
+    }
+
+    const memberOfRound = user.Team.TeamRound.find(tr => tr.roundId === curOrNextRound.id)
+    if (!memberOfRound) {
+        return (
+            <html lang="en">
+                <body>
+                    <Navbar name={session.user.name ?? "User"} />
+                    <EliminationScreen />
+                    {isAdmin && <SwitchAdminModeButton />}
+                </body>
+            </html>
+        );
+    }
+
+    // todo round checked in condition
+
+    const roundStarted = curOrNextRound.start <= new Date();
+
+    if (!roundStarted) {
+        return (
+            <html lang="en">
+                <body>
+                    <Navbar name={session.user.name ?? "User"} />
+                    <CountdownTimer
+                        getTimeUntil={curOrNextRound.start.toISOString()}
+                    />{" "}
+                    {/* todo Time until round start */}
+                    {isAdmin && <SwitchAdminModeButton />}
+                </body>
+            </html>
+        );
+    }
+
+    const roundEnded = curOrNextRound.end <= new Date();
+
+    if (roundEnded) {
+        return (
+            <html lang="en">
+                <body>
+                    <Navbar name={session.user.name ?? "User"} />
+                    <CountdownTimer
+                        getTimeUntil={curOrNextRound.result.toISOString()}
+                    />{" "}
+                    {/* todo Time until result */}
+                    {isAdmin && <SwitchAdminModeButton />}
+                </body>
+            </html>
+        );
+    }
+
     return (
-      <html lang="en">
-        <body className={outfit.className}>
-          {admin}
-          <SignOutButton />
-        </body>
-      </html>
+        <html lang="en">
+            <body
+                className={`min-h-screen flex flex-col ${outfit.className}`}
+                style={{
+                    backgroundImage: "url('./dashbg.png')",
+                    backgroundSize: "cover",
+                    backgroundAttachment: "fixed",
+                }}
+            >
+                <div className="min-h-[80%] max-h-[80%]">
+                    {children}
+                    {isAdmin && <SwitchAdminModeButton />}
+                </div>
+            </body>
+        </html>
     );
-  }
-
-  if (!detailsFilled) {
-    return (
-      <html lang="en">
-        <body>
-          <div className="h-full w-full flex flex-col items-center justify-center">
-            <SessionProvider>
-              <DetailsForm />
-            </SessionProvider>
-
-            {isAdmin && <SwitchAdminModeButton />}
-          </div>
-        </body>
-      </html>
-    );
-  }
-
-  if (!user?.Team) {
-    return (
-      <html lang="en">
-        <body className={`${outfit.className}`}>
-          <Team name={session.user.name ?? "User"} />
-          {isAdmin && <SwitchAdminModeButton />}
-        </body>
-      </html>
-    );
-  }
-
-  const teamCheckedIn = user.Team.checkedIn;
-
-  if (!teamCheckedIn) {
-    return (
-      <html lang="en">
-        <body>
-          <TeamMembersAndLeaveButton />
-          {isAdmin && <SwitchAdminModeButton />}
-        </body>
-      </html>
-    );
-  }
-
-  const disqualified = Boolean(user.Team.disqualify);
-
-  if (disqualified) {
-    return (
-      <html lang="en">
-        <body>
-          <div className="bg-[radial-gradient(110.8%_70.71%_at_50%_50%,_#0B0014_55.41%,_#18181B_100%)] min-h-screen">
-            <Navbar name={session.user.name ?? "User"} />
-            <Disqualified />
-            {isAdmin && <SwitchAdminModeButton />}
-          </div>
-        </body>
-      </html>
-    );
-  }
-
-  if (isAdmin) {
-    return (
-      <html lang="en">
-        <body
-          className="min-h-screen flex flex-col"
-          style={{
-            backgroundImage: "url('./dashbg.png')",
-            backgroundSize: "cover",
-            backgroundAttachment: "fixed",
-          }}
-        >
-          <div className="min-h-[20%] max-h-[20%]">
-            <Navbar name={session.user.name ?? "User"} />
-          </div>
-          <div className="min-h-[80%] max-h-[80%]">
-            {children}
-            <SwitchAdminModeButton />
-          </div>
-        </body>
-      </html>
-    );
-  }
-
-  const winnerScreen = !curOrNextRound;
-
-  if (winnerScreen) {
-    return (
-      <html lang="en">
-        <body>
-          <Navbar name={session.user.name ?? "User"} />
-          <Winners />
-          {isAdmin && <SwitchAdminModeButton />}
-        </body>
-      </html>
-    );
-  }
-
-  const memberOfRound = user.Team.TeamRound.find(tr=>tr.roundId === curOrNextRound.id)
-  if (!memberOfRound) {
-    return (
-      <html lang="en">
-        <body>
-          <Navbar name={session.user.name ?? "User"} />
-          <EliminationScreen />
-          {isAdmin && <SwitchAdminModeButton />}
-        </body>
-      </html>
-    );
-  }
-
-  // todo round checked in condition
-
-  const roundStarted = curOrNextRound.start <= new Date();
-
-  if (!roundStarted) {
-    return (
-      <html lang="en">
-        <body>
-          <Navbar name={session.user.name ?? "User"} />
-          <CountdownTimer
-            getTimeUntil={curOrNextRound.start.toISOString()}
-          />{" "}
-          {/* todo Time until round start */}
-          {isAdmin && <SwitchAdminModeButton />}
-        </body>
-      </html>
-    );
-  }
-
-  const roundEnded = curOrNextRound.end <= new Date();
-
-  if (roundEnded) {
-    return (
-      <html lang="en">
-        <body>
-          <Navbar name={session.user.name ?? "User"} />
-          <CountdownTimer
-            getTimeUntil={curOrNextRound.result.toISOString()}
-          />{" "}
-          {/* todo Time until result */}
-          {isAdmin && <SwitchAdminModeButton />}
-        </body>
-      </html>
-    );
-  }
-
-  return (
-    <html lang="en">
-      <body
-        className="min-h-screen flex flex-col"
-        style={{
-          backgroundImage: "url('./dashbg.png')",
-          backgroundSize: "cover",
-          backgroundAttachment: "fixed",
-        }}
-      >
-        <div className="min-h-[20%] max-h-[20%]">
-          <Navbar name={session.user.name ?? "User"} />
-        </div>
-        <div className="min-h-[80%] max-h-[80%]">
-          {children}
-          {isAdmin && <SwitchAdminModeButton />}
-        </div>
-      </body>
-    </html>
-  );
 }

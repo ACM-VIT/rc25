@@ -9,8 +9,15 @@ export default function SignOutButton() {
       console.error("Error during sign-out:", error);
     }
   };
+  
   return (
-      <button onClick={handleSignOut} type="submit" className="bg-[#39234E] p-5 w-[12vw] border-4 border-[#9B52E0] rounded-full font-bold ">SignOut</button>
-
-  )
+    <button 
+      type="button"
+      onClick={handleSignOut} 
+      className="bg-[#39234E] px-8 py-3 rounded-lg border-2 border-[#9B52E0] 
+                 font-semibold text-white hover:bg-[#4a2b63] transition-colors"
+    >
+      Sign Out
+    </button>
+  );
 }

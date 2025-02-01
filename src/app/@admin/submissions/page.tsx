@@ -1,30 +1,23 @@
-import { prisma } from "@/utils/prisma";
-import SubmissionClient from "./SubmissionClient";
+import Link from 'next/link';
 
-async function getSubmissions() {
-  try {
-    const submissions = await prisma.submission.findMany({
-      orderBy: {
-        id: "asc",
-      },
-      include: {
-        problem: {
-          select: {
-            title: true
-          }
-        }
-      }
-    });
-    return submissions.map(submission => ({
-      ...submission,
-      score: submission.score ?? 0 // Ensure score is always a number
-    }));
-  } finally {
-    await prisma.$disconnect();
-  }
-}
-
-export default async function Page() {
-  const submissions = await getSubmissions();
-  return <SubmissionClient initialSubmissions={submissions} />;
+export default function Page() {
+  return (
+    <div className="space-y-4">
+      <h1 className="text-2xl font-bold">Submissions Dashboard</h1>
+      <div className="flex gap-4">
+        <Link 
+          href="/submissions/team"
+          className="p-4 border rounded hover:bg-gray-100"
+        >
+          View by Team
+        </Link>
+        <Link 
+          href="/submissions/question" 
+          className="p-4 border rounded hover:bg-gray-100"
+        >
+          View by Question
+        </Link>
+      </div>
+    </div>
+  );
 }

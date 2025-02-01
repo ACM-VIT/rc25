@@ -43,6 +43,13 @@ export const SUPPORTED_LANGUAGES = {
     defaultCode: `func solve() {
     // Write your code here
 }`
+  },
+  'rust': {
+    id: 73,
+    name: "Rust (1.40.0)",
+    defaultCode: `fn solve() {
+    // Write your code here
+}`
   }
 } as const;
 

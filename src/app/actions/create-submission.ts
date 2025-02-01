@@ -3,7 +3,7 @@
 import { prisma } from "@/utils/prisma";
 import type {  SupportedLanguage } from '@/utils/judge0-langs';
 import { judgeSolution } from "./submit-code";
-import { pythonFunction, cFunction, cppFunction, javaFunction, jsFunction, goFunction } from "@/utils/funcconvert";
+import { pythonFunction, cFunction, cppFunction, javaFunction, jsFunction, goFunction, rustFunction } from "@/utils/funcconvert";
 
 // Map language to template function
 const languageTemplates = {
@@ -12,17 +12,22 @@ const languageTemplates = {
   'cpp': cppFunction,
   'java': javaFunction,
   'javascript': jsFunction,
-  'go': goFunction
+  'go': goFunction,
+  'rust': rustFunction
 } as const;
 
 // Add this helper to remove duplicated imports from final code
 function removeDuplicateImports(code: string, language: SupportedLanguage): string {
-  // Use a simple approach to handle both the user's code and template code
   const importPatterns: Partial<Record<SupportedLanguage, RegExp[]>> = {
     'cpp': [/#include\s*<[^>]+>/g],
     'java': [/import\s+[^;]+;/g],
     'python': [/^from\s+[\w.]+\s+import\s+.*$/gm, /^import\s+.*$/gm],
     'go': [/^import\s*\([^)]*\)/gm, /^import\s+".*?"$/gm],
+    'rust': [
+      /^use\s+[^;]+;/gm,                    // Matches: use std::io;
+      /^use\s+[^{]+\{[^}]+\};/gm,          // Matches: use std::io::{Write, Read};
+      /^use\s+[^:]+::[^;]+;/gm             // Matches: use std::collections::HashMap;
+    ]
   };
 
   if (!importPatterns[language]) return code;

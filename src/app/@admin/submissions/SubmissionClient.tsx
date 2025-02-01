@@ -1,80 +1,126 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
+import { useState } from 'react';
+import { ChevronDownIcon, ChevronUpIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
 interface Submission {
-  id: string
-  code: string
-  problemId: string
-  userId: string
-  score: number // Ensure score is not nullable
-  testcasespassed: boolean[]
-  createdAt: Date
-  updatedAt: Date
+  id: string;
+  code: string;
+  score: number;
+  createdAt: string;
   problem: {
-    title: string
-  }
+    title: string;
+  };
+  user: {
+    Team: {
+      name: string;
+      shortCode: string;
+    } | null;
+  };
 }
 
-interface SubmissionDetailProps {
-  submission: Submission
-  onClose: () => void
+interface GroupedSubmissions {
+  [key: string]: Submission[];
 }
 
-const SubmissionDetail = ({ submission, onClose }: SubmissionDetailProps) => {
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-      <div className="bg-white p-6 rounded-lg max-w-2xl w-full m-4">
-        <div className="flex justify-between items-center">
-          <h2 className="text-xl font-bold">{submission.problem.title}</h2>
-          <button type="button" onClick={onClose} className="text-gray-500 hover:text-gray-700">
-            ✕
-          </button>
-        </div>
-        <div className="mt-4">
-          <p>{submission.code}</p>
-          <p className="text-sm text-gray-500 mt-2">
-            Submitted: {new Date(submission.createdAt).toLocaleDateString()}
-          </p>
-        </div>
-      </div>
-    </div>
-  )
-}
+// interface SubmissionClientProps {
+//   initialSubmissions: GroupedSubmissions;
+//   viewType: 'team' | 'question';
+// }
 
 export default function SubmissionClient({ 
-  initialSubmissions 
-}: { 
-  initialSubmissions: Submission[] 
+  initialSubmissions,
+  // _viewType // Prefixed with underscore to indicate intentionally unused
+}: {
+  initialSubmissions: GroupedSubmissions;
+  // viewType: 'team' | 'question';
 }) {
-  const [submissions] = useState<Submission[]>(initialSubmissions)
-  const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null)
+  const [searchQuery, setSearchQuery] = useState('');
+  const [expandedTeams, setExpandedTeams] = useState<Set<string>>(new Set());
+
+  const toggleTeam = (teamName: string) => {
+    const newExpanded = new Set(expandedTeams);
+    if (newExpanded.has(teamName)) {
+      newExpanded.delete(teamName);
+    } else {
+      newExpanded.add(teamName);
+    }
+    setExpandedTeams(newExpanded);
+  };
+
+  const filteredSubmissions = Object.entries(initialSubmissions).reduce((acc, [teamName, submissions]) => {
+    const filtered = submissions.filter(sub => 
+      sub.problem.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    if (filtered.length > 0) {
+      acc[teamName] = filtered;
+    }
+    return acc;
+  }, {} as GroupedSubmissions);
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Submissions</h1>
-      <div className="grid gap-4">
-        {submissions.map((submission) => (
-          <div
-            key={submission.id}
-            onClick={() => setSelectedSubmission(submission)}
-            onKeyUp={(e) => e.key === 'Enter' && setSelectedSubmission(submission)}
-            className="p-4 border rounded-lg cursor-pointer hover:shadow-lg hover:border-blue-500 transition-all duration-200"
-          >
-            <h3 className="font-semibold">{submission.problem.title}</h3>
-            <p className="text-sm text-gray-600">
-              Score: {submission.score} | Test Cases Passed: {submission.testcasespassed.filter(Boolean).length}
-            </p>
+    <div className="space-y-6">
+      <div className="relative">
+        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+          <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+        </div>
+        <input
+          type="text"
+          className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          placeholder="Search by question name..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
+
+      <div className="space-y-4">
+        {Object.entries(filteredSubmissions).map(([teamName, submissions]) => (
+          <div key={teamName} className="border rounded-lg overflow-hidden">
+            <button
+              type="button"
+              onClick={() => toggleTeam(teamName)}
+              className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100"
+            >
+              <div className="flex items-center space-x-2">
+                <span className="font-medium">{teamName}</span>
+                <span className="text-sm text-gray-500">
+                  ({submissions.length} submissions)
+                </span>
+              </div>
+              {expandedTeams.has(teamName) ? (
+                <ChevronUpIcon className="h-5 w-5" />
+              ) : (
+                <ChevronDownIcon className="h-5 w-5" />
+              )}
+            </button>
+
+            {expandedTeams.has(teamName) && (
+              <div className="p-4">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead>
+                    <tr>
+                      <th className="px-4 py-2 text-left">Problem</th>
+                      <th className="px-4 py-2 text-left">Score</th>
+                      <th className="px-4 py-2 text-left">Submitted</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {submissions.map((submission) => (
+                      <tr key={submission.id}>
+                        <td className="px-4 py-2">{submission.problem.title}</td>
+                        <td className="px-4 py-2">{submission.score}</td>
+                        <td className="px-4 py-2">
+                          {new Date(submission.createdAt).toLocaleString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         ))}
       </div>
-
-      {selectedSubmission && (
-        <SubmissionDetail
-          submission={selectedSubmission}
-          onClose={() => setSelectedSubmission(null)}
-        />
-      )}
     </div>
-  )
+  );
 }

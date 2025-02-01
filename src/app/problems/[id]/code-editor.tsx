@@ -39,6 +39,7 @@ const validateCode = (
         javascript: /function\s+solve\s*\(\s*\)/,
         python: /def\s+solve\s*\(\s*\):/,
         go: /func\s+solve\s*\(\s*\)/,
+        rust: /fn\s+solve\s*\(\s*\)/,
     };
 
     const regex = validations[language];
@@ -116,7 +117,7 @@ export default function CodeEditor({ problem, session }: CodeEditorProps) {
 
             if (result.success && result.submission) {
                 setSubmissionStatus("Submitted successfully!");
-                console.log("Submission id check:", result.submission.id);
+                console.log("Submission id check:", result.submission.id)
                 const finalResult = await fetch(
                     `/edge?submissionId=${result.submission.id}&token=${result.token}`,
                     {

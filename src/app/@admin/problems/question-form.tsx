@@ -1,6 +1,6 @@
 "use client";
 
-import type React from "react";
+import React, {useTransition} from "react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import type { Problem, Difficulty } from "@prisma/client";
@@ -41,7 +41,7 @@ export function QuestionForm({
 	rounds = [],
 }: QuestionFormProps) {
 	const router = useRouter();
-	const [loading, setLoading] = useState(false);
+	const [isPending, startTransition] = useTransition();
 	const [formData, setFormData] = useState<Partial<Problem>>({
 		title: "",
 		nickname: "",
@@ -78,38 +78,37 @@ export function QuestionForm({
 		}
 	}, [initialData]);
 
-	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault();
-		setLoading(true);
+	const handleSubmit = (e: React.FormEvent) => {
+		startTransition(async ()=> {
+			e.preventDefault();
 
-		try {
-			const formDataToSend = new FormData();
+			try {
+				const formDataToSend = new FormData();
 
-			for (const [key, value] of Object.entries(formData)) {
-				if (
-					value !== null &&
-					value !== undefined &&
-					!["win_dl", "mac_dl", "lin_dl"].includes(key)
-				) {
-					formDataToSend.append(key, value.toString());
+				for (const [key, value] of Object.entries(formData)) {
+					if (
+						value !== null &&
+						value !== undefined &&
+						!["win_dl", "mac_dl", "lin_dl"].includes(key)
+					) {
+						formDataToSend.append(key, value.toString());
+					}
 				}
+
+				if (files.win_dl) formDataToSend.append("windows", files.win_dl);
+				if (files.mac_dl) formDataToSend.append("mac", files.mac_dl);
+				if (files.lin_dl) formDataToSend.append("linux", files.lin_dl);
+
+				await onSubmitAction(formDataToSend);
+
+				if (!isDialog) {
+					router.push("/problems");
+					router.refresh();
+				}
+			} catch (error) {
+				console.error("Error submitting question:", error);
 			}
-
-			if (files.win_dl) formDataToSend.append("windows", files.win_dl);
-			if (files.mac_dl) formDataToSend.append("mac", files.mac_dl);
-			if (files.lin_dl) formDataToSend.append("linux", files.lin_dl);
-
-			await onSubmitAction(formDataToSend);
-
-			if (!isDialog) {
-				router.push("/problems");
-				router.refresh();
-			}
-		} catch (error) {
-			console.error("Error submitting question:", error);
-		} finally {
-			setLoading(false);
-		}
+		})
 	};
 
 	const handleFileChange = (
@@ -318,12 +317,12 @@ export function QuestionForm({
 					variant="outline"
 					onClick={() => (isDialog ? onClose?.() : router.back())}
 					type="button"
-					disabled={loading}
+					disabled={isPending}
 				>
 					Cancel
 				</Button>
-				<Button type="submit" disabled={loading}>
-					{loading
+				<Button type="submit" disabled={isPending}>
+					{isPending
 						? "Saving..."
 						: initialData
 							? "Save Changes"

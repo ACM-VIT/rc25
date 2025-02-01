@@ -5,13 +5,14 @@ import { useFormStatus } from "react-dom";
 import parsePhoneNumber from "libphonenumber-js";
 import { useState } from "react";
 import Image from 'next/image'
-import SignOut from "@/app/(auth)/authactions/signout";
 
 
 import { Audiowide } from "next/font/google";
 import { PT_Sans } from "next/font/google";
 
 export default function OnboardingForm({ name }: { name: string }) {
+    const audiowide = Audiowide({weight: "400"});
+    const pt_sans = PT_Sans({weight: "400"});
     const [selectedGender, setSelectedGender] = useState("");
     const [phone, setPhone] = useState("");
     const [selectStatus, setSelectStatus] = useState("");

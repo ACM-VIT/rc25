@@ -1,7 +1,7 @@
 "use client";
-import type React from "react";
-import { useState, useEffect } from "react";
-import { getTeamSubmissions } from "./actions";
+import React, {useTransition} from "react";
+import {useState, useEffect} from "react";
+import {getTeamSubmissions} from "./actions";
 
 interface SubmissionSectionProps {
     userId: string;
@@ -17,25 +17,21 @@ interface Submission {
 }
 
 const SubmissionSection: React.FC<SubmissionSectionProps> = ({
-    userId,
-    problemId,
-}) => {
+                                                                 userId,
+                                                                 problemId,
+                                                             }) => {
     const [selectedOption, setSelectedOption] =
         useState<string>("best-submission");
     const [submissions, setSubmissions] = useState<{
         best: Submission | null;
         latest: Submission | null;
-    }>({ best: null, latest: null });
-    const [loading, setLoading] = useState(true);
-
+    }>({best: null, latest: null});
+    const [isPending, startTransition] = useTransition()
     useEffect(() => {
-        const fetchData = async () => {
-            setLoading(true);
+        startTransition(async () => {
             const data = await getTeamSubmissions(userId, problemId);
             setSubmissions(data);
-            setLoading(false);
-        };
-        fetchData();
+        })
     }, [userId, problemId]);
 
     const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -43,7 +39,7 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
     };
 
     const renderSubmission = (submission: Submission | null) => {
-        if (loading) return <p>Loading submissions...</p>;
+        if (isPending) return <p>Loading submissions...</p>;
         if (!submission) return <p>No submission found</p>;
 
         const passedCount = submission.testcasespassed.filter(Boolean).length;

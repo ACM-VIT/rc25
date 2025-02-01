@@ -89,14 +89,14 @@ export default async function RootLayout({
     orderBy: {
       start: "asc",
     },
-    include: {
-      teams: {
-        where: {
-          teamId: user?.Team?.id,
-        },
-      },
-    },
-  });
+    // include: {
+        //     teams: {
+        //         where: {
+        //             teamId: user?.Team?.id,
+        //         },
+        //     },
+        // },
+    });
 
   const isAdmin = !!user?.Admin;
   const detailsFilled = !!user?.phone && !!user?.gender && !!user?.phone.length;
@@ -186,8 +186,7 @@ export default async function RootLayout({
     );
   }
 
-  const memberOfRound = !!curOrNextRound.teams.length;
-
+  const memberOfRound = user.Team.TeamRound.find(tr=>tr.roundId === curOrNextRound.id)
   if (!memberOfRound) {
     return (
       <html lang="en">

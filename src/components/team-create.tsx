@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import {useState, useEffect, useTransition} from "react";
 import { useToast } from "@/components/ui/use-toast";
 import {
 	Command,
@@ -32,7 +32,7 @@ export default function TeamBuilder({
 }: TeamBuilderProps) {
 	const [availableUsers, setAvailableUsers] = useState<User[]>([]);
 	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
-	const [loading, setLoading] = useState(false);
+	const [isPending, startTransition] = useTransition();
 	const [searchTerm, setSearchTerm] = useState("");
 	const [teamName, setTeamName] = useState("");
 	const { toast } = useToast();
@@ -43,9 +43,11 @@ export default function TeamBuilder({
 		loadUsers();
 	}, []);
 
-	const loadUsers = async () => {
-		const users = await getAvailableUsers();
-		setAvailableUsers(users);
+	const loadUsers = () => {
+		startTransition(async ()=> {
+			const users = await getAvailableUsers();
+			setAvailableUsers(users);
+		})
 	};
 
 	const handleCreateTeam = async () => {
@@ -65,20 +67,21 @@ export default function TeamBuilder({
 			return;
 		}
 
-		setLoading(true);
-		try {
-			const team = await createTeam(selectedUsers, teamName);
-			if (team) {
-				setTeamName("");
-				onTeamCreated?.();
+		startTransition(async ()=> {
+
+			try {
+				const team = await createTeam(selectedUsers, teamName);
+				if (team) {
+					setTeamName("");
+					onTeamCreated?.();
+				}
+			} catch (error) {
+				toast({
+					description: `Failed to create team: ${error instanceof Error ? error.message : 'Unknown error'}`,
+					variant: "destructive",
+				});
 			}
-		} catch (error) {
-			toast({
-				description: `Failed to create team: ${error instanceof Error ? error.message : 'Unknown error'}`,
-				variant: "destructive",
-			});
-		}
-		setLoading(false);
+		})
 	};
 
 	const handleUserSelect = (userId: string) => {
@@ -178,9 +181,9 @@ export default function TeamBuilder({
 					</span>
 					<Button
 						onClick={handleCreateTeam}
-						disabled={loading || selectedUsers.length < 2 || !teamName.trim()}
+						disabled={isPending || selectedUsers.length < 2 || !teamName.trim()}
 					>
-						{loading ? "Creating..." : "Create Team"}
+						{isPending ? "Creating..." : "Create Team"}
 					</Button>
 				</div>
 			</CardContent>

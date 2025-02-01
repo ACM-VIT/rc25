@@ -3,7 +3,6 @@
 import { PrismaClient } from "@prisma/client";
 import { auth } from "@/app/(auth)/auth";
 import { revalidatePath } from "next/cache";
-import Layout from "../@admin/layout";
 
 export async function leaveTeam() {
   const prisma = new PrismaClient();
@@ -30,7 +29,14 @@ export async function leaveTeam() {
       throw new Error("You are not part of any team.");
     }
 
+    // Remove the user from the team by setting teamId to null
+    await prisma.user.update({
+      where: { email: session.user.email },
+      data: { teamId: null },
+    });
     const team = user.Team;
+
+    revalidatePath("/" , "layout");
 
     // Check if the user is the only member in the team
     if (team?.members?.length === 1) {
@@ -41,13 +47,6 @@ export async function leaveTeam() {
       return { success: true, message: "You were the only member. The team has been deleted." };
     }
 
-    // Remove the user from the team by setting teamId to null
-    await prisma.user.update({
-      where: { email: session.user.email },
-      data: { teamId: null },
-    });
-
-    revalidatePath("/" , "layout");
     return { success: true, message: "You have successfully left the team." };
   } catch (error) {
     console.error("Error leaving team:", error);

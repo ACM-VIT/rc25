@@ -1,6 +1,7 @@
 import type React from "react";
 import Image from "next/image";
 import bg from "../../../../public/landing_new/prize_bg.png";
+// import Prizerock from "../new-pc/rock-prize";
 import SmoothInfiniteScroll from "./infinitescroll";
 import upper from "@/app/assets/upperbracket.svg";
 import lower from "@/app/assets/lowerbracket.svg";

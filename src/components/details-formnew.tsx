@@ -9,21 +9,7 @@ import bg from "@/app/assets/detailsbg.svg"
 import SignOut from "@/app/(auth)/authactions/signout"
 import RC from "../../public/RCLogo.svg"
 
-import { Audiowide } from "next/font/google"
-import { PT_Sans } from "next/font/google"
 import { Outfit } from "next/font/google"
-
-const audiowide = Audiowide({
-  subsets: ["latin"],
-  weight: ["400"],
-  display: "swap",
-})
-
-const pt_sans = PT_Sans({
-  subsets: ["latin"],
-  weight: ["400"],
-  display: "swap",
-})
 
 const outfit = Outfit({
   subsets: ["latin"],

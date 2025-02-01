@@ -8,7 +8,7 @@ import React, { type ReactNode } from "react";
 import { auth } from "./(auth)/auth";
 import { prisma } from "@/utils/prisma";
 import "./globals.css";
-import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
+import { Outfit } from "next/font/google";
 // import Dashboard from "@/components/dashboard";
 import Navbar from "@/components/Navbar";
 import SignOutButton from "@/components/buttons/sign-out";
@@ -19,7 +19,6 @@ import { SessionProvider } from "next-auth/react";
 // import SwitchAdminModeButton from "@/components/switch-admin-mode-button";
 // import TeamSubmissions from "@/components/team-submissions";
 
-const plus_jakarta_sans = Plus_Jakarta_Sans({ subsets: ["latin"] });
 const outfit = Outfit({ subsets: ["latin"] });
 
 // const roundIsActive = true; // true --> portal
@@ -108,7 +107,7 @@ export default async function RootLayout({
   if (isAdmin && mode) {
     return (
       <html lang="en">
-        <body className={plus_jakarta_sans.className}>
+        <body className={outfit.className}>
           {admin}
           <SignOutButton />
         </body>

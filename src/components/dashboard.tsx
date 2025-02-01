@@ -51,7 +51,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                 </h1>
             </div>
             <div className="hidden md:flex flex-col items-center justify-between w-full h-full text-white">
-                <p className="font-bold text-2xl font-[Audiowide] underline underline-offset-4 decoration-white my-4">
+                <p className="font-bold text-2xl font-custom underline underline-offset-4 decoration-white my-4">
                     Round {roundInfo.number}
                 </p>
                 <div className="flex flex-row w-full justify-around">
@@ -127,20 +127,20 @@ const Dashboard: React.FC<DashboardProps> = ({
                                 Leaderboard
                             </p>
                             <ul className="space-y-3 px-1">
-                            {sortedLeaderboard.map((team, index) => (
-                                <li key={team.id} className="flex justify-between items-center">
-                                    <p className="flex w-2/3 mt-1 items-center gap-5">
-                                        {index === 0 && <FaCrown className="text-yellow-500 mr-2" />}
-                                        {index === 1 && <FaCrown className="text-gray-400 mr-2" />}  
-                                        {index === 2 && <FaCrown className="text-[#CD7F32] mr-2" />}
-                                        {index > 2 && <span className="mr-1">{index + 1}</span>}
-                                        {team.name}
-                                    </p>
-                                    <p className="w-1/3 text-center gap-5">
-                                        {team.score} pts
-                                    </p>
-                                </li>
-                            ))}                                
+                                {sortedLeaderboard.map((team, index) => (
+                                    <li key={team.id} className="flex justify-between items-center">
+                                        <p className="flex w-2/3 mt-1 items-center gap-5">
+                                            {index === 0 && <FaCrown className="text-yellow-500 mr-2" />}
+                                            {index === 1 && <FaCrown className="text-gray-400 mr-2" />}
+                                            {index === 2 && <FaCrown className="text-[#CD7F32] mr-2" />}
+                                            {index > 2 && <span className="mr-1">{index + 1}</span>}
+                                            {team.name}
+                                        </p>
+                                        <p className="w-1/3 text-center gap-5">
+                                            {team.score} pts
+                                        </p>
+                                    </li>
+                                ))}
                             </ul>
                         </DashboardBox>
                     </div>

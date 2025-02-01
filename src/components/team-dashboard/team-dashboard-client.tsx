@@ -67,9 +67,9 @@ export function TeamMembers({ teamMembers, teamName, code }: TeamMembersProps) {
       <Image
         src="/RCLogo.svg"
         alt="rclogo"
-        width={50}
-        height={50}
-        className="fixed bottom-4 left-4 w-auto h-[40px] md:h-[50px]"
+        width={190}
+        height={100}
+        className="fixed bottom-4 left-4"
       />
 
       {/* Main content container */}
@@ -163,12 +163,7 @@ export function TeamMembers({ teamMembers, teamName, code }: TeamMembersProps) {
                     <p className="text-lg sm:text-xl md:text-2xl font-bold whitespace-nowrap">
                       {code}
                     </p>
-                    <button
-                      className="p-1 hover:bg-white/10 rounded-md transition-colors"
-                      aria-label="Copy to clipboard"
-                    >
-                      <Copy className="w-5 h-5" />
-                    </button>
+                    <Copy className="w-5 h-5" />
                   </div>
                 </div>
               </button>

@@ -46,6 +46,9 @@ export async function teamAction(inputValue: string, createMode: boolean) {
         if (!team) {
             return { error: { code: 1 } };
         }
+        if(team.checkedIn){
+            return { error: { code: 11 } };
+        }
         if (team.members.length >= Number.parseInt(process.env.TEAM_CAPACITY || "4")) {
             return { error: { code: 4 } };
         }

@@ -9,7 +9,6 @@ export default function Team({ name }: { name: string }) {
   const [mode, setMode] = useState<"CREATE" | "JOIN">("CREATE");
   const [inputValue, setInputValue] = useState("");
   const [error, setError] = useState(0);
-  const [randomCode, setRandomCode] = useState("");
   const [pending, startTransition] = useTransition();
   name = name.split(" ")[0];
 
@@ -24,9 +23,6 @@ export default function Team({ name }: { name: string }) {
 
     startTransition(async () => {
       const res = await teamAction(inputValue, mode === "CREATE");
-      if (mode === "CREATE" && res?.randomCode) {
-        setRandomCode(res.randomCode);
-      }
       setError(res?.error?.code ?? 0);
     });
   }, [mode, inputValue]);
@@ -48,14 +44,6 @@ export default function Team({ name }: { name: string }) {
           backgroundRepeat: "no-repeat",
           zIndex: -1,
         }}
-      />
-
-      <Image
-        src="/RCLogo.svg"
-        alt="rclogo"
-        width={50}
-        height={50}
-        className="absolute bottom-4 left-8 w-auto h-[10%]"
       />
 
       <div className="flex justify-between w-full p-2">
@@ -84,12 +72,12 @@ export default function Team({ name }: { name: string }) {
           alt="rclogo"
           width={190}
           height={100}
-          className="rotate-180 absolute w-auto -bottom-4 right-0 h-[100px] z-50"
+          className="rotate-180 absolute py-2 w-auto -bottom-4 right-0 h-[100px] z-50"
         />
 
         <div
-          className="w-[65vw] lg:w-full sm:w-[75vw] phone:w-[85vw] phone:mt-[15%]
-                      p-16 phone:p-3 mt-5 flex flex-col items-center box-border backdrop-blur-lg bg-black/50 border-4 border-weirdPurple "
+          className="w-[65vw] lg:w-full sm:w-[75vw] phone:w-[85vw] sm:mt-[8%] md:mt-[10%]
+                      p-16 phone:p-3 lg:mt-5 flex flex-col items-center box-border backdrop-blur-lg bg-black/50 border-4 border-weirdPurple "
         >
           <div className="w-full mb-3 flex flex-col items-center justify-start gap-4">
             <div className="flex justify-center items-center gap-2 w-full">
@@ -159,6 +147,7 @@ export default function Team({ name }: { name: string }) {
                   {error === 10
                     ? "Unknown error occurred. Please try again later :("
                     : null}
+                  {error === 11 ? "Team already checked in" : null}
                 </p>
               )}
             </div>
@@ -183,6 +172,13 @@ export default function Team({ name }: { name: string }) {
           </div>
         </div>
       </div>
+      <Image
+        src="/RCLogo.svg"
+        alt="rclogo"
+        width={190}
+        height={100}
+        className="fixed bottom-4 left-4"
+      />
       <div />
       <div />
     </div>

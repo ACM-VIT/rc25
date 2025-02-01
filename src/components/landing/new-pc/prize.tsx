@@ -3,7 +3,7 @@ import Image from "next/image";
 import bg from "../../../../public/landing_new/prize_bg.png";
 // import rock from "../../../../public/landing_new/rock.png";
 import Prizerock from "./rock-prize";
-const Price: React.FC = () => {
+const Prize: React.FC = () => {
   return (
     <div className="relative w-screen h-screen overflow-hidden">
       <Image
@@ -74,4 +74,4 @@ const Price: React.FC = () => {
   );
 };
 
-export default Price;
+export default Prize;

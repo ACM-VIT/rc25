@@ -74,11 +74,12 @@ model Team {
 }
 
 model TeamRound {
-  id      String @id @default(cuid())
-  teamId  String
-  roundId String
-  round   Round  @relation(fields: [roundId], references: [id], onDelete: Cascade)
-  team    Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  id        String  @id @default(cuid())
+  teamId    String
+  checkedIn Boolean @default(false)
+  roundId   String
+  round     Round   @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  team      Team    @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
   @@unique([teamId, roundId])
 }
@@ -138,13 +139,14 @@ model TestcaseSubmission {
 }
 
 model Round {
-  id       String      @id @default(cuid())
-  number   Int         @unique
-  start    DateTime
-  end      DateTime
-  result   DateTime
-  problems Problem[]
-  teams    TeamRound[]
+  id               String      @id @default(cuid())
+  number           Int         @unique
+  requires_checkin Boolean     @default(false)
+  start            DateTime
+  end              DateTime
+  result           DateTime
+  problems         Problem[]
+  teams            TeamRound[]
 }
 
 model Admin {

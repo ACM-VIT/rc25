@@ -4,13 +4,13 @@ import { useEffect, useRef } from "react";
 import NewLandOne from "../../components/landing/new-pc/newlandone";
 import HowItWorks from "../../components/landing/new-pc/howItWorks";
 import Allies from "../../components/landing/new-pc/allies";
-import Price from "../../components/landing/new-pc/price";
+// import Prize from "../../components/landing/new-pc/prize"; -- Redacted for now as it is not used
 import TimeLine from "@/components/landing/new-pc/timeline";
 import Faq from "@/components/landing/new-pc/faq";
 import RegisterNow1 from "@/components/landing/new-pc/RegisterNow";
 import NullPointException1 from "@/components/landing/new-pc/NullPointException";
 import HowItWorksMobile from "@/components/landing/new-mobile/howitworksmobile";
-import PriceMobile from "@/components/landing/new-mobile/pricemobile";
+// import PrizeMobile from "@/components/landing/new-mobile/prizemobile"; -- Redacted for now as it is not used
 import RegisterNowMobile from "@/components/landing/new-mobile/RegisterNowMoblie";
 import HowItWorksMobile2 from "@/components/landing/new-mobile/NullPointException";
 import TimeLineMobile from "@/components/landing/new-mobile/timelinemobile";
@@ -83,37 +83,6 @@ const Layout: React.FC = () => {
 
   return (
     <>
-      {/* Mobile version - md and below */}
-      {/* <div className="lg:hidden flex flex-col h-screen bg-[#C2E6EC] dark:bg-[#0C1222] overflow-y-auto snap-y snap-mandatory">
-        <div className="flex flex-col relative w-full"> */}
-      {/*
-          <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0 bg-[#8DCAE9] dark:bg-[#0C1222]/20 backdrop-blur-[100px]">
-            <PriceMobile />
-          </div> 
-          */}
-      {/* <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0 bg-[#8DCAE9] dark:bg-[#0C1222]/20 backdrop-blur-[100px]">
-            <LandOneMobile/>
-          </div>
-          <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0 bg-[#8DCAE9] dark:bg-[#0C1222]/20 backdrop-blur-[100px]">
-            <HowItWorksMobile/>
-          </div>
-          <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0 bg-[#8DCAE9] dark:bg-[#0C1222]/20 backdrop-blur-[100px]">
-            <HowItWorksMobile2/>
-          </div>
-          <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0 bg-[#8DCAE9] dark:bg-[#0C1222]/20 backdrop-blur-[100px]">
-          <TimeLineMobile />
-          </div>
-          <div>
-            <FaqMobile />
-          </div>
-          <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0 bg-[#8DCAE9] dark:bg-[#0C1222]/20 backdrop-blur-[100px]">
-            <AlliesMobile/>
-          </div>
-          <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0 bg-[#8DCAE9] dark:bg-[#0C1222]/20 backdrop-blur-[100px]">
-            <RegisterNowMobile/>
-          </div>
-        </div>
-      </div> */}
       <div className="lg:hidden flex flex-col h-screen bg-[#C2E6EC] dark:bg-[#0C1222] overflow-y-auto snap-y snap-mandatory ease-in">
         <div className="flex flex-col relative w-full">
           <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0">

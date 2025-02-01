@@ -1,10 +1,10 @@
 import type React from "react";
 import Image from "next/image";
 import bg from "../../../../public/landing_new/prize_bg.png";
-import Prizerock from "./../new-pc/rock-prize";
+import Prizerock from "../new-pc/rock-prize";
 import SmoothInfiniteScroll from "./infinitescroll";
 
-const PriceMobile: React.FC = () => {
+const PrizeMobile: React.FC = () => {
   return (
     <div className="relative w-screen h-screen overflow-hidden">
       <Image
@@ -184,4 +184,4 @@ const PriceMobile: React.FC = () => {
   );
 };
 
-export default PriceMobile;
+export default PrizeMobile;

@@ -44,9 +44,11 @@ export async function handleQuestionSubmit(
     const nickname = formData.get("nickname") as string;
     const description = formData.get("description") as string;
     const difficulty = formData.get("difficulty") as "EASY" | "MEDIUM" | "HARD";
-    const roundId = formData.get("roundId") as string; // Changed from roundNumber
+    const roundId = formData.get("roundId") as string;
     const maxScore = Number.parseInt(formData.get("maxScore") as string);
     const webCode = formData.get("web_code") as string;
+    const normalCases = Number.parseInt(formData.get("normal_cases") as string) || 0;
+    const edgeCases = Number.parseInt(formData.get("edge_cases") as string) || 0;
 
     const winFile = formData.get("windows") as File;
     const macFile = formData.get("mac") as File;
@@ -67,8 +69,8 @@ export async function handleQuestionSubmit(
       lin_dl: linUrl || "",
       mac_dl: macUrl || "",
       win_dl: winUrl || "",
-      normal_cases: 0, // Added required field
-      edge_cases: 0, // Added required field
+      normal_cases: normalCases,
+      edge_cases: edgeCases,
     };
 
     if (questionId) {

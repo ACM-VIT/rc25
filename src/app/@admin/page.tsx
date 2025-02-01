@@ -9,39 +9,50 @@ import {
 import switchAdminMode from "../actions/switch-admin-mode";
 
 const DashboardCard = ({
-                           title,
-                           description,
-                           href,
-                           onClick
-                       }: {
-    title: string; description: string; href?: string; onClick?: () => void
+    title,
+    description,
+    href,
+    onClick
+}: {
+    title: string;
+    description: string;
+    href?: string;
+    onClick?: () => void;
 }) => (
-    <Card>
-        <CardHeader>
-            <CardTitle>
-                {href &&
-                    <Link href={href} className="hover:underline">
+    <Card className="transition-all duration-300 hover:shadow-lg hover:border-primary/50">
+        <CardHeader className="space-y-2">
+            <CardTitle className="text-xl">
+                {href && (
+                    <Link 
+                        href={href} 
+                        className="hover:text-primary transition-colors duration-200 flex items-center"
+                    >
                         {title}
                     </Link>
-                }
-                {/*{!href && title}*/}
-                {onClick &&
-                    <div onClick={onClick} className="hover:underline hover:cursor-pointer">
+                )}
+                {onClick && (
+                    <button 
+                        type="button"
+                        onClick={onClick} 
+                        className="hover:text-primary transition-colors duration-200 flex items-center w-full text-left" 
+                    >
                         {title}
-                    </div>
-                }
+                    </button>
+                )}
                 {!href && !onClick && title}
             </CardTitle>
-            <CardDescription>{description}</CardDescription>
+            <CardDescription className="text-muted-foreground">
+                {description}
+            </CardDescription>
         </CardHeader>
     </Card>
 );
 
 const Page = () => {
     return (
-        <div className="container mx-auto p-6">
-            <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
-            <div className="grid gap-6 md:grid-cols-3">
+        <div className="container mx-auto p-6 space-y-6">
+            <h1 className="text-4xl font-bold tracking-tight">Admin Dashboard</h1>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 <DashboardCard
                     title="Question Management"
                     description="Manage and organize questions"

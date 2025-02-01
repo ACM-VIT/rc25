@@ -1,6 +1,6 @@
 "use server";
 import { auth } from "../(auth)/auth";
-import { PrismaClient, Gender } from "@prisma/client"; // ✅ Import Prisma Enum
+import { PrismaClient } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import parsePhoneNumber from "libphonenumber-js";
 

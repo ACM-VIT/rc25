@@ -10,6 +10,7 @@ import v3 from "../../../../public/Vector(2).svg";
 import v5 from "../../../../public/Vector(3).svg";
 import v7 from "../../../../public/Vector(4).svg";
 import v8 from "../../../../public/Vector(5).svg";
+import SignIn from "@/app/(auth)/authactions/signin";
 const RegisterNow1: React.FC = () => {
   return (
     <div className="relative h-screen w-full overflow-hidden bg-[#1a1a2e]">
@@ -56,10 +57,9 @@ const RegisterNow1: React.FC = () => {
       </div>
 
       <div className="relative z-30 flex flex-col h-full w-full items-center justify-between cursor-pointer">
-        <a
+        <button
           className="h-4/5 flex flex-col justify-center items-center"
-          href="https://acmvit.in"
-          target="_blank"
+          onClick={SignIn}
         >
           <h1 className="text-white text-9xl text-center sm:text-[75px] md:text-[100px] lg:text-[150px] xl:text-[250spx] tracking-widest how-it-works-heading">
             REGISTER
@@ -67,7 +67,7 @@ const RegisterNow1: React.FC = () => {
           <h1 className="text-9xl font-bold text-center bg-gradient-to-b from-white to-transparent text-transparent bg-clip-text sm:text-[75px] md:text-[100px] lg:text-[150px] xl:text-[250spx] tracking-widest how-it-works-heading">
             NOW
           </h1>
-        </a>
+        </button>
         <div className="flex h-1/5 w-full flex-row items-center justify-between">
           <div className="flex justify-center items-center w-1/4">
             <div className="w-full flex justify-end">

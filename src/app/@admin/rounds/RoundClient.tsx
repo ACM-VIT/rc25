@@ -3,9 +3,21 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Round } from '@prisma/client';
-import RoundAdd from './RoundAdd';
 import { upsertRound, deleteRound } from '../../actions/round-actions';
-import DateTimePicker24h from '@/components/DateTimePicker24h'
+
+function formatDateForInput(date: Date): string {
+  return new Date(date).toISOString().slice(0, 16);
+}
+
+function getMinDate(): string {
+  return new Date().toISOString().slice(0, 16);
+}
+
+function getMaxDate(): string {
+  const date = new Date();
+  date.setFullYear(date.getFullYear() + 1);
+  return date.toISOString().slice(0, 16);
+}
 
 interface RoundClientProps {
   initialRounds: Round[];
@@ -15,7 +27,6 @@ export default function RoundClient({ initialRounds }: RoundClientProps) {
   const [rounds, setRounds] = useState(initialRounds);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [showAdd, setShowAdd] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -57,7 +68,7 @@ export default function RoundClient({ initialRounds }: RoundClientProps) {
     } else {
       router.refresh();
       setError('');
-      setSuccess('Round saved successfully');
+      setSuccess('Round updated successfully');
     }
   };
 
@@ -75,10 +86,6 @@ export default function RoundClient({ initialRounds }: RoundClientProps) {
     }
   };
 
-  const getNextRoundNumber = () => {
-    if (rounds.length === 0) return 1;
-    return Math.max(...rounds.map(r => r.number)) + 1;
-  };
 
   return (
     <div className="p-4">
@@ -115,24 +122,36 @@ export default function RoundClient({ initialRounds }: RoundClientProps) {
                 />
               </td>
               <td className="border p-2">
-                <DateTimePicker24h
-                  date={new Date(round.start)}
-                  onDateChange={(date) => handleChange(round.number, 'start', date.toISOString())}
-                  label="Start time"
+                <input
+                  type="datetime-local"
+                  value={formatDateForInput(round.start)}
+                  min={getMinDate()}
+                  max={getMaxDate()}
+                  onChange={(e) => handleChange(round.number, 'start', e.target.value)}
+                  className="w-full p-1 border rounded"
+                  required
                 />
               </td>
               <td className="border p-2">
-                <DateTimePicker24h
-                  date={new Date(round.end)}
-                  onDateChange={(date) => handleChange(round.number, 'end', date.toISOString())}
-                  label="End time"
+                <input
+                  type="datetime-local"
+                  value={formatDateForInput(round.end)}
+                  min={formatDateForInput(round.start)}
+                  max={getMaxDate()}
+                  onChange={(e) => handleChange(round.number, 'end', e.target.value)}
+                  className="w-full p-1 border rounded"
+                  required
                 />
               </td>
               <td className="border p-2">
-                <DateTimePicker24h
-                  date={new Date(round.result)}
-                  onDateChange={(date) => handleChange(round.number, 'result', date.toISOString())}
-                  label="Result time"
+                <input
+                  type="datetime-local"
+                  value={formatDateForInput(round.result)}
+                  min={formatDateForInput(round.end)}
+                  max={getMaxDate()}
+                  onChange={(e) => handleChange(round.number, 'result', e.target.value)}
+                  className="w-full p-1 border rounded"
+                  required
                 />
               </td>
               <td className="border p-2">
@@ -155,21 +174,6 @@ export default function RoundClient({ initialRounds }: RoundClientProps) {
           ))}
         </tbody>
       </table>
-
-      <button
-        type="button"
-        onClick={() => setShowAdd(true)}
-        className="mt-4 bg-green-500 text-white px-4 py-2 rounded"
-      >
-        Add New Round
-      </button>
-      {showAdd && (
-        <RoundAdd
-          onClose={() => setShowAdd(false)}
-          onAdded={() => router.refresh()}
-          number={getNextRoundNumber()}
-        />
-      )}
     </div>
   );
 }

@@ -99,3 +99,20 @@ func main() {
 
     return template.replace('// Original function code here', code);
 }
+
+export function rustFunction(code: string, testcases: number, delimiter: string): string {
+    const template = `use std::io::{self, Write};
+use std::collections::*;
+
+// Original function code here
+
+fn main() {
+    for _ in 0..${testcases} {
+        solve();
+        print!("${delimiter}");
+        io::stdout().flush().unwrap();
+    }
+}`;
+
+    return template.replace('// Original function code here', code);
+}

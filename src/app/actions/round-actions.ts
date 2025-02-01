@@ -26,13 +26,13 @@ export async function upsertRound(data: {
       throw new Error("Invalid time sequence. Start < End < Result required");
     }
 
-    const formattedData = {
-      number: data.number,
-      start: start,
-      end, 
-      result,
-    };
+    const existingRound = await prisma.round.findUnique({
+      where: { number: data.number },
+    });
 
+    if (!existingRound) {
+      throw new Error("Round not found");
+    }
 
     const conflictingRound = await prisma.round.findFirst({
       where: {
@@ -50,15 +50,15 @@ export async function upsertRound(data: {
       throw new Error(`Time conflict with Round ${conflictingRound.number}`);
     }
 
-    console.log(formattedData);
-
-    await prisma.round.upsert({
-      where: { number: formattedData.number },
-      create: formattedData,
-      update: formattedData,
+    await prisma.round.update({
+      where: { number: data.number },
+      data: {
+        start,
+        end,
+        result,
+      },
     });
 
-    // Refresh page
     revalidatePath("/rounds");
     return { success: true };
   } catch (error) {

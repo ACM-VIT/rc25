@@ -10,6 +10,17 @@ import Image from 'next/image'
 import { Audiowide } from "next/font/google";
 import { PT_Sans } from "next/font/google";
 
+// const audiowide = Audiowide({
+//     subsets: ["latin"],
+//     weight: ["400"],
+//     display: "swap",
+// });
+// const pt_sans = PT_Sans({
+//     subsets: ["latin"],
+//     weight: ["400"],
+//     display: "swap",
+// });
+
 export default function OnboardingForm({ name }: { name: string }) {
     const audiowide = Audiowide({weight: "400"});
     const pt_sans = PT_Sans({weight: "400"});
@@ -102,8 +113,8 @@ export default function OnboardingForm({ name }: { name: string }) {
 
                         {/* Gender Selection */}
                         <div className="mb-3">
-                            <label className={`${pt_sans.className} font-semibold text-xs text-white block mb-1`}>GENDER</label>
-                            <div className="flex flex-col md:flex-row gap-3">
+                            <label htmlFor="gender-group" className={`${pt_sans.className} font-semibold text-xs text-white block mb-1`}>GENDER</label>
+                            <div id="gender-group" className="flex flex-col md:flex-row gap-3">
                                 {['male', 'female'].map((gender) => (
                                     <label key={gender} htmlFor={gender} className="flex-1">
                                         <div
@@ -114,6 +125,13 @@ export default function OnboardingForm({ name }: { name: string }) {
                                                 ? "bg-[#f0f1fade] text-purple-700"
                                                 : "bg-transparent text-white"}`}
                                             onClick={() => setSelectedGender(gender)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter' || e.key === ' ') {
+                                                    e.preventDefault();
+                                                    setSelectedGender(gender);
+                                                }
+                                            }}
+                                            aria-checked={selectedGender === gender}
                                         >
                                             <input
                                                 type="radio"
@@ -137,20 +155,27 @@ export default function OnboardingForm({ name }: { name: string }) {
 
                         {/* Status Selection */}
                         <div className="mb-3">
-                            <label className={`${pt_sans.className} font-semibold text-white text-xs block mb-1`}>
+                            <label htmlFor="status-group" className={`${pt_sans.className} font-semibold text-white text-xs block mb-1`}>
                                 PLEASE SELECT AN OPTION
                             </label>
                             <div className="flex flex-col md:flex-row gap-3">
                                 {['hosteller', 'dayscholar'].map((status) => (
                                     <label key={status} htmlFor={status} className="flex-1">
                                         <div
-                                            className={`p-2 w-full text-center box-border border-dashed 
+                                                className={`p-2 w-full text-center box-border border-dashed 
                     border-2 border-[#F0F1FA] ${pt_sans.className} font-semibold rounded-md 
                     flex items-center justify-center h-10 cursor-pointer
                     ${selectStatus === status
                                                 ? "bg-[#f0f1fade] text-purple-700"
                                                 : "bg-transparent text-white"}`}
-                                            onClick={() => setSelectStatus(status)} // Ensure state is updated here
+                                            onClick={() => setSelectStatus(status)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter' || e.key === ' ') {
+                                                    e.preventDefault();
+                                                    setSelectStatus(status);
+                                                }
+                                            }}
+                                            aria-checked={selectStatus === status}
                                         >
                                             <input
                                                 type="radio"
@@ -231,7 +256,7 @@ export default function OnboardingForm({ name }: { name: string }) {
                                 <h4 className="font-custom text-weirdPurple md:text-base text-xs">A MESSAGE FROM ACM</h4>
                                 <div className="border border-weirdPurple w-1/2 h-3" />
                             </div>
-                            <h2 className={` text-weirdPurple font-bold text-center md:text-[120%] xs:text-[100%] phone:text-[90%] mt-2 mb-3`}>
+                            <h2 className={" text-weirdPurple font-bold text-center md:text-[120%] xs:text-[100%] phone:text-[90%] mt-2 mb-3"}>
                                 Please provide us with the following information to ensure a seamless experience
                             </h2>
                         </div>
@@ -240,7 +265,7 @@ export default function OnboardingForm({ name }: { name: string }) {
                         <div className="w-full max-w-2xl px-4">
                             {/* Phone Number */}
                             <div className="mb-3">
-                                <label htmlFor="phone" className={`font-custom font-semibold text-white text-xs block mb-1 `}>
+                                <label htmlFor="phone" className={"font-custom font-semibold text-white text-xs block mb-1 "}>
                                     CONTACT NUMBER
                                 </label>
                                 <input
@@ -265,8 +290,8 @@ export default function OnboardingForm({ name }: { name: string }) {
 
                             {/* Gender Selection */}
                             <div className="mb-3">
-                                <label className={`font-custom font-semibold text-xs text-white block mb-1`}>GENDER</label>
-                                <div className="flex flex-col md:flex-row gap-3">
+                                <label htmlFor="gender-group" className={"font-custom font-semibold text-xs text-white block mb-1"}>GENDER</label>
+                                <div id="gender-group" className="flex flex-col md:flex-row gap-3">
                                     {['male', 'female'].map((gender) => (
                                         <label key={gender} htmlFor={gender} className="flex-1">
                                             <div
@@ -275,6 +300,12 @@ export default function OnboardingForm({ name }: { name: string }) {
                                                         ? "bg-weirdPurple/70"
                                                         : "bg-weirdPurple/30"}`}
                                                 onClick={() => setSelectedGender(gender)}
+                                                onKeyUp={(e) => {
+                                                    if (e.key === 'Enter' || e.key === ' ') {
+                                                        e.preventDefault();
+                                                        setSelectedGender(gender);
+                                                    }
+                                                }}
                                             >
                                                 <input
                                                     type="radio"
@@ -298,7 +329,7 @@ export default function OnboardingForm({ name }: { name: string }) {
 
                             {/* Status Selection */}
                             <div className="mb-3">
-                                <label className={`font-custom font-semibold text-white text-xs block mb-1`}>
+                                <label htmlFor="status-group" className={"font-custom font-semibold text-white text-xs block mb-1"}>
                                     SELECT AN OPTION
                                 </label>
                                 <div className="flex flex-col md:flex-row gap-3">
@@ -309,7 +340,13 @@ export default function OnboardingForm({ name }: { name: string }) {
                                                 ${selectStatus === status
                                                         ? "bg-weirdPurple/70"
                                                         : "bg-weirdPurple/30"}`}
-                                                onClick={() => setSelectStatus(status)} // Ensure state is updated here
+                                                onClick={() => setSelectStatus(status)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter' || e.key === ' ') {
+                                                        e.preventDefault();
+                                                        setSelectStatus(status);
+                                                    }
+                                                }}
                                             >
                                                 <input
                                                     type="radio"
@@ -352,7 +389,7 @@ function SubmitButton() {
             aria-disabled={pending}
             disabled={pending}
             className={
-                `transition-colors font-bold p-2 w-[45vw] bg-primary text-base md:text-2xl text-white hover:bg-primary/80`
+                "transition-colors font-bold p-2 w-[45vw] bg-primary text-base md:text-2xl text-white hover:bg-primary/80"
             }
         >
             {pending ? "SUBMITTING..." : "JOIN THE COUNCIL"}

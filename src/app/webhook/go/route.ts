@@ -41,6 +41,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    console.log("Submission:", submission);
+
     console.log(submission);
 
     // Split stdout using delimiter

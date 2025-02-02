@@ -61,6 +61,7 @@
     "react-lottie": "^1.2.10",
     "react-resizable-panels": "^2.1.7",
     "react-responsive": "^10.0.0",
+    "sass": "^1.83.4",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "tailwindcss-motion": "^1.0.1"

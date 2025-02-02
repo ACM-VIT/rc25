@@ -70,13 +70,16 @@ const validateCode = (
 };
 
 export default function CodeEditor({ problem, session, setStatusRibbon, statusRibbon, setSubmissions }: CodeEditorProps) {
-    const [language, setLanguage] = useState<SupportedLanguage>(() => {
-        if (typeof window === "undefined") return "c";
-        return (
-            (localStorage.getItem(LANGUAGE_STORAGE_KEY) as SupportedLanguage) ||
-            "c"
-        );
-    });
+    const [language, setLanguage] = useState<SupportedLanguage>("c");
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const storedLanguage = localStorage.getItem(LANGUAGE_STORAGE_KEY) as SupportedLanguage;
+            if (storedLanguage) {
+                setLanguage(storedLanguage);
+            }
+        }
+    }, []);
 
     const [code, setCode] = useState<string>(() => {
         if (typeof window === "undefined")

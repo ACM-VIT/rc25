@@ -151,6 +151,7 @@ export async function POST(request: NextRequest) {
         data: {
           testcasespassed: finalTestCasesPassed,
           score: invidualSubmissionScore,
+          evaluated: true,
         },
       }),
       prisma.team.update({

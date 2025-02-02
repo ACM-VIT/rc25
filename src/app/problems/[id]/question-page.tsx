@@ -6,7 +6,7 @@ import QuestionDisplay from "./question-display";
 import WebRunner from "./web-runner";
 import { useRouter } from "next/navigation";
 import SubmissionSection from "@/app/problems/[id]/submission-section";
-import { useEffect, useState, useTransition } from "react";
+import React, { useEffect, useState, useTransition } from "react";
 import { getTeamSubmissions } from "@/app/problems/[id]/actions";
 import getSubmissionResults from "@/app/actions/get-submission-results";
 import {
@@ -113,7 +113,7 @@ export default function QuestionPage({
         };
 
         submissions
-            .filter((submission) => submission.testcasespassed.length === 0)
+            .filter((submission) => !submission.evaluated)
             .forEach(async (submission) => {
                 const token = submission.token;
                 const submissionId = submission.id;

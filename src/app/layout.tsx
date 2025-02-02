@@ -1,4 +1,4 @@
-import CountdownTimer from "@/components/countdown-timer";
+import Counter from "@/components/countdown-timer";
 import DetailsForm from "@/components/details-formnew";
 import Disqualified from "@/components/disqualifed";
 import EliminationScreen from "@/components/elimination-screen";
@@ -17,6 +17,9 @@ import { cookies } from "next/headers";
 import SwitchAdminModeButton from "@/components/switch-admin-mode-button";
 import { SessionProvider } from "next-auth/react";
 import { type Metadata } from "next";
+import FloatingDock from "@/components/FloatingDock";
+
+
 // import SwitchAdminModeButton from "@/components/switch-admin-mode-button";
 // import TeamSubmissions from "@/components/team-submissions";
 
@@ -223,36 +226,43 @@ export default async function RootLayout({
     const roundStarted = curOrNextRound.start <= new Date();
 
     if (!roundStarted) {
+        const roundNumber = curOrNextRound?.number ? Number(curOrNextRound.number) : 1; 
+        const roundStartTime = curOrNextRound?.start?.toISOString();
+    
         return (
             <html lang="en">
                 <body>
-                    <Navbar name={session.user.name ?? "User"} />
-                    <CountdownTimer
-                        getTimeUntil={curOrNextRound.start.toISOString()}
-                    />{" "}
-                    {/* todo Time until round start */}
+
+                    <Counter getTimeUntil={roundStartTime} roundNumber={roundNumber} />
+                    <FloatingDock />
                     {isAdmin && <SwitchAdminModeButton />}
                 </body>
             </html>
         );
     }
+    
+    
 
     const roundEnded = curOrNextRound.end <= new Date();
 
     if (roundEnded) {
+        const roundNumber = curOrNextRound?.number ? Number(curOrNextRound.number) : 1; 
+        const resultTime = curOrNextRound?.result?.toISOString();
+    
         return (
             <html lang="en">
                 <body>
-                    <Navbar name={session.user.name ?? "User"} />
-                    <CountdownTimer
-                        getTimeUntil={curOrNextRound.result.toISOString()}
-                    />{" "}
-                    {/* todo Time until result */}
+                    
+            
+                    <Counter getTimeUntil={resultTime} roundNumber={roundNumber} />
+                    <FloatingDock />
                     {isAdmin && <SwitchAdminModeButton />}
                 </body>
             </html>
         );
     }
+    
+
 
     return (
         <html lang="en">

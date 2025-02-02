@@ -1,6 +1,6 @@
 import type React from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import CountdownTimer from "@/components/countdown-timer";
+import Counter from "./countdown-timer";
 import DashboardBox from "@/components/DashboardBox";
 import type { DashboardProps } from "@/types/dashboard";
 import Link from "next/link";
@@ -90,10 +90,12 @@ const Dashboard: React.FC<DashboardProps> = ({
                             </div>
                         </DashboardBox>
                         <DashboardBox className="p-6 text-center py-4 h-fit flex-none">
-                            <CountdownTimer
-                                getTimeUntil={roundInfo.end.toISOString()}
-                            />
-                        </DashboardBox>
+    <Counter
+        getTimeUntil={roundInfo?.end ? roundInfo.end.toISOString() : "2025-02-03T18:30:00.000Z"}
+        roundNumber={roundInfo?.number ? Number(roundInfo.number) : 1} 
+    />
+</DashboardBox>
+
                     </div>
                     <div className="w-1/2">
                         <DashboardBox className="h-full">

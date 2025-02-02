@@ -37,16 +37,26 @@ export default function EditTestCaseDialog({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await addTestCase(problemId, weight, input, output, isEdge, testCase.id);
+    await addTestCase(
+      problemId, 
+      weight, 
+      input.trim(), 
+      output.trim(), 
+      isEdge, 
+      testCase.id
+    );
     onSuccess();
     onClose();
   };
 
   const handleCheck = () => {
-    if (!input || !output) {
+    const trimmedInput = input.trim();
+    const trimmedOutput = output.trim();
+    
+    if (!trimmedInput || !trimmedOutput) {
       return;
     }
-    const result = validateCode(webCode, input, output);
+    const result = validateCode(webCode, trimmedInput, trimmedOutput);
     setValidationResult(result);
   };
 
@@ -69,7 +79,7 @@ export default function EditTestCaseDialog({
                 id="input"
                 className="mt-1 w-full rounded-md border-gray-300 shadow-sm text-black"
                 value={input}
-                onChange={(e) => setInput(e.target.value)}
+                onChange={(e) => setInput(e.target.value.trim())}
               />
             </div>
             <div>
@@ -81,9 +91,9 @@ export default function EditTestCaseDialog({
               </label>
               <textarea
                 id="output"
-                className="mt-1 w-full rounded-md border-gray-300 shadow-sm text-black"
+                className="mt-1 w-full rounded-md border-gray-300 shadow-sm text-black" 
                 value={output}
-                onChange={(e) => setOutput(e.target.value)}
+                onChange={(e) => setOutput(e.target.value.trim())}
               />
             </div>
             <div>

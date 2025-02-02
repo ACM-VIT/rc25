@@ -175,9 +175,9 @@ async function main() {
 
             await createRound({ start, end, result });
         } else if (choice === "2") {
-            const roundId = parseInt(await rl.question("Enter round ID to delete: "), 10);
+            const roundId = Number.parseInt(await rl.question("Enter round ID to delete: "), 10);
 
-            if (isNaN(roundId)) {
+            if (Number.isNaN(roundId)) {
                 console.error("Invalid round ID.");
                 return;
             }
@@ -199,9 +199,9 @@ async function main() {
 
         await createRound({ start, end, result });
     } else if (action === "round_delete") {
-        const roundId = parseInt(await rl.question("Enter round ID to delete: "), 10);
+        const roundId = Number.parseInt(await rl.question("Enter round ID to delete: "), 10);
 
-        if (isNaN(roundId)) {
+        if (Number.isNaN(roundId)) {
             console.error("Invalid round ID.");
             return;
         }

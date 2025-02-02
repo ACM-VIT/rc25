@@ -35,7 +35,7 @@ const Dashboard: React.FC<DashboardProps> = ({
     const getStatusColor = (status: string) => {
         if (status === "Not Attempted") return "#EB5757";
         const statusParts = status.split("/").map(Number);
-        if (statusParts.length === 2 && !isNaN(statusParts[0]) && !isNaN(statusParts[1])) {
+        if (statusParts.length === 2 && !Number.isNaN(statusParts[0]) && !Number.isNaN(statusParts[1])) {
             const [passed, total] = statusParts;
             const percentage = (passed / total) * 100;
 

@@ -190,6 +190,30 @@ async function whitelist() {
     }
 }
 
+async function toggleLeaderboard() {
+    try {
+        const currentFlag = await prisma.flags.findUnique({
+            where: { name: 'showLeaderboard' }
+        });
+        
+        const currentValue = currentFlag?.value ?? false;
+        console.log(`Current leaderboard visibility: ${currentValue}`);
+        
+        const response = await rl.question("Set leaderboard visibility (true/false): ");
+        const newValue = response.toLowerCase() === 'true';
+        
+        await prisma.flags.upsert({
+            where: { name: 'showLeaderboard' },
+            update: { value: newValue },
+            create: { name: 'showLeaderboard', value: newValue }
+        });
+        
+        console.log(`Leaderboard visibility updated to: ${newValue}`);
+    } catch (e) {
+        console.error("Error updating leaderboard visibility:", e);
+    }
+}
+
 // MODIFY main() to include option 5 for whitelist
 async function main() {
     const args = process.argv.slice(2);
@@ -203,8 +227,9 @@ async function main() {
         console.log("3. Add Admin");
         console.log("4. Delete Admin");
         console.log("5. Whitelist");
+        console.log("6. Toggle Leaderboard");
 
-        const choice = await rl.question("Enter your choice (1-5): ");
+        const choice = await rl.question("Enter your choice (1-6): ");
 
         if (choice === "1") {
             const start = new Date(await rl.question("Enter round start date (YYYY-MM-DD): "));
@@ -229,6 +254,8 @@ async function main() {
             await deleteAdmin({ email: emailInput });
         } else if (choice === "5") {
             await whitelist();
+        } else if (choice === "6") {
+            await toggleLeaderboard();
         } else {
             console.log("Invalid choice.");
         }
@@ -253,9 +280,11 @@ async function main() {
         await deleteAdmin({ email });
     } else if (action === "whitelist") {
         await whitelist();
+    } else if (action === "leaderboard_toggle") {
+        await toggleLeaderboard();
     } else {
         console.error(
-            "Invalid command. Use:\n  ROUND \"round_add\" - to add a round\n  \"round_delete\" - to delete a round\n  \"admin_add\" <email> - to add admin\n  \"admin_delete\" <email> - to delete admin\n  \"whitelist\" - to process whitelist CSV"
+            "Invalid command. Use:\n  ROUND \"round_add\" - to add a round\n  \"round_delete\" - to delete a round\n  \"admin_add\" <email> - to add admin\n  \"admin_delete\" <email> - to delete admin\n  \"whitelist\" - to process whitelist CSV\n  \"leaderboard_toggle\" - to toggle leaderboard visibility\n"
         );
     }
 }

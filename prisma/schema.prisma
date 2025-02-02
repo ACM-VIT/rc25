@@ -157,6 +157,11 @@ model Admin {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model Flags {
+  name String  @unique
+  value Boolean
+}
+
 enum Gender {
   male
   female

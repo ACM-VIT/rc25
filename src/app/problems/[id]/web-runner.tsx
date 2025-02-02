@@ -43,36 +43,37 @@ export default function WebRunner({ problem }: WebRunnerProps) {
                 <div className="flex flex-row justify-between h-[75%] rounded-[10px]">
                     <div className="flex flex-col w-1/2 px-4">
                         <div className="relative h-full">
-                            <h3 className="absolute top-2 left-4 text-sm font-semibold text-white">
+                            <h3 className="absolute top-4 left-4 text-sm font-semibold text-white">
                                 Input
                             </h3>
                             <Button
-                                className="absolute top-3 right-4 text-white bg-primary hover:bg-secondary px-3 py-1 rounded-md text-xs "
+                                className="absolute top-5 right-2 text-white bg-primary hover:bg-secondary px-3 py-0 rounded-md text-xs "
                                 onClick={handleRun}
                                 disabled={isRunning}
                             >
                                 {isRunning ? "Running..." : "Run"}
                             </Button>
                             <textarea
-                                className="w-full h-[100%] mt-2 bg-[#3C3C46] text-white p-4 rounded-[10px] resize-none focus:outline-none placeholder:text-sm"
+                                className="w-full h-[100%] mt-2 bg-[#3C3C46] text-white pt-8 p-4 rounded-[10px] resize-none focus:outline-none placeholder:text-sm"
                                 style={{
                                     background:
                                         "radial-gradient(circle, #36253D 80%, #39234E 110%)",
                                 }}
                                 value={input}
-                                onChange={(e) => setInput(e.target.value.trim())}
+                                onChange={(e) => setInput(e.target.value)}
                                 placeholder="Enter Your Input"
+                                rows={10}
                             />
                         </div>
                     </div>
                     <Separator orientation="vertical" />
                     <div className="flex flex-col w-1/2 px-4">
                         <div className="relative h-full">
-                            <h3 className="absolute top-2 left-4 text-sm font-semibold text-white">
+                            <h3 className="absolute top-4 left-4 text-sm font-semibold text-white">
                                 Output
                             </h3>
                             <textarea
-                                className="w-full h-[100%] mt-2 bg-[#3C3C46] text-white p-4 rounded-[10px] resize-none focus:outline-none placeholder:text-sm"
+                                className="w-full h-[100%] mt-2 bg-[#3C3C46] text-white pt-8 p-4 rounded-[10px] resize-none focus:outline-none placeholder:text-sm"
                                 style={{
                                     background:
                                         "radial-gradient(circle, #36253D 80%, #39234E 110%)",

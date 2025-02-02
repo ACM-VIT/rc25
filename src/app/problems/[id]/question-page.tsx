@@ -41,54 +41,14 @@ export default function QuestionPage({
     const router = useRouter();
     const currentIndex = questions.findIndex((q) => q.slno === currentSlno);
     const [isPending, startTransition] = useTransition();
-    // const [submissions, setSubmissions] = useState<Submission[]>([]);
-
-    const [submissions, setSubmissions] = useState<Submission[]>([
-        {
-            id: "sub1",
-            problemId: "prob1",
-            userId: "user1",
-            token: "token123",
-            score: 85,
-            testcasespassed: [true, true, false, true, true],
-            code: `def add(a, b):\n    return a + b`,
-            createdAt: new Date("2024-02-01T10:00:00Z"),
-            updatedAt: new Date("2024-02-01T10:30:00Z"),
-            evaluated: false,
-        },
-        {
-            id: "sub2",
-            problemId: "prob1",
-            userId: "user2",
-            token: "token456",
-            score: 60,
-            testcasespassed: [true, false, true, false, true],
-            code: `def multiply(a, b):\n    return a * b`,
-            createdAt: new Date("2024-02-01T11:00:00Z"),
-            updatedAt: new Date("2024-02-01T11:15:00Z"),
-            evaluated: true,
-        },
-        {
-            id: "sub3",
-            problemId: "prob2",
-            userId: "user3",
-            token: "token789",
-            score: 100,
-            testcasespassed: [true, true, true, true, true],
-            code: `def is_even(n):\n    return n % 2 == 0`,
-            createdAt: new Date("2024-02-02T08:45:00Z"),
-            updatedAt: new Date("2024-02-02T09:00:00Z"),
-            evaluated: true,
-        },
-    ]);
-
+    const [submissions, setSubmissions] = useState<Submission[]>([]);
     const [statusRibbon, setStatusRibbon] = useState<StatusRibbonProps>(null);
-    // useEffect(() => {
-    //     startTransition(async () => {
-    //         const data = await getTeamSubmissions(session.user.id, problem.id);
-    //         setSubmissions(data);
-    //     });
-    // }, [problem.id, session.user.id]);
+    useEffect(() => {
+        startTransition(async () => {
+            const data = await getTeamSubmissions(session.user.id, problem.id);
+            setSubmissions(data);
+        });
+    }, [problem.id, session.user.id]);
 
     const handleNext = () => {
         if (currentIndex < questions.length - 1) {
@@ -104,64 +64,64 @@ export default function QuestionPage({
         }
     };
 
-    // useEffect(() => {
-    //     const subscribeToSubmission = async (
-    //         submissionId: string,
-    //         token: string
-    //     ) => {
-    //         const finalResult = await fetch(
-    //             `/edge?submissionId=${submissionId}&token=${token}`,
-    //             {
-    //                 method: "GET",
-    //             }
-    //         );
+    useEffect(() => {
+        const subscribeToSubmission = async (
+            submissionId: string,
+            token: string
+        ) => {
+            const finalResult = await fetch(
+                `/edge?submissionId=${submissionId}&token=${token}`,
+                {
+                    method: "GET",
+                }
+            );
 
-    //         const reader = finalResult.body?.getReader();
-    //         const decoder = new TextDecoder();
+            const reader = finalResult.body?.getReader();
+            const decoder = new TextDecoder();
 
-    //         if (reader) {
-    //             try {
-    //                 while (true) {
-    //                     const { done, value } = await reader.read();
-    //                     if (done) break;
-    //                     const chunk = decoder.decode(value);
-    //                     console.log("Received chunk:", chunk);
-    //                 }
-    //             } catch (error) {
-    //                 console.error("Error reading stream:", error);
-    //             } finally {
-    //                 reader.releaseLock();
-    //             }
-    //         }
+            if (reader) {
+                try {
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+                        const chunk = decoder.decode(value);
+                        console.log("Received chunk:", chunk);
+                    }
+                } catch (error) {
+                    console.error("Error reading stream:", error);
+                } finally {
+                    reader.releaseLock();
+                }
+            }
 
-    //         const results = await getSubmissionResults(submissionId);
-    //         const passed = results.filter((r) => r === true).length;
-    //         setStatusRibbon({
-    //             type: "evaluation",
-    //             passed,
-    //             total: results.length,
-    //         });
+            const results = await getSubmissionResults(submissionId);
+            const passed = results.filter((r) => r === true).length;
+            setStatusRibbon({
+                type: "evaluation",
+                passed,
+                total: results.length,
+            });
 
-    //         setSubmissions((prev) =>
-    //             prev.map((submission) =>
-    //                 submission.id === submissionId
-    //                     ? { ...submission, testcasespassed: results }
-    //                     : submission
-    //             )
-    //         );
-    //         console.log("Final result", results);
-    //     };
+            setSubmissions((prev) =>
+                prev.map((submission) =>
+                    submission.id === submissionId
+                        ? { ...submission, testcasespassed: results }
+                        : submission
+                )
+            );
+            console.log("Final result", results);
+        };
 
-    //     submissions
-    //         .filter((submission) => !submission.evaluated)
-    //         .forEach(async (submission) => {
-    //             const token = submission.token;
-    //             const submissionId = submission.id;
-    //             subscribeToSubmission(submissionId, token).then((r) =>
-    //                 console.log(r)
-    //             );
-    //         });
-    // }, [problem.id, session.user.id, submissions]);
+        submissions
+            .filter((submission) => !submission.evaluated)
+            .forEach(async (submission) => {
+                const token = submission.token;
+                const submissionId = submission.id;
+                subscribeToSubmission(submissionId, token).then((r) =>
+                    console.log(r)
+                );
+            });
+    }, [problem.id, session.user.id, submissions]);
 
     return (
         <div

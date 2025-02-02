@@ -74,12 +74,11 @@ model Team {
 }
 
 model TeamRound {
-  id        String  @id @default(cuid())
-  teamId    String
-  checkedIn Boolean @default(false)
-  roundId   String
-  round     Round   @relation(fields: [roundId], references: [id], onDelete: Cascade)
-  team      Team    @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  id      String @id @default(cuid())
+  teamId  String
+  roundId String
+  round   Round  @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  team    Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
   @@unique([teamId, roundId])
 }
@@ -126,6 +125,7 @@ model Submission {
   updatedAt       DateTime             @updatedAt
   problem         Problem              @relation(fields: [problemId], references: [id], onDelete: Cascade)
   user            User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  evaluated       Boolean              @default(false)
   testcases       TestcaseSubmission[]
 }
 
@@ -140,14 +140,13 @@ model TestcaseSubmission {
 }
 
 model Round {
-  id               String      @id @default(cuid())
-  number           Int         @unique
-  requires_checkin Boolean     @default(false)
-  start            DateTime
-  end              DateTime
-  result           DateTime
-  problems         Problem[]
-  teams            TeamRound[]
+  id       String      @id @default(cuid())
+  number   Int         @unique
+  start    DateTime
+  end      DateTime
+  result   DateTime
+  problems Problem[]
+  teams    TeamRound[]
 }
 
 model Admin {
@@ -156,6 +155,11 @@ model Admin {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Flags {
+  name String  @unique
+  value Boolean
 }
 
 enum Gender {

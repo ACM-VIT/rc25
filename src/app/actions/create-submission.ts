@@ -164,6 +164,7 @@ export default async function createSubmission(data: {
                 problemId: data.problemId,
                 userId: data.userId,
                 testcasespassed: testcasespassed,
+                evaluated: false,
                 testcases: {
                     create: selectedTestcases.map((tc) => ({
                         testcase: {

@@ -5,6 +5,15 @@ import Dashboard from "@/components/dashboard";
 import { getTeamRound } from "@/hooks/useTeamRound";
 import { Metadata } from "next";
 
+async function getLeaderBoardShowBoolean(): Promise<boolean> {
+  const showBool = await prisma.flags.findFirst({
+    where: { name: "showLeaderboard" },
+    select: { value: true },
+  });
+
+  return showBool?.value ?? false;
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const teamRound = await getTeamRound();
   const roundInfo = teamRound?.roundId
@@ -143,11 +152,14 @@ export default async function Page() {
     score: team.score,
   }));
 
+  const showLeaderboard = await getLeaderBoardShowBoolean();
+
   return (
     <>
       <Dashboard
         teamDetails={teamDetails}
         leaderboard={leaderboard}
+        leaderboardShow={showLeaderboard}
         questions={questions}
         roundInfo={{
           number: roundInfo?.number ?? 0,

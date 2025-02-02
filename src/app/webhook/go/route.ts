@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
 
     // Combine all test results (true if any team member passed)
     const teamTestResults = submission.testcases.map((_, index) => {
-      return teamSubmissions.some((sub) => sub.testcasespassed[index] === true);
+      return teamSubmissions.some((sub) => sub.testcasespassed[index]);
     });
 
     // Use the independent test case results
@@ -151,6 +151,7 @@ export async function POST(request: NextRequest) {
         data: {
           testcasespassed: finalTestCasesPassed,
           score: invidualSubmissionScore,
+          evaluated: true,
         },
       }),
       prisma.team.update({

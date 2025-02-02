@@ -1,4 +1,5 @@
 import type React from "react";
+import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Counter from "./countdown-timer";
 import DashboardBox from "@/components/DashboardBox";
@@ -8,10 +9,11 @@ import { FaCrown } from "react-icons/fa";
 import FloatingDock from "./FloatingDock";
 
 const Dashboard: React.FC<DashboardProps> = ({
-  teamDetails,
-  leaderboard,
-  questions,
-  roundInfo,
+    teamDetails,
+    leaderboard,
+    questions,
+    roundInfo,
+    leaderboardShow,
 }) => {
   const sortedLeaderboard = [...leaderboard].sort((a, b) => b.score - a.score);
 
@@ -39,6 +41,25 @@ const Dashboard: React.FC<DashboardProps> = ({
       const [passed, total] = statusParts;
       const percentage = (passed / total) * 100;
 
+
+    return (
+        <div className="flex flex-col justify-start p-8 items-center min-h-screen">
+            <div
+                className="fixed inset-0 w-full h-full bg-black"
+                style={{
+                    backgroundImage: `url('./dashbg.png')`,
+                    backgroundPosition: "center",
+                    backgroundSize: "cover",
+                    backgroundRepeat: "no-repeat",
+                    zIndex: -1,
+                }}
+            />
+            <div className="flex md:hidden min-h-screen items-center justify-center">
+                <h1 className="text-white font-semibold text-lg w-[70%] text-center">
+                    Oops! It looks like you&apos;re using a smaller screen.
+                </h1>
+            </div>
+
       if (percentage <= 40) return "#EB5757";
       if (percentage < 100) return "#F2994A";
       return "#27AE60";
@@ -63,7 +84,6 @@ const Dashboard: React.FC<DashboardProps> = ({
           Oops! It looks like you&apos;re using a smaller screen.
         </h1>
       </div>
-
       <FloatingDock />
       <div className="hidden md:flex flex-col items-center justify-between w-full h-[85vh] text-white">
         <div className="flex flex-row w-full justify-center gap-4 h-full">
@@ -149,6 +169,31 @@ const Dashboard: React.FC<DashboardProps> = ({
                       </div>
                     </Link>
                   ))}
+                    <div className="w-1/4">
+                       { leaderboardShow && (
+                            <DashboardBox className="h-full overflow-auto">
+                                <p className="text-2xl font-custom border-b-2 border-rcgrey/20 pb-4 mb-4">
+                                    Leaderboard
+                                </p>
+                                <ul className="space-y-3 px-1">
+                                    {sortedLeaderboard.map((team, index) => (
+                                        <li key={team.id} className="flex justify-between items-center">
+                                            <p className="flex w-2/3 mt-1 items-center gap-5">
+                                                {index === 0 && <FaCrown className="text-yellow-500 mr-2" />}
+                                                {index === 1 && <FaCrown className="text-gray-400 mr-2" />}
+                                                {index === 2 && <FaCrown className="text-[#CD7F32] mr-2" />}
+                                                {index > 2 && <span className="mr-1">{index + 1}</span>}
+                                                {team.name}
+                                            </p>
+                                            <p className="w-1/3 text-center gap-5">
+                                                {team.score} pts
+                                            </p>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </DashboardBox>
+                        )}
+                    </div>
                 </div>
               </ScrollArea>
             </DashboardBox>

@@ -51,6 +51,16 @@ export async function POST(request: NextRequest) {
 
     console.log("Raw stdout:", stdout); // Debug log
     console.log("Split outputs:", outputs);
+
+    // Retrieve problem to get maxScore for weight calculations
+    const problem = await prisma.problem.findUnique({
+      where: { id: submission.problemId },
+      select: { maxScore: true },
+    });
+    if (!problem) {
+      return NextResponse.json({ message: "Problem not found" }, { status: 400 });
+    }
+
     // Compare outputs with testcases
     const testcasespassed = submission.testcases.map((relation, index) => {
       const expectedOutput = relation.testcase.output.trim();
@@ -58,12 +68,24 @@ export async function POST(request: NextRequest) {
       return expectedOutput === actualOutput;
     });
 
+    // Calculate total ratio from test cases
+    const totalRatio = submission.testcases.reduce(
+      (acc, rel) => acc + rel.testcase.weight,
+      0
+    );
+
+    // Function to compute effective weight for a testcase
+    const effectiveWeight = (index: number): number => {
+      return (problem.maxScore / totalRatio) * submission.testcases[index].testcase.weight;
+    };
+
+    // Compute individual submission score using effective weight
     const invidualSubmissionScore = testcasespassed.reduce((acc, isPassed, index) => {
       if (isPassed) {
-        return acc + submission.testcases[index].testcase.weight;
+        return acc + effectiveWeight(index);
       }
       return acc;
-    }, 0)
+    }, 0);
 
     // Get user's team
     const user = await prisma.user.findUnique({
@@ -106,24 +128,20 @@ export async function POST(request: NextRequest) {
       },
     });
 
-
     // Combine all test results (true if any team member passed)
     const teamTestResults = submission.testcases.map((_, index) => {
       return teamSubmissions.some((sub) => sub.testcasespassed[index] === true);
     });
 
-    // Merge results - keep true if previously passed by any team member
-    const finalTestCasesPassed = submission.testcases.map((_, index) => {
-      const wasPassedByTeam = teamTestResults[index];
-      const isPassedNow = testcasespassed[index];
-      return wasPassedByTeam ? wasPassedByTeam : isPassedNow;
-    });
+    // Use the independent test case results
+    const finalTestCasesPassed = testcasespassed;
 
+    // Calculate score change using effective weight instead of direct testcase.weight
     let scoreChange = 0;
     testcasespassed.forEach((isPassed, index) => {
       const wasPassedByTeam = teamTestResults[index];
       if (!wasPassedByTeam && isPassed) {
-        scoreChange += submission.testcases[index].testcase.weight;
+        scoreChange += effectiveWeight(index);
       }
     });
 

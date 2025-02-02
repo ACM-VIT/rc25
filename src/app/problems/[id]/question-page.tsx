@@ -1,16 +1,21 @@
 "use client";
-import React from "react";
+import type { Prisma } from "@prisma/client";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import CodeEditor from "./code-editor";
 import QuestionDisplay from "./question-display";
 import WebRunner from "./web-runner";
-import type { Problem } from "./page";
 import { useRouter } from "next/navigation";
 import SubmissionSection from "@/app/problems/[id]/submission-section";
 
+type problemWithRelations = Prisma.ProblemGetPayload<{include: {Testcase: true, round: true}}>;
+
 interface QuestionPageProps {
-    problem: Problem;
-    session: { user: { id: string } };
+    problem: problemWithRelations;
+    session: { 
+      user: { 
+        id: string;
+      } 
+    };
     questions: Array<{ id: string; slno: number }>;
     currentSlno: number;
 }

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Round } from '@prisma/client';
 import { upsertRound, deleteRound } from '../../actions/round-actions';
+import { clearFirestoreData } from '@/app/actions/clear-firestore-data';
 
 function formatDateForInput(date: Date): string {
   return new Date(date).toISOString().slice(0, 16);
@@ -86,6 +87,26 @@ export default function RoundClient({ initialRounds }: RoundClientProps) {
     }
   };
 
+  const handleClearData = async () => {
+    if (confirm('Are you sure you want to clear all Firestore data? This action cannot be undone.')) {
+      try {
+        const result = await clearFirestoreData();
+        
+        if (!result.success) {
+          setError(result.error || 'Failed to clear data');
+          setSuccess('');
+          return;
+        }
+  
+        setError('');
+        setSuccess(result.message || 'Data cleared successfully');
+        router.refresh();
+      } catch (err) {
+        setError('Failed to clear data: ' + (err instanceof Error ? err.message : 'Unknown error'));
+        setSuccess('');
+      }
+    }
+  };
 
   return (
     <div className="p-4">
@@ -174,6 +195,15 @@ export default function RoundClient({ initialRounds }: RoundClientProps) {
           ))}
         </tbody>
       </table>
+      <div className="mt-6">
+        <button
+          type="button"
+          onClick={handleClearData}
+          className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+        >
+          Clear Firestore Data
+        </button>
+      </div>
     </div>
   );
 }

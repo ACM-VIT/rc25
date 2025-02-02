@@ -14,19 +14,19 @@ export default function FloatingDock() {
         <div className="bg-secondary/60 text-text flex shadow-lg justify-between backdrop-blur-3xl w-[250px] px-4 py-2 rounded-xl  transition-all
             fixed bottom-2 left-1/2 transform -translate-x-1/2  hover:p4 hover:shadow-xl shadow-black/20 hover:-translate-y-2 hover:w-[300px] hover:scale-110
             hover:motion-translate-y-loop-[5%] motion-ease-in-out motion-duration-2000 motion-preset-slide-up-md">
-            <FloatingDockItems href="#" className="motion-preset-slide-up-md motion-delay-[300ms]">
+            <FloatingDockItems href="/" className="motion-preset-slide-up-md motion-delay-[300ms]">
                 <LayoutDashboard />
             </FloatingDockItems>
-            <FloatingDockItems href="#" className="motion-preset-slide-up-md motion-delay-[400ms]">
+            <FloatingDockItems href="/submissions" className="motion-preset-slide-up-md motion-delay-[400ms]">
                 <MailCheck />
             </FloatingDockItems>
-            <FloatingDockItems href="#" className="motion-preset-slide-up-md motion-delay-[500ms]">
+            <FloatingDockItems href="/instructions" className="motion-preset-slide-up-md motion-delay-[500ms]">
                 <Info />
             </FloatingDockItems>
-            <FloatingDockItems href="#" className="motion-preset-slide-up-md motion-delay-[600ms]">
+            <FloatingDockItems href="/portalfaqs" className="motion-preset-slide-up-md motion-delay-[600ms]">
                 <BadgeHelp />
             </FloatingDockItems>
-            <FloatingDockItems href="#" className="motion-preset-slide-up-md motion-delay-[700ms]">
+            <FloatingDockItems href="/profile" className="motion-preset-slide-up-md motion-delay-[700ms]">
                 <UserRound />
             </FloatingDockItems>
         </div>

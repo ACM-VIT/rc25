@@ -55,7 +55,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                 </h1>
             </div>
             <div className="hidden md:flex flex-col items-center justify-between w-full h-full text-white">
-                <p className="font-bold text-2xl font-[Audiowide] underline underline-offset-4 decoration-white my-4">
+                <p className="font-bold text-2xl font-custom underline underline-offset-4 decoration-white my-4">
                     Round {roundInfo.number}
                 </p>
                 <div className="flex flex-row w-full justify-between space-x-4">

@@ -11,11 +11,13 @@ import UploadFolder from "./UploadFolder";
 import { useRouter } from "next/navigation";
 import DeleteQuestionDialog from "../DeleteQuestionDialog";
 import { deleteQuestion } from "@/app/actions/delete-question";
-// import type { Difficulty } from "@prisma/client";
 import type { Problem as PrismaBaseProblem } from '@prisma/client';
 
 interface Problem extends PrismaBaseProblem {
   Testcase: TestCase[];
+  round: {
+    number: number;
+  };
 }
 
 
@@ -268,7 +270,7 @@ export default function ViewProblem({ problem }: ViewProblemProps) {
 
           <div className="bg-gray-50 p-4 rounded">
             <h3 className="font-semibold mb-2 text-black">Round Number</h3>
-            <p className="text-black">{problem.roundId}</p>
+            <p className="text-black">{problem.round.number}</p>
           </div>
         </div>
 

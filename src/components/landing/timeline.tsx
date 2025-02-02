@@ -1,13 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { Audiowide } from "next/font/google";
 import { Outfit } from "next/font/google";
-
-const audiowide = Audiowide({
-    subsets: ['latin'], 
-    weight: ['400'],
-    display: 'swap',
-});
 
 const outfit = Outfit({
     subsets: ['latin'], 
@@ -98,7 +91,7 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
       ref={containerRef}
     >
       <div className="max-w-7xl mx-auto py-5 phone:pb-2 phone:px-6 xs:px-8 sm:px-8 md:px-4 lg:px-10">
-        <p className={`text-5xl phone:text-5xl xs:text-7xl sm:text-8xl md:text-9xl mb-4 text-white dark:text-white ${audiowide.className} max-w-4xl motion-safe:animate-fade-in`} style={{color: '#F0F1FA'}}>
+        <p className={`text-5xl phone:text-5xl xs:text-7xl sm:text-8xl md:text-9xl mb-4 text-white dark:text-white max-w-4xl motion-safe:animate-fade-in`} style={{color: '#F0F1FA'}}>
           TIMELINE
         </p>
       </div>

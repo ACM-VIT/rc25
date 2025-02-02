@@ -2,15 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Audiowide } from 'next/font/google';
 import Image from 'next/image';
 import rock from '@/app/assets/rock.svg';
-
-const audiowide = Audiowide({
-  subsets: ['latin'], 
-  weight: ['400'],
-  display: 'swap',
-});
 
 const prizes = [
   { title: '1st', amount: '₹00,000' },
@@ -133,7 +126,7 @@ export default function PrizePool() {
       </div>
 
       {/* Adjusted title positioning for small/phone screens */}
-      <h1 className={`text-4xl xs:text-[3.5rem] sm:text-[4rem] phone:mt-0 md:text-[6.5rem] sm:mt-0 md:mt-[2%] lg:text-[7rem] xl:text-[8rem] text-white mb-4 ${audiowide.className} relative z-10 whitespace-nowrap`}>
+      <h1 className={`text-4xl xs:text-[3.5rem] sm:text-[4rem] phone:mt-0 md:text-[6.5rem] sm:mt-0 md:mt-[2%] lg:text-[7rem] xl:text-[8rem] text-white mb-4 relative z-10 whitespace-nowrap`}>
         PRIZE POOL
       </h1>
       
@@ -177,7 +170,7 @@ export default function PrizePool() {
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
               }}>
-                <h2 className={`text-[2.5rem] xs:text-[10rem] sm:text-[10rem] md:text-[8rem] lg:text-[10rem] ${audiowide.className} mb-1 md:mb-2 text-center`} style={{
+                <h2 className={`text-[2.5rem] xs:text-[10rem] sm:text-[10rem] md:text-[8rem] lg:text-[10rem] mb-1 md:mb-2 text-center`} style={{
                   color: '#222222',
                   WebkitTextStroke: '1px purple',
                   textShadow: 'xl'
@@ -191,12 +184,12 @@ export default function PrizePool() {
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
               }}>
-                <h2 className={`text-sm xs:text-[280%] sm:text-[270%] md:text-[250%] lg:text-[300%] mb-4 xs:mb-5 text-center ${audiowide.className}`} style={{
+                <h2 className={`text-sm xs:text-[280%] sm:text-[270%] md:text-[250%] lg:text-[300%] mb-4 xs:mb-5 text-center`} style={{
                   color: '#222222',
                   WebkitTextStroke: '1px purple',
                   textShadow: 'none'
                 }}>{prize.title}</h2>
-                <p className={`text-xs xs:text-xl sm:text-xl md:text-lg lg:text-xl ${audiowide.className}`} style={{
+                <p className={`text-xs xs:text-xl sm:text-xl md:text-lg lg:text-xl`} style={{
                   color: '#222222',
                   WebkitTextStroke: '1px purple',
                   textShadow: 'none'
@@ -206,7 +199,7 @@ export default function PrizePool() {
           </motion.div>
         ))}
       </div>
-      <div className={`hidden md:block  md:text-[3rem] lg:text-[4rem] xl:text-[5rem] mt-4 ${audiowide.className}`} style={{
+      <div className={`hidden md:block  md:text-[3rem] lg:text-[4rem] xl:text-[5rem] mt-4`} style={{
         color: 'black',
         WebkitTextStroke: '1px white',
         textShadow: 'none'

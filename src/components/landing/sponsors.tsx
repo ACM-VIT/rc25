@@ -1,13 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
 import React from "react"
-import { Audiowide } from "next/font/google"
-
-const audiowide = Audiowide({
-    subsets: ['latin'],
-    weight: ['400'],
-    display: 'swap',
-})
 
 export default function SponsorsSection() {
   const sponsors = [
@@ -22,7 +15,7 @@ export default function SponsorsSection() {
   return (
     <section className="bg-[#0a0a0a] py-16 px-4 md:py-20 overflow-hidden">
       <div className="container mx-auto">
-        <h2 className={`text-[2.2rem] ml-[-11%] xs:ml-[0] xs:text-[3.5rem] sm:text-[4rem] md:text-[4rem] lg:text-[5rem] text-center text-white mb-16 tracking-[0.15em] ${audiowide.className}`}>
+        <h2 className={`text-[2.2rem] ml-[-11%] xs:ml-[0] xs:text-[3.5rem] sm:text-[4rem] md:text-[4rem] lg:text-[5rem] text-center text-white mb-16 tracking-[0.15em]`}>
           SPONSORS
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12 lg:gap-16 max-w-full mx-auto ">

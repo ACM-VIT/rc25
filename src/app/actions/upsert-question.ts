@@ -10,8 +10,15 @@ const uploadToGCS = async (
   if (!file) return "";
 
   try {
+    const credentialsEnv = process.env.GCP_CREDENTIALS;
+    if (!credentialsEnv) {
+      throw new Error("GCP_CREDENTIALS environment variable is not set");
+    }
+    const credentials = JSON.parse(credentialsEnv);
+
     const storage = new Storage({
-      keyFilename: "./google-cloud-key.json",
+      credentials,
+      projectId: credentials.project_id,
     });
 
     const bucketName = process.env.GCS_BUCKET;
@@ -28,7 +35,7 @@ const uploadToGCS = async (
       contentType: file.type,
     });
 
-    return `https://storage.googleapis.com/${process.env.GCS_BUCKET}/${filename}`;
+    return `https://storage.googleapis.com/${bucketName}/${filename}`;
   } catch (error) {
     console.error("GCS Upload Error:", error);
     throw error;

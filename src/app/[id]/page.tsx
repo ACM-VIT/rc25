@@ -1,8 +1,40 @@
-import ViewProblem from './ProblemClient';
+import ViewProblem from "./ProblemClient";
 import { prisma } from "@/utils/prisma";
 import { notFound } from "next/navigation";
 import { auth } from "@/app/(auth)/auth"; // Import your auth
-import type { Problem as PrismaBaseProblem } from '@prisma/client';
+import type { Problem as PrismaBaseProblem } from "@prisma/client";
+import { type Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: PageParams): Promise<Metadata> {
+  try {
+    const problem = await getProblem((await params).id);
+    return {
+      title: `${problem.title}`,
+      description: `Problem ${problem.id}: ${problem.description.substring(
+        0,
+        150
+      )}...`,
+      openGraph: {
+        title: `${problem.title}`,
+        description: `Solve problem ${problem.title} in Reverse Coding competition`,
+      },
+      robots: {
+        index: true,
+        follow: true,
+      },
+      icons: {
+        icon: "/favicon.ico",
+      },
+    };
+  } catch {
+    return {
+      title: "Problem Not Found",
+      description: "The requested problem could not be found",
+    };
+  }
+}
 
 interface Problem extends PrismaBaseProblem {
   Testcase: TestCase[];
@@ -20,7 +52,6 @@ interface TestCase {
   input: string;
   output: string;
   isEdge: boolean;
-  
 }
 
 async function getProblem(id: string): Promise<Problem> {
@@ -28,7 +59,7 @@ async function getProblem(id: string): Promise<Problem> {
     where: { id },
     include: {
       Testcase: true,
-    }
+    },
   });
 
   if (!problem) notFound();
@@ -44,5 +75,10 @@ export default async function Page({ params }: PageParams) {
     notFound();
   }
 
-  return <ViewProblem problem={problem} session={{ user: { id: session.user.id }}} />;
+  return (
+    <ViewProblem
+      problem={problem}
+      session={{ user: { id: session.user.id } }}
+    />
+  );
 }

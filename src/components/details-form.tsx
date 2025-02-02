@@ -7,23 +7,7 @@ import { useState } from "react";
 import Image from 'next/image'
 
 
-import { Audiowide } from "next/font/google";
-import { PT_Sans } from "next/font/google";
-
-// const audiowide = Audiowide({
-//     subsets: ["latin"],
-//     weight: ["400"],
-//     display: "swap",
-// });
-// const pt_sans = PT_Sans({
-//     subsets: ["latin"],
-//     weight: ["400"],
-//     display: "swap",
-// });
-
 export default function OnboardingForm({ name }: { name: string }) {
-    const audiowide = Audiowide({weight: "400"});
-    const pt_sans = PT_Sans({weight: "400"});
     const [selectedGender, setSelectedGender] = useState("");
     const [phone, setPhone] = useState("");
     const [selectStatus, setSelectStatus] = useState("");
@@ -74,10 +58,10 @@ export default function OnboardingForm({ name }: { name: string }) {
                 >
                     {/* Header */}
                     <div className="w-full mb-3 ">
-                    <h1 className={`font-bold text-center text-white md:text-[200%] sm:text-3xl xs:text-[135%] phone:text-[135%] ${audiowide.className} mb-2`}>
+                    <h1 className={`font-bold text-center text-white md:text-[200%] sm:text-3xl xs:text-[135%] phone:text-[135%] mb-2`}>
     HELLO THERE!
 </h1>
-                        <h2 className={` text-white text-center md:text-[120%] xs:text-[100%] phone:text-[90%] mt-2 mb-3  ${pt_sans.className}`}>
+                        <h2 className={` text-white text-center md:text-[120%] xs:text-[100%] phone:text-[90%] mt-2 mb-3 `}>
                             To ensure a seamless experience, please tell us more about yourself
                         </h2>
                     </div>
@@ -86,7 +70,7 @@ export default function OnboardingForm({ name }: { name: string }) {
                     <div className="w-full max-w-2xl px-4">
                         {/* Phone Number */}
                         <div className="mb-3">
-    <label htmlFor="phone" className={`font-semibold text-white text-xs block mb-1 ${pt_sans.className}`}>
+    <label htmlFor="phone" className={`font-semibold text-white text-xs block mb-1`}>
         PHONE NUMBER
     </label>
     <input
@@ -113,13 +97,13 @@ export default function OnboardingForm({ name }: { name: string }) {
 
                         {/* Gender Selection */}
                         <div className="mb-3">
-                            <label htmlFor="gender-group" className={`${pt_sans.className} font-semibold text-xs text-white block mb-1`}>GENDER</label>
+                            <label htmlFor="gender-group" className={`font-semibold text-xs text-white block mb-1`}>GENDER</label>
                             <div id="gender-group" className="flex flex-col md:flex-row gap-3">
                                 {['male', 'female'].map((gender) => (
                                     <label key={gender} htmlFor={gender} className="flex-1">
                                         <div
                                             className={`p-2 w-full text-center box-border border-dashed 
-                    border-2 border-[#F0F1FA] ${pt_sans.className} font-semibold rounded-md 
+                    border-2 border-[#F0F1FA] font-semibold rounded-md 
                     flex items-center justify-center h-10 cursor-pointer
                     ${selectedGender === gender
                                                 ? "bg-[#f0f1fade] text-purple-700"
@@ -155,7 +139,7 @@ export default function OnboardingForm({ name }: { name: string }) {
 
                         {/* Status Selection */}
                         <div className="mb-3">
-                            <label htmlFor="status-group" className={`${pt_sans.className} font-semibold text-white text-xs block mb-1`}>
+                            <label htmlFor="status-group" className={`font-semibold text-white text-xs block mb-1`}>
                                 PLEASE SELECT AN OPTION
                             </label>
                             <div className="flex flex-col md:flex-row gap-3">
@@ -163,7 +147,7 @@ export default function OnboardingForm({ name }: { name: string }) {
                                     <label key={status} htmlFor={status} className="flex-1">
                                         <div
                                                 className={`p-2 w-full text-center box-border border-dashed 
-                    border-2 border-[#F0F1FA] ${pt_sans.className} font-semibold rounded-md 
+                    border-2 border-[#F0F1FA] font-semibold rounded-md 
                     flex items-center justify-center h-10 cursor-pointer
                     ${selectStatus === status
                                                 ? "bg-[#f0f1fade] text-purple-700"

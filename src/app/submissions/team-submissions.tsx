@@ -17,7 +17,7 @@ const TeamSubmissions: React.FC<TeamSubmissionProps> = ({ submissions, teamName 
         style={{ backgroundImage: "url('./submissionsbg.png')", backgroundSize: "cover" }}
       >
         <div className="p-2 justify-center items-center">
-          <p className="font-bold text-2xl font-[Audiowide] underline underline-offset-4 decoration-white">
+          <p className="font-bold text-2xl font-custom underline underline-offset-4 decoration-white">
             {teamName}&apos;s Submissions
           </p>
         </div>

@@ -2,18 +2,11 @@
 
 import React from "react";
 import Image from "next/image";
-import { Audiowide } from "next/font/google";
 import { Outfit } from "next/font/google";
 import regrock from "@/app/assets/regrock.svg";
 import yellowround from "@/app/assets/yellowround.svg";
 import whiteround from "@/app/assets/whiteround.svg";
 import Footer from "./footer";
-
-const audiowide = Audiowide({
-    subsets: ['latin'], 
-    weight: ['400'],
-    display: 'swap',
-});
 
 const outfit = Outfit({
     subsets: ['latin'], 
@@ -62,7 +55,7 @@ export default function FaqRegister() {
         <div className="flex flex-col">
           {/* FAQ Title */}
           <div className="flex justify-start pl-10 lg:pl-14 md:pl-10 sm:pl-8 xs:pl-8 phone:pl-6">
-            <div className={`bg-gradient-to-b from-[#F0F1FA] to-[#ACADB5] bg-clip-text text-transparent text-center phone:text-[4rem] xs:text-[6rem] sm:text-[8rem] md:text-[9rem] lg:text-[10rem] ${audiowide.className}`}>
+            <div className={`bg-gradient-to-b from-[#F0F1FA] to-[#ACADB5] bg-clip-text text-transparent text-center phone:text-[4rem] xs:text-[6rem] sm:text-[8rem] md:text-[9rem] lg:text-[10rem]`}>
               FAQ
             </div>
           </div>
@@ -89,7 +82,7 @@ export default function FaqRegister() {
           
           <div className="flex items-center justify-center lg:pt-48 lg:pb-36 md:pt-36 md:pb-32 sm:pt-32 sm:pb-28 xs:pt-28 xs:pb-24 phone:pt-28 phone:pb-28">
               <div
-                  className={`bg-gradient-to-b from-[rgba(254,254,254,1)] to-[rgba(254,254,254,0.2)] bg-clip-text text-transparent text-center phone:text-[3rem] xs:text-[4rem] sm:text-[5rem] md:text-[6rem] lg:text-[10rem] ${audiowide.className} leading-[1] max-w-full overflow-hidden`}
+                  className={`bg-gradient-to-b from-[rgba(254,254,254,1)] to-[rgba(254,254,254,0.2)] bg-clip-text text-transparent text-center phone:text-[3rem] xs:text-[4rem] sm:text-[5rem] md:text-[6rem] lg:text-[10rem] leading-[1] max-w-full overflow-hidden`}
               >
                   REGISTER<br />NOW
               </div>

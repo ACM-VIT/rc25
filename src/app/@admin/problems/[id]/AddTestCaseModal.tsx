@@ -1,4 +1,5 @@
-import React, {useState, useTransition} from "react";
+import type React from "react";
+import {useState, useTransition} from "react";
 import addTestCase from "../../../actions/upsert-case";
 import {validateCode} from "./validate";
 
@@ -30,11 +31,14 @@ export default function AddTestCaseModal({
 
             const formData = new FormData(e.currentTarget);
             try {
+                const input = (formData.get("input") as string).trim();
+                const output = (formData.get("output") as string).trim();
+                
                 await addTestCase(
                     problemId,
                     Number(formData.get("weight")),
-                    formData.get("input") as string,
-                    formData.get("output") as string,
+                    input,
+                    output,
                     formData.get("isEdge") === "true"
                 );
                 onSuccess();
@@ -49,8 +53,8 @@ export default function AddTestCaseModal({
     const handleCheck = async () => {
         const form = document.querySelector("form") as HTMLFormElement;
         const formData = new FormData(form);
-        const input = formData.get("input") as string;
-        const output = formData.get("output") as string;
+        const input = (formData.get("input") as string).trim();
+        const output = (formData.get("output") as string).trim();
 
         if (!input || !output) {
             setError("Please fill in all fields");

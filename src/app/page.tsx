@@ -3,7 +3,7 @@ import Dashboard from "@/components/dashboard";
 // import SignOutButton from "@/components/buttons/sign-out";
 // import type { TeamRound } from "@prisma/client"
 import { getTeamRound } from "@/hooks/useTeamRound";
-import { Metadata } from "next";
+import type { Metadata } from "next";
 
 async function getLeaderBoardShowBoolean(): Promise<boolean> {
   const showBool = await prisma.flags.findFirst({

@@ -25,6 +25,7 @@ const Dashboard: React.FC<DashboardProps> = ({
       case "HARD":
         return "#EB5757";
       default:
+
         return "#FF0000";
     }
   };

@@ -24,7 +24,7 @@ export default function WebRunner({ problem }: WebRunnerProps) {
     const handleRun = async () => {
         setIsRunning(true);
         try {
-            const result = await runCode(problem.id, input);
+            const result = await runCode(problem.id, input.trim());
             setOutput(result.output);
         } catch (error) {
             setOutput(`Error running code: ${error}`);
@@ -60,7 +60,7 @@ export default function WebRunner({ problem }: WebRunnerProps) {
                                         "radial-gradient(circle, #36253D 80%, #39234E 110%)",
                                 }}
                                 value={input}
-                                onChange={(e) => setInput(e.target.value)}
+                                onChange={(e) => setInput(e.target.value.trim())}
                                 placeholder="Enter Your Input"
                             />
                         </div>

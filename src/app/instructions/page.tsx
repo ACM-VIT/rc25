@@ -1,6 +1,6 @@
 import FloatingDock from "@/components/FloatingDock";
 import Instructions from "./instructions";
-import { Metadata } from "next";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Instructions",

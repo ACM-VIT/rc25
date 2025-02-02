@@ -143,7 +143,6 @@ const Dashboard: React.FC<DashboardProps> = ({
                                     <p className="w-1/3 text-center gap-5">
                                         {team.score} pts
                                     </p>
-                                    
                                 </li>
                             ))}               
                             </ul>

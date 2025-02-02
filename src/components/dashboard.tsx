@@ -78,12 +78,6 @@ const Dashboard: React.FC<DashboardProps> = ({
                                             <p>{member.score}&nbsp;pts</p>
                                         </li>
                                     ))}
-                                    <li>Pooki</li>
-                                    <li>Pooki</li>
-                                    <li>Pooki</li>
-                                    <li>Pooki</li>
-                                    <li>Pooki</li>
-                                    <li>Pooki</li>
                                 </ul>
                             </ScrollArea>
                         </DashboardBox>

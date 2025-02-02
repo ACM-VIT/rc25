@@ -1,3 +1,4 @@
+import FloatingDock from "@/components/FloatingDock";
 import Instructions from "./instructions";
 import { Metadata } from "next";
 
@@ -18,7 +19,10 @@ export const metadata: Metadata = {
 };
 
 const Page = () => {
-  return <Instructions />;
+    return <>
+        <Instructions />
+        <FloatingDock />
+    </>;
 };
 
 export default Page;

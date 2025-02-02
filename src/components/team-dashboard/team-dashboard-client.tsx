@@ -10,9 +10,10 @@ interface TeamMembersProps {
   teamMembers: User[];
   teamName: string | "";
   code: string;
+  min_team_size: number;
 }
 
-export function TeamMembers({ teamMembers, teamName, code }: TeamMembersProps) {
+export function TeamMembers({ teamMembers, teamName, code, min_team_size }: TeamMembersProps) {
   const [showToast, setShowToast] = useState(false);
 
   const handleCopy = async () => {
@@ -120,9 +121,9 @@ export function TeamMembers({ teamMembers, teamName, code }: TeamMembersProps) {
               </div>
 
               <h3 className="text-center text-lg md:text-xl text-[#EB5757] font-bold">
-                {teamMembers.length === 1
+                {teamMembers.length < min_team_size
                   ? "A BIT LONELY, IT FEELS. A SQUAD OF AT LEAST TWO, YOU MUST GATHER!"
-                  : ""}
+                  : null}
               </h3>
             </div>
             <div className="w-full flex flex-col item-center justify-center text-2xl md:text-4xl text-weirdPurple font-custom">

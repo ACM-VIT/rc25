@@ -1,3 +1,4 @@
+import FloatingDock from "@/components/FloatingDock";
 import PortalFaqs from "./portal-faqs";
 import { Metadata } from "next";
 
@@ -20,7 +21,10 @@ export const metadata: Metadata = {
 };
 
 const Page = () => {
-  return <PortalFaqs />;
+  return <>
+        <PortalFaqs />;
+        <FloatingDock />
+    </>
 };
 
 export default Page;

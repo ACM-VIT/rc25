@@ -2,6 +2,7 @@ import { prisma } from "@/utils/prisma";
 import TeamSubmissions from "./team-submissions";
 import { redirect } from "next/navigation";
 import { auth } from "@/app/(auth)/auth"; // Import your auth
+import FloatingDock from "@/components/FloatingDock";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -66,9 +67,12 @@ export default async function SubmissionsPage() {
   }));
 
   return (
-    <TeamSubmissions
-      submissions={formattedSubmissions}
-      teamName={user.Team.name}
-    />
+    <>
+      <TeamSubmissions
+        submissions={formattedSubmissions}
+        teamName={user.Team.name}
+      />
+      <FloatingDock />
+    </>
   );
 }

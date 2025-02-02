@@ -11,14 +11,14 @@ export async function generateMetadata({
   try {
     const problem = await getProblem((await params).id);
     return {
-      title: `${problem.title} - Round ${problem.roundNumber} | Reverse Coding`,
+      title: `${problem.title} - Round ${problem.round.number} | Reverse Coding`,
       description: `${
         problem.difficulty
       } difficulty problem: ${problem.description.substring(0, 150)}...`,
       openGraph: {
         title: `${problem.title}`,
         description: `Solve this ${problem.difficulty.toLowerCase()} difficulty problem in Round ${
-          problem.roundNumber
+          problem.round.number
         }`,
         type: "article",
       },
@@ -70,7 +70,7 @@ interface TestCase {
   isEdge: boolean;
 }
 
-async function getProblem(id: string): Promise<Problem> {
+async function getProblem(id: string) {
   const problem = await prisma.problem.findUnique({
     where: { id },
     include: {
@@ -80,10 +80,7 @@ async function getProblem(id: string): Promise<Problem> {
   });
 
   if (!problem) notFound();
-  return {
-    ...problem,
-    roundNumber: problem.round.number,
-  };
+  return problem;
 }
 
 async function getQuestions(roundId: string) {
@@ -100,6 +97,17 @@ async function getQuestions(roundId: string) {
   }));
 }
 
+async function getUser(id: string) {
+  const user = await prisma.user.findUnique({
+    where: { id },
+    include: {
+      Team: true,
+    },
+  });
+
+  return user;
+}
+
 export default async function Page({ params }: PageParams) {
   const resolvedParams = await params;
   const problem = await getProblem(resolvedParams.id);
@@ -110,10 +118,20 @@ export default async function Page({ params }: PageParams) {
     notFound();
   }
 
+  const user = await getUser(session.user.id);
+
   // Find the current question's slno based on the problem id
   const currentQuestion = questions.find((q) => q.id === resolvedParams.id);
   const currentSlno = currentQuestion?.slno ?? 1;
 
+  console.log("User:", user);
+
+  if (
+    !problem ||
+    ((problem.round.start > new Date() || problem.round.end < new Date()) &&
+      user?.Team?.name !== process.env.ADMIN_TEAM_ID)
+  )
+    notFound();
   return (
     <div>
       <QuestionPage

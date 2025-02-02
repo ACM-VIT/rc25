@@ -1,8 +1,8 @@
 import type React from "react";
 import Image from "next/image";
 import bg from "../../../../public/landing_new/prize_bg.png";
-// import rock from "../../../../public/landing_new/rock.png";
-import Prizerock from "./rock-prize";
+import upper from "@/app/assets/upperbracket.svg";
+import lower from "@/app/assets/lowerbracket.svg";
 const Prize: React.FC = () => {
   return (
     <div className="relative w-screen h-screen overflow-hidden">
@@ -34,8 +34,8 @@ const Prize: React.FC = () => {
       </div>
 
       {/* Main Content - Responsive positioning and spacing */}
-      <div className="absolute z-10 w-full h-full flex flex-row items-center justify-center px-4 sm:px-8 md:px-16 lg:px-24 pt-[20vh]">
-        <div className="flex flex-row items-center justify-center">
+      {/* <div className="absolute z-10 w-full h-full flex flex-row items-center justify-center px-4 sm:px-8 md:px-16 lg:px-24 pt-[20vh]"> */}
+      {/* <div className="flex flex-row items-center justify-center">
           <Prizerock
             position="Best Freshers"
             prize={1224}
@@ -68,6 +68,54 @@ const Prize: React.FC = () => {
             positionTextSize="text-3xl lg:text-4xl xl:text-5xl"
             prizeTextSize="text-3xl lg:text-4xl xl:text-5xl"
           />
+        </div> */}
+      <div className="h-full w-full flex flex-col items-center justify-center">
+        <div className="relative flex flex-col items-center text-center justify-center h-[40vh] w-[50vw] text-white transform hover:scale-105 transition-transform duration-200 mx-6 my-4">
+          {/* Top bracket */}
+          <div className="absolute -top-3 -left-3">
+            <Image
+              src={upper}
+              alt="upper bracket"
+              width={40}
+              height={40}
+              className="md:w-[45px] md:h-[45px] lg:w-[50px] lg:h-[50px]"
+            />
+          </div>
+
+          {/* Text content */}
+          <div className="flex flex-col items-center px-4 py-2 justify-center space-y-6 tracking-widest">
+            <span
+              className="text-base sm:text-lg md:text-xl lg:text-8xl font-custom"
+              style={{
+                textShadow: "0 0 5px rgba(255,255,255,0.7)",
+                WebkitTextStroke: "0.5px white",
+              }}
+            >
+              REDACTED
+            </span>
+            <span
+              className="text-base sm:text-lg md:text-xl lg:text-2xl "
+              style={{
+                textShadow: "0 0 5px rgba(255,255,255,0.7)",
+                WebkitTextStroke: "0.5px white",
+              }}
+            >
+              The prize awaits, hidden in the far reaches of the galaxy... stay
+              tuned, young Padawan.
+            </span>
+          </div>
+
+          {/* Bottom bracket */}
+          <div className="absolute -bottom-3 -right-3">
+            <Image
+              src={lower}
+              alt="lower bracket"
+              width={40}
+              height={40}
+              className="md:w-[45px] md:h-[45px] lg:w-[50px] lg:h-[50px]"
+            />
+            {/* </div> */}
+          </div>
         </div>
       </div>
     </div>

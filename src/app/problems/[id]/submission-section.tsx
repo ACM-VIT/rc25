@@ -1,38 +1,16 @@
 "use client";
-import React, {useTransition} from "react";
-import {useState, useEffect} from "react";
-import {getTeamSubmissions} from "./actions";
+import React, {useState} from "react";
+import {Submission} from "@prisma/client";
 
 interface SubmissionSectionProps {
-    userId: string;
-    problemId: string;
+    isPending: boolean;
+    submissions: Submission[];
+    setSubmissions: React.Dispatch<React.SetStateAction<Submission[]>>;
 }
 
-interface Submission {
-    id: string;
-    code: string;
-    score: number | null;
-    testcasespassed: boolean[];
-    createdAt: Date;
-}
-
-const SubmissionSection: React.FC<SubmissionSectionProps> = ({
-                                                                 userId,
-                                                                 problemId,
-                                                             }) => {
+const SubmissionSection: React.FC<SubmissionSectionProps> = ({isPending, submissions}) => {
     const [selectedOption, setSelectedOption] =
         useState<string>("best-submission");
-    const [submissions, setSubmissions] = useState<{
-        best: Submission | null;
-        latest: Submission | null;
-    }>({best: null, latest: null});
-    const [isPending, startTransition] = useTransition()
-    useEffect(() => {
-        startTransition(async () => {
-            const data = await getTeamSubmissions(userId, problemId);
-            setSubmissions(data);
-        })
-    }, [userId, problemId]);
 
     const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSelectedOption(event.target.value);
@@ -89,11 +67,11 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
                 <option value="latest-submission">Latest Submission</option>
             </select>
 
-            {selectedOption === "best-submission" &&
-                renderSubmission(submissions.best)}
+            {/*{selectedOption === "best-submission" &&*/}
+            {/*    renderSubmission(submissions.best)}*/}
 
-            {selectedOption === "latest-submission" &&
-                renderSubmission(submissions.latest)}
+            {/*{selectedOption === "latest-submission" &&*/}
+            {/*    renderSubmission(submissions.latest)}*/}
         </div>
     );
 };

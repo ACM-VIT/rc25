@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { runCode } from "@/app/actions/runCode";
 import { Button } from "@/components/ui/button";
-import { Separator } from "../../../components/ui/seperator";
+import { Separator } from "@/components/ui/seperator";
 import DashboardBox from "@/components/DashboardBox";
 
 interface Problem {

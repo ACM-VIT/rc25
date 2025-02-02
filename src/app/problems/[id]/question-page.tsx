@@ -152,20 +152,21 @@ export default function QuestionPage({
                             Previous
                         </button>
                         <div className="flex gap-2">
-                            {questions.map((q) => (
-                                <div
-                                    key={q.id}
-                                    className={`px-3 py-1 rounded-md text-xs border-2 text-white font-bold mt-5 ${
-                                        q.slno === currentSlno
-                                            ? "border-yellow-500"
-                                            : "border-[#9B52E0]"
-                                    }`}
-                                >
-                                    {q.slno}
-                                </div>
-                            ))}
+                            {questions
+                                .slice(currentIndex, currentIndex + 4)
+                                .map((q) => (
+                                    <div
+                                        key={q.id}
+                                        className={`px-3 py-1 rounded-md text-xs border-2 text-white font-bold mt-5 ${
+                                            q.slno === currentSlno
+                                                ? "border-yellow-500"
+                                                : "border-[#9B52E0]"
+                                        }`}
+                                    >
+                                        {q.slno}
+                                    </div>
+                                ))}
                         </div>
-
                         <button
                             type="button"
                             onClick={handleNext}

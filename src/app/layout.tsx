@@ -21,10 +21,10 @@ import { type Metadata } from "next";
 // import TeamSubmissions from "@/components/team-submissions";
 
 export const metadata: Metadata = {
-  title: "Reverse Coding",
+  title: "Reverse Coding | ACM-VIT",
   description: "ACM-VIT's premier competitive coding event",
   openGraph: {
-    title: "Reverse Coding",
+    title: "Reverse Coding | ACM-VIT",
     description: "ACM-VIT's premier competitive coding event",
     type: "website",
   },

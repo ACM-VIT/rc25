@@ -16,10 +16,10 @@ export async function generateMetadata(): Promise<Metadata> {
 
   if (!roundInfo?.number) {
     return {
-      title: "Dashboard",
+      title: "Reverse Coding | ACM-VIT",
       description: "Join Reverse Coding competition",
       openGraph: {
-        title: "Dashboard",
+        title: "Reverse Coding | ACM-VIT",
         description: "Join ACM-VIT's premier coding competition",
         type: "website",
       },

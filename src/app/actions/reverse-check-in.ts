@@ -23,12 +23,12 @@ export default async function ReverseCheckIn(teamId: string) {
 		return false;
 	}
 
-	await prisma.teamRound.delete({
+	await prisma.teamRound.deleteMany({
 		where: {
-			teamId_roundId: {
-				teamId: teamId,
-				roundId: '1',
-			},
+			teamId: teamId,
+			round: {
+				number: 1,
+			}
 		},
 	});
 

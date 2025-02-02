@@ -1,7 +1,7 @@
 "use server";
 
-import { PrismaClient } from "@prisma/client";
-import { revalidatePath } from "next/cache";
+import {PrismaClient} from "@prisma/client";
+import {revalidatePath} from "next/cache";
 
 const prisma = new PrismaClient();
 
@@ -13,43 +13,27 @@ type CheckInResponse = {
 export default async function CheckInTeam(teamId: string): Promise<CheckInResponse> {
     try {
         const team = await prisma.team.findUnique({
-            where: { id: teamId },
-            include: { members: true },
+            where: {id: teamId},
+            include: {members: true},
         });
 
         if (!team) {
             throw new Error("Team not found");
         }
-        if (team.members.length < Number.parseInt(process.env.MIN_TEAM_CAPACITY || "2")) {
+        if (team.members.length < parseInt(process.env.MIN_TEAM_CAPACITY || "2")) {
             return {
                 success: false,
                 message: "Insufficient team members"
             };
         }
 
-        await prisma.team.update({
-            where: { id: teamId },
-            data: { checkedIn: true }
-        });
+        await prisma.$transaction([prisma.team.update({
+            where: {id: teamId},
+            data: {checkedIn: true}
+        }), prisma.teamRound.create({data: {team: {connect: {id: teamId}}, round: {connect: {number: 1}},},})]);
 
-        try {
-            await prisma.teamRound.create({
-                data: {
-                    team: { connect: { id: teamId } },
-                    round: { connect: { number: 1 } },
-                },
-            });
-        } catch (roundError) {
-            // Revert team check-in if round creation fails
-            await prisma.team.update({
-                where: { id: teamId },
-                data: { checkedIn: false }
-            });
-            throw roundError;
-        }
+        revalidatePath(`/check-in/${teamId}`, 'page');
 
-        revalidatePath(`/check-in/user/${teamId}`, 'page');
-        
         return {
             success: true,
             message: "Team checked in successfully"
@@ -58,7 +42,7 @@ export default async function CheckInTeam(teamId: string): Promise<CheckInRespon
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
         console.error("Check-in error:", errorMessage);
-        
+
         return {
             success: false,
             message: errorMessage

@@ -66,19 +66,20 @@ const Dashboard: React.FC<DashboardProps> = ({
             <div className="hidden md:flex flex-col items-center justify-between w-full h-[85vh] text-white">
                 <div className="flex flex-row w-full justify-center gap-4 h-full">
                     <div className="flex flex-col w-1/5 gap-4 justify-start h-full">
-                        <DashboardBox className="flex flex-col h-fit flex-none">
+                        <DashboardBox className="flex flex-col h-fit max-h-60 flex-none overflow-auto">
                             <p className="text-xl font-custom border-b border-rcgrey/20 pb-4">
                                 {teamDetails.name}
                             </p>
-                            <ul className="space-y-3 pt-4 px-1">
-                                {teamDetails.members.map((member) => (
-                                    <li key={member.id} className="flex justify-between">
-                                        <p className="flex">{member.name?.slice(0, member.name.lastIndexOf(' ')) || "Anonymous"}</p>
-                                        <p>{member.score}&nbsp;pts</p>
-                                        
-                                    </li>
-                                ))}
-                            </ul>
+                            <ScrollArea className="h-full">
+                                <ul className="space-y-3 pt-4 px-1">
+                                    {teamDetails.members.map((member) => (
+                                        <li key={member.id} className="flex justify-between">
+                                            <p className="flex">{member.name?.slice(0, member.name.lastIndexOf(' ')) || "Anonymous"}</p>
+                                            <p>{member.score}&nbsp;pts</p>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </ScrollArea>
                         </DashboardBox>
                         <DashboardBox className="grow h-full space-y-4">
                             <div>
@@ -138,20 +139,20 @@ const Dashboard: React.FC<DashboardProps> = ({
                                 Leaderboard
                             </p>
                             <ul className="space-y-3 px-1">
-                            {sortedLeaderboard.map((team, index) => (
-                                <li key={team.id} className="flex justify-between items-center">
-                                    <p className="flex w-2/3 mt-1 items-center gap-5">
-                                        {index === 0 && <FaCrown className="text-yellow-500 mr-2" />}
-                                        {index === 1 && <FaCrown className="text-gray-400 mr-2" />}  
-                                        {index === 2 && <FaCrown className="text-[#CD7F32] mr-2" />}
-                                        {index > 2 && <span className="mr-1">{index + 1}</span>}
-                                        {team.name}
-                                    </p>
-                                    <p className="w-1/3 text-center gap-5">
-                                        {team.score} pts
-                                    </p>
-                                </li>
-                            ))}               
+                                {sortedLeaderboard.map((team, index) => (
+                                    <li key={team.id} className="flex justify-between items-center">
+                                        <p className="flex w-2/3 mt-1 items-center gap-5">
+                                            {index === 0 && <FaCrown className="text-yellow-500 mr-2" />}
+                                            {index === 1 && <FaCrown className="text-gray-400 mr-2" />}
+                                            {index === 2 && <FaCrown className="text-[#CD7F32] mr-2" />}
+                                            {index > 2 && <span className="mr-1">{index + 1}</span>}
+                                            {team.name}
+                                        </p>
+                                        <p className="w-1/3 text-center gap-5">
+                                            {team.score} pts
+                                        </p>
+                                    </li>
+                                ))}
                             </ul>
                         </DashboardBox>
                     </div>

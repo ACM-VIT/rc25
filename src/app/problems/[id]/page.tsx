@@ -4,8 +4,6 @@ import { notFound } from "next/navigation";
 import { auth } from "@/app/(auth)/auth"; // Import your auth
 import type { Round } from "@prisma/client";
 
-import type { Metadata } from "next";
-
 import { Metadata } from "next";
 import { MDXRemote } from "next-mdx-remote/rsc";
 
@@ -133,7 +131,7 @@ export default async function Page({ params }: PageParams) {
     if (
         !problem ||
         ((problem.round.start > new Date() || problem.round.end < new Date()) &&
-            user?.Team?.name !== process.env.ADMIN_TEAM_ID)
+            user?.Team?.id !== process.env.ADMIN_TEAM_ID)
     )
         notFound();
     return (

@@ -119,6 +119,7 @@ model Submission {
   code            String
   problemId       String
   userId          String
+  token           String               @default("")
   score           Int?                 @default(0)
   testcasespassed Boolean[]            @default([])
   createdAt       DateTime             @default(now())
@@ -168,9 +169,9 @@ enum Difficulty {
   HARD
 }
 
-model News{
-  id        String   @id @default(cuid())
-  content   String
-  title     String
-  time      DateTime
+model News {
+  id      String   @id @default(cuid())
+  content String
+  title   String
+  time    DateTime
 }

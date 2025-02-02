@@ -1,13 +1,13 @@
-import { prisma } from "@/utils/prisma";    
+import {prisma} from "@/utils/prisma";
 import NewsClient from "@/app/@admin/news/newsClient";
+
 async function getNews() {
   try {
-    const news = await prisma.news.findMany({
+    return await prisma.news.findMany({
       orderBy: {
         time: "desc",
       },
     });
-    return news;
   } finally {
     await prisma.$disconnect();
   }

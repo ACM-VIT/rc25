@@ -1,23 +1,34 @@
 "use client";
-import type { Prisma } from "@prisma/client";
+import { Prisma, Submission } from "@prisma/client";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
-import CodeEditor from "./code-editor";
+import CodeEditor, { StatusRibbonProps } from "./code-editor";
 import QuestionDisplay from "./question-display";
 import WebRunner from "./web-runner";
 import { useRouter } from "next/navigation";
 import SubmissionSection from "@/app/problems/[id]/submission-section";
+import { useEffect, useState, useTransition } from "react";
+import { getTeamSubmissions } from "@/app/problems/[id]/actions";
+import getSubmissionResults from "@/app/actions/get-submission-results";
+import {
+    ResizableHandle,
+    ResizablePanel,
+    ResizablePanelGroup,
+} from "@/components/ui/resizable";
 
-type problemWithRelations = Prisma.ProblemGetPayload<{include: {Testcase: true, round: true}}>;
+type problemWithRelations = Prisma.ProblemGetPayload<{
+    include: { Testcase: true; round: true };
+}>;
 
 interface QuestionPageProps {
     problem: problemWithRelations;
-    session: { 
-      user: { 
-        id: string;
-      } 
+    session: {
+        user: {
+            id: string;
+        };
     };
     questions: Array<{ id: string; slno: number }>;
     currentSlno: number;
+    desc: React.ReactElement;
 }
 
 export default function QuestionPage({
@@ -25,9 +36,19 @@ export default function QuestionPage({
     session,
     questions,
     currentSlno,
+    desc,
 }: QuestionPageProps) {
     const router = useRouter();
     const currentIndex = questions.findIndex((q) => q.slno === currentSlno);
+    const [isPending, startTransition] = useTransition();
+    const [submissions, setSubmissions] = useState<Submission[]>([]);
+    const [statusRibbon, setStatusRibbon] = useState<StatusRibbonProps>(null);
+    useEffect(() => {
+        startTransition(async () => {
+            const data = await getTeamSubmissions(session.user.id, problem.id);
+            setSubmissions(data);
+        });
+    }, [problem.id, session.user.id]);
 
     const handleNext = () => {
         if (currentIndex < questions.length - 1) {
@@ -42,6 +63,65 @@ export default function QuestionPage({
             router.push(`/problems/${prevQuestion.id}`);
         }
     };
+
+    useEffect(() => {
+        const subscribeToSubmission = async (
+            submissionId: string,
+            token: string
+        ) => {
+            const finalResult = await fetch(
+                `/edge?submissionId=${submissionId}&token=${token}`,
+                {
+                    method: "GET",
+                }
+            );
+
+            const reader = finalResult.body?.getReader();
+            const decoder = new TextDecoder();
+
+            if (reader) {
+                try {
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+                        const chunk = decoder.decode(value);
+                        console.log("Received chunk:", chunk);
+                    }
+                } catch (error) {
+                    console.error("Error reading stream:", error);
+                } finally {
+                    reader.releaseLock();
+                }
+            }
+
+            const results = await getSubmissionResults(submissionId);
+            const passed = results.filter((r) => r === true).length;
+            setStatusRibbon({
+                type: "evaluation",
+                passed,
+                total: results.length,
+            });
+
+            setSubmissions((prev) =>
+                prev.map((submission) =>
+                    submission.id === submissionId
+                        ? { ...submission, testcasespassed: results }
+                        : submission
+                )
+            );
+            console.log("Final result", results);
+        };
+
+        submissions
+            .filter((submission) => submission.testcasespassed.length === 0)
+            .forEach(async (submission) => {
+                const token = submission.token;
+                const submissionId = submission.id;
+                subscribeToSubmission(submissionId, token).then((r) =>
+                    console.log(r)
+                );
+            });
+    }, [problem.id, session.user.id, submissions]);
 
     return (
         <div
@@ -101,26 +181,90 @@ export default function QuestionPage({
                         </button>
                     </div>
                 </div>
-                <div className="flex flex-row w-[90%] h-[87vh] justify-around gap-3">
-                    <div className="flex flex-col justify-evenly h-full w-[50%]">
-                        <div className="h-[50%]">
-                            <QuestionDisplay problem={problem} />
-                        </div>
-                        <div className="h-[45%]">
-                            <WebRunner problem={problem} />
-                        </div>
-                    </div>
-                    <div className="flex flex-col justify-evenly h-full w-[50%]">
-                        <div className="h-[50%]">
-                            <CodeEditor problem={problem} session={session} />
-                        </div>
-                        <div className="h-[45%]">
-                            <SubmissionSection
-                                userId={session.user.id}
-                                problemId={problem.id}
-                            />
-                        </div>
-                    </div>
+                <div className="w-[90%] h-[87vh] gap-1">
+                    <ResizablePanelGroup
+                        direction="horizontal"
+                        className="gap-1"
+                    >
+                        {/* Left Resizable Section */}
+                        <ResizablePanel
+                            defaultSize={30}
+                            minSize={20}
+                            maxSize={70}
+                        >
+                            <div className="flex flex-col justify-evenly h-full">
+                                <ResizablePanelGroup
+                                    direction="vertical"
+                                    className="gap-2"
+                                >
+                                    <ResizablePanel
+                                        defaultSize={50}
+                                        minSize={30}
+                                        maxSize={70}
+                                        // className="h-[50%]"
+                                    >
+                                        <QuestionDisplay
+                                            problem={problem}
+                                            desc={desc}
+                                        />
+                                    </ResizablePanel>
+                                    <ResizablePanel
+                                        defaultSize={50}
+                                        minSize={30}
+                                        maxSize={70}
+                                        // className="h-[45%]"
+                                    >
+                                        <WebRunner problem={problem} />
+                                    </ResizablePanel>
+                                </ResizablePanelGroup>
+                            </div>
+                        </ResizablePanel>
+
+                        {/* Resizable Handle */}
+                        <ResizableHandle />
+
+                        {/* Right Resizable Section */}
+                        <ResizablePanel
+                            defaultSize={50}
+                            minSize={30}
+                            maxSize={70}
+                        >
+                            <div className="flex flex-col justify-evenly h-full">
+                                <ResizablePanelGroup
+                                    direction="vertical"
+                                    className="gap-1"
+                                >
+                                    <ResizablePanel
+                                        defaultSize={50}
+                                        minSize={30}
+                                        maxSize={70}
+                                        // className="h-[50%]"
+                                    >
+                                        <CodeEditor
+                                            problem={problem}
+                                            statusRibbon={statusRibbon}
+                                            setStatusRibbon={setStatusRibbon}
+                                            setSubmissions={setSubmissions}
+                                            session={session}
+                                        />
+                                    </ResizablePanel>
+                                    <ResizableHandle />
+                                    <ResizablePanel
+                                        defaultSize={30}
+                                        minSize={30}
+                                        maxSize={70}
+                                        // className="h-[45%]"
+                                    >
+                                        <SubmissionSection
+                                            isPending={isPending}
+                                            setSubmissions={setSubmissions}
+                                            submissions={submissions}
+                                        />
+                                    </ResizablePanel>
+                                </ResizablePanelGroup>
+                            </div>
+                        </ResizablePanel>
+                    </ResizablePanelGroup>
                 </div>
             </div>
         </div>

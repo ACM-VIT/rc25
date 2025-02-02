@@ -1,80 +1,75 @@
 "use client";
 
-// import Image from "next/image";
-// import instrock from "@/app/assets/instrock.png";
 import DashboardBox from "@/components/DashboardBox";
 
 export default function Instructions() {
   const instructions = [
     {
-      title: "Login to Your Account",
+      title: "General Guidelines",
       description:
-        "• Use the credentials provided in your registration email to log into your account. This will give you access to all the features available on the platform.\n• If you encounter any issues with logging in, ensure your email address and password are correctly entered.\n• You can reset your password if necessary by following the 'Forgot Password' link.",
+        "• Team Formation: Teams can consist of [X] to [Y] members. Ensure all team members are registered.\n• Project Scope: Your project must align with the hackathon's theme or challenges. Off-topic projects may be disqualified.\n• Original Work: All work must be original and created during the hackathon. Pre-existing projects are not allowed.\n• Time Limit: You have [specific duration, e.g., 24 or 48 hours] to complete your project.",
     },
     {
-      title: "Navigate to the Dashboard",
+      title: "Submission Guidelines",
       description:
-        "• Once logged in, you'll be directed to the dashboard where you can get an overview of your activity, recent updates, and system notifications.\n• The dashboard displays key statistics, such as your current progress, recent achievements, and upcoming events.\n• You can access detailed views of each section by clicking on the relevant icons or links.",
+        "• Platform: Submit your project through [platform, e.g., Devpost, Google Forms, etc.].\n• Deliverables: Source code in a publicly accessible repository (e.g., GitHub). A short description of your project and its purpose.\n• [Optional] A video or presentation explaining your project.\n• Deadline: Submissions must be completed by [specific deadline]. Late entries will not be accepted.",
     },
     {
-      title: "Customize Your Preferences",
+      title: "Judging Criteria",
       description:
-        "• Go to the 'Settings' section to modify your preferences, update your account details, or change the theme of the platform to suit your needs.\n• You can update your personal information, such as your email address, profile picture, and notification preferences.\n• The platform allows you to choose a light or dark mode to enhance your user experience.",
+        "• Projects will be evaluated based on:\n  - Innovation: How unique and creative is the idea?\n  - Implementation: How well is the idea executed?\n  - Impact: What is the potential impact or usefulness of the project?\n  - Presentation: How clearly and effectively is the project explained?",
     },
     {
-      title: "Visit the Help Center",
+      title: "Rules and Conduct",
       description:
-        "• If you need assistance or have any questions, the 'Help Center' offers FAQs, user guides, and a way to contact support for further help.\n• The Help Center contains a variety of resources, including step-by-step tutorials and troubleshooting tips.\n• If you can’t find the answer you're looking for, feel free to reach out to the support team through the contact form.",
+        "• Code of Conduct: Participants must adhere to the hackathon's [Code of Conduct]. Harassment or inappropriate behavior will not be tolerated.\n• External Help: You may use open-source libraries, APIs, or tools but must disclose them in your submission. Plagiarism will result in disqualification.\n• Collaboration Tools: Use appropriate tools (e.g., GitHub, Figma) to collaborate effectively with your team.",
     },
     {
-      title: "Track Your Progress",
+      title: "Technical Support",
       description:
-        "• The platform allows you to monitor your progress on various tasks and goals.\n• You can track completed and pending tasks, as well as your overall progress through visual charts and reports.\n• Make sure to check this section regularly to stay on top of your tasks.",
+        "• Workshops and Mentorship: Attend scheduled workshops or connect with mentors for guidance.\n• Resources: Use provided resources, APIs, and datasets for your project.",
     },
     {
-      title: "Connect with Other Users",
+      title: "Communication",
       description:
-        "• The platform allows you to connect with other users for collaboration and networking.\n• You can send messages, join groups, and share updates with fellow users.\n• To start connecting, go to the 'Community' section and explore the available options.",
+        "• Updates: Check [communication platform, e.g., Discord, Slack] regularly for updates and announcements.\n• Support Channels: For queries or technical assistance, use the designated support channels.",
     },
     {
-      title: "Set Up Notifications",
+      title: "Prizes and Recognition",
       description:
-        "• You can set up notifications to keep you informed about updates on the platform.\n• Go to 'Settings' and configure notification preferences for new messages, updates, and reminders.\n• Choose between email notifications, push notifications, or both to stay informed.",
+        "• Winners Announcement: Winners will be announced on [date and platform].\n• Prizes: Details of prizes will be shared at the start of the hackathon.\n• Participation Certificates: All participants completing a project will receive certificates.",
     },
     {
-      title: "Log Out Securely",
+      title: "Miscellaneous",
       description:
-        "• When you're finished using the platform, make sure to log out to protect your account.\n• To log out, click on the 'Logout' button in the top right corner of the screen.\n• Logging out ensures that no one else can access your account without your credentials.",
+        "• Hardware and Venue: If in-person, bring necessary hardware (laptops, chargers, etc.). Wi-Fi and power outlets will be provided.\n• Breaks and Refreshments: Stay hydrated and take regular breaks! Food and refreshments will be available [details].\n• Have Fun! The hackathon is a great opportunity to learn, collaborate, and innovate. Good luck and happy hacking! 🚀",
     },
   ];
 
   return (
     <div
-      className="min-h-screen relative"
-      style={{ backgroundImage: "url('./submissionsbg.png')", backgroundSize: "cover" }}
+      className="min-h-screen relative flex flex-col items-center justify-center p-6"
+      style={{
+        backgroundImage: "url('./submissionsbg.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
     >
-      <div className="p-6 text-white">
-        <h1 className="text-5xl font-bold mb-8 underline">Instructions</h1>
-      </div>
-      <div className="flex items-center justify-center mt-19 relative">
-       <DashboardBox className="shadow-lg w-[80vw] h-[68vh] rounded-lg p-8 overflow-y-auto border text-white">
-          <ol className="list-decimal pl-6 text-lg">
-            {instructions.map((instruction) => (
-              <li key={instruction.title}>
-                <h3 className="text-xl font-bold mt-4">{instruction.title}</h3>
-                <p className="mt-2 text-sm">
-                  <ul className="list-inside">
-                    {instruction.description.split("\n").map((line, idx) => (
-                      <li key={`${instruction.title}-${idx}`}>{line}</li>
-                    ))}
-                  </ul>
-                </p>
-              </li>
-            ))}
-          </ol>
-          </DashboardBox>
-      </div>
+      <h1 className="text-5xl font-bold text-white mb-6 underline">Instructions</h1>
+      <DashboardBox className="shadow-lg w-[85vw] max-w-4xl h-[70vh] rounded-lg p-6 overflow-y-auto border text-white bg-opacity-80 backdrop-blur-md">
+        <ol className="list-decimal pl-6 space-y-6 text-lg">
+          {instructions.map((instruction) => (
+            <li key={instruction.title}>
+              <h3 className="text-xl font-bold">{instruction.title}</h3>
+              <ul className="list-inside mt-2 text-sm leading-relaxed">
+                {instruction.description.split("\n").map((line, idx) => (
+                  <li key={`${instruction.title}-${idx}`}>{line}</li>
+                ))}
+              </ul>
+            </li>
+          ))}
+        </ol>
+      </DashboardBox>
     </div>
-      
   );
 }

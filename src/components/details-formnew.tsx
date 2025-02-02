@@ -62,13 +62,13 @@ export default function OnboardingForm() {
                     boxShadow: "0 0 10px #CEB7FF, 0 0 10px #CEB7FF, 0 0 30px #CEB7FF",
                   }}
                 />
-                <div className="w-1/3 text-[#CEB7FF] lg:text-center md:text-right md:block hidden text-nowrap md:text-[85%] lg:text-[100%] how-it-works-heading uppercase">
+                <div className="w-sm text-[#CEB7FF] lg:text-center md:text-right text-sm  text-nowrap md:text-sm lg:text-[100%] how-it-works-heading ">
                   A MESSAGE FROM ACM
                 </div>
               </div>
 
               <h1
-                className="text-white text-[30px] sm:text-[20px] md:text-[40px] lg:text-[40px] xl:text-[60px]
+                className="text-white text-[20px] sm:text-[20px] md:text-[40px] lg:text-[40px] xl:text-[60px]
                           tracking-wide px-6 py-2 how-it-works-heading uppercase"
                 style={{
                   color: "transparent",
@@ -79,7 +79,7 @@ export default function OnboardingForm() {
                 HELLO {userName}
               </h1>
               <div className="flex flex-row items-center w-full">
-                <div className="w-1/3 text-[#CEB7FF] lg:text-center md:text-left md:block hidden text-nowrap md:text-[85%] lg:text-[100%] how-it-works-heading uppercase">
+                <div className="w-sm text-[#CEB7FF] lg:text-center md:text-left text-sm text-nowrap md:text-sm lg:text-[100%] how-it-works-heading ">
                   A MESSAGE FROM ACM
                 </div>
                 <div 
@@ -142,7 +142,7 @@ export default function OnboardingForm() {
                         onChange={() => setSelectedGender(gender)}
                       />
                       <div
-                        className={`p-3 text-center border border-[#F0F1FA] text-lg font-semibold
+                        className={`p-3 text-center border border-[#F0F1FA] text-sm font-semibold
                                     ${selectedGender === gender ? "bg-[#CEB7FF] bg-opacity-9 text-black" : "bg-[#CEB7FF] bg-opacity-20 text-white"}`}
                       >
                         {gender.toUpperCase()}
@@ -159,7 +159,7 @@ export default function OnboardingForm() {
                     <button
                       key={status}
                       type="button"
-                      className={`flex-1 p-3 text-center border border-[#F0F1FA] text-lg font-semibold
+                      className={`flex-1 p-3 text-center border border-[#F0F1FA] text-sm font-semibold
                                  ${selectStatus === status ? "bg-[#CEB7FF] bg-opacity-9.5 text-black" : "bg-[#CEB7FF] bg-opacity-20 text-white"}`}
                       onClick={() => setSelectStatus(status)}
                     >
@@ -193,8 +193,8 @@ export default function OnboardingForm() {
           <Image
             alt="Reverse Coding Logo"
             src={RC || "/placeholder.svg"}
-            width={120}
-            height={120}
+            width={100}
+            height={100}
             className="transform scale-100"
             priority
           />

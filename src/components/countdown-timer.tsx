@@ -21,18 +21,18 @@ interface CounterProps {
 const Counter: React.FC<CounterProps> = ({ getTimeUntil, roundNumber }) => {
   const [timer, setTimer] = useState<string>("00:00:00");
 
-  const getTimeRemaining = (end: string) => {
-    const total = new Date(end).getTime() - new Date().getTime();
-    if (total < 0) {
-      return { total: 0, hours: 0, minutes: 0, seconds: 0 };
-    }
-    const seconds = Math.floor((total / 1000) % 60);
-    const minutes = Math.floor((total / 1000 / 60) % 60);
-    const hours = Math.floor((total / 1000 / 60 / 60) % 24);
-    return { total, hours, minutes, seconds };
-  };
-
   useEffect(() => {
+    const getTimeRemaining = (end: string) => {
+      const total = new Date(end).getTime() - new Date().getTime();
+      if (total < 0) {
+        return { total: 0, hours: 0, minutes: 0, seconds: 0 };
+      }
+      const seconds = Math.floor((total / 1000) % 60);
+      const minutes = Math.floor((total / 1000 / 60) % 60);
+      const hours = Math.floor((total / 1000 / 60 / 60) % 24);
+      return { total, hours, minutes, seconds };
+    };
+
     if (isNaN(Date.parse(getTimeUntil))) {
       console.error("Invalid date format for `getTimeUntil`:", getTimeUntil);
     }
@@ -47,7 +47,7 @@ const Counter: React.FC<CounterProps> = ({ getTimeUntil, roundNumber }) => {
     updateTimer();
     const interval = setInterval(updateTimer, 1000);
     return () => clearInterval(interval);
-  }, [getTimeUntil, getTimeRemaining]); // Added getTimeRemaining to dependencies
+  }, [getTimeUntil]); // Added getTimeRemaining to dependencies
 
   return (
     <div className="h-screen w-full">

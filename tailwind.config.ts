@@ -90,7 +90,8 @@ const config: Config = {
 	
 	plugins: [
 		nextui(),
-		require("tailwindcss-motion") 
+		// eslint-disable-next-line @typescript-eslint/no-require-imports
+		require("tailwindcss-motion")
 	  ],
 	
 };

@@ -32,8 +32,6 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
     console.log("Submissions array:", submissions);
     console.log("Submissions length:", submissions.length);
 
-    const [selectedOption, setSelectedOption] =
-        useState<string>("best-submission");
     const [randomMessage, setRandomMessage] = useState<string>("");
 
     useEffect(() => {

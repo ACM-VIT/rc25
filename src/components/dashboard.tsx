@@ -11,7 +11,6 @@ const Dashboard: React.FC<DashboardProps> = ({
   teamDetails,
   leaderboard,
   questions,
-  roundInfo,
   leaderboardShow,
 }) => {
   const sortedLeaderboard = [...leaderboard].sort((a, b) => b.score - a.score);

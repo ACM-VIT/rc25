@@ -39,6 +39,7 @@ export default function OnboardingForm() {
       <div className="relative z-30 flex flex-col h-full w-full">
         <div className="flex flex-row w-full h-1/12 justify-end items-center p-4 sm:p-6 md:p-8">
           <button
+            type="button"
             className="px-6 py-2 sm:px-8 sm:py-3 w-24 sm:w-28 md:w-32 
                      border bg-[#08000F] border-[#CEB7FF] text-[#CEB7FF] 
                      uppercase hover:bg-[#CEB7FF] hover:text-black 
@@ -115,8 +116,9 @@ export default function OnboardingForm() {
                 }}
               >
                 {/* Phone Number */}
-                <label className="text-white text-left text-sm">Contact Number</label>
+                <label htmlFor="phone" className="text-white text-left text-sm">Contact Number</label>
                 <input
+                  id="phone"
                   type="tel"
                   name="phone"
                   className="w-full p-2 rounded bg-[#CEB7FF] bg-opacity-20 border border-[#F0F1FA] text-white focus:ring focus:ring-[#9B51E0]"
@@ -127,8 +129,8 @@ export default function OnboardingForm() {
                 <div className="text-red-600 text-xs">{phoneError}</div>
 
                 {/* Gender Selection */}
-                <label className="text-white text-left text-sm">Gender</label>
-                <div className="flex gap-4">
+                <label htmlFor="gender-group" className="text-white text-left text-sm">Gender</label>
+                <fieldset id="gender-group" aria-label="Gender Selection" className="flex gap-4 border-0">
                   {["male", "female"].map((gender) => (
                     <label key={gender} className="flex-1 cursor-pointer">
                       <input
@@ -147,12 +149,12 @@ export default function OnboardingForm() {
                       </div>
                     </label>
                   ))}
-                </div>
+                </fieldset>
                 <div className="text-red-600 text-xs">{genderError}</div>
 
                 {/* Status Selection */}
-                <label className="text-white text-left text-sm">Select an Option</label>
-                <div className="flex gap-4">
+                <label htmlFor="status-group" className="text-white text-left text-sm">Select an Option</label>
+                <div id="status-group" className="flex gap-4">
                   {["HOSTELLER", "DAY SCHOLAR"].map((status) => (
                     <button
                       key={status}

@@ -1,4 +1,5 @@
 import type React from "react";
+import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Counter from "./countdown-timer";
 import DashboardBox from "@/components/DashboardBox";
@@ -12,6 +13,7 @@ const Dashboard: React.FC<DashboardProps> = ({
     leaderboard,
     questions,
     roundInfo,
+    leaderboardShow,
 }) => {
     const sortedLeaderboard = [...leaderboard].sort(
         (a, b) => b.score - a.score
@@ -43,6 +45,7 @@ const Dashboard: React.FC<DashboardProps> = ({
         }
         return "#FF0000";
     };
+
 
     return (
         <div className="flex flex-col justify-start p-8 items-center min-h-screen">
@@ -136,27 +139,29 @@ const Dashboard: React.FC<DashboardProps> = ({
                     </div>
 
                     <div className="w-1/4">
-                        <DashboardBox className="h-full overflow-auto">
-                            <p className="text-2xl font-custom border-b-2 border-rcgrey/20 pb-4 mb-4">
-                                Leaderboard
-                            </p>
-                            <ul className="space-y-3 px-1">
-                                {sortedLeaderboard.map((team, index) => (
-                                    <li key={team.id} className="flex justify-between items-center">
-                                        <p className="flex w-2/3 mt-1 items-center gap-5">
-                                            {index === 0 && <FaCrown className="text-yellow-500 mr-2" />}
-                                            {index === 1 && <FaCrown className="text-gray-400 mr-2" />}
-                                            {index === 2 && <FaCrown className="text-[#CD7F32] mr-2" />}
-                                            {index > 2 && <span className="mr-1">{index + 1}</span>}
-                                            {team.name}
-                                        </p>
-                                        <p className="w-1/3 text-center gap-5">
-                                            {team.score} pts
-                                        </p>
-                                    </li>
-                                ))}
-                            </ul>
-                        </DashboardBox>
+                       { leaderboardShow && (
+                            <DashboardBox className="h-full overflow-auto">
+                                <p className="text-2xl font-custom border-b-2 border-rcgrey/20 pb-4 mb-4">
+                                    Leaderboard
+                                </p>
+                                <ul className="space-y-3 px-1">
+                                    {sortedLeaderboard.map((team, index) => (
+                                        <li key={team.id} className="flex justify-between items-center">
+                                            <p className="flex w-2/3 mt-1 items-center gap-5">
+                                                {index === 0 && <FaCrown className="text-yellow-500 mr-2" />}
+                                                {index === 1 && <FaCrown className="text-gray-400 mr-2" />}
+                                                {index === 2 && <FaCrown className="text-[#CD7F32] mr-2" />}
+                                                {index > 2 && <span className="mr-1">{index + 1}</span>}
+                                                {team.name}
+                                            </p>
+                                            <p className="w-1/3 text-center gap-5">
+                                                {team.score} pts
+                                            </p>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </DashboardBox>
+                        )}
                     </div>
                 </div>
                 <div />

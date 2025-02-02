@@ -5,7 +5,8 @@ import DashboardBox from "@/components/DashboardBox";
 import type { DashboardProps } from "@/types/dashboard";
 import Link from "next/link";
 import { FaCrown } from "react-icons/fa";
-import { FaUserGroup } from "react-icons/fa6";
+import FloatingDock from "./FloatingDock";
+
 const Dashboard: React.FC<DashboardProps> = ({
     teamDetails,
     leaderboard,
@@ -15,10 +16,6 @@ const Dashboard: React.FC<DashboardProps> = ({
     const sortedLeaderboard = [...leaderboard].sort(
         (a, b) => b.score - a.score
     );
-
-    const userTeam = () => {
-        return sortedLeaderboard.find((team) => team.name === teamDetails.name);
-    };
 
     const getDifficultyColor = (difficulty: string) => {
         switch (difficulty) {
@@ -48,62 +45,71 @@ const Dashboard: React.FC<DashboardProps> = ({
     };
 
     return (
-        <div>
+        <div className="flex flex-col justify-start p-8 items-center min-h-screen">
+            <div
+                className="fixed inset-0 w-full h-full bg-black"
+                style={{
+                    backgroundImage: `url('./dashbg.png')`,
+                    backgroundPosition: "center",
+                    backgroundSize: "cover",
+                    backgroundRepeat: "no-repeat",
+                    zIndex: -1,
+                }}
+            />
             <div className="flex md:hidden min-h-screen items-center justify-center">
                 <h1 className="text-white font-semibold text-lg w-[70%] text-center">
                     Oops! It looks like you&apos;re using a smaller screen.
                 </h1>
             </div>
-            <div className="hidden md:flex flex-col items-center justify-between w-full h-full text-white">
-                <p className="font-bold text-2xl font-custom underline underline-offset-4 decoration-white my-4">
-                    Round {roundInfo.number}
-                </p>
-                <div className="flex flex-row w-full justify-between space-x-4">
-                    <div className="flex flex-col w-1/4 space-y-4">
-                        <DashboardBox className="flex flex-col p-6 mb-4 text-white h-[35%]">
-                            <p className="text-xl font-semibold border-b-2 text-center border-white pb-4">
+
+            <FloatingDock />
+            <div className="hidden md:flex flex-col items-center justify-between w-full h-[85vh] text-white">
+                <div className="flex flex-row w-full justify-center gap-4 h-full">
+                    <div className="flex flex-col w-1/5 gap-4 justify-start h-full">
+                        <DashboardBox className="flex flex-col h-fit flex-none">
+                            <p className="text-xl font-custom border-b border-rcgrey/20 pb-4">
                                 {teamDetails.name}
                             </p>
                             <ul className="space-y-3 pt-4 px-1">
                                 {teamDetails.members.map((member) => (
                                     <li key={member.id} className="flex justify-between">
-                                        <p className="flex">{member.name || "Anonymous"}</p>
+                                        <p className="flex">{member.name?.slice(0, member.name.lastIndexOf(' ')) || "Anonymous"}</p>
+                                        <p>{member.score}&nbsp;pts</p>
+                                        
                                     </li>
                                 ))}
                             </ul>
                         </DashboardBox>
-
-                        <DashboardBox className="p-6 text-center py-4 h-[28%]">
+                        <DashboardBox className="grow h-full space-y-4">
+                            <div>
+                                <p className="text-xl font-semibold border-b-2 font-custom border-rcgrey/20 pb-4 mb-4">
+                                    NEWS
+                                </p>
+                                <p>Lorem ipsum blah blah blah</p>
+                            </div>
+                        </DashboardBox>
+                        <DashboardBox className="p-6 text-center py-4 h-fit flex-none">
                             <CountdownTimer
                                 getTimeUntil={roundInfo.end.toISOString()}
                             />
                         </DashboardBox>
-                        <DashboardBox className="p-6 text-center mt-3 py-4 h-[30%]">
-                            <div>
-                                <p className="text-xl font-semibold border-b-2 text-center border-white pb-4">
-                                    NEWS
-                                </p>
-                            </div>
-                        </DashboardBox>
                     </div>
-
-                    {/* Middle Column */}
                     <div className="w-1/2">
-                        <DashboardBox>
-                            <p className="text-2xl font-semibold border-b-2 border-white p-2 py-4 mb-4">
+                        <DashboardBox className="h-full">
+                            <p className="text-2xl font-custom border-b border-rcgrey/20 pb-4 mb-4">
                                 Questions
                             </p>
-                            <div className="flex flex-row border-b-2 pb-4 w-full">
-                                <h1 className="w-1/6 text-xl font-bold text-center">Sr. No</h1>
-                                <h1 className="w-2/6 text-xl font-bold text-center">Question Name</h1>
+                            <div className="flex flex-row pb-4 w-full">
+                                <h1 className="w-1/6 text-xl font-bold text-center">Sl No.</h1>
+                                <h1 className="w-2/6 text-xl font-bold text-center">Question</h1>
                                 <h1 className="w-1/6 text-xl font-bold text-center">Difficulty</h1>
                                 <h1 className="w-2/6 text-xl font-bold text-center">Status</h1>
                             </div>
-                            <ScrollArea className="h-[60vh] mt-4 rounded-md">
+                            <ScrollArea className="h-[60vh] rounded-md">
                                 <div className="space-y-4">
                                     {questions.map((question) => (
                                         <Link href={`/problems/${question.id}`} key={question.id} className="block">
-                                            <div className="flex flex-row items-center mt-4 rounded-lg hover:bg-[#383838] transition-colors">
+                                            <div className="flex flex-row items-center mt-4 rounded-lg hover:bg-weirdPurple/20 transition-colors">
                                                 <p className="w-1/6 text-center p-2">{question.slno}</p>
                                                 <p className="w-2/6 text-center p-2">{question.questionName}</p>
                                                 <p
@@ -125,9 +131,10 @@ const Dashboard: React.FC<DashboardProps> = ({
                             </ScrollArea>
                         </DashboardBox>
                     </div>
+
                     <div className="w-1/4">
-                        <DashboardBox className="h-[94vh]">
-                            <p className="text-2xl font-semibold border-b-2 border-white mb-2">
+                        <DashboardBox className="h-full overflow-auto">
+                            <p className="text-2xl font-custom border-b-2 border-rcgrey/20 pb-4 mb-4">
                                 Leaderboard
                             </p>
                             <ul className="space-y-3 px-1">
@@ -146,17 +153,10 @@ const Dashboard: React.FC<DashboardProps> = ({
                                     </li>
                                 ))}
                             </ul>
-                            {userTeam() && (
-                                <div className="flex flex-row text-center bg-[#ffffff1a] mr-2 mt-4 rounded-lg">
-                                    <FaUserGroup className="mr-2 text-white mx-auto" />
-                                    <p className="text-white">
-                                        {sortedLeaderboard.indexOf(userTeam()!) + 1} {userTeam()?.name}  {userTeam()?.score} pts
-                                    </p>
-                                </div>
-                            )}
                         </DashboardBox>
                     </div>
                 </div>
+                <div />
             </div>
         </div>
     );

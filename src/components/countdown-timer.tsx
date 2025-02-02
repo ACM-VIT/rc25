@@ -5,6 +5,12 @@ interface CountdownTimerProps {
     getTimeUntil: string;
 }
 
+import { Orbitron } from "next/font/google";
+
+const orbitron = Orbitron({
+    subsets: ['latin']
+})
+
 const CountdownTimer: React.FC<CountdownTimerProps> = ({ getTimeUntil }) => {
     const [timer, setTimer] = useState<string>("00:00:00");
 
@@ -49,8 +55,7 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ getTimeUntil }) => {
             );
         };
         setTimer(
-            `${getTimeRemaining(getTimeUntil).hours}:${
-                getTimeRemaining(getTimeUntil).minutes
+            `${getTimeRemaining(getTimeUntil).hours}:${getTimeRemaining(getTimeUntil).minutes
             }:${getTimeRemaining(getTimeUntil).seconds}`
         );
         updateTimer();
@@ -58,39 +63,12 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ getTimeUntil }) => {
         return () => clearInterval(interval);
     }, [getTimeUntil]);
     return (
-        <div>
-            <div
-                style={{
-                    background: `linear-gradient(0deg, rgba(57, 35, 78, 0.25), rgba(57, 35, 78, 0.25)),
-                 linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03))`,
-                }}
-                className="flex items-center justify-center gap-1 md:gap-2 p-6 mt-2 shadow-lg rounded-lg text-white"
-            >
-                <div className="flex flex-col items-center">
-                    <span className="text-base md:text-xl font-mono font-bold">
-                        {timer[0] + timer[1]}
-                    </span>
-                    <span className="text-xs md:text-sm mt-1">Hours</span>
-                </div>
-
-                <span className="text-base font-bold mb-5">:</span>
-
-                <div className="flex flex-col items-center">
-                    <span className="text-base md:text-xl font-mono font-bold">
-                        {timer[3] + timer[4]}
-                    </span>
-                    <span className="text-xs md:text-sm mt-1">Minutes</span>
-                </div>
-
-                <span className="text-base font-bold mb-5">:</span>
-
-                <div className="flex flex-col items-center">
-                    <span className="text-base md:text-xl font-mono font-bold">
-                        {timer[6] + timer[7]}
-                    </span>
-                    <span className="text-xs md:text-sm mt-1">Seconds</span>
-                </div>
-            </div>
+        <div
+            className={`${orbitron.className} flex items-center justify-center p-6 rounded-lg text-text`}
+        >
+            <span className="text-base md:text-2xl  font-bold">
+                {timer[0] + timer[1]} : {timer[3] + timer[4]} : {timer[6] + timer[7]}
+            </span>
         </div>
     );
 };

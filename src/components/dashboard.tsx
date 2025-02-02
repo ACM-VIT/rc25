@@ -116,7 +116,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                                                     className="w-1/6 text-center p-2"
                                                     style={{ color: getDifficultyColor(question.difficulty) }}
                                                 >
-                                                    {question.difficulty}
+                                                    {question.difficulty === 'EASY' ? 'Easy' : question.difficulty === "MEDIUM" ? 'Medium' : question.difficulty === "HARD" ? 'Hard' : ''}
                                                 </p>
                                                 <p
                                                     className="w-2/6 text-center p-2"

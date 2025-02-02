@@ -18,7 +18,7 @@ function FloatingDockItems({ href, src, className }: { href: string, src: string
 export default function FloatingDock() {
     return (
         <div className="bg-[#262626]/25 text-text flex shadow-2xl shadow-weirdPurple justify-between backdrop-blur-md 
-            w-[250px] px-4 py-2 rounded-xl  transition-all
+            w-[290px] px-4 py-2 rounded-xl  transition-all
             fixed bottom-2 left-1/2 transform -translate-x-1/2  hover:p4 hover:shadow-2xl hover:shadow-weirdPurple/20 
             hover:-translate-y-2 hover:w-[300px] hover:scale-110
             hover:motion-translate-y-loop-[5%] motion-ease-in-out motion-duration-2000 motion-preset-slide-up-md z-50">

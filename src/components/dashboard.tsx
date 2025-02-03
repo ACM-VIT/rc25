@@ -12,6 +12,7 @@ const Dashboard: React.FC<DashboardProps> = ({
   leaderboard,
   questions,
   leaderboardShow,
+  news,
 }) => {
   const sortedLeaderboard = [...leaderboard].sort((a, b) => b.score - a.score);
 
@@ -115,41 +116,14 @@ const Dashboard: React.FC<DashboardProps> = ({
                 `}</style>
                 <ScrollArea className="h-full">
                   <div className="space-y-4 pr-4">
-                    <News
-                      title="News Title"
-                      time="12:00 PM"
-                      content="News Content"
-                    />
-                    <News
-                      title="News Title"
-                      time="12:00 PM"
-                      content="News Content"
-                    />
-                    <News
-                      title="News Title"
-                      time="12:00 PM"
-                      content="News Content"
-                    />
-                    <News
-                      title="News Title"
-                      time="12:00 PM"
-                      content="News Content"
-                    />
-                    <News
-                      title="News Title"
-                      time="12:00 PM"
-                      content="News Content"
-                    />
-                    <News
-                      title="News Title"
-                      time="12:00 PM"
-                      content="News Content"
-                    />
-                    <News
-                      title="News Title"
-                      time="12:00 PM"
-                      content="News Content"
-                    />
+                    {news.map((item) => (
+                      <News
+                        key={item.id}
+                        title={item.title}
+                        time={new Date(item.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        content={item.content}
+                      />
+                    ))}
                   </div>
                 </ScrollArea>
               </div>

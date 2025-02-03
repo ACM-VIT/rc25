@@ -24,12 +24,33 @@ export async function demoteTeams(teamIds: string[], roundId?: string) {
   if (!roundId) return { success: false };
 
   try {
+    const targetRound = await prisma.round.findUnique({
+      where: { id: roundId },
+      select: { start: true }
+    });
+
+    if (!targetRound) return { success: false };
+
+    const laterRounds = await prisma.round.findMany({
+      where: {
+        start: {
+          gte: targetRound.start
+        }
+      },
+      select: { id: true }
+    });
+
+    const laterRoundIds = laterRounds.map(round => round.id);
+
     await prisma.teamRound.deleteMany({
       where: {
-        teamId: { in: teamIds },
-        roundId: roundId
+        AND: [
+          { teamId: { in: teamIds } },
+          { roundId: { in: laterRoundIds } }
+        ]
       }
     });
+
     return { success: true };
   } catch (error) {
     console.error('Failed to demote teams:', error);

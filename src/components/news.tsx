@@ -8,10 +8,14 @@ interface NewsProps {
 
 const News = ({ title, time, content }: NewsProps) => {
   return (
-    <div className="flex flex-col items-center justify-center">
-      <h1 className="text-2xl font-bold">{title}</h1>
-      <p className="text-sm">{time}</p>
-      <p className="text-sm">{content}</p>
+    <div className="p-4 bg-white bg-opacity-5 backdrop-filter backdrop-blur-lg rounded-lg shadow-md">
+      <div className="flex justify-between">
+        <h1 className="text-2xl font-bold">{title}</h1>
+        <p className="text-sm">{time}</p>
+      </div>
+      <div className="mt-2">
+        <p className="text-sm">{content}</p>
+      </div>
     </div>
   );
 };

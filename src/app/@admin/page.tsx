@@ -84,6 +84,16 @@ const Page = () => {
                     href="/submissions"
                 />
                 <DashboardCard
+                    title="News"
+                    description="Manage participant news"
+                    href="/news"
+                />
+                <DashboardCard
+                    title="Flag Management"
+                    description="Manage feature flags"
+                    href="/flags"
+                />
+                <DashboardCard
                     title="Participant Portal"
                     description="Switch to participant view"
                     onClick={() => switchAdminMode('user')}

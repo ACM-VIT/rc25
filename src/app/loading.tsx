@@ -1,18 +1,23 @@
 "use client";
 
-import Lottie from "lottie-react"; // Updated library import
+import dynamic from 'next/dynamic';
+
+const Lottie = dynamic(() => import('lottie-react'), {
+  ssr: false,
+  loading: () => <div className="h-screen bg-black/80" />
+});
+
 import animationData from "../../public/loading.json";
 
 export default function Loading() {
   return (
-    <div className="bg-black/80">
-      <div className="flex justify-center items-center h-screen scale-[0.35] ">
+    <div className="bg-black/80 min-h-screen flex items-center justify-center">
+      <div className="scale-[0.35]">
         <Lottie
           animationData={animationData}
-          loop
-          autoplay
-          height={90}
-          width={90}
+          loop={true}
+          autoplay={true}
+          style={{ width: 90, height: 90 }}
         />
       </div>
     </div>

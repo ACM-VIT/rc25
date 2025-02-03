@@ -39,10 +39,18 @@ export type Questions = {
     status: string
 }
 
+export interface NewsItem {
+  id: string;
+  title: string;
+  content: string;
+  time: Date;
+}
+
 export type DashboardProps = {
     teamDetails: TeamDetails
     leaderboard: LeaderboardTeam[]
     questions: Questions[]
     roundInfo: RoundInfo
     leaderboardShow: boolean
+    news: NewsItem[];
 }

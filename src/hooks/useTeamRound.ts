@@ -8,6 +8,7 @@ export async function getTeamRound(): Promise<TeamRound | null> {
 
   // Get user's team
   const user = await prisma.user.findUnique({
+    relationLoadStrategy: 'join',
     where: { email: session.user.email },
     select: { teamId: true }
   });
@@ -16,6 +17,7 @@ export async function getTeamRound(): Promise<TeamRound | null> {
 
   // Get current active round
   const curRound = await prisma.round.findFirst({
+    relationLoadStrategy: 'join',
     where: {
       start: { lte: new Date() },
       end: { gte: new Date() }
@@ -27,6 +29,7 @@ export async function getTeamRound(): Promise<TeamRound | null> {
 
   // Get team round
   return prisma.teamRound.findFirst({
+    relationLoadStrategy: 'join',
     where: {
       teamId: user.teamId,
       roundId: curRound.id

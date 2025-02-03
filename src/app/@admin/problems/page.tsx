@@ -4,6 +4,7 @@ import { prisma } from "@/utils/prisma";
 async function getProblems() {
   try {
     return await prisma.problem.findMany({
+      relationLoadStrategy: 'join',
       orderBy: { roundId: "asc" },
       include: {
         round: {
@@ -25,6 +26,7 @@ async function getProblems() {
 async function getRounds() {
   try {
     return await prisma.round.findMany({
+      relationLoadStrategy: 'join',
       orderBy: { number: "asc" },
     });
   } finally {

@@ -7,6 +7,7 @@ export default async function GetTeam(regNo: string) {
     const prisma = new PrismaClient();
 
     const team = await prisma.team.findFirst({
+        relationLoadStrategy: 'join',
         where: {
             members: {
                 some: {

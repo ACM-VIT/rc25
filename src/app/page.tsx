@@ -9,6 +9,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const teamRound = await getTeamRound();
   const roundInfo = teamRound?.roundId
     ? await prisma.round.findFirst({
+        relationLoadStrategy: 'join',
         where: { id: teamRound.roundId },
         select: { number: true },
       })
@@ -59,6 +60,7 @@ export default async function Page() {
 
   // Round info
   const roundInfo = await prisma.round.findFirst({
+    relationLoadStrategy: 'join',
     where: { id: teamRound.roundId },
     select: { number: true, end: true, id: true },
   });
@@ -66,6 +68,7 @@ export default async function Page() {
   // Questions
   const problems = roundInfo
     ? await prisma.problem.findMany({
+        relationLoadStrategy: 'join',
         where: { roundId: roundInfo.id },
         orderBy: { id: "asc" },
         include: {
@@ -93,6 +96,7 @@ export default async function Page() {
   });
 
   const teamData = await prisma.team.findUnique({
+    relationLoadStrategy: 'join',
     where: { id: teamRound.teamId },
     select: {
       id: true,
@@ -130,6 +134,7 @@ export default async function Page() {
 
   // Leaderboard
   const leaderboardData = await prisma.team.findMany({
+    relationLoadStrategy: 'join',
     orderBy: { score: "desc" },
     select: {
       id: true,

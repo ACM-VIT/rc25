@@ -13,6 +13,7 @@ type CheckInResponse = {
 export default async function CheckInTeam(teamId: string): Promise<CheckInResponse> {
     try {
         const team = await prisma.team.findUnique({
+            relationLoadStrategy: 'join',
             where: { id: teamId },
             include: { members: true },
         });

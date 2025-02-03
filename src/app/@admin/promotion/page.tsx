@@ -4,6 +4,7 @@ import TeamsClient from "./TeamsClient";
 async function getNextRound() {
   const now = new Date();  
   const nextRound = await prisma.round.findFirst({
+    relationLoadStrategy: 'join',
     where: {
       start: {
         gt: now
@@ -23,6 +24,7 @@ async function getNextRound() {
 async function getTeams() {
   try {
     const teams = await prisma.team.findMany({
+      relationLoadStrategy: 'join',
       include: {
         TeamRound: {
           orderBy: {

@@ -28,6 +28,7 @@ interface TestCase {
 
 async function getProblem(id: string): Promise<Problem> {
   const problem = await prisma.problem.findUnique({
+    relationLoadStrategy: 'join',
     where: { id },
     include: {
       Testcase: true,

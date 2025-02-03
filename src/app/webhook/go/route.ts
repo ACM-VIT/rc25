@@ -18,6 +18,7 @@ export async function POST(request: NextRequest) {
 
 
     const submission = await prisma.submission.findUnique({
+      relationLoadStrategy: 'join',
       where: { id: submissionId },  
       include: {
         testcases: {
@@ -54,6 +55,7 @@ export async function POST(request: NextRequest) {
 
     // Retrieve problem to get maxScore for weight calculations
     const problem = await prisma.problem.findUnique({
+      relationLoadStrategy: 'join',
       where: { id: submission.problemId },
       select: { maxScore: true },
     });
@@ -89,6 +91,7 @@ export async function POST(request: NextRequest) {
 
     // Get user's team
     const user = await prisma.user.findUnique({
+      relationLoadStrategy: 'join',
       where: { id: submission.userId },
       include: { Team: true },
     });
@@ -102,6 +105,7 @@ export async function POST(request: NextRequest) {
 
     // Get all team submissions for this problem
     const teamSubmissions = await prisma.submission.findMany({
+      relationLoadStrategy: 'join',
       where: {
         problemId: submission.problemId,
         user: {

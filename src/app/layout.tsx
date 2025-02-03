@@ -85,6 +85,7 @@ export default async function RootLayout({
     }
 
     const user = await prisma.user.findUnique({
+        relationLoadStrategy: 'join',
         where: {
             email: session.user.email,
         },
@@ -101,6 +102,7 @@ export default async function RootLayout({
     });
 
   const curOrNextRound = await prisma.round.findFirst({
+      relationLoadStrategy: 'join',
     where: {
       result: {
         gte: new Date(),

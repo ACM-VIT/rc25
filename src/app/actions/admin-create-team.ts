@@ -15,6 +15,7 @@ export async function createTeam({
 }: CreateTeamParams) {
   try {
     const users = await prisma.user.findMany({
+      relationLoadStrategy: 'join',
       where: {
         OR: registrationNumbers.map((registrationNumber) => ({
           name: {

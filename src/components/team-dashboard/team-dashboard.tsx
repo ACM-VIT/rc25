@@ -9,6 +9,7 @@ async function getTeamMembers() {
   const prisma = new PrismaClient();
   try {
     const user = await prisma.user.findUnique({
+      relationLoadStrategy: 'join',
       where: { email: session.user.email },
       include: {
         Team: {
@@ -44,6 +45,7 @@ async function getTeamName() {
   const prisma = new PrismaClient();
   try {
     const user = await prisma.user.findUnique({
+      relationLoadStrategy: 'join',
       where: { email: session.user.email },
       include: {
         Team: {
@@ -68,6 +70,7 @@ async function getTeamCode() {
   const prisma = new PrismaClient();
   try {
     const user = await prisma.user.findUnique({
+      relationLoadStrategy: 'join',
       where: { email: session.user.email },
       include: {
         Team: {

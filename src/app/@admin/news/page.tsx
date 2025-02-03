@@ -4,6 +4,7 @@ import NewsClient from "@/app/@admin/news/newsClient";
 async function getNews() {
   try {
     return await prisma.news.findMany({
+      relationLoadStrategy: 'join',
       orderBy: {
         time: "desc",
       },

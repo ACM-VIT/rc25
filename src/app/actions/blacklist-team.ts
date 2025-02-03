@@ -7,6 +7,7 @@ export async function searchTeams(query: string) {
   const prisma = new PrismaClient();
   try {
     const teams = await prisma.team.findMany({
+      relationLoadStrategy: 'join',
       where: {
         OR: [{ name: { contains: query, mode: "insensitive" } }],
       },

@@ -16,8 +16,18 @@ import Team from "@/components/createjoin";
 import { cookies } from "next/headers";
 import SwitchAdminModeButton from "@/components/switch-admin-mode-button";
 import { SessionProvider } from "next-auth/react";
-import { type Metadata } from "next";
+import type { Metadata } from "next";
 import FloatingDock from "@/components/FloatingDock";
+import moment from 'moment-timezone';
+import { get } from "http";
+
+const getISTTime = (date: Date) => {
+  return moment(date).tz('Asia/Kolkata');
+};
+
+const getCurrentISTTime = () => {
+  return moment().tz('Asia/Kolkata');
+};
 
 
 // import SwitchAdminModeButton from "@/components/switch-admin-mode-button";
@@ -41,28 +51,6 @@ export const metadata: Metadata = {
 };
 
 const outfit = Outfit({ subsets: ["latin"] });
-
-// const roundIsActive = true; // true --> portal
-// const memberOfActiveRound = true; // false --> elimination
-// const winnersAnnounced = true;
-// const noPendingRound = true;
-// const disqualified = false;
-
-// async function getUserStatus(email: string) {
-//     const user = await prisma.user.findUnique({
-//         where: {email},
-//         select: {
-//             phone: true,
-//             gender: true,
-//             teamId: true,
-//         },
-//     });
-//
-//     return {
-//         detailsFilled: Boolean(user?.phone && user?.gender),
-//         teamId: user?.teamId || null,
-//     };
-// }
 
 interface LayoutProps {
     children: ReactNode;
@@ -111,14 +99,7 @@ export default async function RootLayout({
     orderBy: {
       start: "asc",
     },
-    // include: {
-    //     teams: {
-    //         where: {
-    //             teamId: user?.Team?.id,
-    //         },
-    //     },
-    // },
-  });
+    });
 
     const isAdmin = !!user?.Admin;
     const detailsFilled = !!user?.phone && !!user?.gender && !!user?.phone.length;
@@ -208,28 +189,34 @@ export default async function RootLayout({
         );
     }
 
-  const memberOfRound = user.Team.TeamRound.find(
-    (tr) => tr.roundId === curOrNextRound.id
-  );
-  if (!memberOfRound) {
-    return (
-      <html lang="en">
-        <body>
-          <Navbar name={session.user.name ?? "User"} />
-          <EliminationScreen />
-          {isAdmin && <SwitchAdminModeButton />}
-        </body>
-      </html>
-    );
-  }
+    const isAdminTeam = user.Team?.id === process.env.ADMIN_TEAM_ID;
+
+    if (!isAdminTeam) {
+        const memberOfRound = user.Team.TeamRound.find(
+            (tr) => tr.roundId === curOrNextRound.id
+        );
+
+        if (!memberOfRound) {
+            return (
+                <html lang="en">
+                    <body>
+                        <Navbar name={session.user.name ?? "User"} />
+                        <EliminationScreen />
+                        {isAdmin && <SwitchAdminModeButton />}
+                    </body>
+                </html>
+            );
+        }
+    }
+
 
     // todo round checked in condition
 
-    const roundStarted = curOrNextRound.start <= new Date();
+    const roundStarted = getISTTime(curOrNextRound.start) <= getCurrentISTTime();
 
     if (!roundStarted) {
         const roundNumber = curOrNextRound?.number ? Number(curOrNextRound.number) : 1; 
-        const roundStartTime = curOrNextRound?.start?.toISOString();
+        const roundStartTime = getISTTime(curOrNextRound.start).toISOString();
     
         return (
             <html lang="en">
@@ -244,12 +231,11 @@ export default async function RootLayout({
     }
     
     
-
-    const roundEnded = curOrNextRound.end <= new Date();
+    const roundEnded = getISTTime(curOrNextRound.end) <= getCurrentISTTime();
 
     if (roundEnded) {
         const roundNumber = curOrNextRound?.number ? Number(curOrNextRound.number) : 1; 
-        const resultTime = curOrNextRound?.result?.toISOString();
+        const resultTime = getISTTime(curOrNextRound.result).toISOString();
     
         return (
             <html lang="en">
@@ -263,8 +249,6 @@ export default async function RootLayout({
             </html>
         );
     }
-    
-
 
     return (
         <html lang="en">

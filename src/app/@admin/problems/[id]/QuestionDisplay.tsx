@@ -6,6 +6,7 @@ import AddTestCaseModal from "./AddTestCaseModal";
 import EditTestCaseDialog from "./EditTestCaseDialog";
 import DeleteConfirmationDialog from "./DeleteConfirmationDialog";
 import deleteTestCase from "../../../actions/delete-case";
+import deleteAllTestCases from "../../../actions/delete-all-test-cases";
 import { validateCode } from "./validate";
 import UploadFolder from "./UploadFolder";
 import { useRouter } from "next/navigation";
@@ -109,6 +110,16 @@ export default function ViewProblem({ problem }: ViewProblemProps) {
     }
   };
 
+  const handleDeleteAllTestCases = async () => {
+    try {
+      await deleteAllTestCases(problem.id);
+      setKey((prev) => prev + 1);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error deleting all test cases:", error);
+    }
+  };
+
   // Update table headers
   const tableHeaders = (
     <tr className="bg-gray-100">
@@ -136,15 +147,15 @@ export default function ViewProblem({ problem }: ViewProblemProps) {
     </tr>
   );
 
-  // Update the table rows to use serial numbers
+  // Update the table rows to use serial numbers and wrap content
   const tableRows = problem.Testcase.map((testCase, index) => (
     <tr key={testCase.id} className="hover:bg-gray-50">
       <td className="px-6 py-4 whitespace-nowrap text-black">{index + 1}</td>
       <td className="px-6 py-4 whitespace-nowrap text-black">
         {testCase.weight}
       </td>
-      <td className="px-6 py-4 text-black">{testCase.input}</td>
-      <td className="px-6 py-4 text-black">{testCase.output}</td>
+      <td className="px-6 py-4 text-black break-words">{testCase.input}</td>
+      <td className="px-6 py-4 text-black break-words">{testCase.output}</td>
       <td className="px-6 py-4 whitespace-nowrap">
         <span
           className={`px-2 py-1 text-sm rounded-full ${
@@ -367,6 +378,29 @@ export default function ViewProblem({ problem }: ViewProblemProps) {
               isValidating={isValidating}
               className={commonButtonStyle}
             />
+
+            <button
+              type="button"
+              onClick={handleDeleteAllTestCases}
+              className="inline-flex items-center px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 text-sm font-medium"
+            >
+              <svg
+                className="mr-2 h-5 w-5"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <title>Delete All Test Cases</title>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+              Delete All Test Cases
+            </button>
           </div>
         </div>
 

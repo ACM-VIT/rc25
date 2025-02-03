@@ -42,6 +42,7 @@ export async function getTeamSubmissions(userId: string, problemId: string) {
       userId: {in: userIds},
       problemId: problemId
     },
-    orderBy: {createdAt: 'desc'}
+    orderBy: {createdAt: 'desc'},
+    include: {user: true}
   });
 }

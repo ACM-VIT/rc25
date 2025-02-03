@@ -105,34 +105,18 @@ export default async function Page() {
     select: { number: true, end: true, id: true },
   });
 
-  // Questions
-  const problems = roundInfo
-    ? await prisma.problem.findMany({
-        where: { roundId: roundInfo.id },
-        orderBy: { id: "asc" },
-        include: {
-          submissions: {
-            orderBy: { createdAt: "desc" },
-            take: 1,
-          },
-        },
-      })
-    : [];
+  interface SubmissionType {
+    testcasespassed: boolean[];
+    createdAt: Date;
+  }
 
-  const questions = problems.map((problem, index) => {
-    const recentSubmission = problem.submissions[0];
-    const passedArray = recentSubmission?.testcasespassed || [];
-    const passCount = passedArray.filter(Boolean).length;
-    const total = passedArray.length;
-    const status = total > 0 ? `${passCount}/${total}` : "Not Attempted";
-    return {
-      slno: index + 1,
-      id: problem.id,
-      questionName: problem.title,
-      difficulty: problem.difficulty,
-      status,
-    };
-  });
+  interface ProblemType {
+    id: string;
+    title: string;
+    difficulty: string;
+    roundId: string;
+    submissions: SubmissionType[];
+  }
 
   let teamData = teamRound ? await prisma.team.findUnique({
     where: { id: teamRound.teamId },
@@ -168,6 +152,64 @@ export default async function Page() {
     }): null;
   }
 
+  let problems: ProblemType[];
+
+  // Questions
+  if (!isAdminTeam){
+    problems = roundInfo
+    ? await prisma.problem.findMany({
+        where: { roundId: roundInfo.id },
+        orderBy: { id: "asc" },
+        include: {
+          submissions: {
+            where: {
+              userId: {
+                in: teamData?.members.map(member => member.id) || []
+              }
+            },
+            orderBy: { createdAt: "desc" },
+          },
+        },
+      })
+    : [];
+  } else {
+    problems = await prisma.problem.findMany({
+      orderBy: { id: "asc" },
+      include: {
+        submissions: {
+          where: {
+            userId: {
+              in: teamData?.members.map(member => member.id) || []
+            }
+          },
+          orderBy: { createdAt: "desc" },
+        },
+      },
+    });
+  }
+
+  const questions = problems.map((problem, index) => {
+    // Find submission with maximum passed test cases
+    const bestSubmission = problem.submissions.reduce((best, current) => {
+      const currentPassed = current.testcasespassed.filter(Boolean).length;
+      const bestPassed = best ? best.testcasespassed.filter(Boolean).length : -1;
+      return currentPassed > bestPassed ? current : best;
+    }, null as any);
+
+    const passedArray = bestSubmission?.testcasespassed || [];
+    const passCount = passedArray.filter(Boolean).length;
+    const total = passedArray.length;
+    const status = total > 0 ? `${passCount}/${total}` : "Not Attempted";
+    
+    return {
+      slno: index + 1,
+      id: problem.id,
+      questionName: problem.title,
+      difficulty: problem.difficulty,
+      status,
+    };
+  });
+
   const teamDetails = teamData
     ? {
         id: teamData.id,
@@ -190,11 +232,11 @@ export default async function Page() {
 
   // Leaderboard
   const leaderboardData = await prisma.team.findMany({
-    // where: {
-    //   id: {
-    //     not: process.env.ADMIN_TEAM_ID // Exclude admin team
-    //   }
-    // },
+    where: {
+      id: {
+        not: process.env.ADMIN_TEAM_ID // Exclude admin team
+      }
+    },
     orderBy: { score: "desc" },
     select: {
       id: true,

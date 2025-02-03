@@ -81,12 +81,12 @@ async function storeSubmissionToken(submissionId: string, token: string) {
 export async function getSubmission(
   submissionId: string
 ): Promise<SubmissionResult> {
-  const url = `https://judge0-ce.p.rapidapi.com/submissions/${submissionId}?base64_encoded=true&fields=*`;
+  const url = `https://judge0-ce.p.sulu.sh/submissions/${submissionId}?base64_encoded=true&fields=*`;
   const options = {
     method: "GET",
     headers: {
-      "x-rapidapi-key": process.env.RAPIDAPI_KEY || "",
-      "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
+      Accept: 'application/json',
+      Authorization: `Bearer ${process.env.SULU_KEY}`,
     },
   };
   try {
@@ -106,13 +106,13 @@ export async function judgeSolution(
   const encodedCode = Buffer.from(code).toString("base64");
   const encodedStdin = Buffer.from(stdin).toString("base64");
   const postUrl =
-    "https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=true&wait=false&fields=*";
+    "https://judge0-ce.p.sulu.sh/submissions?base64_encoded=true&wait=false&fields=*";
 
   const postOptions = {
     method: "POST",
     headers: {
-      "x-rapidapi-key": process.env.RAPIDAPI_KEY || "",
-      "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
+      Accept: 'application/json',
+      Authorization: `Bearer ${process.env.SULU_KEY}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({

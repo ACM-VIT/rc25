@@ -1,14 +1,28 @@
 import { prisma } from "@/utils/prisma";
 import TeamsClient from "./TeamsClient";
 
+async function getNextRound() {
+  const now = new Date();  
+  const nextRound = await prisma.round.findFirst({
+    where: {
+      start: {
+        gt: now
+      }
+    },
+    orderBy: {
+      start: 'asc'
+    },
+    select: {
+      id: true
+    }
+  });
+  
+  return nextRound?.id;
+}
+
 async function getTeams() {
   try {
     const teams = await prisma.team.findMany({
-      where: {
-        id: {
-          not: process.env.ADMIN_TEAM_ID // Exclude admin team
-        }
-      },
       include: {
         TeamRound: {
           orderBy: {

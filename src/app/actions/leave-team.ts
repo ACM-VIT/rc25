@@ -15,6 +15,7 @@ export async function leaveTeam() {
 
     // Fetch the user and their team details
     const user = await prisma.user.findUnique({
+      relationLoadStrategy: 'join',
       where: { email: session.user.email },
       include: {
         Team: {

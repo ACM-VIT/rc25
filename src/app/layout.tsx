@@ -73,6 +73,7 @@ export default async function RootLayout({
     }
 
     const user = await prisma.user.findUnique({
+        relationLoadStrategy: 'join',
         where: {
             email: session.user.email,
         },
@@ -88,17 +89,17 @@ export default async function RootLayout({
         },
     });
 
-    const curOrNextRound = await prisma.round.findFirst({
-        where: {
-        result: {
-            gte: new Date(),
-        },
-        },
-        orderBy: {
-        start: "asc",
-        },
+  const curOrNextRound = await prisma.round.findFirst({
+      relationLoadStrategy: 'join',
+    where: {
+      result: {
+        gte: new Date(),
+      },
+    },
+    orderBy: {
+      start: "asc",
+    },
     });
-
 
     const isAdmin = !!user?.Admin;
     const detailsFilled = !!user?.phone && !!user?.gender && !!user?.phone.length;
@@ -212,7 +213,7 @@ export default async function RootLayout({
     // todo round checked in condition
 
     const roundStarted = getISTTime(curOrNextRound.start) <= getCurrentISTTime();
-    
+
     if (!roundStarted) {
         const roundNumber = curOrNextRound?.number ? Number(curOrNextRound.number) : 1; 
         const roundStartTime = getISTTime(curOrNextRound.start).toISOString();

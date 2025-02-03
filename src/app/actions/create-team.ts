@@ -6,6 +6,7 @@ export async function getAvailableUsers() {
 	const prisma = new PrismaClient();
 	try {
 		const users = await prisma.user.findMany({
+			relationLoadStrategy: 'join',
 			where: {
 				teamId: null,
 			},

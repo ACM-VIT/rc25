@@ -8,6 +8,7 @@ export default async function AddToTeam(userId: string, teamId: string) {
 	const prisma = new PrismaClient();
 	try {
 		const team = await prisma.team.findUnique({
+			relationLoadStrategy: 'join',
 			where: { id: teamId },
 			include: { members: true },
 		});

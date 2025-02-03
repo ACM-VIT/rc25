@@ -30,6 +30,7 @@ export default async function SubmissionsPage() {
   }
 
   const user = await prisma.user.findUnique({
+    relationLoadStrategy: 'join',
     where: { id: session.user.id },
     include: { Team: true },
   });
@@ -39,6 +40,7 @@ export default async function SubmissionsPage() {
   }
 
   const submissions = await prisma.submission.findMany({
+    relationLoadStrategy: 'join',
     where: {
       user: {
         teamId: user.Team.id,

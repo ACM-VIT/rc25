@@ -6,10 +6,11 @@ import { getTeamRound } from "@/hooks/useTeamRound";
 import type { Metadata } from "next";
 import { FLAGS } from "@/types/flags"
 import { auth } from "./(auth)/auth";
-import { use } from "react";
+// import { use } from "react";
 
 async function getLeaderBoardShowBoolean(): Promise<boolean> {
   const showBool = await prisma.flags.findFirst({
+    relationLoadStrategy: 'join',
     where: { name: FLAGS.SCOREBOARD_VISIBLE },
     select: { value: true },
   });
@@ -21,6 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const teamRound = await getTeamRound();
   const roundInfo = teamRound?.roundId
     ? await prisma.round.findFirst({
+        relationLoadStrategy: 'join',
         where: { id: teamRound.roundId },
         select: { number: true },
       })
@@ -91,7 +93,7 @@ export default async function Page() {
   }
 
   const isAdminTeam = user.Team?.id === process.env.ADMIN_TEAM_ID;
-  
+
 
   if (!isAdminTeam) {
     if (!teamRound?.roundId) {
@@ -101,6 +103,7 @@ export default async function Page() {
 
   // Round info
   const roundInfo = await prisma.round.findFirst({
+    relationLoadStrategy: 'join',
     where: { id: teamRound?.roundId ?? '' },
     select: { number: true, end: true, id: true },
   });
@@ -158,6 +161,7 @@ export default async function Page() {
   if (!isAdminTeam){
     problems = roundInfo
     ? await prisma.problem.findMany({
+        relationLoadStrategy: 'join',
         where: { roundId: roundInfo.id },
         orderBy: { id: "asc" },
         include: {
@@ -200,7 +204,7 @@ export default async function Page() {
     const passCount = passedArray.filter(Boolean).length;
     const total = passedArray.length;
     const status = total > 0 ? `${passCount}/${total}` : "Not Attempted";
-    
+
     return {
       slno: index + 1,
       id: problem.id,
@@ -232,6 +236,7 @@ export default async function Page() {
 
   // Leaderboard
   const leaderboardData = await prisma.team.findMany({
+    relationLoadStrategy: 'join',
     where: {
       id: {
         not: process.env.ADMIN_TEAM_ID // Exclude admin team
@@ -244,7 +249,7 @@ export default async function Page() {
       score: true,
     },
   });
-  
+
   const leaderboard = leaderboardData.map((team) => ({
     id: team.id,
     name: team.name,

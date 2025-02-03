@@ -32,6 +32,7 @@ async function createRound({ start, end, result }) {
             });
 
             const rounds = await prisma.round.findMany({
+                relationLoadStrategy: 'join',
                 select: {
                     id: true,
                     start: true,
@@ -72,6 +73,7 @@ async function deleteRound(roundId) {
         });
 
         const rounds = await prisma.round.findMany({
+            relationLoadStrategy: 'join',
             select: {
                 id: true,
                 start: true,
@@ -137,6 +139,7 @@ async function deleteAdmin({ email }) {
 
     try {
         const admin = await prisma.admin.findFirstOrThrow({
+            relationLoadStrategy: 'join',
             where: { user: { email } },
         });
 
@@ -170,7 +173,7 @@ async function whitelist() {
             const name = fields[2];
             const phone = fields[5];
             const email = fields[6];
-            const exists = await prisma.uniReg.findUnique({ where: { email } });
+            const exists = await prisma.uniReg.findUnique({relationLoadStrategy: 'join', where: { email } });
             if (!exists) {
                 return prisma.uniReg.create({
                     data: {

@@ -71,6 +71,7 @@ export default async function createSubmission(data: {
     try {
         // Get problem details first
         const problem = await prisma.problem.findUnique({
+            relationLoadStrategy: 'join',
             where: {
                 id: data.problemId,
             },
@@ -96,6 +97,7 @@ export default async function createSubmission(data: {
         }
 
         const userTeam = await prisma.team.findFirst({
+            relationLoadStrategy: 'join',
             where: {
                 members: {
                     some: {
@@ -125,6 +127,7 @@ export default async function createSubmission(data: {
 
         // Get all testcases
         const allTestcases = await prisma.testcase.findMany({
+            relationLoadStrategy: 'join',
             where: {
                 problemId: data.problemId,
             },

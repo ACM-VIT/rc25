@@ -113,6 +113,8 @@ export default function validateIO() {
         const normalizedOutput = output.trim().replace(/\r\n/g, '\n');
         const normalizedExpected = expectedOutput.trim().replace(/\r\n/g, '\n');
 
+        console.log(normalizedExpected, normalizedOutput);
+
         return normalizedOutput === normalizedExpected;
 
       } catch (error) {

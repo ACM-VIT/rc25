@@ -16,7 +16,7 @@ const dummyLeaderboard = [
 ];
 
 const LiveLeaderboard = () => (
-    <div className="h-full bg-transparent overflow-auto justify-center m-2 backdrop-blur-md">
+    <div className="h-full bg-transparent overflow-x-hidden justify-center m-2 backdrop-blur-md">
         <p className="text-4xl text-white bg-transparent border-b-2 pb-4 mb-4 text-center h-[10vh]">
             Leaderboard
         </p>
@@ -30,7 +30,7 @@ const LiveLeaderboard = () => (
             <ScrollAreaViewport>
                 <ul className="space-y-3 px-1">
                     {dummyLeaderboard.map((team, index) => (
-                        <li key={team.id} className="flex w-3/4 mx-auto bg-slate-700 bg-opacity-50 rounded-lg justify-between text-white items-center h-[7.5vh]">
+                        <li key={team.id} className="flex w-3/4 mx-auto bg-slate-700 bg-opacity-50 rounded-lg justify-between text-white items-center h-[9.5vh]">
                             <div className="flex w-1/6 p-4 items-center justify-center">
                                 {index === 0 && (
                                     <FaCrown size={28} className="text-yellow-500" />

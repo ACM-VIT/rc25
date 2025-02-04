@@ -64,7 +64,7 @@ export default function Team({ name }: { name: string }) {
           alt="rclogo"
           width={190}
           height={100}
-          className="absolute w-auto top-0 left-0 h-[100px] z-50"
+          className="absolute w-auto lg:top-0 xs:left-5 xs:-top-6 lg:left-0 h-[100px] z-50 sm:top-12"
         />
 
         <Image
@@ -72,7 +72,7 @@ export default function Team({ name }: { name: string }) {
           alt="rclogo"
           width={190}
           height={100}
-          className="rotate-180 absolute py-2 w-auto -bottom-4 right-0 h-[100px] z-50"
+          className="rotate-180 absolute py-2 w-auto lg:-bottom-4 xs:right-6 xs:-bottom-6 lg:right-0 h-[100px] z-50 sm:bottom-0"
         />
 
         <div
@@ -104,7 +104,7 @@ export default function Team({ name }: { name: string }) {
             <h3 className="text-center text-xl text-weirdPurple">
               {mode === "CREATE"
                 ? "What’s your squads’s epic name?"
-                : "Toss in the funky code of the team you’re eager to hop into!"}
+                : "Toss in the funky code of the squad you’re eager to hop into!"}
             </h3>
           </div>
           <div className="md:w-1/2 w-full flex flex-col items-center">

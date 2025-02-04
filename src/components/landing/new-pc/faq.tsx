@@ -39,7 +39,7 @@ const Faq: React.FC = () => {
   return (
     <div className="relative w-screen h-screen bg-black overflow-y-hidden">
       <div
-        className="absolute left-4 top-4 h-full flex items-center z-20"
+        className="absolute mx-0 top-4 h-full flex items-center z-20"
         style={{
           writingMode: "vertical-lr",
           fontFamily: "Death Star, sans-serif",
@@ -47,7 +47,7 @@ const Faq: React.FC = () => {
           WebkitTextStroke: "1px rgba(255, 255, 255, 1)",
         }}
       >
-        <span className="transform text-glow how-it-works-heading rotate-180 text-4xl lg:text-5xl tracking-wider">
+        <span className="text-glow font-extrabold transform text-glow how-it-works-heading rotate-180 lg:text-[30px] xl:text-[45px] lg:text-5xl tracking-wider">
           ASK YOU MUST
         </span>
       </div>
@@ -61,7 +61,7 @@ const Faq: React.FC = () => {
           WebkitTextStroke: "1px rgba(255, 255, 255, 1)",
         }}
       >
-        <span className="transform text-glow how-it-works-heading rotate-180 text-4xl lg:text-5xl tracking-wider">
+        <span className="text-glow -m-1 font-extrabold transform text-glow how-it-works-heading rotate-180 lg:text-[30px] xl:text-[45px] lg:text-5xl tracking-wider">
           ANSWER WE WILL
         </span>
       </div>
@@ -75,7 +75,7 @@ const Faq: React.FC = () => {
       />
 
       <div className="flex flex-col relative z-10 h-full">
-        <div className="flex how-it-works-heading text-white justify-center pt-8 sm:pt-12 md:pt-12 lg:pt-12 text-6xl sm:text-7xl md:text-8xl lg:text-9xl text-center">
+        <div className="flex how-it-works-heading text-white justify-center lg:text-[80px] xl:text-[115px] text-center">
           HOLO-GUIDE
         </div>
 

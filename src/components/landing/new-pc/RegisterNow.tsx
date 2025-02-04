@@ -24,9 +24,9 @@ const RegisterNow1: React.FC = () => {
         />
       </div>
 
-      <div className="absolute inset-0 z-40 flex flex-col h-full w-[20vw] justify-center  m-6 items-start gap-7 mt-[-1%]">
+      <div className="absolute inset-0 z-40 flex flex-col h-full w-[20vw] justify-center  my-6 items-start gap-7 mt-[-1%]">
         <div className="flex  items-start">
-          <p className="rotate-180 text-3xl how-it-works-heading text-glow font-extrabold text-white/70 [writing-mode:vertical-lr] tracking-widest M-5">
+          <p className="rotate-180 lg:text-[45px] xl:text-[45px] how-it-works-heading text-glow font-extrabold text-white/70 [writing-mode:vertical-lr] tracking-widest M-5">
             REACH US AT
           </p>
         </div>
@@ -42,7 +42,7 @@ const RegisterNow1: React.FC = () => {
             key={`vector-${index}`}
             href={item.href}
             target="_blank"
-            className="transition-transform hover:scale-110"
+            className="mx-4 transition-transform hover:scale-110"
           >
             <Image
               alt={`Vector icon ${index + 1}`}

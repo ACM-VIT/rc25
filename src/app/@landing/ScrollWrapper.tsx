@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import NewLandOne from "../../components/landing/new-pc/newlandone";
 import HowItWorks from "../../components/landing/new-pc/howItWorks";
 import Allies from "../../components/landing/new-pc/allies";
-// import Prize from "../../components/landing/new-pc/prize"; -- Redacted for now as it is not used
+// import Prize from "../../components/landing/new-pc/prize";
 import TimeLine from "@/components/landing/new-pc/timeline";
 import Faq from "@/components/landing/new-pc/faq";
 import RegisterNow1 from "@/components/landing/new-pc/RegisterNow";
@@ -36,8 +36,12 @@ const ScrollWrapper: React.FC = () => {
         return;
       }
 
-      const deltaY = Math.abs(event.deltaY) > 30 ? Math.sign(event.deltaY) : 0;
-      if (deltaY === 0) return;
+      const delta =
+        Math.abs(event.deltaY) > Math.abs(event.deltaX)
+          ? event.deltaY
+          : event.deltaX;
+      const deltaSign = Math.abs(delta) > 30 ? Math.sign(delta) : 0;
+      if (deltaSign === 0) return;
 
       isScrolling.current = true;
       lastScrollTime.current = now;
@@ -45,7 +49,7 @@ const ScrollWrapper: React.FC = () => {
       const pageWidth = container.clientWidth;
       const currentScroll = container.scrollLeft;
       const currentPage = Math.round(currentScroll / pageWidth);
-      const targetPage = Math.max(0, Math.min(currentPage + deltaY, 7));
+      const targetPage = Math.max(0, Math.min(currentPage + deltaSign, 7));
 
       container.scrollTo({
         left: targetPage * pageWidth,
@@ -131,7 +135,7 @@ const ScrollWrapper: React.FC = () => {
             <TimeLine />
           </div>
           {/* <div className="flex-none w-screen h-full snap-center shrink-0">
-            <Price />
+            <Prize />
           </div> */}
           <div className="flex-none w-screen h-full snap-center shrink-0">
             <Allies />

@@ -14,15 +14,7 @@ import rc from "../../../../public/RClogo2.png";
 const RegisterNowMobile: React.FC = () => {
   return (
     <>
-      <div className="absolute inset-0 z-20">
-        <Image
-          alt="background"
-          src={dark}
-          fill
-          className="object-center  transform fix"
-          priority
-        />
-      </div>
+      <div className="absolute inset-0 z-20"></div>
       <div className="absolute bottom-0  z-30 w-full flex flex-row justify-between">
         <div className="relative w-20 h-20 translate-y-1">
           <Image

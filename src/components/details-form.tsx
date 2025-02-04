@@ -4,379 +4,444 @@ import onboard from "../app/actions/onboard";
 import { useFormStatus } from "react-dom";
 import parsePhoneNumber from "libphonenumber-js";
 import { useState } from "react";
-import Image from 'next/image'
-
+import Image from "next/image";
 
 export default function OnboardingForm({ name }: { name: string }) {
-    const [selectedGender, setSelectedGender] = useState("");
-    const [phone, setPhone] = useState("");
-    const [selectStatus, setSelectStatus] = useState("");
-    const [phoneError, setPhoneError] = useState("");
-    const [genderError, setGenderError] = useState("");
-    const [statusError, setStatusError] = useState("");
+  const [selectedGender, setSelectedGender] = useState("");
+  const [phone, setPhone] = useState("");
+  const [selectStatus, setSelectStatus] = useState("");
+  const [phoneError, setPhoneError] = useState("");
+  const [genderError, setGenderError] = useState("");
+  const [statusError, setStatusError] = useState("");
 
-    name = name.split(' ')[0]
+  name = name.split(" ")[0];
 
-    return (
-        <div className="flex flex-col gap-2 items-center justify-between min-h-screen w-full">
-            <div
-                className="fixed inset-0 w-full h-full bg-black"
-                style={{
-                    backgroundImage: `url('/backgrounds/createTeamBg.png')`,
-                    backgroundPosition: 'center',
-                    backgroundSize: 'cover',
-                    backgroundRepeat: 'no-repeat',
-                    zIndex: -1
-                }}
-            />
+  return (
+    <div className="flex flex-col gap-2 items-center justify-between min-h-screen w-full">
+      <div
+        className="fixed inset-0 w-full h-full bg-black"
+        style={{
+          backgroundImage: `url('/backgrounds/createTeamBg.png')`,
+          backgroundPosition: "center",
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
+          zIndex: -1,
+        }}
+      />
 
-            <div className="w-[65vw] md:w-[55vw] lg:w-[90vw] sm:w-[75vw] phone:w-[85vw] phone:mt-[15%] 
+      <div
+        className="w-[65vw] md:w-[55vw] lg:w-[90vw] sm:w-[75vw] phone:w-[85vw] phone:mt-[15%] 
                       p-4 phone:p-3 mt-5
                       flex flex-col box-border rounded-[5%] 
-                      backdrop-blur-md bg-transparent border border-[#9B51E0] ">
-                <form
-                    action={onboard}
-                    id="form"
-                    className="flex flex-col items-center w-full"
-                    onSubmit={(e) => {
-                        const parsedPhone = parsePhoneNumber(phone, "IN");
-                        if (!parsedPhone || !parsedPhone.isValid()) {
-                            e.preventDefault();
-                            setPhoneError("Invalid Phone Number");
-                        } else {
-                            setPhoneError("");
-                        }
-                        if (selectedGender === "") {
-                            e.preventDefault();
-                            setGenderError("Please select your Gender");
-                        }
-                        if (selectStatus === "") {
-                            e.preventDefault();
-                            setStatusError("Please select an Option");
-                        }
-                    }}
-                >
-                    {/* Header */}
-                    <div className="w-full mb-3 ">
-                    <h1 className={`font-bold text-center text-white md:text-[200%] sm:text-3xl xs:text-[135%] phone:text-[135%] mb-2`}>
-    HELLO THERE!
-</h1>
-                        <h2 className={` text-white text-center md:text-[120%] xs:text-[100%] phone:text-[90%] mt-2 mb-3 `}>
-                            To ensure a seamless experience, please tell us more about yourself
-                        </h2>
-                    </div>
+                      backdrop-blur-md bg-transparent border border-[#9B51E0] "
+      >
+        <form
+          action={onboard}
+          id="form"
+          className="flex flex-col items-center w-full"
+          onSubmit={(e) => {
+            const parsedPhone = parsePhoneNumber(phone, "IN");
+            if (!parsedPhone || !parsedPhone.isValid()) {
+              e.preventDefault();
+              setPhoneError("Invalid Phone Number");
+            } else {
+              setPhoneError("");
+            }
+            if (selectedGender === "") {
+              e.preventDefault();
+              setGenderError("Please select your Gender");
+            }
+            if (selectStatus === "") {
+              e.preventDefault();
+              setStatusError("Please select an Option");
+            }
+          }}
+        >
+          {/* Header */}
+          <div className="w-full mb-3 ">
+            <h1
+              className={`font-bold text-center text-white md:text-[200%] sm:text-3xl xs:text-[135%] phone:text-[135%] mb-2`}
+            >
+              HELLO THERE!
+            </h1>
+            <h2
+              className={` text-white text-center md:text-[120%] xs:text-[100%] phone:text-[90%] mt-2 mb-3 `}
+            >
+              To ensure a seamless experience, please tell us more about
+              yourself
+            </h2>
+          </div>
 
-                    {/* Form Fields Container */}
-                    <div className="w-full max-w-2xl px-4">
-                        {/* Phone Number */}
-                        <div className="mb-3">
-    <label htmlFor="phone" className={`font-semibold text-white text-xs block mb-1`}>
-        PHONE NUMBER
-    </label>
-    <input
-        type="tel"
-        name="phone"
-        id="phone"
-        inputMode="numeric"
-        pattern="[0-9]*"
-        className="w-full h-10 rounded-md p-2 bg-transparent
+          {/* Form Fields Container */}
+          <div className="w-full max-w-2xl px-4">
+            {/* Phone Number */}
+            <div className="mb-3">
+              <label
+                htmlFor="phone"
+                className={`font-semibold text-white text-xs block mb-1`}
+              >
+                PHONE NUMBER
+              </label>
+              <input
+                type="tel"
+                name="phone"
+                id="phone"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                className="w-full h-10 rounded-md p-2 bg-transparent
                    box-border border-dashed border-[#F0F1FA] border-2 
                    outline-none text-white"
-        onChange={(e) => {
-            // Update state only with numbers
-            const value = e.target.value.replace(/[^0-9]/g, ""); // Remove non-numeric characters
-            setPhone(value);
-        }}
-        value={phone} // Ensure the value is controlled
-        onInput={() => setPhoneError("")}
-    />
-    <div className="text-red-600 text-xs mt-0.5">
-        {phoneError}&nbsp;
-    </div>
-</div>
-
-                        {/* Gender Selection */}
-                        <div className="mb-3">
-                            <label htmlFor="gender-group" className={`font-semibold text-xs text-white block mb-1`}>GENDER</label>
-                            <div id="gender-group" className="flex flex-col md:flex-row gap-3">
-                                {['male', 'female'].map((gender) => (
-                                    <label key={gender} htmlFor={gender} className="flex-1">
-                                        <div
-                                            className={`p-2 w-full text-center box-border border-dashed 
-                    border-2 border-[#F0F1FA] font-semibold rounded-md 
-                    flex items-center justify-center h-10 cursor-pointer
-                    ${selectedGender === gender
-                                                ? "bg-[#f0f1fade] text-purple-700"
-                                                : "bg-transparent text-white"}`}
-                                            onClick={() => setSelectedGender(gender)}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter' || e.key === ' ') {
-                                                    e.preventDefault();
-                                                    setSelectedGender(gender);
-                                                }
-                                            }}
-                                            aria-checked={selectedGender === gender}
-                                        >
-                                            <input
-                                                type="radio"
-                                                name="gender"
-                                                value={gender}
-                                                id={gender}
-                                                className="hidden"
-                                                onChange={(e) => {
-                                                    setGenderError("");
-                                                    setSelectedGender(e.target.value);
-                                                }}
-                                            />
-                                            {gender.toUpperCase()}
-                                        </div>
-                                    </label>
-                                ))}
-                            </div>
-                            <div className="text-red-600 text-xs mt-0.5">{genderError}&nbsp;</div>
-                        </div>
-
-
-                        {/* Status Selection */}
-                        <div className="mb-3">
-                            <label htmlFor="status-group" className={`font-semibold text-white text-xs block mb-1`}>
-                                PLEASE SELECT AN OPTION
-                            </label>
-                            <div className="flex flex-col md:flex-row gap-3">
-                                {['hosteller', 'dayscholar'].map((status) => (
-                                    <label key={status} htmlFor={status} className="flex-1">
-                                        <div
-                                                className={`p-2 w-full text-center box-border border-dashed 
-                    border-2 border-[#F0F1FA] font-semibold rounded-md 
-                    flex items-center justify-center h-10 cursor-pointer
-                    ${selectStatus === status
-                                                ? "bg-[#f0f1fade] text-purple-700"
-                                                : "bg-transparent text-white"}`}
-                                            onClick={() => setSelectStatus(status)}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter' || e.key === ' ') {
-                                                    e.preventDefault();
-                                                    setSelectStatus(status);
-                                                }
-                                            }}
-                                            aria-checked={selectStatus === status}
-                                        >
-                                            <input
-                                                type="radio"
-                                                name="status"
-                                                value={status}
-                                                id={status}
-                                                className="hidden"
-                                                onChange={() => setSelectStatus(status)} // Additional safeguard
-                                            />
-                                            {status.toUpperCase()}
-                                        </div>
-                                    </label>
-                                ))}
-                            </div>
-                            <div className="text-red-600 text-xs mt-0.5">{statusError}&nbsp;</div>
-                        </div>
-
-
-                        {/* Submit Button */}
-                        <div className="flex justify-center w-full mt-3 mb-4 ">
-                            <SubmitButton/>
-                        </div>
-                    </div>
-                </form>
+                onChange={(e) => {
+                  // Update state only with numbers
+                  const value = e.target.value.replace(/[^0-9]/g, ""); // Remove non-numeric characters
+                  setPhone(value);
+                }}
+                value={phone} // Ensure the value is controlled
+                onInput={() => setPhoneError("")}
+              />
+              <div className="text-red-600 text-xs mt-0.5">
+                {phoneError}&nbsp;
+              </div>
             </div>
 
-            <div className="relative px-6 py-2 flex justify-center items-center w-[85vw] motion-preset-slide-down-sm">
-                <Image
-                    src='/frameDecoration.svg'
-                    alt="rclogo"
-                    width={190}
-                    height={100}
-                    className="absolute w-auto top-0 left-0 h-[100px] z-50"
-                />
-
-                <Image
-                    src='/frameDecoration.svg'
-                    alt="rclogo"
-                    width={190}
-                    height={100}
-                    className="rotate-180 absolute w-auto -bottom-4 right-0 h-[100px] z-50"
-                />
-
-                <div className="w-[65vw] lg:w-full sm:w-[75vw] phone:w-[85vw] phone:mt-[15%]
-                      p-16 phone:p-3 mt-5 flex flex-col box-border backdrop-blur-lg bg-black/50 border-4 border-weirdPurple ">
-                    <form
-                        action={onboard}
-                        id="form"
-                        className="flex flex-col items-center w-full"
-                        onSubmit={(e) => {
-                            const parsedPhone = parsePhoneNumber(phone, "IN");
-                            if (!parsedPhone || !parsedPhone.isValid()) {
-                                e.preventDefault();
-                                setPhoneError("Invalid Phone Number");
-                            } else {
-                                setPhoneError("");
-                            }
-                            if (selectedGender === "") {
-                                e.preventDefault();
-                                setGenderError("Please select your Gender");
-                            }
-                            if (selectStatus === "") {
-                                e.preventDefault();
-                                setStatusError("Please select an Option");
-                            }
-                        }}
+            {/* Gender Selection */}
+            <div className="mb-3">
+              <label
+                htmlFor="gender-group"
+                className={`font-semibold text-xs text-white block mb-1`}
+              >
+                GENDER
+              </label>
+              <div
+                id="gender-group"
+                className="flex flex-col md:flex-row gap-3"
+              >
+                {["male", "female"].map((gender) => (
+                  <label key={gender} htmlFor={gender} className="flex-1">
+                    <div
+                      className={`p-2 w-full text-center box-border border-dashed 
+                    border-2 border-[#F0F1FA] font-semibold rounded-md 
+                    flex items-center justify-center h-10 cursor-pointer
+                    ${
+                      selectedGender === gender
+                        ? "bg-[#f0f1fade] text-purple-700"
+                        : "bg-transparent text-white"
+                    }`}
+                      onClick={() => setSelectedGender(gender)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          setSelectedGender(gender);
+                        }
+                      }}
+                      aria-checked={selectedGender === gender}
                     >
-                        <div className="w-full mb-3 flex flex-col items-center justify-start gap-4">
-                            <div className="flex justify-center items-center gap-2 w-full">
-                                <div className="border border-weirdPurple w-1/2 h-3" />
-                                <h4 className="font-custom text-weirdPurple md:text-base text-xs">A MESSAGE FROM ACM</h4>
-                            </div>
-                            <h1 className={`font-custom border-weirdPurple text-center text-transparent text-hollow
-                                md:text-[58px] sm:text-3xl xs:text-[135%] phone:text-[135%]`}>
-                                HELLO {name}
-                            </h1>
-                            <div className="flex justify-center items-center gap-2 w-full">
-                                <h4 className="font-custom text-weirdPurple md:text-base text-xs">A MESSAGE FROM ACM</h4>
-                                <div className="border border-weirdPurple w-1/2 h-3" />
-                            </div>
-                            <h2 className={" text-weirdPurple font-bold text-center md:text-[120%] xs:text-[100%] phone:text-[90%] mt-2 mb-3"}>
-                                Please provide us with the following information to ensure a seamless experience
-                            </h2>
-                        </div>
-
-                        {/* Form Fields Container */}
-                        <div className="w-full max-w-2xl px-4">
-                            {/* Phone Number */}
-                            <div className="mb-3">
-                                <label htmlFor="phone" className={"font-custom font-semibold text-white text-xs block mb-1 "}>
-                                    CONTACT NUMBER
-                                </label>
-                                <input
-                                    type="tel"
-                                    name="phone"
-                                    id="phone"
-                                    inputMode="numeric"
-                                    pattern="[0-9]*"
-                                    className="w-full h-10 p-2 bg-weirdPurple/30 outline-none text-white text-center"
-                                    onChange={(e) => {
-                                        // Update state only with numbers
-                                        const value = e.target.value.replace(/[^0-9]/g, ""); // Remove non-numeric characters
-                                        setPhone(value);
-                                    }}
-                                    value={phone} // Ensure the value is controlled
-                                    onInput={() => setPhoneError("")}
-                                />
-                                <div className="text-red-600 text-xs mt-0.5">
-                                    {phoneError}&nbsp;
-                                </div>
-                            </div>
-
-                            {/* Gender Selection */}
-                            <div className="mb-3">
-                                <label htmlFor="gender-group" className={"font-custom font-semibold text-xs text-white block mb-1"}>GENDER</label>
-                                <div id="gender-group" className="flex flex-col md:flex-row gap-3">
-                                    {['male', 'female'].map((gender) => (
-                                        <label key={gender} htmlFor={gender} className="flex-1">
-                                            <div
-                                                className={`transition-colors p-2 w-full text-center text-white font-semibold flex items-center justify-center h-10 cursor-pointer
-                                                ${selectedGender === gender
-                                                        ? "bg-weirdPurple/70"
-                                                        : "bg-weirdPurple/30"}`}
-                                                onClick={() => setSelectedGender(gender)}
-                                                onKeyUp={(e) => {
-                                                    if (e.key === 'Enter' || e.key === ' ') {
-                                                        e.preventDefault();
-                                                        setSelectedGender(gender);
-                                                    }
-                                                }}
-                                            >
-                                                <input
-                                                    type="radio"
-                                                    name="gender"
-                                                    value={gender}
-                                                    id={gender}
-                                                    className="hidden"
-                                                    onChange={(e) => {
-                                                        setGenderError("");
-                                                        setSelectedGender(e.target.value);
-                                                    }}
-                                                />
-                                                {gender.toUpperCase()}
-                                            </div>
-                                        </label>
-                                    ))}
-                                </div>
-                                <div className="text-red-600 text-xs mt-0.5">{genderError}&nbsp;</div>
-                            </div>
-
-
-                            {/* Status Selection */}
-                            <div className="mb-3">
-                                <label htmlFor="status-group" className={"font-custom font-semibold text-white text-xs block mb-1"}>
-                                    SELECT AN OPTION
-                                </label>
-                                <div className="flex flex-col md:flex-row gap-3">
-                                    {['hosteller', 'dayscholar'].map((status) => (
-                                        <label key={status} htmlFor={status} className="flex-1">
-                                            <div
-                                                className={`transition-colors p-2 w-full text-center text-white font-semibold flex items-center justify-center h-10 cursor-pointer
-                                                ${selectStatus === status
-                                                        ? "bg-weirdPurple/70"
-                                                        : "bg-weirdPurple/30"}`}
-                                                onClick={() => setSelectStatus(status)}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter' || e.key === ' ') {
-                                                        e.preventDefault();
-                                                        setSelectStatus(status);
-                                                    }
-                                                }}
-                                            >
-                                                <input
-                                                    type="radio"
-                                                    name="status"
-                                                    value={status}
-                                                    id={status}
-                                                    className="hidden"
-                                                    onChange={() => setSelectStatus(status)} // Additional safeguard
-                                                />
-                                                {status.toUpperCase()}
-                                            </div>
-                                        </label>
-                                    ))}
-                                </div>
-                                <div className="text-red-600 text-xs mt-0.5">{statusError}&nbsp;</div>
-                            </div>
-
-
-                            {/* Submit Button */}
-                            <div className="flex justify-center w-full mt-3 mb-4 ">
-                                <SubmitButton />
-                            </div>
-                        </div>
-                    </form>
-                </div>
+                      <input
+                        type="radio"
+                        name="gender"
+                        value={gender}
+                        id={gender}
+                        className="hidden"
+                        onChange={(e) => {
+                          setGenderError("");
+                          setSelectedGender(e.target.value);
+                        }}
+                      />
+                      {gender.toUpperCase()}
+                    </div>
+                  </label>
+                ))}
+              </div>
+              <div className="text-red-600 text-xs mt-0.5">
+                {genderError}&nbsp;
+              </div>
             </div>
-            <div />
-            <div />
+
+            {/* Status Selection */}
+            <div className="mb-3">
+              <label
+                htmlFor="status-group"
+                className={`font-semibold text-white text-xs block mb-1`}
+              >
+                PLEASE SELECT AN OPTION
+              </label>
+              <div className="flex flex-col md:flex-row gap-3">
+                {["hosteller", "dayscholar"].map((status) => (
+                  <label key={status} htmlFor={status} className="flex-1">
+                    <div
+                      className={`p-2 w-full text-center box-border border-dashed 
+                    border-2 border-[#F0F1FA] font-semibold rounded-md 
+                    flex items-center justify-center h-10 cursor-pointer
+                    ${
+                      selectStatus === status
+                        ? "bg-[#f0f1fade] text-purple-700"
+                        : "bg-transparent text-white"
+                    }`}
+                      onClick={() => setSelectStatus(status)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          setSelectStatus(status);
+                        }
+                      }}
+                      aria-checked={selectStatus === status}
+                    >
+                      <input
+                        type="radio"
+                        name="status"
+                        value={status}
+                        id={status}
+                        className="hidden"
+                        onChange={() => setSelectStatus(status)} // Additional safeguard
+                      />
+                      {status.toUpperCase()}
+                    </div>
+                  </label>
+                ))}
+              </div>
+              <div className="text-red-600 text-xs mt-0.5">
+                {statusError}&nbsp;
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <div className="flex justify-center w-full mt-3 mb-4 ">
+              <SubmitButton />
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div className="relative px-6 py-2 flex justify-center items-center w-[85vw] motion-preset-slide-down-sm">
+        <Image
+          src="/frameDecoration.svg"
+          alt="rclogo"
+          width={190}
+          height={100}
+          className="absolute w-auto top-0 left-0 h-[100px] z-50"
+        />
+
+        <Image
+          src="/frameDecoration.svg"
+          alt="rclogo"
+          width={190}
+          height={100}
+          className="rotate-180 absolute w-auto -bottom-4 right-0 h-[100px] z-50"
+        />
+
+        <div
+          className="w-[65vw] sm:w-[75vw] phone:w-[85vw] phone:mt-[15%]
+                      p-16 phone:p-3 mt-5 flex flex-col box-border backdrop-blur-lg bg-black/50 border-4 border-weirdPurple "
+        >
+          <form
+            action={onboard}
+            id="form"
+            className="flex flex-col items-center w-full"
+            onSubmit={(e) => {
+              const parsedPhone = parsePhoneNumber(phone, "IN");
+              if (!parsedPhone || !parsedPhone.isValid()) {
+                e.preventDefault();
+                setPhoneError("Invalid Phone Number");
+              } else {
+                setPhoneError("");
+              }
+              if (selectedGender === "") {
+                e.preventDefault();
+                setGenderError("Please select your Gender");
+              }
+              if (selectStatus === "") {
+                e.preventDefault();
+                setStatusError("Please select an Option");
+              }
+            }}
+          >
+            <div className="w-full mb-3 flex flex-col items-center justify-start gap-4">
+              <div className="flex flex-row align-middle justify-center items-center gap-8 w-full">
+                <div className="border border-weirdPurple w-1/2 h-3" />
+                <h4 className="font-custom text-weirdPurple md:text-base text-xs">
+                  A MESSAGE FROM ACM
+                </h4>
+              </div>
+              <h1
+                className={`font-custom border-weirdPurple text-center text-transparent text-hollow
+                                md:text-[58px] sm:text-3xl xs:text-[135%] phone:text-[135%]`}
+              >
+                HELLO {name}
+              </h1>
+              <div className="flex justify-center items-center gap-2 w-full">
+                <h4 className="font-custom text-weirdPurple md:text-base text-xs">
+                  A MESSAGE FROM ACM
+                </h4>
+                <div className="border border-weirdPurple w-1/2 h-3" />
+              </div>
+              <h2
+                className={
+                  " text-weirdPurple font-bold text-center md:text-[120%] xs:text-[100%] phone:text-[90%] mt-2 mb-3"
+                }
+              >
+                Please provide us with the following information to ensure a
+                seamless experience
+              </h2>
+            </div>
+
+            {/* Form Fields Container */}
+            <div className="w-full max-w-2xl px-4">
+              {/* Phone Number */}
+              <div className="mb-3">
+                <label
+                  htmlFor="phone"
+                  className={
+                    "font-custom font-semibold text-white text-xs block mb-1 "
+                  }
+                >
+                  CONTACT NUMBER
+                </label>
+                <input
+                  type="tel"
+                  name="phone"
+                  id="phone"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  className="w-full h-10 p-2 bg-weirdPurple/30 outline-none text-white text-center"
+                  onChange={(e) => {
+                    // Update state only with numbers
+                    const value = e.target.value.replace(/[^0-9]/g, ""); // Remove non-numeric characters
+                    setPhone(value);
+                  }}
+                  value={phone} // Ensure the value is controlled
+                  onInput={() => setPhoneError("")}
+                />
+                <div className="text-red-600 text-xs mt-0.5">
+                  {phoneError}&nbsp;
+                </div>
+              </div>
+
+              {/* Gender Selection */}
+              <div className="mb-3">
+                <label
+                  htmlFor="gender-group"
+                  className={
+                    "font-custom font-semibold text-xs text-white block mb-1"
+                  }
+                >
+                  GENDER
+                </label>
+                <div
+                  id="gender-group"
+                  className="flex flex-col md:flex-row gap-3"
+                >
+                  {["male", "female"].map((gender) => (
+                    <label key={gender} htmlFor={gender} className="flex-1">
+                      <div
+                        className={`transition-colors p-2 w-full text-center text-white font-semibold flex items-center justify-center h-10 cursor-pointer
+                                                ${
+                                                  selectedGender === gender
+                                                    ? "bg-weirdPurple/70"
+                                                    : "bg-weirdPurple/30"
+                                                }`}
+                        onClick={() => setSelectedGender(gender)}
+                        onKeyUp={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            setSelectedGender(gender);
+                          }
+                        }}
+                      >
+                        <input
+                          type="radio"
+                          name="gender"
+                          value={gender}
+                          id={gender}
+                          className="hidden"
+                          onChange={(e) => {
+                            setGenderError("");
+                            setSelectedGender(e.target.value);
+                          }}
+                        />
+                        {gender.toUpperCase()}
+                      </div>
+                    </label>
+                  ))}
+                </div>
+                <div className="text-red-600 text-xs mt-0.5">
+                  {genderError}&nbsp;
+                </div>
+              </div>
+
+              {/* Status Selection */}
+              <div className="mb-3">
+                <label
+                  htmlFor="status-group"
+                  className={
+                    "font-custom font-semibold text-white text-xs block mb-1"
+                  }
+                >
+                  SELECT AN OPTION
+                </label>
+                <div className="flex flex-col md:flex-row gap-3">
+                  {["hosteller", "dayscholar"].map((status) => (
+                    <label key={status} htmlFor={status} className="flex-1">
+                      <div
+                        className={`transition-colors p-2 w-full text-center text-white font-semibold flex items-center justify-center h-10 cursor-pointer
+                                                ${
+                                                  selectStatus === status
+                                                    ? "bg-weirdPurple/70"
+                                                    : "bg-weirdPurple/30"
+                                                }`}
+                        onClick={() => setSelectStatus(status)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            setSelectStatus(status);
+                          }
+                        }}
+                      >
+                        <input
+                          type="radio"
+                          name="status"
+                          value={status}
+                          id={status}
+                          className="hidden"
+                          onChange={() => setSelectStatus(status)} // Additional safeguard
+                        />
+                        {status.toUpperCase()}
+                      </div>
+                    </label>
+                  ))}
+                </div>
+                <div className="text-red-600 text-xs mt-0.5">
+                  {statusError}&nbsp;
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <div className="flex justify-center w-full mt-3 mb-4 ">
+                <SubmitButton />
+              </div>
+            </div>
+          </form>
         </div>
-    );
+      </div>
+      <div />
+      <div />
+    </div>
+  );
 }
 
 function SubmitButton() {
-    const { pending } = useFormStatus();
+  const { pending } = useFormStatus();
 
-    return (
-        <button
-            type="submit"
-            id="submit_button"
-            aria-disabled={pending}
-            disabled={pending}
-            className={
-                "transition-colors font-bold p-2 w-[45vw] bg-primary text-base md:text-2xl text-white hover:bg-primary/80"
-            }
-        >
-            {pending ? "SUBMITTING..." : "JOIN THE COUNCIL"}
-        </button>
-    );
+  return (
+    <button
+      type="submit"
+      id="submit_button"
+      aria-disabled={pending}
+      disabled={pending}
+      className={
+        "transition-colors font-bold p-2 w-[45vw] bg-primary text-base md:text-2xl text-white hover:bg-primary/80"
+      }
+    >
+      {pending ? "SUBMITTING..." : "JOIN THE COUNCIL"}
+    </button>
+  );
 }

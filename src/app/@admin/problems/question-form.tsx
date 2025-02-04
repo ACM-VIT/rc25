@@ -117,7 +117,7 @@ const validateMarkdown = (markdown: string): MarkdownValidationError => {
 
 		return { isValid: true };
 	} catch (error) {
-		return { isValid: false, error: "Error validating markdown" };
+		return { isValid: false, error: "Error validating markdown"+error };
 	}
 };
 

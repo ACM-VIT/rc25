@@ -148,12 +148,14 @@ export default function NewsClient({ initialNews }: NewsClientProps) {
                                 </td>
                                 <td className="px-4 py-2">
                                     <button
+                                        type="button"
                                         onClick={() => handleEdit(item)}
                                         className="bg-yellow-500 text-white px-3 py-1 rounded mr-2"
                                     >
                                         Edit
                                     </button>
                                     <button
+                                        type="button"
                                         onClick={() => handleDelete(item.id)}
                                         className="bg-red-500 text-white px-3 py-1 rounded"
                                     >

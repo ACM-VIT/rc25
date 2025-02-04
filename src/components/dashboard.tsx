@@ -25,7 +25,6 @@ const Dashboard: React.FC<DashboardProps> = ({
       case "HARD":
         return "#EB5757";
       default:
-
         return "#FF0000";
     }
   };
@@ -88,46 +87,30 @@ const Dashboard: React.FC<DashboardProps> = ({
                 </ul>
               </ScrollArea>
             </DashboardBox>
-            <DashboardBox className="flex flex-col h-fit max-h-[500px] space-y-4 flex-none overflow-auto">
-              <div>
-                <p className="text-xl font-semibold border-b-2 font-custom border-rcgrey/20 pb-4 mb-4">
-                  NEWS
-                </p>
-                <style jsx global>{`
-                  ::-webkit-scrollbar {
-                    width: 6px;
-                    height: 6px;
-                  }
-                  ::-webkit-scrollbar-track {
-                    background: #1a1a1a;
-                    border-radius: 3px;
-                  }
-                  ::-webkit-scrollbar-thumb {
-                    background: #fbc205;
-                    border-radius: 3px;
-                  }
-                  ::-webkit-scrollbar-thumb:hover {
-                    background: #ffe384;
-                  }
-                  * {
-                    scrollbar-width: thin;
-                    scrollbar-color: #808080 #1a1a1a;
-                  }
-                `}</style>
-                <ScrollArea className="h-full">
-                  <div className="space-y-4 pr-4">
-                    {news.map((item) => (
-                      <News
-                        key={item.id}
-                        title={item.title}
-                        time={new Date(item.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        content={item.content}
-                      />
-                    ))}
-                  </div>
-                </ScrollArea>
-              </div>
+            <DashboardBox className="flex flex-col h-fit max-h-[500px] space-y-4">
+              {/* Header */}
+              <p className="text-xl font-semibold border-b-2 font-custom border-rcgrey/20 pb-4 mb-4">
+                NEWS
+              </p>
+
+              {/* Scrollable News Section */}
+              <ScrollArea className="max-h-[400px] overflow-y-auto">
+                <div className="space-y-4">
+                  {news.map((item) => (
+                    <News
+                      key={item.id}
+                      title={item.title}
+                      time={new Date(item.time).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                      content={item.content}
+                    />
+                  ))}
+                </div>
+              </ScrollArea>
             </DashboardBox>
+
             <DashboardBox className="p-6 text-center py-4 h-fit flex-none">
               <div></div>
             </DashboardBox>

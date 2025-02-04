@@ -112,7 +112,6 @@ export default async function RootLayout({
             <html lang="en">
                 <body className={outfit.className}>
                     {admin}
-                    <SignOutButton />
                 </body>
             </html>
         );

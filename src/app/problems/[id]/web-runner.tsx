@@ -42,23 +42,20 @@ export default function WebRunner({ problem }: WebRunnerProps) {
                 <hr className="border-t-2 border-gray-700 w-full mb-2" />
                 <div className="flex flex-row justify-between h-[75%] rounded-[10px]">
                     <div className="flex flex-col w-1/2 px-4">
-                        <div className="relative h-full">
-                            <h3 className="absolute top-4 left-4 text-sm font-semibold text-white">
+                        <div className="relative h-full rounded-[10px]"
+                        style={{background: "radial-gradient(circle, #36253D 80%, #39234E 110%)",}}>
+                            <h3 className="absolute top-4 underline underline-offset-1 left-4 text-base font-semibold text-white">
                                 Input
                             </h3>
                             <Button
-                                className="absolute top-5 right-2 text-white bg-primary hover:bg-secondary px-3 py-0 rounded-md text-xs "
+                                className="absolute top-2 right-2 text-white bg-primary hover:bg-secondary px-4 py-0 rounded-md text-xs "
                                 onClick={handleRun}
                                 disabled={isRunning}
                             >
                                 {isRunning ? "Running..." : "Run"}
                             </Button>
                             <textarea
-                                className="w-full h-[100%] mt-2 bg-[#3C3C46] text-white pt-8 p-4 rounded-[10px] resize-none focus:outline-none placeholder:text-sm"
-                                style={{
-                                    background:
-                                        "radial-gradient(circle, #36253D 80%, #39234E 110%)",
-                                }}
+                                className="w-full h-[100%] mt-5 bg-transparent text-white pt-8 p-4 rounded-[10px] resize-none focus:outline-none placeholder:text-sm"
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 placeholder="Enter Your Input"
@@ -68,16 +65,13 @@ export default function WebRunner({ problem }: WebRunnerProps) {
                     </div>
                     <Separator orientation="vertical" />
                     <div className="flex flex-col w-1/2 px-4">
-                        <div className="relative h-full">
-                            <h3 className="absolute top-4 left-4 text-sm font-semibold text-white">
+                        <div className="relative h-full rounded-[10px]"
+                             style={{background: "radial-gradient(circle, #36253D 80%, #39234E 110%)",}}>
+                            <h3 className="absolute underline underline-offset-1 top-4 left-4 text-base font-semibold text-white">
                                 Output
                             </h3>
                             <textarea
-                                className="w-full h-[100%] mt-2 bg-[#3C3C46] text-white pt-8 p-4 rounded-[10px] resize-none focus:outline-none placeholder:text-sm"
-                                style={{
-                                    background:
-                                        "radial-gradient(circle, #36253D 80%, #39234E 110%)",
-                                }}
+                                className="w-full h-[100%] text-nowrap overflow-x-auto mt-5 bg-transparent text-white pt-8 p-4 rounded-[10px] resize-none focus:outline-none placeholder:text-sm"
                                 value={output}
                                 readOnly
                                 placeholder="Output here"

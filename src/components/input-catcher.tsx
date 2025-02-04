@@ -13,7 +13,6 @@ function InputCatcher({
 	const handleKeyPress = useCallback(
 		(e: KeyboardEvent) => {
 			if ((e.target as HTMLElement).tagName !== "INPUT") {
-				console.log(e.key);
 				if (e.key === "Enter") {
 					if (/^[0-9]{2}[A-Z]{3}[0-9]{4}$/.test(input)) {
 						lookup();
@@ -28,9 +27,9 @@ function InputCatcher({
 					e.key.match(/^[A-Za-z0-9]$/) &&
 					!e.ctrlKey &&
 					!e.metaKey &&
-					!e.altKey &&
-					!e.shiftKey
+					!e.altKey
 				) {
+					console.log(e.key);
 					setInput((i) => i + (i.length < 9 ? e.key.toUpperCase() : ""));
 				}
 			}

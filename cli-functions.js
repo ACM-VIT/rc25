@@ -2,7 +2,6 @@ import * as readline from "node:readline/promises";
 import { PrismaClient } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import fs from "node:fs/promises";
-// import { FLAGS } from "./src/types/flags";
 
 const prisma = new PrismaClient();
 const adminTeamId = process.env.ADMIN_TEAM_ID;
@@ -194,46 +193,6 @@ async function whitelist() {
     }
 }
 
-async function toggleFlag() {
-    try {
-        // Display current flags
-        const currentFlags = await prisma.flags.findMany();
-        console.log("\nCurrent Flag States:");
-        for (const flag of currentFlags) {
-            console.log(`${flag.name}: ${flag.value}`);
-        }
-
-        // List available flags
-        console.log("\nAvailable Flags:");
-        Object.values(FLAGS).forEach((flag, index) => {
-            console.log(`${index + 1}. ${flag}`);
-        });
-
-        // Get flag selection
-        const flagChoice = await rl.question("\nSelect flag number to toggle: ");
-        const selectedFlag = Object.values(FLAGS)[Number.parseInt(flagChoice) - 1];
-
-        if (!selectedFlag) {
-            console.error("Invalid flag selection");
-            return;
-        }
-
-        // Get new value
-        const newValue = (await rl.question("Set flag value (true/false): ")).toLowerCase() === 'true';
-
-        // Update flag
-        await prisma.flags.upsert({
-            where: { name: selectedFlag },
-            update: { value: newValue },
-            create: { name: selectedFlag, value: newValue }
-        });
-
-        console.log(`Flag ${selectedFlag} updated to: ${newValue}`);
-    } catch (e) {
-        console.error("Error updating flag:", e);
-    }
-}
-
 // MODIFY main() to include option 5 for whitelist
 async function main() {
     const args = process.argv.slice(2);
@@ -247,9 +206,8 @@ async function main() {
         console.log("3. Add Admin");
         console.log("4. Delete Admin");
         console.log("5. Whitelist");
-        console.log("6. Manage Flags"); 
 
-        const choice = await rl.question("Enter your choice (1-6): ");
+        const choice = await rl.question("Enter your choice (1-5): ");
 
         if (choice === "1") {
             const start = new Date(await rl.question("Enter round start date (YYYY-MM-DD): "));
@@ -275,8 +233,6 @@ async function main() {
         } else if (choice === "5") {
             await whitelist();
         } else if (choice === "6") {
-            await toggleFlag();
-        } else {
             console.log("Invalid choice.");
         }
     } else if (action === "round_add") {

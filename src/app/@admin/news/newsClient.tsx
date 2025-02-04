@@ -14,7 +14,7 @@ const getCurrentKolkataTime = () => {
 };
 
 const formatDisplayTime = (date: Date) => {
-    return moment(date).tz('Asia/Kolkata').format('DD MMM YYYY hh:mm A');
+    return moment(date).tz('Asia/Kolkata').format('DD MMM YYYY hh:mm A').toUpperCase();
 };
 
 interface NewsClientProps {

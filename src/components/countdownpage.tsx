@@ -1,10 +1,9 @@
 "use client";
 
-import React, {  useState } from "react";
+import React from "react";
 import Image from "next/image";
 import bg from "@/app/assets/backgroundone.svg";
 import earthone from "@/app/assets/rounded_earth.svg";
-import { Orbitron } from "next/font/google";
 import CountdownTimer from "@/components/countdown-timer";
 
 

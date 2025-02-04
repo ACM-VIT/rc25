@@ -2,7 +2,7 @@ import * as readline from "node:readline/promises";
 import { PrismaClient } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import fs from "node:fs/promises";
-import { FLAGS } from "./src/types/flags";
+// import { FLAGS } from "./src/types/flags";
 
 const prisma = new PrismaClient();
 const adminTeamId = process.env.ADMIN_TEAM_ID;

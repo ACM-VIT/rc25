@@ -21,9 +21,9 @@ const HowItWorks: React.FC = () => {
       </div>
 
       {/* Right Side Text - Positioned relative to viewport width */}
-      <div className="absolute right-8 translate-x-1/2 transform xl:bottom-[210px] lg:bottom-[150px] bottom-[60px] -translate-y-1/2 z-10">
+      <div className="absolute right-8 translate-x-1/2 transform xl:bottom-[120px] lg:bottom-[80px] -translate-y-1/2 z-10">
         <div className="vertical-text transform how-it-works-heading -rotate-90 text-glow font-extrabold text-[35px] sm:text-[20px] md:text-[30px] lg:text-[30px] xl:text-[45px] tracking-widest">
-          BUT BUGS WILL FALL!
+          RUST ENSURES
         </div>
       </div>
 
@@ -34,7 +34,7 @@ const HowItWorks: React.FC = () => {
 
       {/* Main Content - Responsive positioning and spacing */}
       <div className="absolute z-10 w-full h-full flex flex-col items-end justify-center px-4 sm:px-8 md:px-16 lg:px-24 pt-[20vh]">
-        <div className="text-white font-extrabold text-right space-y-8 sm:space-y-12 lg:space-y-16 max-w-3xl">
+        <div className="text-white font-extrabold text-right outfit pace-y-8 sm:space-y-12 lg:space-y-16 max-w-3xl">
           <div className="flex items-start justify-end gap-4">
             <div className="text-lg sm:text-xl lg:text-2xl leading-relaxed">
               Participants are given runnable files that <br />
@@ -49,9 +49,8 @@ const HowItWorks: React.FC = () => {
             <div className="text-lg sm:text-xl lg:text-2xl leading-relaxed">
               After deciphering the logic based on these input-output <br />
               patterns, they need to come up with a code that will fulfill some
-              hidden
               <br />
-              test cases.
+              hidden test cases.
             </div>
             <div className="text-lg sm:text-xl lg:text-2xl">j)</div>
           </div>

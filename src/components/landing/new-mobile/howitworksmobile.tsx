@@ -21,7 +21,7 @@ const HowItWorksMobile: React.FC = () => {
 
       {/* Main Content - Responsive positioning and spacing */}
       <div className="absolute z-10 w-full h-full flex flex-col items-left justify-center px-4 sm:px-8 md:px-16 lg:px-24">
-        <div className="text-white font-extrabold text-left space-y-8 sm:space-y-12 lg:space-y-16 max-w-3xl">
+        <div className="outfit text-white font-extrabold text-left space-y-8 sm:space-y-12 lg:space-y-16 max-w-3xl">
           <div className="flex items-start justify-start gap-4">
             <div className="text-lg sm:text-xl md:text-3xl lg:text-2xl leading-relaxed">
               Participants are given runnable files that <br />

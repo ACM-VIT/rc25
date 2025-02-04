@@ -22,35 +22,33 @@ const NullPointException1: React.FC = () => {
       <div className="relative z-10 flex h-full w-full items-center justify-between px-4 md:px-8">
         {/* Text Content */}
         <div className="w-full lg:max-w-3xl md:max-w-2xl sm:max-w-lg max-w-md">
-          <div>
-            <div className="space-y-4 text-white text-[15px] sm:text-[15px] md:text-[20px] lg:text-[15px] xl:text-[20px] tracking-widest">
-              <div className="flex gap-4">
-                <span>I.</span>
-                <p>
-                  Participants are given runnable files that display
-                  input-output test cases. After deciphering the logic based on
-                  these input-output patterns, they need to come up with a code
-                  that will fulfill some hidden test cases.
-                </p>
-              </div>
+          <div className="space-y-4 text-white outfit font-extrabold text-lg sm:text-xl lg:text-2xl leading-relaxed">
+            <div className="flex gap-4 ">
+              <span>l.</span>
+              <p className="text-lg sm:text-xl lg:text-2xl leading-relaxed ">
+                Participants are given runnable files that display input-output
+                test cases. After deciphering the logic based on these
+                input-output patterns, they need to come up with a code that
+                will fulfill some hidden test cases.
+              </p>
+            </div>
 
-              <div className="flex gap-4">
-                <span>M.</span>
-                <p>
-                  The fifteen best-performing teams of Round One advance to
-                  Round Two. Participants are given runnable files that display
-                  input-output test cases.
-                </p>
-              </div>
+            <div className="flex gap-4">
+              <span>m.</span>
+              <p>
+                The fifteen best-performing teams of Round One advance to Round
+                Two. Participants are given runnable files that display
+                input-output test cases.
+              </p>
+            </div>
 
-              <div className="flex gap-4">
-                <span>N.</span>
-                <p>
-                  After deciphering the logic based on these input-output
-                  patterns, they need to come up with a code that will fulfill
-                  some hidden test cases.
-                </p>
-              </div>
+            <div className="flex gap-4">
+              <span>n.</span>
+              <p>
+                After deciphering the logic based on these input-output
+                patterns, they need to come up with a code that will fulfill
+                some hidden test cases.
+              </p>
             </div>
           </div>
         </div>

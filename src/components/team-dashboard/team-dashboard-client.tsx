@@ -13,7 +13,12 @@ interface TeamMembersProps {
   min_team_size: number;
 }
 
-export function TeamMembers({ teamMembers, teamName, code, min_team_size }: TeamMembersProps) {
+export function TeamMembers({
+  teamMembers,
+  teamName,
+  code,
+  min_team_size,
+}: TeamMembersProps) {
   const [showToast, setShowToast] = useState(false);
 
   const handleCopy = async () => {
@@ -139,8 +144,8 @@ export function TeamMembers({ teamMembers, teamName, code, min_team_size }: Team
                   className="flex flex-col items-center space-y-4 px-4"
                 >
                   <div className="flex flex-col items-center gap-4 w-full">
-                    <p className="font-custom text-base md:text-lg">
-                      {member.name}
+                    <p className="font-custom text-base md:text-lg tracking-wider">
+                      {(member.name ?? "").split(" ").slice(0, -1).join(" ")}
                     </p>
                     <div className="border border-weirdPurple w-full max-w-md h-2 md:h-2" />
                   </div>

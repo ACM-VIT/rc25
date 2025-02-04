@@ -198,7 +198,7 @@ export default async function Page() {
       const currentPassed = current.testcasespassed.filter(Boolean).length;
       const bestPassed = best ? best.testcasespassed.filter(Boolean).length : -1;
       return currentPassed > bestPassed ? current : best;
-    }, null as any);
+    }, null as SubmissionType | null);
 
     const passedArray = bestSubmission?.testcasespassed || [];
     const passCount = passedArray.filter(Boolean).length;
@@ -220,9 +220,9 @@ export default async function Page() {
         name: teamData.name,
         shortCode: teamData.shortCode,
         score: teamData.score,
-        members: teamData.members.map((member: { id: any; name: any; }) => ({
+        members: teamData.members.map((member: { id: string; name: string | null; }) => ({
           id: member.id,
-          name: member.name,
+          name: member.name ?? '',
           score: 0, // Adjust if you store member scores
         })),
       }

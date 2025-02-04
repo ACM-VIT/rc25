@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import {useTransition} from "react";
+import { useTransition } from "react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import type { Problem, Difficulty } from "@prisma/client";
@@ -32,6 +32,94 @@ interface QuestionFormProps {
 	open?: boolean;
 	rounds?: { id: string; number: number }[];
 }
+interface MarkdownValidationError {
+	isValid: boolean;
+	error?: string;
+}
+
+interface MarkdownValidationError {
+	isValid: boolean;
+	error?: string;
+}
+
+const validateMarkdown = (markdown: string): MarkdownValidationError => {
+	if (!markdown || typeof markdown !== "string") {
+		return { isValid: false, error: "Description is required" };
+	}
+
+	try {
+		// Check for unmatched backticks
+		const backtickCount = (markdown.match(/`/g) || []).length;
+		if (backtickCount % 2 !== 0) {
+			return { isValid: false, error: "Unmatched code backticks found" };
+		}
+
+		// Check for unmatched triple backticks
+		const tripleBacktickCount = (markdown.match(/```/g) || []).length;
+		if (tripleBacktickCount % 2 !== 0) {
+			return { isValid: false, error: "Unmatched code block markers found" };
+		}
+
+		// Check for unmatched square brackets
+		const openSquareBrackets = (markdown.match(/\[/g) || []).length;
+		const closeSquareBrackets = (markdown.match(/\]/g) || []).length;
+		if (openSquareBrackets !== closeSquareBrackets) {
+			return { isValid: false, error: "Unmatched square brackets found" };
+		}
+
+		// Check for unmatched parentheses
+		const openParentheses = (markdown.match(/\(/g) || []).length;
+		const closeParentheses = (markdown.match(/\)/g) || []).length;
+		if (openParentheses !== closeParentheses) {
+			return { isValid: false, error: "Unmatched parentheses found" };
+		}
+
+		// Check for unmatched curly braces
+		const openCurlyBraces = (markdown.match(/\{/g) || []).length;
+		const closeCurlyBraces = (markdown.match(/\}/g) || []).length;
+		if (openCurlyBraces !== closeCurlyBraces) {
+			return { isValid: false, error: "Unmatched curly braces found" };
+		}
+
+		// Check for unmatched asterisks for bold/italic
+		const asteriskCount = (markdown.match(/\*/g) || []).length;
+		if (asteriskCount % 2 !== 0) {
+			return { isValid: false, error: "Unmatched asterisks found" };
+		}
+
+		// Check for unmatched underscores for bold/italic
+		const underscoreCount = (markdown.match(/_/g) || []).length;
+		if (underscoreCount % 2 !== 0) {
+			return { isValid: false, error: "Unmatched underscores found" };
+		}
+
+		// Check for unmatched HTML tags
+		const htmlTags = markdown.match(/<[^>]+>/g) || [];
+		const unclosedTags = htmlTags.filter((tag) => !tag.startsWith("</")).length;
+		const closingTags = htmlTags.filter((tag) => tag.startsWith("</")).length;
+		if (unclosedTags !== closingTags) {
+			return { isValid: false, error: "Unmatched HTML tags found" };
+		}
+
+		// Check for unmatched Markdown links
+		const linkPattern = /\[([^\]]+)\]\(([^)]+)\)/g;
+		const links = markdown.match(linkPattern) || [];
+		const linkTexts = markdown.match(/\[([^\]]+)\]/g) || [];
+		const linkUrls = markdown.match(/\(([^)]+)\)/g) || [];
+		if (links.length !== linkTexts.length || links.length !== linkUrls.length) {
+			return { isValid: false, error: "Unmatched Markdown links found" };
+		}
+
+		const equalSignMisuse = markdown.match(/(^|\s)=\s*[^=]|\s=\s*$/gm);
+		if (equalSignMisuse && equalSignMisuse.length > 0) {
+			return { isValid: false, error: "Misuse of equal sign (=) found" };
+		}
+
+		return { isValid: true };
+	} catch (error) {
+		return { isValid: false, error: "Error validating markdown" };
+	}
+};
 
 export function QuestionForm({
 	initialData,
@@ -42,6 +130,7 @@ export function QuestionForm({
 	rounds = [],
 }: QuestionFormProps) {
 	const router = useRouter();
+	const [markdownError, setMarkdownError] = useState<string>("");
 	const [isPending, startTransition] = useTransition();
 	const [formData, setFormData] = useState<Partial<Problem>>({
 		title: "",
@@ -79,9 +168,23 @@ export function QuestionForm({
 		}
 	}, [initialData]);
 
+	useEffect(() => {
+		if (formData.description) {
+			const validation = validateMarkdown(formData.description);
+			setMarkdownError(validation.error || "");
+		}
+	}, [formData.description]);
+
 	const handleSubmit = (e: React.FormEvent) => {
-		startTransition(async ()=> {
+		startTransition(async () => {
 			e.preventDefault();
+
+			// Validate markdown before submission
+			const markdownValidation = validateMarkdown(formData.description || "");
+			if (!markdownValidation.isValid) {
+				alert(markdownValidation.error);
+				return;
+			}
 
 			// Add validation
 			if ((formData.normal_cases ?? 0) < 0 || (formData.edge_cases ?? 0) < 0) {
@@ -115,7 +218,7 @@ export function QuestionForm({
 			} catch (error) {
 				console.error("Error submitting question:", error);
 			}
-		})
+		});
 	};
 
 	const handleFileChange = (
@@ -163,12 +266,15 @@ export function QuestionForm({
 					<Textarea
 						id="description"
 						placeholder="Question description"
-						className="min-h-[100px]"
+						className={`min-h-[100px] ${markdownError ? "border-red-500" : ""}`}
 						value={formData.description || ""}
 						onChange={(e) =>
 							setFormData((prev) => ({ ...prev, description: e.target.value }))
 						}
 					/>
+					{markdownError && (
+						<p className="text-sm text-red-500">{markdownError}</p>
+					)}
 				</div>
 
 				<div className="space-y-2">
@@ -211,27 +317,24 @@ export function QuestionForm({
 						<Select
 							value={formData.roundId}
 							onValueChange={(value) =>
-							setFormData((prev) => ({
-								...prev,
-								roundId: value
-							}))
+								setFormData((prev) => ({
+									...prev,
+									roundId: value,
+								}))
 							}
 						>
 							<SelectTrigger>
-							<SelectValue placeholder="Select round" />
+								<SelectValue placeholder="Select round" />
 							</SelectTrigger>
 							<SelectContent>
-							{rounds.map((round) => (
-								<SelectItem
-								key={round.id}
-								value={round.id}
-								>
-								Round {round.number}
-								</SelectItem>
-							))}
+								{rounds.map((round) => (
+									<SelectItem key={round.id} value={round.id}>
+										Round {round.number}
+									</SelectItem>
+								))}
 							</SelectContent>
 						</Select>
-					</div>					
+					</div>
 					<div className="space-y-2">
 						<Label htmlFor="maxScore">Max Score</Label>
 						<Input

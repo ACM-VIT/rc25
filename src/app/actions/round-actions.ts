@@ -75,3 +75,60 @@ export async function deleteRound(number: number) {
     return { error: (error as Error).message };
   }
 }
+
+export async function getLatestRound() {
+  try {
+      const now = new Date();
+
+      let round = await prisma.round.findFirst({
+          where: {
+              end: { lt: now },   
+              result: { gt: now } 
+          },
+          orderBy: { number: "desc" }, 
+      });
+
+      if (round) {
+          return {
+              number: round.number,
+              status: "RESULTS IN", 
+              timeUntil: round.result.toISOString(), // ✅ No modification, use as stored in DB
+          };
+      }
+
+      round = await prisma.round.findFirst({
+          where: {
+              start: { lte: now },
+              end: { gte: now },
+          },
+          orderBy: { number: "desc" },
+      });
+
+      if (round) {
+          return {
+              number: round.number,
+              status: "ENDS IN",
+              timeUntil: round.end.toISOString(), // ✅ No modification, use as stored in DB
+          };
+      }
+
+      round = await prisma.round.findFirst({
+          where: { start: { gt: now } },
+          orderBy: { number: "asc" },
+      });
+
+      if (round) {
+          return {
+              number: round.number,
+              status: "STARTS IN",
+              timeUntil: round.start.toISOString(), // ✅ No modification, use as stored in DB
+          };
+      }
+
+      return null;
+  } catch (error) {
+      console.error("Error fetching latest round:", error);
+      return null;
+  }
+}
+

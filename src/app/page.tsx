@@ -7,6 +7,7 @@ import type { Metadata } from "next";
 import { FLAGS } from "@/types/flags"
 import { auth } from "./(auth)/auth";
 import LiveLeaderboard from "./@admin/components/liveleaderboard";
+import SecondPage from "./@admin/livepages/secondpage";
 // import { use } from "react";
 
 async function getLeaderBoardShowBoolean(): Promise<boolean> {
@@ -274,7 +275,7 @@ export default async function Page() {
 
   return (
     <>
-      <LiveLeaderboard/>
+      <SecondPage/>
     </>
   );
 }

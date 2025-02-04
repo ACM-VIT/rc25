@@ -1,4 +1,4 @@
-import Counter from "@/components/countdown-timer";
+import Counter from "@/components/countdownpage";
 import DetailsForm from "@/components/details-formnew";
 import Disqualified from "@/components/disqualifed";
 import EliminationScreen from "@/components/elimination-screen";
@@ -214,17 +214,13 @@ export default async function RootLayout({
         getISTTime(curOrNextRound.start) <= getCurrentISTTime();
 
     if (!roundStarted) {
-        const roundNumber = curOrNextRound?.number
-            ? Number(curOrNextRound.number)
-            : 1;
-        const roundStartTime = getISTTime(curOrNextRound.start).toISOString();
+     
 
         return (
             <html lang="en">
                 <body>
                     <Counter
-                        getTimeUntil={roundStartTime}
-                        roundNumber={roundNumber}
+                        
                     />
                     <FloatingDock />
                     {isAdmin && <SwitchAdminModeButton />}
@@ -236,17 +232,13 @@ export default async function RootLayout({
     const roundEnded = getISTTime(curOrNextRound.end) <= getCurrentISTTime();
 
     if (roundEnded) {
-        const roundNumber = curOrNextRound?.number
-            ? Number(curOrNextRound.number)
-            : 1;
-        const resultTime = getISTTime(curOrNextRound.result).toISOString();
+     
 
         return (
             <html lang="en">
                 <body>
                     <Counter
-                        getTimeUntil={resultTime}
-                        roundNumber={roundNumber}
+                   
                     />
                     <FloatingDock />
                     {isAdmin && <SwitchAdminModeButton />}

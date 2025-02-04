@@ -1,7 +1,6 @@
-import DashboardBox from "@/components/DashboardBox";
 import { FaCrown } from "react-icons/fa";
 import React from "react";
-import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { ScrollArea, ScrollAreaViewport, ScrollAreaScrollbar, ScrollAreaThumb } from "@radix-ui/react-scroll-area";
 
 const dummyLeaderboard = [
     { id: 1, name: "Team A", score: 100, questionsCompleted: 10, totalQuestions: 20 },
@@ -17,42 +16,45 @@ const dummyLeaderboard = [
 ];
 
 const LiveLeaderboard = () => (
-    <DashboardBox className="h-full overflow-auto justify-center">
-        <DashboardBox>
-        <p className="text-2xl text-white border-b-2 border-rcgrey/20 pb-4 mb-4 text-center">
+    <div className="h-full bg-transparent overflow-auto justify-center m-2 backdrop-blur-md">
+        <p className="text-4xl text-white bg-transparent border-b-2 pb-4 mb-4 text-center h-[10vh]">
             Leaderboard
         </p>
-        <div className="flex justify-between text-white mb-2 px-1 text-center">
-            <span className="w-1/6 text-2xl font-bold">Rank</span>
-            <span className="w-1/3 text-2xl font-bold">Team Name</span>
-            <span className="w-1/3 text-2xl font-bold">Questions Completed</span>
-            <span className="w-1/6 text-2xl font-bold">Score</span>
+        <div className="flex justify-center text-white mb-2 px-1 text-center w-[85vw] h-[8vh]">
+            <span className="w-1/2 text-2xl font-bold text-center">Rank</span>
+            <span className="w-1/4 text-2xl font-bold text-center">Team Name</span>
+            <span className="w-1/2 text-2xl font-bold text-center">Questions Completed</span>
+            <span className="w-1/4 text-2xl font-bold text-center">Score</span>
         </div>
-        <ScrollArea className="justify-center">
-            <ul className="space-y-3 px-1">
-                {dummyLeaderboard.map((team, index) => (
-                    <li key={team.id} className="flex justify-between text-white items-center">
-                        <div className="flex w-1/6 items-center justify-center">
-                            {index === 0 && (
-                                <FaCrown className="text-yellow-500 mr-2" />
-                            )}
-                            {index === 1 && <FaCrown className="text-gray-400" />}
-                            {index === 2 && (
-                                <FaCrown className="text-[#CD7F32]" />
-                            )}
-                            {index > 2 && (
-                                <span className="text-white">{index + 1}</span>
-                            )}
-                        </div>
-                        <span className="w-1/3 font-medium truncate text-center">{team.name}</span>
-                        <span className="w-1/3 text-center">{team.questionsCompleted}/{team.totalQuestions}</span>
-                        <span className="w-1/6 text-center font-semibold">{team.score} pts</span>
-                    </li>
-                ))}
-            </ul>
+        <ScrollArea className="justify-center h-[78vh]">
+            <ScrollAreaViewport>
+                <ul className="space-y-3 px-1">
+                    {dummyLeaderboard.map((team, index) => (
+                        <li key={team.id} className="flex w-3/4 mx-auto bg-slate-700 bg-opacity-50 rounded-lg justify-between text-white items-center h-[7.5vh]">
+                            <div className="flex w-1/6 p-4 items-center justify-center">
+                                {index === 0 && (
+                                    <FaCrown size={28} className="text-yellow-500" />
+                                )}
+                                {index === 1 && <FaCrown size={28} className="text-gray-400" />}
+                                {index === 2 && (
+                                    <FaCrown size={28} className="text-[#CD7F32]" />
+                                )}
+                                {index > 2 && (
+                                    <span className="text-white">{index + 1}</span>
+                                )}
+                            </div>
+                            <span className="w-1/3 font-medium truncate text-center uppercase">{team.name}</span>
+                            <span className="w-1/3 text-center">{team.questionsCompleted}/{team.totalQuestions}</span>
+                            <span className="w-1/6 text-center font-semibold">{team.score} pts</span>
+                        </li>
+                    ))}
+                </ul>
+            </ScrollAreaViewport>
+            <ScrollAreaScrollbar orientation="vertical">
+                <ScrollAreaThumb className="bg-gray-500 rounded-full" />
+            </ScrollAreaScrollbar>
         </ScrollArea>
-        </DashboardBox>
-    </DashboardBox>
+    </div>
 );
 
 export default LiveLeaderboard;

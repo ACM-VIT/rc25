@@ -1,4 +1,4 @@
-import Counter from "@/components/countdown-timer";
+import Counter from "@/components/countdownpage";
 import DetailsForm from "@/components/details-formnew";
 import Disqualified from "@/components/disqualifed";
 import EliminationScreen from "@/components/elimination-screen";
@@ -18,36 +18,34 @@ import SwitchAdminModeButton from "@/components/switch-admin-mode-button";
 import { SessionProvider } from "next-auth/react";
 import type { Metadata } from "next";
 import FloatingDock from "@/components/FloatingDock";
-import moment from 'moment-timezone';
-import { get } from "http";
+import moment from "moment-timezone";
 
 const getISTTime = (date: Date) => {
-  return moment(date).tz('Asia/Kolkata');
+    return moment(date).tz("Asia/Kolkata");
 };
 
 const getCurrentISTTime = () => {
-  return moment().tz('Asia/Kolkata');
+    return moment().tz("Asia/Kolkata");
 };
-
 
 // import SwitchAdminModeButton from "@/components/switch-admin-mode-button";
 // import TeamSubmissions from "@/components/team-submissions";
 
 export const metadata: Metadata = {
-  title: "Reverse Coding | ACM-VIT",
-  description: "ACM-VIT's premier competitive coding event",
-  openGraph: {
     title: "Reverse Coding | ACM-VIT",
     description: "ACM-VIT's premier competitive coding event",
-    type: "website",
-  },
-  robots: {
-    index: true,
-    follow: true,
-  },
-  icons: {
-    icon: "/favicon.ico",
-  },
+    openGraph: {
+        title: "Reverse Coding | ACM-VIT",
+        description: "ACM-VIT's premier competitive coding event",
+        type: "website",
+    },
+    robots: {
+        index: true,
+        follow: true,
+    },
+    icons: {
+        icon: "/favicon.ico",
+    },
 };
 
 const outfit = Outfit({ subsets: ["latin"] });
@@ -73,7 +71,7 @@ export default async function RootLayout({
     }
 
     const user = await prisma.user.findUnique({
-        relationLoadStrategy: 'join',
+        relationLoadStrategy: "join",
         where: {
             email: session.user.email,
         },
@@ -89,20 +87,21 @@ export default async function RootLayout({
         },
     });
 
-  const curOrNextRound = await prisma.round.findFirst({
-      relationLoadStrategy: 'join',
-    where: {
-      result: {
-        gte: new Date(),
-      },
-    },
-    orderBy: {
-      start: "asc",
-    },
+    const curOrNextRound = await prisma.round.findFirst({
+        relationLoadStrategy: "join",
+        where: {
+            result: {
+                gte: new Date(),
+            },
+        },
+        orderBy: {
+            start: "asc",
+        },
     });
 
     const isAdmin = !!user?.Admin;
-    const detailsFilled = !!user?.phone && !!user?.gender && !!user?.phone.length;
+    const detailsFilled =
+        !!user?.phone && !!user?.gender && !!user?.phone.length;
 
     const cookieStore = await cookies();
     const mode = cookieStore.get("mode")?.value !== "user";
@@ -113,7 +112,6 @@ export default async function RootLayout({
             <html lang="en">
                 <body className={outfit.className}>
                     {admin}
-                    <SignOutButton />
                 </body>
             </html>
         );
@@ -209,40 +207,38 @@ export default async function RootLayout({
         }
     }
 
-
     // todo round checked in condition
 
-    const roundStarted = getISTTime(curOrNextRound.start) <= getCurrentISTTime();
+    const roundStarted =
+        getISTTime(curOrNextRound.start) <= getCurrentISTTime();
 
     if (!roundStarted) {
-        const roundNumber = curOrNextRound?.number ? Number(curOrNextRound.number) : 1; 
-        const roundStartTime = getISTTime(curOrNextRound.start).toISOString();
-    
+     
+
         return (
             <html lang="en">
                 <body>
-
-                    <Counter getTimeUntil={roundStartTime} roundNumber={roundNumber} />
+                    <Counter
+                        
+                    />
                     <FloatingDock />
                     {isAdmin && <SwitchAdminModeButton />}
                 </body>
             </html>
         );
     }
-    
-    
+
     const roundEnded = getISTTime(curOrNextRound.end) <= getCurrentISTTime();
 
     if (roundEnded) {
-        const roundNumber = curOrNextRound?.number ? Number(curOrNextRound.number) : 1; 
-        const resultTime = getISTTime(curOrNextRound.result).toISOString();
-    
+     
+
         return (
             <html lang="en">
                 <body>
-                    
-            
-                    <Counter getTimeUntil={resultTime} roundNumber={roundNumber} />
+                    <Counter
+                   
+                    />
                     <FloatingDock />
                     {isAdmin && <SwitchAdminModeButton />}
                 </body>

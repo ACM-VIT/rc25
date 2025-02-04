@@ -1,6 +1,7 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { Submission } from "@prisma/client";
+import type React from "react";
+import { useState, useEffect } from "react";
+import type { Submission } from "@prisma/client";
 import Lottie from "lottie-react";
 import animationData from "../../../../public/loading.json";
 import { ScrollArea } from "../../../components/ui/scroll-area";
@@ -40,7 +41,7 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
         });
         setRandomMessage(getRandomMessage());
         console.log(submissions);
-    }, []); // Runs only once after mount
+    }, [submissions]); // Runs only once after mount
 
     const renderSubmission = (
         submission: Submission | null,
@@ -130,7 +131,7 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
                     ) : (
                         <div className="space-y-4 overflow-y-auto">
                             {submissions.map((submission, index) => (
-                                <div key={index}>
+                                <div key={submission.id}>
                                     {renderSubmission(
                                         submission,
                                         index ===

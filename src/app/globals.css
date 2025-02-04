@@ -202,7 +202,7 @@
 @media (max-width: 1023px) {
     html,
     body {
-      overflow: hidden;
+      /* overflow: hidden; */ /* Uncomment this line to disable scrolling */
       height: 100%;
     }
   

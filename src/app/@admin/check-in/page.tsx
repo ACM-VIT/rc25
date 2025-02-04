@@ -52,6 +52,7 @@ export default function Page() {
 
 				<div>
 					<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+						<DialogTitle>Create New Team</DialogTitle>
 						<DialogTrigger asChild>
 							<button
 								type="button"

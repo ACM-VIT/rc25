@@ -7,6 +7,7 @@ import Link from "next/link";
 import { FaCrown } from "react-icons/fa";
 import FloatingDock from "./FloatingDock";
 import News from "./news";
+
 const Dashboard: React.FC<DashboardProps> = ({
   teamDetails,
   leaderboard,

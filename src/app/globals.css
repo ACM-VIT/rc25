@@ -96,7 +96,7 @@
     @font-face {
         font-family: 'deathstar';
         /* The name you'll use in CSS */
-        src: url('/fonts/DeathStar.otf') format('opentype');
+        src: url('https://rc25-assets.acmvit.in/Death Star.otf') format('opentype');
         /* Path to your font file */
         font-weight: normal;
         font-style: normal;
@@ -105,7 +105,7 @@
     @font-face {
         font-family: 'aurebesh';
         /* Name of the font */
-        src: url('/fonts/Aurebesh.otf') format('opentype');
+        src: url('https://rc25-assets.acmvit.in/fonts/Aurebesh.otf') format('opentype');
         font-weight: normal;
         font-style: normal;
     }
@@ -168,7 +168,7 @@
 }
 @font-face {
     font-family: 'Outfit';
-    src: url('/fonts/Outfit-Bold.ttf') format('truetype');
+    src: url('https://rc25-assets.acmvit.in/fonts/Outfit-Bold.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
@@ -177,7 +177,7 @@
 }
 @font-face {
     font-family: 'Orbitron';
-    src: url('/Orbitron-Regular.ttf') format('truetype');
+    src: url('https://rc25-assets.acmvit.in/Orbitron-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }

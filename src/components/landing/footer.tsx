@@ -4,7 +4,6 @@ import acm from '@/app/assets/acm.svg'
 import { Outfit } from 'next/font/google'
 import { FaFacebookF, FaLinkedin, FaYoutube, FaInstagram } from "react-icons/fa"
 import { FaXTwitter, FaHashnode } from "react-icons/fa6"
-import rclogo from '@/app/assets/RCLogo.svg'
 import Link from 'next/link';
 
 const outfit = Outfit({
@@ -62,7 +61,7 @@ export default function Footer() {
       {/* RC Logo Section */}
       <div className='flex justify-center items-center w-full md:w-1/4 py-2 md:py-0'>
         <Image
-          src={rclogo}
+          src="https://rc25-assets.acmvit.in/RCLogo.svg"
           alt='rclogo'
           width={200}
           height={200}

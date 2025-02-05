@@ -5,8 +5,6 @@ import bg from "@/app/assets/bgally.svg";
 import upper from "@/app/assets/upperbracket.svg";
 import lower from "@/app/assets/lowerbracket.svg";
 import SmoothInfiniteScroll from "./infinitescroll";
-import judge0 from "../../../../public/judge0.svg";
-import easeMyTrip from "../../../../public/easemytrip.svg";
 
 function AlliesMobile() {
     return (
@@ -48,7 +46,7 @@ function AlliesMobile() {
 
                             {/* Main Image */}
                             <Image
-                                src={judge0}
+                                src="https://rc25-assets.acmvit.in/judge0.svg"
                                 alt="Judge0"
                                 width={150}
                                 height={150}
@@ -88,7 +86,7 @@ function AlliesMobile() {
 
                             {/* Main Image */}
                             <Image
-                                src={easeMyTrip}
+                                src="https://rc25-assets.acmvit.in/easemytrip.svg"
                                 alt="EaseMyTrip"
                                 width={350}
                                 height={350}

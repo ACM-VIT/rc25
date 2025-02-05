@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
-import faqbg from "../../../../public/landing_new/faqbg.png";
 import SmoothInfiniteScroll from "./infinitescroll";
 
 // 🌀 Magic UI: Embla Carousel Hook
@@ -106,7 +105,7 @@ const FaqMobile: React.FC = () => {
     <div className="relative w-screen h-screen bg-black overflow-hidden">
       {/* Background Image */}
       <Image
-        src={faqbg || "/placeholder.svg"}
+        src="https://rc25-assets.acmvit.in/landing_new/faqbg.png"
         alt="bg"
         layout="fill"
         objectFit="cover"

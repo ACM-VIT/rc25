@@ -2,7 +2,6 @@
 
 import type React from "react";
 import Image from "next/image";
-import R2d2 from "../../../../public/r2d2.png";
 
 const NullPointException1: React.FC = () => {
   return (
@@ -11,7 +10,7 @@ const NullPointException1: React.FC = () => {
       <div className="absolute inset-0">
         <Image
           alt="background"
-          src="/NullPointBackground.png"
+          src="https://rc25-assets.acmvit.in/NullPointBackground.png"
           fill
           className="object-cover object-center"
           priority
@@ -57,7 +56,7 @@ const NullPointException1: React.FC = () => {
           <div className="absolute bottom-10 right-0 w-full">
             <Image
               alt="R2D2"
-              src={R2d2 || "/placeholder.svg"}
+              src="https://rc25-assets.acmvit.in/r2d2.png"
               className="scale-125 transform fix"
               priority
             />

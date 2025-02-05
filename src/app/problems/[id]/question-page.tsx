@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 import SubmissionSection from "@/app/problems/[id]/submission-section";
 import React, { useEffect, useState, useTransition } from "react";
 import { getTeamSubmissions } from "@/app/problems/[id]/actions";
-import getSubmissionResults from "@/app/actions/get-submission-results";
 import {
     ResizableHandle,
     ResizablePanel,
@@ -127,7 +126,7 @@ export default function QuestionPage({
         <div
             className="min-h-screen"
             style={{
-                backgroundImage: "url('../problembg.png')",
+                backgroundImage: "url(https://rc25-assets.acmvit.in/problembg.png)",
                 backgroundSize: "cover",
             }}
         >

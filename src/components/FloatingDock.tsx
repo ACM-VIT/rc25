@@ -36,31 +36,31 @@ export default function FloatingDock() {
                 href="/"
                 tooltip="Home"
                 className="motion-preset-slide-up-md motion-delay-[300ms]"
-                src="/floatingDock/death-star.svg"
+                src="https://rc25-assets.acmvit.in/floatingDock/death-star.svg"
             />
             <FloatingDockItems
                 tooltip="Submissions"
                 href="/submissions"
                 className="motion-preset-slide-up-md motion-delay-[400ms]"
-                src="/floatingDock/jedi-insignia.svg"
+                src="https://rc25-assets.acmvit.in/floatingDock/jedi-insignia.svg"
             />
             <FloatingDockItems
                 tooltip="Instructions"
                 href="/instructions"
                 className="motion-preset-slide-up-md motion-delay-[500ms]"
-                src="/floatingDock/falcon.svg"
+                src="https://rc25-assets.acmvit.in/floatingDock/falcon.svg"
             />
             <FloatingDockItems
                 href="/portalfaqs"
                 tooltip="FAQ's"
                 className="motion-preset-slide-up-md motion-delay-[600ms]"
-                src="/floatingDock/sith-insignia.svg"
+                src="https://rc25-assets.acmvit.in/floatingDock/sith-insignia.svg"
             />
             <FloatingDockItems
                 href="/profile"
                 tooltip="Profile"
                 className="motion-preset-slide-up-md motion-delay-[700ms]"
-                src="/floatingDock/vader.svg"
+                src="https://rc25-assets.acmvit.in/floatingDock/vader.svg"
             />
         </div>
     );

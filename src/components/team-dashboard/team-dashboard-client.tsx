@@ -49,7 +49,7 @@ export function TeamMembers({
       <div
         className="fixed inset-0 w-full h-full bg-black"
         style={{
-          backgroundImage: `url('/backgrounds/createTeamBg.png')`,
+          backgroundImage: `url(https://rc25-assets.acmvit.in/backgrounds/createTeamBg.png)`,
           backgroundPosition: "center",
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
@@ -83,14 +83,14 @@ export function TeamMembers({
         <div className="relative w-full p-4 md:p-8 lg:p-16">
           {/* Frame decorations */}
           <Image
-            src="/frameDecoration.svg"
+            src="https://rc25-assets.acmvit.in/frameDecoration.svg"
             alt="frame"
             width={190}
             height={100}
             className="absolute w-auto top-0 left-0 h-[60px] md:h-[100px] z-50"
           />
           <Image
-            src="/frameDecoration.svg"
+            src="https://rc25-assets.acmvit.in/frameDecoration.svg"
             alt="frame"
             width={190}
             height={100}

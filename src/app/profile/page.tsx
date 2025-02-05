@@ -5,6 +5,7 @@ import stormtrooper from "../../../public/stormtrooper.png";
 import { prisma } from '@/utils/prisma';
 import { notFound } from "next/navigation";
 import { auth } from '../(auth)/auth';
+import FloatingDock from '@/components/FloatingDock';
 
 async function getTeam(userId: string) {
   try {
@@ -158,6 +159,7 @@ export default async function Page(){
           </div>
         </div>
       </div>
+      <FloatingDock />
     </div>
   );
 };

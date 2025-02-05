@@ -40,7 +40,7 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
             return a.updatedAt > b.updatedAt ? -1 : 1;
         });
         setRandomMessage(getRandomMessage());
-        console.log(submissions);
+        console.log('manan  chutiya hai');
     }, [submissions]); // Runs only once after mount
 
     const renderSubmission = (

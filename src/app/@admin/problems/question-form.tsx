@@ -180,11 +180,11 @@ export function QuestionForm({
 			e.preventDefault();
 
 			// Validate markdown before submission
-			const markdownValidation = validateMarkdown(formData.description || "");
-			if (!markdownValidation.isValid) {
-				alert(markdownValidation.error);
-				return;
-			}
+			// const markdownValidation = validateMarkdown(formData.description || "");
+			// if (!markdownValidation.isValid) {
+			// 	alert(markdownValidation.error);
+			// 	return;
+			// }
 
 			// Add validation
 			if ((formData.normal_cases ?? 0) < 0 || (formData.edge_cases ?? 0) < 0) {

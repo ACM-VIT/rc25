@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 
 const Page = () => {
   return <>
-        <PortalFaqs />;
+        <PortalFaqs />
         <FloatingDock />
     </>
 };

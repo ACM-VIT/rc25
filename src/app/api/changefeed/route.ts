@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server';
-import { firestoreService } from '@/lib/firebase-service';
+import { firestoreService } from '@/lib/firebase-admin-service';
 
 export async function POST(req: NextRequest) {
   try {

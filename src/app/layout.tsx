@@ -182,6 +182,7 @@ export default async function RootLayout({
             <body>
             <Navbar name={session.user.name ?? "User"}/>
             <Winners/>
+            {/* todo */}
             {isAdmin && <SwitchAdminModeButton/>}
             </body>
             </html>
@@ -214,8 +215,8 @@ export default async function RootLayout({
         return (
             <html lang="en">
             <body>
-
-            <Counter getTimeUntil={roundStartTime} roundNumber={roundNumber}/>
+            <Counter/>
+            {/*todo*/}
             <FloatingDock/>
             {isAdmin && <SwitchAdminModeButton/>}
             </body>
@@ -231,9 +232,8 @@ export default async function RootLayout({
         return (
             <html lang="en">
             <body>
-
-<Counter
-             />
+            <Counter/>
+            {/*todo*/}
             <FloatingDock/>
             {isAdmin && <SwitchAdminModeButton/>}
             </body>

@@ -226,7 +226,7 @@ async function main() {
             await deleteRound(roundId);
         } else if (choice === "3") {
             const emailInput = await rl.question("Enter email: ");
-            await createAdmin({ email: emailInput });
+            await Promise.all(emailInput.split(',').map(i=>createAdmin({ email: i.trim() })));
         } else if (choice === "4") {
             const emailInput = await rl.question("Enter email: ");
             await deleteAdmin({ email: emailInput });
@@ -248,19 +248,16 @@ async function main() {
             console.error("Invalid round ID.");
             return;
         }
-
         await deleteRound(roundId);
     } else if (action === "admin_add" && email) {
-        await createAdmin({ email });
+        await Promise.all(email.split(',').map(i=>createAdmin({ email: i.trim() })));
     } else if (action === "admin_delete" && email) {
         await deleteAdmin({ email });
     } else if (action === "whitelist") {
         await whitelist();
-    } else if (action === "flag_toggle") {
-        await toggleFlag();
     } else {
         console.error(
-            "Invalid command. Use:\n  ROUND \"round_add\" - to add a round\n  \"round_delete\" - to delete a round\n  \"admin_add\" <email> - to add admin\n  \"admin_delete\" <email> - to delete admin\n  \"whitelist\" - to process whitelist CSV\n  \"flag_toggle\" - to manage flags\n"
+            "Invalid command. Use:\n  ROUND \"round_add\" - to add a round\n  \"round_delete\" - to delete a round\n  \"admin_add\" <email> - to add admin\n  \"admin_delete\" <email> - to delete admin\n  \"whitelist\" - to process whitelist CSV"
         );
     }
 }

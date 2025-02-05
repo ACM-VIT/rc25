@@ -66,64 +66,64 @@ export default function QuestionPage({
         }
     };
 
-    useEffect(() => {
-        const subscribeToSubmission = async (
-            submissionId: string,
-            token: string
-        ) => {
-            const finalResult = await fetch(
-                `/edge?submissionId=${submissionId}&token=${token}`,
-                {
-                    method: "GET",
-                }
-            );
-
-            const reader = finalResult.body?.getReader();
-            const decoder = new TextDecoder();
-
-            if (reader) {
-                try {
-                    while (true) {
-                        const { done, value } = await reader.read();
-                        if (done) break;
-                        const chunk = decoder.decode(value);
-                        console.log("Received chunk:", chunk);
-                    }
-                } catch (error) {
-                    console.error("Error reading stream:", error);
-                } finally {
-                    reader.releaseLock();
-                }
-            }
-
-            const results = await getSubmissionResults(submissionId);
-            const passed = results.filter((r) => r === true).length;
-            setStatusRibbon({
-                type: "evaluation",
-                passed,
-                total: results.length,
-            });
-
-            setSubmissions((prev) =>
-                prev.map((submission) =>
-                    submission.id === submissionId
-                        ? { ...submission, testcasespassed: results }
-                        : submission
-                )
-            );
-            console.log("Final result", results);
-        };
-
-        submissions
-            .filter((submission) => !submission.evaluated)
-            .forEach(async (submission) => {
-                const token = submission.token;
-                const submissionId = submission.id;
-                subscribeToSubmission(submissionId, token).then((r) =>
-                    console.log(r)
-                );
-            });
-    }, [problem.id, session.user.id, submissions]);
+    // useEffect(() => {
+    //     const subscribeToSubmission = async (
+    //         submissionId: string,
+    //         token: string
+    //     ) => {
+    //         const finalResult = await fetch(
+    //             `/edge?submissionId=${submissionId}&token=${token}`,
+    //             {
+    //                 method: "GET",
+    //             }
+    //         );
+    //
+    //         const reader = finalResult.body?.getReader();
+    //         const decoder = new TextDecoder();
+    //
+    //         if (reader) {
+    //             try {
+    //                 while (true) {
+    //                     const { done, value } = await reader.read();
+    //                     if (done) break;
+    //                     const chunk = decoder.decode(value);
+    //                     console.log("Received chunk:", chunk);
+    //                 }
+    //             } catch (error) {
+    //                 console.error("Error reading stream:", error);
+    //             } finally {
+    //                 reader.releaseLock();
+    //             }
+    //         }
+    //
+    //         const results = await getSubmissionResults(submissionId);
+    //         const passed = results.filter((r) => r === true).length;
+    //         setStatusRibbon({
+    //             type: "evaluation",
+    //             passed,
+    //             total: results.length,
+    //         });
+    //
+    //         setSubmissions((prev) =>
+    //             prev.map((submission) =>
+    //                 submission.id === submissionId
+    //                     ? { ...submission, testcasespassed: results }
+    //                     : submission
+    //             )
+    //         );
+    //         console.log("Final result", results);
+    //     };
+    //
+    //     submissions
+    //         .filter((submission) => !submission.evaluated)
+    //         .forEach(async (submission) => {
+    //             const token = submission.token;
+    //             const submissionId = submission.id;
+    //             subscribeToSubmission(submissionId, token).then((r) =>
+    //                 console.log(r)
+    //             );
+    //         });
+    // }, [problem.id, session.user.id, submissions]);
 
     return (
         <div

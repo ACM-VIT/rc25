@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache';
-import { firestoreService } from '@/lib/firebase-service';
+import { firestoreService } from '@/lib/firebase-admin-service';
 
 interface ActionResponse {
   success: boolean;

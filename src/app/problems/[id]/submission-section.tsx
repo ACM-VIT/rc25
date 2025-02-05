@@ -71,15 +71,15 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
                             : "#F2994A",
                 }}
             >
-                <div className="flex items-center space-x-2">
+                <div className="flex flex-col items-start space-x-2">
                     <span className="font-bold">{submission.user.name}</span>
+                </div>
+                <div className="flex flex-col items-center justify-between gap-1 space-x-2">
                     {isBest && (
-                        <span className="m-0 px-2 py-1 text-xs font-semibold text-purple-500 border border-purple-500 rounded-md">
+                        <span className="m-0 px-1 py-0 text-[0.5rem] font-semibold text-purple-500 border border-purple-500 rounded-md">
                             Best Submission
                         </span>
                     )}
-                </div>
-                <div className="flex flex-col items-center justify-between gap-2 space-x-2">
                     <span>
                         {passedCount}/{totalTests} Test Cases Passed
                     </span>

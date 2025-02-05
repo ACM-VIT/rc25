@@ -46,12 +46,12 @@ export default function PortalFaqs() {
 
     return (
         <div
-            className="min-h-screen"
+            className="flex min-h-dvh w-full justify-center"
             style={{ backgroundImage: "url(https://rc25-assets.acmvit.in/submissionsbg.png)", backgroundSize: "contain", backgroundAttachment: "fixed" }}
         >
-            <div className="p-6 text-white">
-                <p className="text-3xl font-semibold text-center border-white pt-0 pb-4">FAQs</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-10 justify-center">
+            <div className="p-6 text-white w-[80%]">
+                <p className="text-5xl font-semibold text-center border-white pt-0 pb-10">FAQs</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-7 justify-center">
                     {faqs.map((faq, index) => (
                         <div
                             key={faq.id}
@@ -60,12 +60,12 @@ export default function PortalFaqs() {
                             <Accordion type="single" collapsible>
                                 <AccordionItem
                                     value={`question${index + 1}`}
-                                    className="rounded-lg border border-[rgba(155,81,224,0.5)] bg-[rgba(66,66,66,0.75)] shadow-[0_0_7.7px_4px_#FFF,0_0_18.8px_14px_#7638F5] backdrop-blur-[16px]"
+                                    className="rounded-lg border border-[rgba(155,81,224,0.5)] bg-[rgba(66,66,66,0.75)] shadow-[0_0_9.7px_1px_#FFF,0_0_18.8px_10px_#7638F5] backdrop-blur-[16px]"
                                 >
-                                    <AccordionTrigger className="text-lg font-bold  font-medium p-4">
+                                    <AccordionTrigger className="md:text-lg font-medium p-4">
                                         {faq.question}
                                     </AccordionTrigger>
-                                    <AccordionContent className="p-4 font-[Aubile] text-sm">
+                                    <AccordionContent className="p-4 pt-0 text-sm">
                                         {faq.answer}
                                     </AccordionContent>
                                 </AccordionItem>

@@ -96,16 +96,16 @@ export default async function createSubmission(data: {
             throw new Error("Problem not found");
         }
 
-        const userTeam = await prisma.team.findFirst({
+        const user = await prisma.user.findUnique({
             relationLoadStrategy: 'join',
-            where: {
-                members: {
-                    some: {
-                        id: data.userId,
-                    },
-                },
+            where:{
+                id: data.userId
             },
-        });
+            include: {
+                Team: true
+            }
+        })
+        const userTeam = user?.Team
 
         if (!userTeam) {
             throw new Error("User is not part of any team");
@@ -224,10 +224,9 @@ export default async function createSubmission(data: {
             },
         });
 
-
         return {
             success: true,
-            submission,
+            submission: {...submission, user: {name: user.name}},
             token: judgeResult.token,
         };
     } catch (error: unknown) {

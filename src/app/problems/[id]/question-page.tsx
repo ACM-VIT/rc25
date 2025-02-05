@@ -5,21 +5,24 @@ import CodeEditor, { StatusRibbonProps } from "./code-editor";
 import QuestionDisplay from "./question-display";
 import WebRunner from "./web-runner";
 import { useRouter } from "next/navigation";
-import SubmissionSection from "@/app/problems/[id]/submission-section";
+import SubmissionSection, {SubmissionWithUser} from "@/app/problems/[id]/submission-section";
 import React, { useEffect, useState, useTransition } from "react";
 import { getTeamSubmissions } from "@/app/problems/[id]/actions";
+import getSubmissionResults from "@/app/actions/get-submission-results";
+
 import {
     ResizableHandle,
     ResizablePanel,
     ResizablePanelGroup,
 } from "@/components/ui/resizable";
 
-type problemWithRelations = Prisma.ProblemGetPayload<{
+type ProblemWithRelations = Prisma.ProblemGetPayload<{
     include: { Testcase: true; round: true };
 }>;
 
+
 interface QuestionPageProps {
-    problem: problemWithRelations;
+    problem: ProblemWithRelations;
     session: {
         user: {
             id: string;
@@ -40,7 +43,7 @@ export default function QuestionPage({
     const router = useRouter();
     const currentIndex = questions.findIndex((q) => q.slno === currentSlno);
     const [isPending, startTransition] = useTransition();
-    const [submissions, setSubmissions] = useState<Submission[]>([]);
+    const [submissions, setSubmissions] = useState<SubmissionWithUser[]>([]);
     const [statusRibbon, setStatusRibbon] = useState<StatusRibbonProps>(null);
     useEffect(() => {
         startTransition(async () => {

@@ -1,5 +1,5 @@
 "use client";
-import {Prisma, Submission} from "@prisma/client";
+import {Prisma} from "@prisma/client";
 import {FiChevronLeft, FiChevronRight} from "react-icons/fi";
 import CodeEditor, {StatusRibbonProps} from "./code-editor";
 import QuestionDisplay from "./question-display";

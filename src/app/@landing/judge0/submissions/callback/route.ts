@@ -147,7 +147,7 @@ export async function PUT(request: NextRequest) {
                 }
             });
 
-            const [_, {score}] = await Promise.all([prisma.submission.update({
+            const [{}, {score}] = await Promise.all([prisma.submission.update({
                 where: {id: submission.id},
                 data: {
                     testcasespassed: finalTestCasesPassed,

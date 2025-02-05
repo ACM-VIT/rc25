@@ -1,7 +1,7 @@
 "use client";
 import type React from "react";
 import {useState, useEffect} from "react";
-import type {Prisma,Submission} from "@prisma/client";
+import type {Prisma} from "@prisma/client";
 import Lottie from "lottie-react";
 import animationData from "../../../../public/loading.json";
 import {ScrollArea} from "../../../components/ui/scroll-area";

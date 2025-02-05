@@ -1,19 +1,21 @@
 "use client";
-import { Prisma, Submission } from "@prisma/client";
-import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
-import CodeEditor, { StatusRibbonProps } from "./code-editor";
+import {Prisma, Submission} from "@prisma/client";
+import {FiChevronLeft, FiChevronRight} from "react-icons/fi";
+import CodeEditor, {StatusRibbonProps} from "./code-editor";
 import QuestionDisplay from "./question-display";
 import WebRunner from "./web-runner";
-import { useRouter } from "next/navigation";
+import {useRouter} from "next/navigation";
 import SubmissionSection from "@/app/problems/[id]/submission-section";
-import React, { useEffect, useState, useTransition } from "react";
-import { getTeamSubmissions } from "@/app/problems/[id]/actions";
+import React, {useEffect, useState, useTransition} from "react";
+import {getTeamSubmissions} from "@/app/problems/[id]/actions";
 import getSubmissionResults from "@/app/actions/get-submission-results";
 import {
     ResizableHandle,
     ResizablePanel,
     ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import {doc, onSnapshot} from "@firebase/firestore";
+import {db} from "@/lib/firebase-service";
 
 type problemWithRelations = Prisma.ProblemGetPayload<{
     include: { Testcase: true; round: true };
@@ -32,12 +34,12 @@ interface QuestionPageProps {
 }
 
 export default function QuestionPage({
-    problem,
-    session,
-    questions,
-    currentSlno,
-    desc,
-}: QuestionPageProps) {
+                                         problem,
+                                         session,
+                                         questions,
+                                         currentSlno,
+                                         desc,
+                                     }: QuestionPageProps) {
     const router = useRouter();
     const currentIndex = questions.findIndex((q) => q.slno === currentSlno);
     const [isPending, startTransition] = useTransition();
@@ -64,64 +66,40 @@ export default function QuestionPage({
         }
     };
 
-    // useEffect(() => {
-    //     const subscribeToSubmission = async (
-    //         submissionId: string,
-    //         token: string
-    //     ) => {
-    //         const finalResult = await fetch(
-    //             `/edge?submissionId=${submissionId}&token=${token}`,
-    //             {
-    //                 method: "GET",
-    //             }
-    //         );
-    //
-    //         const reader = finalResult.body?.getReader();
-    //         const decoder = new TextDecoder();
-    //
-    //         if (reader) {
-    //             try {
-    //                 while (true) {
-    //                     const { done, value } = await reader.read();
-    //                     if (done) break;
-    //                     const chunk = decoder.decode(value);
-    //                     console.log("Received chunk:", chunk);
-    //                 }
-    //             } catch (error) {
-    //                 console.error("Error reading stream:", error);
-    //             } finally {
-    //                 reader.releaseLock();
-    //             }
-    //         }
-    //
-    //         const results = await getSubmissionResults(submissionId);
-    //         const passed = results.filter((r) => r === true).length;
-    //         setStatusRibbon({
-    //             type: "evaluation",
-    //             passed,
-    //             total: results.length,
-    //         });
-    //
-    //         setSubmissions((prev) =>
-    //             prev.map((submission) =>
-    //                 submission.id === submissionId
-    //                     ? { ...submission, testcasespassed: results }
-    //                     : submission
-    //             )
-    //         );
-    //         console.log("Final result", results);
-    //     };
-    //
-    //     submissions
-    //         .filter((submission) => !submission.evaluated)
-    //         .forEach(async (submission) => {
-    //             const token = submission.token;
-    //             const submissionId = submission.id;
-    //             subscribeToSubmission(submissionId, token).then((r) =>
-    //                 console.log(r)
-    //             );
-    //         });
-    // }, [problem.id, session.user.id, submissions]);
+    useEffect(() => {
+        const subscribeToSubmission = (
+            submissionId: string,
+        ) => {
+            return onSnapshot(doc(db, "submissions", submissionId), async (doc) => {
+                if (!doc.data()?.status) return
+                const results = await getSubmissionResults(submissionId);
+                const passed = results.filter((r) => r === true).length;
+                setStatusRibbon({
+                    type: "evaluation",
+                    passed,
+                    total: results.length,
+                });
+
+                setSubmissions((prev) =>
+                    prev.map((submission) =>
+                        submission.id === submissionId
+                            ? {...submission, testcasespassed: results}
+                            : submission
+                    )
+                );
+            });
+        };
+
+        const unsub = submissions
+            .filter((submission) => !submission.evaluated)
+            .map((submission) => {
+                const submissionId = submission.id;
+                return subscribeToSubmission(submissionId)
+            });
+        return () => {
+            unsub.forEach((u) => u());
+        }
+    }, [problem.id, session.user.id, submissions]);
 
     return (
         <div
@@ -148,7 +126,7 @@ export default function QuestionPage({
                                     : "hover:bg-gray-700"
                             }`}
                         >
-                            <FiChevronLeft className="inline" />
+                            <FiChevronLeft className="inline"/>
                             Previous
                         </button>
                         <div className="flex gap-2">
@@ -178,7 +156,7 @@ export default function QuestionPage({
                             }`}
                         >
                             Next
-                            <FiChevronRight className="inline" />
+                            <FiChevronRight className="inline"/>
                         </button>
                     </div>
                 </div>
@@ -215,14 +193,14 @@ export default function QuestionPage({
                                         maxSize={70}
                                         // className="h-[45%]"
                                     >
-                                        <WebRunner problem={problem} />
+                                        <WebRunner problem={problem}/>
                                     </ResizablePanel>
                                 </ResizablePanelGroup>
                             </div>
                         </ResizablePanel>
 
                         {/* Resizable Handle */}
-                        <ResizableHandle />
+                        <ResizableHandle/>
 
                         {/* Right Resizable Section */}
                         <ResizablePanel
@@ -249,7 +227,7 @@ export default function QuestionPage({
                                             session={session}
                                         />
                                     </ResizablePanel>
-                                    <ResizableHandle />
+                                    <ResizableHandle/>
                                     <ResizablePanel
                                         defaultSize={30}
                                         minSize={30}

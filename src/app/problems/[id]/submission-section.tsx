@@ -1,10 +1,10 @@
 "use client";
 import type React from "react";
-import { useState, useEffect } from "react";
-import type { Submission } from "@prisma/client";
+import {useState, useEffect} from "react";
+import type {Submission} from "@prisma/client";
 import Lottie from "lottie-react";
 import animationData from "../../../../public/loading.json";
-import { ScrollArea } from "../../../components/ui/scroll-area";
+import {ScrollArea} from "../../../components/ui/scroll-area";
 
 interface SubmissionSectionProps {
     isPending: boolean;
@@ -23,13 +23,13 @@ const noSubmissionMessages = [
 const getRandomMessage = () => {
     return noSubmissionMessages[
         Math.floor(Math.random() * noSubmissionMessages.length)
-    ];
+        ];
 };
 
 const SubmissionSection: React.FC<SubmissionSectionProps> = ({
-    isPending,
-    submissions,
-}) => {
+                                                                 isPending,
+                                                                 submissions,
+                                                             }) => {
     console.log("Submissions array:", submissions);
     console.log("Submissions length:", submissions.length);
 
@@ -67,8 +67,8 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
                         passedCount === totalTests
                             ? "#27AE60"
                             : passedCount / totalTests <= 0.4
-                            ? "#EB5757"
-                            : "#F2994A",
+                                ? "#EB5757"
+                                : "#F2994A",
                 }}
             >
                 <div className="flex items-center space-x-2">
@@ -76,7 +76,8 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
                 </div>
                 <div className="flex flex-col items-center justify-between gap-2 space-x-2">
                     {isBest && (
-                        <span className="m-0 px-2 py-1 text-xs font-semibold text-purple-500 border border-purple-500 rounded-md">
+                        <span
+                            className="m-0 px-2 py-1 text-xs font-semibold text-purple-500 border border-purple-500 rounded-md">
                             Best Submission
                         </span>
                     )}
@@ -107,13 +108,12 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
                     }}
                 >
                     {submissions.length === 0 ? (
-                        // Case 1: No submissions so far
-                        <div className="w-full flex items-center justify-center border-[#EB5757] border-1 py-2 rounded-md">
+                        <div
+                            className="w-full flex items-center justify-center border-[#EB5757] border-1 py-2 rounded-md">
                             {randomMessage}
                         </div>
                     ) : submissions.length === 1 &&
-                      !submissions[0].evaluated ? (
-                        // Case 2: No previous submissions, first submission created and still evaluating
+                    !submissions[0].evaluated ? (
                         <div className="w-full h-full border-2 border-[#EB5757] px-4 py-2 rounded-md">
                             <p className="text-[#F8CC22] font-outfit text-center">
                                 The first record is now under scrutiny. The
@@ -124,7 +124,7 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
                                     animationData={animationData}
                                     loop
                                     autoplay
-                                    style={{ width: "25%" }}
+                                    style={{width: "25%"}}
                                 />
                             </div>
                         </div>
@@ -135,20 +135,20 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
                                     {renderSubmission(
                                         submission,
                                         index ===
-                                            submissions.findIndex(
-                                                (s) =>
-                                                    s.testcasespassed.filter(
-                                                        Boolean
-                                                    ).length ===
-                                                    Math.max(
-                                                        ...submissions.map(
-                                                            (sub) =>
-                                                                sub.testcasespassed.filter(
-                                                                    Boolean
-                                                                ).length
-                                                        )
+                                        submissions.findIndex(
+                                            (s) =>
+                                                s.testcasespassed.filter(
+                                                    Boolean
+                                                ).length ===
+                                                Math.max(
+                                                    ...submissions.map(
+                                                        (sub) =>
+                                                            sub.testcasespassed.filter(
+                                                                Boolean
+                                                            ).length
                                                     )
-                                            ) // The submission with the highest score gets the "Best Submission" tag
+                                                )
+                                        )
                                     )}
                                 </div>
                             ))}

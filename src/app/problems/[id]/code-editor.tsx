@@ -6,10 +6,14 @@ import {
     SUPPORTED_LANGUAGES,
     type SupportedLanguage,
 } from "@/utils/judge0-langs";
-import {Submission} from "@prisma/client";
+import {Prisma, Submission} from "@prisma/client";
 
 const LANGUAGE_STORAGE_KEY = "preferred-language" as const;
 const CODE_STORAGE_KEY = "code-snippets" as const;
+
+type SubmissionWithUser = Prisma.SubmissionGetPayload<{
+    include: {user: {select: {name: true}}}
+}>
 
 interface Problem {
     id: string;
@@ -22,7 +26,7 @@ interface CodeEditorProps {
     session: { user: { id: string } };
     setStatusRibbon: React.Dispatch<React.SetStateAction<StatusRibbonProps>>;
     statusRibbon: StatusRibbonProps;
-    setSubmissions: React.Dispatch<React.SetStateAction<Submission[]>>;
+    setSubmissions: React.Dispatch<React.SetStateAction<SubmissionWithUser[]>>;
 }
 
 interface SubmittedStatusRibbonProps {

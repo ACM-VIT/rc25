@@ -13,8 +13,7 @@ export default async function AddToTeam(userId: string, teamId: string) {
 			include: { members: true },
 		});
 		if (!team) return null;
-		if (team.checkedIn)
-		{
+		if (team.checkedIn){
 			return false
 		}
 		if (

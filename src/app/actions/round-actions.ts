@@ -2,6 +2,7 @@
 
 import { prisma } from "@/utils/prisma";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export async function upsertRound(data: {
   number: number;
@@ -132,3 +133,7 @@ export async function getLatestRound() {
   }
 }
 
+export async function refreshRoundCache() {
+  revalidatePath("/", "layout");
+  return redirect("/");
+}

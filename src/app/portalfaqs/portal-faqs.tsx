@@ -1,7 +1,12 @@
 "use client";
 
 import React from "react";
-import { AccordionContent, AccordionItem, AccordionTrigger, Accordion } from "../../components/ui/accordion";
+import {
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+    Accordion,
+} from "../../components/ui/accordion";
 // import Image from "next/image";
 // import yellowwhitering from "@/app/assets/yellowwhitering.png";
 
@@ -47,10 +52,16 @@ export default function PortalFaqs() {
     return (
         <div
             className="flex min-h-dvh w-full justify-center"
-            style={{ backgroundImage: "url('./submissionsbg.png')", backgroundSize: "contain", backgroundAttachment: "fixed" }}
+            style={{
+                backgroundImage: "url('./submissionsbg.png')",
+                backgroundSize: "contain",
+                backgroundAttachment: "fixed",
+            }}
         >
             <div className="p-6 text-white w-[80%]">
-                <p className="text-5xl font-semibold text-center border-white pt-0 pb-10">FAQs</p>
+                <p className="text-5xl font-semibold text-center border-white pt-0 pb-10">
+                    FAQs
+                </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-7 justify-center">
                     {faqs.map((faq, index) => (
                         <div

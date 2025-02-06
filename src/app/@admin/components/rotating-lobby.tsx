@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Dashboard from "./dashboard";
+import Sponsor from "./sponsor";
 import SecondPage from "./duo-sponsor";
 import ThirdPage from "../livepages/thirdpage";
 import WormGraph from "./worm-graph";
+import Sponsor2 from "./sponsor2";
 
 import LiveLeaderboard from "./live-leaderboard";
 
@@ -14,9 +15,10 @@ interface Screen {
 }
 
 const screens: Screen[] = [
-  { Component: Dashboard, timeout: 5000 },
-  { Component: SecondPage, timeout: 5000 },
-  { Component: LiveLeaderboard, timeout: 5000 },
+  { Component: Sponsor, timeout: 5000 },
+  { Component: SecondPage, timeout: 1000 },
+  { Component: LiveLeaderboard, timeout: 1000 },
+  { Component: Sponsor2, timeout: 1000 },
   // { Component: ThirdPage, timeout: 5000 },
   // { Component: WormGraph, timeout: 5000 },
 ];

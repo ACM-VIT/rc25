@@ -1,11 +1,11 @@
 "use client";
 import React from "react";
-import { ScrollArea, ScrollBar } from "../../../components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import Image from "next/image";
 import windows from "../assets/windows.png";
 import mac from "../assets/mac.png";
 import linux from "../assets/linux.png";
-import { Button } from "../../../components/ui/button";
+import { Button } from "@/components/ui/button";
 import DashboardBox from "../../../components/DashboardBox";
 import { FaCircleExclamation } from "react-icons/fa6";
 
@@ -55,7 +55,7 @@ export default function QuestionDisplay({
                 {/* I/O Runner Explanation */}
                 <div className="p-1 border-t border-purple-700 w-full">
                     <div className="text-[#A2A2A2] text-xs md:text-[60%] xl:text-xs">
-                        Use the I/O Runner below to experiment with inputs and uncover the logic behind the expected output. Once you've reverse-engineered the solution, write your code in the embedded editor, submit it, and view the results in the submissions pane.
+                        Use the I/O Runner below to experiment with inputs and uncover the logic behind the expected output. Once you&apos;ve reverse-engineered the solution, write your code in the embedded editor, submit it, and view the results in the submissions pane.
                     </div>
                 </div>
 

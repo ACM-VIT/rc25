@@ -86,7 +86,7 @@ export default function QuestionPage({
                     setSubmissions((prev) =>
                         prev.map((submission) =>
                             submission.id === submissionId
-                                ? { ...submission, testcasespassed: results }
+                                ? { ...submission, testcasespassed: results, evaluated: true,  }
                                 : submission
                         )
                     );

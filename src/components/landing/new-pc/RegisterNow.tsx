@@ -2,6 +2,14 @@
 
 import type React from "react";
 import Image from "next/image";
+import RC from "../../../../public/ReverseCoding.svg";
+import logo from "../../../../public/acmlogo.svg";
+import v1 from "../../../../public/Vector.svg";
+import v2 from "../../../../public/Vector(1).svg";
+import v3 from "../../../../public/Vector(2).svg";
+import v5 from "../../../../public/Vector(3).svg";
+import v7 from "../../../../public/Vector(4).svg";
+import v8 from "../../../../public/Vector(5).svg";
 import SignIn from "@/app/(auth)/authactions/signin";
 const RegisterNow1: React.FC = () => {
   return (
@@ -9,7 +17,7 @@ const RegisterNow1: React.FC = () => {
       <div className="absolute inset-0 z-10">
         <Image
           alt="background"
-          src="https://rc25-assets.acmvit.in/RegisterNow.png"
+          src="/RegisterNow.png"
           fill
           className="object-cover object-center"
           priority
@@ -23,12 +31,12 @@ const RegisterNow1: React.FC = () => {
           </p>
         </div>
         {[
-          { src: "https://rc25-assets.acmvit.in/Vector(1).svg", href: "https://github.com/ACM-VIT" },
-          { src: "https://rc25-assets.acmvit.in/Vector.svg", href: "https://www.instagram.com/acmvit/" },
-          { src: "https://rc25-assets.acmvit.in/Vector(3).svg", href: "https://www.linkedin.com/company/acmvit/" },
-          { src: "https://rc25-assets.acmvit.in/Vector(2).svg", href: "https://www.facebook.com/acmvitvellore/" },
-          { src: "https://rc25-assets.acmvit.in/Vector(4).svg", href: "https://x.com/ACM_VIT" },
-          { src: "https://rc25-assets.acmvit.in/Vector(5).svg", href: "https://blog.acmvit.in/" },
+          { src: v2, href: "https://github.com/ACM-VIT" },
+          { src: v1, href: "https://www.instagram.com/acmvit/" },
+          { src: v5, href: "https://www.linkedin.com/company/acmvit/" },
+          { src: v3, href: "https://www.facebook.com/acmvitvellore/" },
+          { src: v7, href: "https://x.com/ACM_VIT" },
+          { src: v8, href: "https://blog.acmvit.in/" },
         ].map((item, index) => (
           <a
             key={`vector-${index}`}
@@ -65,7 +73,7 @@ const RegisterNow1: React.FC = () => {
             <div className="w-full flex justify-end">
               <Image
                 alt="ACM Logo"
-                src="https://rc25-assets.acmvit.in/acmlogo.svg"
+                src={logo || "/placeholder.svg"}
                 width={120}
                 height={120}
                 className="transform scale-150"
@@ -78,7 +86,7 @@ const RegisterNow1: React.FC = () => {
             <div className="w-full flex justify-start">
               <Image
                 alt="Reverse Coding Logo"
-                src="https://rc25-assets.acmvit.in/ReverseCodingLogo.png"
+                src={RC || "/placeholder.svg"}
                 width={120}
                 height={120}
                 className="transform scale-150"

@@ -18,7 +18,7 @@ export default function LandOne() {
         {/* Decorative Left Rock */}
         <div className="absolute hidden lg:block left-0 top-1/2 transform -translate-y-[35vh] mt-[-15%] animate-float">
           <Image
-            src="https://rc25-assets.acmvit.in/leftrock.svg"
+            src="/leftrock.svg"
             alt="Left Rock"
             width={200}
             height={200}
@@ -29,7 +29,7 @@ export default function LandOne() {
         {/* Central Logo */}
         <div className="w-2/3 sm:w-1/2 lg:w-[40%] mx-auto z-10 mt-[-15%]">
           <Image
-            src="https://rc25-assets.acmvit.in/revcod.svg"
+            src="/revcod.svg"
             alt="Reverse Coding"
             width={300}
             height={300}
@@ -40,7 +40,7 @@ export default function LandOne() {
         {/* Decorative Right Rock */}
         <div className="absolute hidden lg:block right-0 top-1/2 transform -translate-y-[48vh] animate-float mt-[-30%]">
           <Image
-            src="https://rc25-assets.acmvit.in/rightrock.svg"
+            src="/rightrock.svg"
             alt="Right Rock"
             width={500}
             height={500}

@@ -165,7 +165,7 @@ export default function PrizePool() {
               {/* Card front */}
               <div className="absolute w-full h-full rounded-xl shadow-xl border-4 border-purple-700 flex flex-col items-center justify-center p-2 " style={{
                 backfaceVisibility: 'hidden',
-                backgroundImage: "url(https://rc25-assets.acmvit.in/paper.png)",
+                backgroundImage: "url('/paper.png')",
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
@@ -179,7 +179,7 @@ export default function PrizePool() {
               {/* Card back */}
               <div className="absolute w-full h-full rounded-xl border-4 border-purple-700 shadow-xl shadow-purple-500 flex flex-col items-center justify-center p-2 [transform:rotateY(180deg)]" style={{
                 backfaceVisibility: 'hidden',
-                backgroundImage: "url(https://rc25-assets.acmvit.in/paper.png)",
+                backgroundImage: "url('/paper.png')",
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',

@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
+import faqbg from "../../../../public/landing_new/faqbg.png";
 import SmoothInfiniteScroll from "./infinitescroll";
 
 interface CarouselIndicatorState {
@@ -108,7 +109,7 @@ const FaqMobile: React.FC = () => {
   return (
     <div className="relative w-screen h-screen bg-black overflow-hidden">
       <Image
-        src="https://rc25-assets.acmvit.in/landing_new/faqbg.png"
+        src={faqbg || "/placeholder.svg"}
         alt="bg"
         layout="fill"
         objectFit="cover"

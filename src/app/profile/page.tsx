@@ -1,6 +1,8 @@
-import React from 'react';
-import Image from 'next/image';
-import { prisma } from '@/utils/prisma';
+import React from "react";
+import Image from "next/image";
+import dark from "../../../public/teamdash.png";
+import stormtrooper from "../../../public/stormtrooper.png";
+import { prisma } from "@/utils/prisma";
 import { notFound } from "next/navigation";
 import { auth } from "../(auth)/auth";
 import FloatingDock from "@/components/FloatingDock";
@@ -76,11 +78,13 @@ export default async function Page() {
     return (
         <div className="min-h-screen w-full flex flex-col items-center justify-center text-white p-2 sm:p-4 md:p-5 lg:p-6 xl:p-8">
             <div className="absolute inset-0 z-0">
-                <img
-          alt="background"
-          src="https://rc25-assets.acmvit.in/teamdash.png"
-          className="object-center transform"
-        />
+                <Image
+                    alt="background"
+                    src={dark}
+                    fill
+                    className="object-center transform"
+                    priority
+                />
             </div>
             <div className="fixed inset-0 w-full h-full bg-black bg-opacity-50" />
 
@@ -95,7 +99,13 @@ export default async function Page() {
             </div>
 
             <div className="fixed bottom-2 left-2">
-                <Image src="https://rc25-assets.acmvit.in/RCLogo.svg" alt="rclogo" width={100} height={50} className="w-[80px] sm:w-[100px] md:w-[110px] lg:w-[120px] xl:w-[130px]" />
+                <Image
+                    src="/RCLogo.svg"
+                    alt="rclogo"
+                    width={100}
+                    height={50}
+                    className="w-[80px] sm:w-[100px] md:w-[110px] lg:w-[120px] xl:w-[130px]"
+                />
             </div>
 
             <div className="w-full max-w-4xl px-2 py-4 sm:py-6 md:py-7 lg:py-8 xl:py-10">
@@ -134,13 +144,13 @@ export default async function Page() {
                                                 <p className="text-xs sm:text-sm md:text-sm lg:text-base xl:text-lg flex-1 text-center how-it-works-heading">
                                                     {index + 1}. {member.name}
                                                 </p>
-                                                <img
-                        src="https://rc25-assets.acmvit.in/stormtrooper.png"
-                        alt="Stormtrooper"
-                        width={30}
-                        height={30}
-                        className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10"
-                      />
+                                                <Image
+                                                    src={stormtrooper}
+                                                    alt="Stormtrooper"
+                                                    width={30}
+                                                    height={30}
+                                                    className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10"
+                                                />
                                             </div>
                                             <div className="border border-purple-500 w-full h-1 sm:h-1.5 md:h-1.5 lg:h-2 xl:h-2 mt-2" />
                                         </div>

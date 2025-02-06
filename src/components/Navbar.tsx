@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
-
+import RCLogo from "@/app/assets/RCLogo.svg";
 import { User as AvatarIcon } from "lucide-react";
 import SignOut from "@/app/(auth)/authactions/signout";
 import Link from "next/link";
@@ -45,7 +45,7 @@ const Navbar: React.FC<NavbarProps> = ({ name }) => {
             <div className="flex h-full flex-row justify-between items-center mx-auto px-4 sm:px-6 md:px-4 max-w-9xl mb-3">
                 <div className="h-full">
                     <Image
-                        src="https://rc25-assets.acmvit.in/RCLogo.svg"
+                        src={RCLogo}
                         alt="LOGO"
                         className="h-[100%] w-[95%]"
                     />

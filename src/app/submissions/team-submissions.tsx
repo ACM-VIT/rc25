@@ -14,7 +14,7 @@ const TeamSubmissions: React.FC<TeamSubmissionProps> = ({ submissions, teamName 
 
       <div
         className="hidden md:flex flex-col w-full h-[90%] items-center gap-4 text-white p-4 pb-0 min-h-screen"
-        style={{ backgroundImage: "url(https://rc25-assets.acmvit.in/submissionsbg.png)", backgroundSize: "cover" }}
+        style={{ backgroundImage: "url('./submissionsbg.png')", backgroundSize: "cover" }}
       >
         <div className="p-2 justify-center items-center">
           <p className="font-bold text-2xl font-custom underline underline-offset-4 decoration-white">

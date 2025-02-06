@@ -47,7 +47,7 @@ export default function PortalFaqs() {
     return (
         <div
             className="flex min-h-dvh w-full justify-center"
-            style={{ backgroundImage: "url(https://rc25-assets.acmvit.in/submissionsbg.png)", backgroundSize: "contain", backgroundAttachment: "fixed" }}
+            style={{ backgroundImage: "url('./submissionsbg.png')", backgroundSize: "contain", backgroundAttachment: "fixed" }}
         >
             <div className="p-6 text-white w-[80%]">
                 <p className="text-5xl font-semibold text-center border-white pt-0 pb-10">FAQs</p>

@@ -13,6 +13,10 @@ export default async function AddToTeam(userId: string, teamId: string) {
 			include: { members: true },
 		});
 		if (!team) return null;
+		if (team.checkedIn)
+		{
+			return false
+		}
 		if (
 			team.members.length >= Number.parseInt(process.env.TEAM_CAPACITY || "4")
 		) {

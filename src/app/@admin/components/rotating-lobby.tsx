@@ -18,7 +18,7 @@ const Sponsor = lazyWithPreload(() => import("./sponsor"));
 const DuoSponsor = lazyWithPreload(() => import("./duo-sponsor"));
 const Sponsor2 = lazyWithPreload(() => import("./sponsor2"));
 const LiveLeaderboard = lazyWithPreload(() => import("./live-leaderboard"));
-const Counter = lazyWithPreload(() => import("@/components/countdownpage"));
+const Counter = lazyWithPreload(() => import("./lobby-counter"));
 
 interface Screen {
   Component: PreloadableLazy<ComponentType<Record<string, never>>>;

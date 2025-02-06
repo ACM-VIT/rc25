@@ -7,7 +7,6 @@ const config: NextConfig = {
             bodySizeLimit: "4mb", // or whatever limit you need
         },
     },
-    assetPrefix: "https://rc25-assets.acmvit.in",
 };
 
 export default config;

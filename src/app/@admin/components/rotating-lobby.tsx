@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect, Suspense, ComponentType } from "react";
 
-type PreloadableLazy<T extends React.ComponentType<any>> = React.LazyExoticComponent<T> & {
+type PreloadableLazy<T extends ComponentType<Record<string, never>>> = React.LazyExoticComponent<T> & {
   preload: () => Promise<{ default: T }>;
 };
 
-function lazyWithPreload<T extends React.ComponentType<any>>(
+function lazyWithPreload<T extends ComponentType<Record<string, never>>>(
   factory: () => Promise<{ default: T }>
 ): PreloadableLazy<T> {
   const Component = React.lazy(factory) as PreloadableLazy<T>;
@@ -21,7 +21,7 @@ const LiveLeaderboard = lazyWithPreload(() => import("./live-leaderboard"));
 const Counter = lazyWithPreload(() => import("@/components/countdownpage"));
 
 interface Screen {
-  Component: PreloadableLazy<React.ComponentType<any>>;
+  Component: PreloadableLazy<ComponentType<Record<string, never>>>;
   timeout: number;
 }
 

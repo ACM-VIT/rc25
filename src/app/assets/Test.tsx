@@ -7,7 +7,7 @@ const Test: React.FC = () => {
   return (
     <div className="relative w-full h-auto">
       <Image 
-        src="https://rc25-assets.acmvit.in/NullPointBackground.png"
+        src="src\app\assets\NullPointBackground.png"
         alt="Null Point Background"
         width={1920} 
         height={1080} 

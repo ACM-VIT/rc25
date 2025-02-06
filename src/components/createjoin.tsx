@@ -38,7 +38,7 @@ export default function Team({ name }: { name: string }) {
       <div
         className="fixed inset-0 w-full h-full bg-black"
         style={{
-          backgroundImage: `url('https://rc25-assets.acmvit.in/backgrounds/createTeamBg.png')`,
+          backgroundImage: `url('/backgrounds/createTeamBg.png')`,
           backgroundPosition: "center",
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
@@ -60,7 +60,7 @@ export default function Team({ name }: { name: string }) {
 
       <div className="relative px-6 py-2 flex justify-center items-center w-[85vw] motion-preset-slide-down-sm">
         <Image
-          src="https://rc25-assets.acmvit.in/frameDecoration.svg"
+          src="/frameDecoration.svg"
           alt="rclogo"
           width={190}
           height={100}
@@ -68,7 +68,7 @@ export default function Team({ name }: { name: string }) {
         />
 
         <Image
-          src="https://rc25-assets.acmvit.in/frameDecoration.svg"
+          src="/frameDecoration.svg"
           alt="rclogo"
           width={190}
           height={100}
@@ -173,7 +173,7 @@ export default function Team({ name }: { name: string }) {
         </div>
       </div>
       <Image
-        src="https://rc25-assets.acmvit.in/RCLogo.svg"
+        src="/RCLogo.svg"
         alt="rclogo"
         width={190}
         height={100}

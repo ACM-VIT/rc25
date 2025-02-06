@@ -1,12 +1,13 @@
 import type React from "react";
 import Image from "next/image";
+import bg from "../../../../public/landing_new/howitworks.png";
 import SmoothInfiniteScroll from "./infinitescroll";
 
 const HowItWorksMobile: React.FC = () => {
   return (
     <div className="relative w-screen h-screen overflow-hidden">
       <Image
-        src={"https://rc25-assets.acmvit.in/HowitWorks-2.png"}
+        src={bg || "/placeholder.svg"}
         alt="bg"
         layout="fill"
         objectFit="cover"

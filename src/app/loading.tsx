@@ -7,12 +7,14 @@ const Lottie = dynamic(() => import("lottie-react"), {
   loading: () => <div className="h-screen bg-black/80" />,
 });
 
+import animationData from "../../public/loading.json";
+
 export default function Loading() {
   return (
     <div className="bg-black/80 min-h-screen flex items-center justify-center">
       <div className="scale-[0.85]">
         <Lottie
-          animationData="https://rc25-assets.acmvit.in/loading.json"
+          animationData={animationData}
           loop={true}
           autoplay={true}
           style={{ width: 800, height: 800 }}

@@ -51,7 +51,7 @@ export default function Instructions() {
         <div
             className="min-h-screen relative flex flex-col items-center justify-center p-6"
             style={{
-                backgroundImage: "url(https://rc25-assets.acmvit.in/submissionsbg.png)",
+                backgroundImage: "url('./submissionsbg.png')",
                 backgroundSize: "cover",
                 backgroundPosition: "center",
             }}

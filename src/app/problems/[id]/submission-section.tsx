@@ -3,8 +3,8 @@ import type React from "react";
 import {useState, useEffect} from "react";
 import type {Prisma} from "@prisma/client";
 import Lottie from "lottie-react";
-import { ScrollArea } from "../../../components/ui/scroll-area";
-
+import animationData from "../../../../public/loading.json";
+import {ScrollArea} from "../../../components/ui/scroll-area";
 
 interface SubmissionSectionProps {
     isPending: boolean;
@@ -121,7 +121,7 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
                             </p>
                             <div className="h-full flex items-center justify-center">
                                 <Lottie
-                                    animationData="https://rc25-assets.acmvit.in/loading.json"
+                                    animationData={animationData}
                                     loop
                                     autoplay
                                     style={{width: "25%"}}

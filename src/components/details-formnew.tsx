@@ -1,13 +1,13 @@
 "use client";
 import { useState } from "react";
-import onboard from "../app/actions/onboard";
+import onboard from "@/app/actions/onboard";
 import { useFormStatus } from "react-dom";
 import { useSession } from "next-auth/react";
 import parsePhoneNumber from "libphonenumber-js";
 import Image from "next/image";
 import bg from "@/app/assets/detailsbg.svg";
 import SignOut from "@/app/(auth)/authactions/signout";
-import RC from "../../public/RCLogo.svg";
+import RC from "@/app/assets/RCLogo.svg";
 
 import { Outfit } from "next/font/google";
 
@@ -46,7 +46,7 @@ export default function OnboardingForm() {
                 <div className="flex flex-row w-full h-1/12 justify-end items-center lg:p-4 ">
                     <button
                         type="button"
-                        className="absolute bottom-5 right-2 transform -translate-x-1/2 text-center w-24 sm:w-28 md:w-32 p-4 py-2 rounded-md 
+                        className="absolute top-3 right-1 transform -translate-x-1/2 text-center w-24 sm:w-28 md:w-32 p-4 py-2 rounded-md 
                  border bg-[#08000F] border-[#CEB7FF] text-[#CEB7FF] 
                  uppercase hover:bg-[#CEB7FF] hover:text-black 
                  transition-all duration-300 shadow-lg text-sm sm:text-base"
@@ -59,8 +59,8 @@ export default function OnboardingForm() {
                 </div>
                 <div className="flex flex-col w-full h-full justify-center items-center">
                     <div className="w-[85vw] lg:w-[65vw] text-center relative h-full flex flex-col items-center justify-center mb-16 sm:mb-24 lg:mb-0">
-                        <div className="box-border w-[85vw] lg:w-[65vw] h-[80vh] bg-[#08000F] bg-opacity-60 border overflow-y-auto lg:overflow-y-hidden border-[#9B51E0] relative px-8 py-8 xs-sm:px-8 xs-sm:py-8  phone:px-1 phone:py-1 lg:px-10 lg:py-12 xl:px-12 xl:py-6">
-                            <div className="flex text-center flex-row items-center justify-center gap-x-4 w-full">
+                        <div className="box-border w-[85vw] lg:w-[65vw] h-[70vh] bg-[#08000F] bg-opacity-60 border overflow-y-auto border-[#9B51E0] relative px-8 py-8 xs-sm:px-8 xs-sm:py-8  phone:px-1 phone:py-1 lg:px-10 lg:py-12 xl:px-12 xl:py-6">
+                            <div className="flex text-center flex-row items-center justify-center gap-x-4 w-full ">
                                 <div
                                     className="w-2/3 h-[10px] bg-transparent border border-[#CEB7FF]"
                                     style={{

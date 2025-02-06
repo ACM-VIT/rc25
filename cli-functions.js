@@ -163,30 +163,35 @@ async function whitelist() {
     try {
         const data = await fs.readFile(CSV_FILE_PATH, "utf-8");
         const lines = data.split("\n").filter((line) => line.trim() !== "");
-        // Remove header line
         const rows = lines.slice(1);
-        const createPromises = rows.map(async (line) => {
-            const fields = line.split(",").map((f) => f.trim());
-            // CSV columns: [S.No., ParticipantId, Participant Name, School, Session Attended, Mobile Number, EmailID]
-            const regNo = fields[1];
-            const name = fields[2];
-            const phone = fields[5];
-            const email = fields[6];
-            const exists = await prisma.uniReg.findUnique({relationLoadStrategy: 'join', where: { email } });
-            if (!exists) {
-                return prisma.uniReg.create({
-                    data: {
-                        regNo,
-                        name,
-                        phone,
-                        email,
-                    },
-                });
+
+        await prisma.$transaction(async (tx) => {
+            for (const line of rows) {
+                const fields = line.split(",").map((f) => f.trim());
+                
+                const regNo = fields[1];
+                const name = fields[2];
+                const phone = fields[5];
+                const email = fields[6];
+
+                if (!regNo || !name || !phone || !email) {
+                    console.error(`Skipping invalid row: ${line}`);
+                    continue;
+                }
+
+                try {
+                    await tx.uniReg.upsert({
+                        where: { email },
+                        update: { regNo, name, phone },
+                        create: { regNo, name, phone, email }
+                    });
+                    console.log(`Processed: ${email}`);
+                } catch (err) {
+                    console.error(`Error processing row: ${line}`, err);
+                }
             }
-            console.log(`Email ${email} already exists. Skipping.`);
-            return null;
         });
-        await Promise.all(createPromises);
+
         console.log("Whitelist data processed successfully.");
     } catch (e) {
         console.error("Error processing whitelist data:", e);

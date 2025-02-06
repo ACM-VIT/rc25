@@ -117,7 +117,7 @@ export default async function RootLayout({
         );
     }
 
-    if (!detailsFilled) {
+    if (!detailsFilled && !isAdmin) {
         return (
             <html lang="en">
                 <body>
@@ -145,7 +145,7 @@ export default async function RootLayout({
     }
 
     const teamCheckedIn = user.Team.checkedIn;
-    if (!teamCheckedIn) {
+    if (!teamCheckedIn && !isAdmin) {
         return (
             <html lang="en">
                 <body>
@@ -158,7 +158,7 @@ export default async function RootLayout({
 
     const disqualified = Boolean(user.Team.disqualify);
 
-    if (disqualified) {
+    if (disqualified && !isAdmin) {
         return (
             <html lang="en">
                 <body>
@@ -174,7 +174,7 @@ export default async function RootLayout({
 
     const winnerScreen = !curOrNextRound;
 
-    if (winnerScreen) {
+    if (winnerScreen && !isAdmin) {
         return (
             <html lang="en">
                 <body>
@@ -188,10 +188,10 @@ export default async function RootLayout({
     }
 
     const memberOfRound = user.Team.TeamRound.find(
-        (tr) => tr.roundId === curOrNextRound.id
+        (tr) => curOrNextRound && tr.roundId === curOrNextRound.id
     );
 
-    if (!memberOfRound) {
+    if (!memberOfRound && !isAdmin) {
         return (
             <html lang="en">
                 <body>
@@ -205,10 +205,10 @@ export default async function RootLayout({
 
     // todo round checked in condition
 
-    const roundStarted =
+    const roundStarted = curOrNextRound &&
         getISTTime(curOrNextRound.start) <= getCurrentISTTime();
 
-    if (!roundStarted) {
+    if (!roundStarted && !isAdmin) {
         return (
             <html lang="en">
                 <body>
@@ -221,9 +221,9 @@ export default async function RootLayout({
         );
     }
 
-    const roundEnded = getISTTime(curOrNextRound.end) <= getCurrentISTTime();
+    const roundEnded = curOrNextRound && getISTTime(curOrNextRound.end) <= getCurrentISTTime();
 
-    if (roundEnded) {
+    if (roundEnded && !isAdmin) {
         return (
             <html lang="en">
                 <body>

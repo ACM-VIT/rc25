@@ -101,6 +101,7 @@ model Problem {
   round        Round        @relation(fields: [roundId], references: [id], onDelete: Cascade)
   submissions  Submission[]
   Testcase     Testcase[]
+  isHidden     Boolean      @default(false)
 }
 
 model Testcase {

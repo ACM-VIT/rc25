@@ -31,6 +31,9 @@ export async function PUT(request: NextRequest) {
                                 weight: true,
                             },
                         }
+                    },
+                    orderBy: {
+                        sequence: 'asc'
                     }
                 },
             },

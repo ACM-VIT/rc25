@@ -169,10 +169,11 @@ export default async function createSubmission(data: {
                 testcasespassed: testcasespassed,
                 evaluated: false,
                 testcases: {
-                    create: selectedTestcases.map((tc) => ({
+                    create: selectedTestcases.map((tc, index) => ({
                         testcase: {
                             connect: {id: tc.id}
-                        }
+                        },
+                        sequence: index
                     })),
                 },
             },

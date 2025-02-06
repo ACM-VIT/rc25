@@ -136,6 +136,7 @@ model TestcaseSubmission {
   submissionId String
   submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
   testcase     Testcase   @relation(fields: [testcaseId], references: [id], onDelete: Cascade)
+  sequence     Int        @default(0)
 
   @@id([testcaseId, submissionId])
   @@unique([testcaseId, submissionId])
@@ -174,7 +175,6 @@ enum Difficulty {
   MEDIUM
   HARD
 }
-
 
 model News {
   id      String   @id @default(cuid())

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { auth } from "@/app/(auth)/auth"; // Import your auth
 import type { Round } from "@prisma/client";
 
-import { Metadata } from "next";
+import type { Metadata } from "next";
 import { MDXRemote } from "next-mdx-remote/rsc";
 
 export async function generateMetadata({
@@ -126,12 +126,13 @@ export default async function Page({ params }: PageParams) {
     const currentQuestion = questions.find((q) => q.id === resolvedParams.id);
     const currentSlno = currentQuestion?.slno ?? 1;
 
-    console.log("User:", user);
+    // console.log("User:", user);
 
     if (
         !problem ||
         ((problem.round.start > new Date() || problem.round.end < new Date()) &&
-            user?.Team?.id !== process.env.ADMIN_TEAM_ID)
+            user?.Team?.id !== process.env.ADMIN_TEAM_ID) ||
+        (problem.isHidden && user?.Team?.id !== process.env.ADMIN_TEAM_ID)
     )
         notFound();
     return (

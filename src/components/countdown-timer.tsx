@@ -18,7 +18,7 @@ const CountdownTimer: React.FC = () => {
     const fetchRoundDetails = async () => {
         try {
             const round = await getLatestRound();
-            console.log("Fetched Round Data:", round);
+            // console.log("Fetched Round Data:", round);
 
             if (!round) {
                 setStatus("No Active Round");

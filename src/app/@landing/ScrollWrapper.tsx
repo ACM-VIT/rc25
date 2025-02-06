@@ -25,25 +25,25 @@ const ScrollWrapper: React.FC = () => {
         <>
             <div className="lg:hidden flex flex-col h-screen bg-[#C2E6EC] dark:bg-[#0C1222] overflow-y-auto snap-y snap-mandatory ease-in">
                 <div className="flex flex-col relative w-full">
-                    <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0">
+                    <div className="top-0 w-full h-screen flex flex-col snap-start shrink-0">
                         <LandOneMobile />
                     </div>
-                    <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0">
+                    <div className="top-0 w-full h-screen flex flex-col snap-start shrink-0">
                         <HowItWorksMobile />
                     </div>
-                    <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0">
+                    <div className="top-0 w-full h-screen flex flex-col snap-start shrink-0">
                         <HowItWorksMobile2 />
                     </div>
-                    <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0">
+                    <div className="top-0 w-full h-screen flex flex-col snap-start shrink-0">
                         <TimeLineMobile />
                     </div>
-                    <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0">
+                    <div className="top-0 w-full h-screen flex flex-col snap-start shrink-0">
                         <AlliesMobile />
                     </div>
-                    <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0 ">
+                    <div className="top-0 w-full h-screen flex flex-col snap-start shrink-0 ">
                         <FaqMobile />
                     </div>
-                    <div className="sticky top-0 w-full h-screen flex flex-col snap-start shrink-0">
+                    <div className="relative top-0 w-full h-screen flex flex-col snap-start shrink-0">
                         <RegisterNowMobile />
                     </div>
                 </div>

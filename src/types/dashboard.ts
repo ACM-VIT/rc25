@@ -37,6 +37,7 @@ export type Questions = {
     questionName: string
     difficulty: string
     status: string
+    isHidden: boolean
 }
 
 export interface NewsItem {

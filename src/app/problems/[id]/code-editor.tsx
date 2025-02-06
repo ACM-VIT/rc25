@@ -135,11 +135,11 @@ export default function CodeEditor({ problem, session, setStatusRibbon, statusRi
                 language,
             });
 
-            console.log("result: ", result);
+            // console.log("result: ", result);
 
             if (result.success && result.submission) {
                 setStatusRibbon({type: "submitted"});
-                console.log("Submission id check:", result.submission.id)
+                // console.log("Submission id check:", result.submission.id)
                 // todo: push into submissions state
                 setSubmissions(prev=>[...prev, result.submission]);
             }
@@ -252,13 +252,13 @@ export default function CodeEditor({ problem, session, setStatusRibbon, statusRi
 
             {statusRibbon?.type === "evaluation" && statusRibbon.passed === statusRibbon.total && (
                 <div className="top-[5vh] p-2 bg-green-100 text-green-700 text-sm">
-                    Submitted successfully!
+                    All testcases passed!
                 </div>
             )}
 
             {statusRibbon?.type === "evaluation" && statusRibbon.passed !== statusRibbon.total && (
                 <div className="top-[5vh] p-2 bg-yellow-300 text-green-700 text-sm">
-                    Submitted successfully!
+                    {statusRibbon.passed}/{statusRibbon.total} testcases passed
                 </div>
             )}
 

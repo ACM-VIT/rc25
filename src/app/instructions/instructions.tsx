@@ -3,47 +3,29 @@
 import DashboardBox from "@/components/DashboardBox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
+// TODO: Update instructions
+
 export default function Instructions() {
     const instructions = [
         {
-            title: "General Guidelines",
+            title: "Team Formation",
             description:
-                "• Team Formation: Teams can consist of 2 to 4 members. Ensure all team members are registered.\n• Project Scope: Your project must align with the hackathon's theme or challenges. Off-topic projects may be disqualified.\n• Original Work: All work must be original and created during the hackathon. Pre-existing projects are not allowed.\n• Time Limit: You have [specific duration, e.g., 24 or 48 hours] to complete your project.",
+                "• Each team can have 2-4 members.\n• If you don’t have a teammate, you can search for them on our Discord channel."
         },
         {
-            title: "Submission Guidelines",
+            title: "Format",
             description:
-                "• Platform: Submit your project through [platform, e.g., Devpost, Google Forms, etc.].\n• Deliverables: Source code in a publicly accessible repository (e.g., GitHub). A short description of your project and its purpose.\n• [Optional] A video or presentation explaining your project.\n• Deadline: Submissions must be completed by [specific deadline]. Late entries will not be accepted.",
+                "• There will be 2 rounds.\n• The best performing teams of round 1 will advance to round 2.\n• The team with maximum points at the end of round 2 wins the event.",
         },
         {
-            title: "Judging Criteria",
+            title: "Code Execution and Scoring",
             description:
-                "• Projects will be evaluated based on:\n  - Innovation: How unique and creative is the idea?\n  - Implementation: How well is the idea executed?\n  - Impact: What is the potential impact or usefulness of the project?\n  - Presentation: How clearly and effectively is the project explained?",
+                "• All participants will be given executable files that display input-output test cases.\n• The code you write should implement the logic based on these input-output files and also fulfill some hidden test cases.\n• Once the code runs you'll be awarded with points from 0 to 100% of the points dedicated to the question on the basis of the number of test cases passed.\n• Each language has a distinct boilerplate code template, and you must write your code within the specified template.",
         },
         {
-            title: "Rules and Conduct",
+            title: "Code of Conduct",
             description:
-                "• Code of Conduct: Participants must adhere to the hackathon's [Code of Conduct]. Harassment or inappropriate behavior will not be tolerated.\n• External Help: You may use open-source libraries, APIs, or tools but must disclose them in your submission. Plagiarism will result in disqualification.\n• Collaboration Tools: Use appropriate tools (e.g., GitHub, Figma) to collaborate effectively with your team.",
-        },
-        {
-            title: "Technical Support",
-            description:
-                "• Workshops and Mentorship: Attend scheduled workshops or connect with mentors for guidance.\n• Resources: Use provided resources, APIs, and datasets for your project.",
-        },
-        {
-            title: "Communication",
-            description:
-                "• Updates: Check [communication platform, e.g., Discord, Slack] regularly for updates and announcements.\n• Support Channels: For queries or technical assistance, use the designated support channels.",
-        },
-        {
-            title: "Prizes and Recognition",
-            description:
-                "• Winners Announcement: Winners will be announced on [date and platform].\n• Prizes: Details of prizes will be shared at the start of the hackathon.\n• Participation Certificates: All participants completing a project will receive certificates.",
-        },
-        {
-            title: "Miscellaneous",
-            description:
-                "• Hardware and Venue: If in-person, bring necessary hardware (laptops, chargers, etc.). Wi-Fi and power outlets will be provided.\n• Breaks and Refreshments: Stay hydrated and take regular breaks! Food and refreshments will be available [details].\n• Have Fun! The hackathon is a great opportunity to learn, collaborate, and innovate. Good luck and happy hacking! 🚀",
+                "• Our portal consists of inter-team plagiarism checks hence sharing codes/answers with other teams can get you disqualified.",
         },
     ];
 

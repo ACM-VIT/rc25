@@ -430,7 +430,7 @@ const Dashboard: React.FC<DashboardProps> = ({
 
                     {/* Right Column - Leaderboard */}
                     <div className="w-1/4">
-                        {leaderboardShow && (
+                        {leaderboardShow ? (
                             <DashboardBox className="h-full">
                                 <p className="text-2xl overflow-x-hidden font-custom border-b-2 border-rcgrey/20 pb-4 mb-4">
                                     Leaderboard
@@ -474,6 +474,17 @@ const Dashboard: React.FC<DashboardProps> = ({
                                         )}
                                     </ul>
                                 </ScrollArea>
+                            </DashboardBox>
+                        ) : (
+                            <DashboardBox className="h-full">
+                                <p className="text-2xl overflow-x-hidden font-custom border-b-2 border-rcgrey/20 pb-4 mb-4">
+                                    Leaderboard
+                                </p>
+                                <div className="flex justify-center items-center h-full">
+                                    <p className="text-xl font-semibold">
+                                        The dark side of suspense is strong. Wait, you must, for the leaderboard to reveal itself.
+                                    </p>
+                                </div>
                             </DashboardBox>
                         )}
                     </div>

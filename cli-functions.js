@@ -210,9 +210,9 @@ async function main() {
         const choice = await rl.question("Enter your choice (1-5): ");
 
         if (choice === "1") {
-            const start = new Date(await rl.question("Enter round start date (YYYY-MM-DD): "));
-            const end = new Date(await rl.question("Enter round end date (YYYY-MM-DD): "));
-            const result = new Date(await rl.question("Enter round result date (YYYY-MM-DD): "));
+            const start = new Date();
+            const end = new Date();
+            const result = new Date();
 
             await createRound({ start, end, result });
         } else if (choice === "2") {
@@ -236,9 +236,9 @@ async function main() {
             console.log("Invalid choice.");
         }
     } else if (action === "round_add") {
-        const start = new Date(await rl.question("Enter round start date (YYYY-MM-DD): "));
-        const end = new Date(await rl.question("Enter round end date (YYYY-MM-DD): "));
-        const result = new Date(await rl.question("Enter round result date (YYYY-MM-DD): "));
+        const start = new Date();
+        const end = new Date();
+        const result = new Date();
 
         await createRound({ start, end, result });
     } else if (action === "round_delete") {

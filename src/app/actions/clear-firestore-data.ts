@@ -11,7 +11,7 @@ interface ActionResponse {
 
 export async function clearFirestoreData(): Promise<ActionResponse> {
   try {
-    await firestoreService.clearAllData();
+    await firestoreService.leaderboard.clearAllData();
     
     revalidatePath('/');
     

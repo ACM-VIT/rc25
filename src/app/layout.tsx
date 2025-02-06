@@ -11,7 +11,6 @@ import "./globals.css";
 import { Outfit } from "next/font/google";
 // import Dashboard from "@/components/dashboard";
 import Navbar from "@/components/Navbar";
-import SignOutButton from "@/components/buttons/sign-out";
 import Team from "@/components/createjoin";
 import { cookies } from "next/headers";
 import SwitchAdminModeButton from "@/components/switch-admin-mode-button";

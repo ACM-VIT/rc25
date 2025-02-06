@@ -1,11 +1,13 @@
 "use client";
-import { Prisma, Submission } from "@prisma/client";
-import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { Prisma } from "@prisma/client";
+// import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import CodeEditor, { StatusRibbonProps } from "./code-editor";
 import QuestionDisplay from "./question-display";
 import WebRunner from "./web-runner";
-import { useRouter } from "next/navigation";
-import SubmissionSection, {SubmissionWithUser} from "@/app/problems/[id]/submission-section";
+// import { useRouter } from "next/navigation";
+import SubmissionSection, {
+    SubmissionWithUser,
+} from "@/app/problems/[id]/submission-section";
 import React, { useEffect, useState, useTransition } from "react";
 import { getTeamSubmissions } from "@/app/problems/[id]/actions";
 import getSubmissionResults from "@/app/actions/get-submission-results";
@@ -15,11 +17,12 @@ import {
     ResizablePanel,
     ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import { doc, onSnapshot } from "@firebase/firestore";
+import { db } from "@/lib/firebase-service";
 
 type ProblemWithRelations = Prisma.ProblemGetPayload<{
     include: { Testcase: true; round: true };
 }>;
-
 
 interface QuestionPageProps {
     problem: ProblemWithRelations;
@@ -36,12 +39,12 @@ interface QuestionPageProps {
 export default function QuestionPage({
     problem,
     session,
-    questions,
-    currentSlno,
+    // questions,
+    // currentSlno,
     desc,
 }: QuestionPageProps) {
-    const router = useRouter();
-    const currentIndex = questions.findIndex((q) => q.slno === currentSlno);
+    // const router = useRouter();
+    // const currentIndex = questions.findIndex((q) => q.slno === currentSlno);
     const [isPending, startTransition] = useTransition();
     const [submissions, setSubmissions] = useState<SubmissionWithUser[]>([]);
     const [statusRibbon, setStatusRibbon] = useState<StatusRibbonProps>(null);
@@ -52,78 +55,55 @@ export default function QuestionPage({
         });
     }, [problem.id, session.user.id]);
 
-    const handleNext = () => {
-        if (currentIndex < questions.length - 1) {
-            const nextQuestion = questions[currentIndex + 1];
-            router.push(`/problems/${nextQuestion.id}`);
-        }
-    };
+    // const handleNext = () => {
+    //     if (currentIndex < questions.length - 1) {
+    //         const nextQuestion = questions[currentIndex + 1];
+    //         router.push(`/problems/${nextQuestion.id}`);
+    //     }
+    // };
 
-    const handlePrevious = () => {
-        if (currentIndex > 0) {
-            const prevQuestion = questions[currentIndex - 1];
-            router.push(`/problems/${prevQuestion.id}`);
-        }
-    };
+    // const handlePrevious = () => {
+    //     if (currentIndex > 0) {
+    //         const prevQuestion = questions[currentIndex - 1];
+    //         router.push(`/problems/${prevQuestion.id}`);
+    //     }
+    // };
 
-    // useEffect(() => {
-    //     const subscribeToSubmission = async (
-    //         submissionId: string,
-    //         token: string
-    //     ) => {
-    //         const finalResult = await fetch(
-    //             `/edge?submissionId=${submissionId}&token=${token}`,
-    //             {
-    //                 method: "GET",
-    //             }
-    //         );
-    //
-    //         const reader = finalResult.body?.getReader();
-    //         const decoder = new TextDecoder();
-    //
-    //         if (reader) {
-    //             try {
-    //                 while (true) {
-    //                     const { done, value } = await reader.read();
-    //                     if (done) break;
-    //                     const chunk = decoder.decode(value);
-    //                     console.log("Received chunk:", chunk);
-    //                 }
-    //             } catch (error) {
-    //                 console.error("Error reading stream:", error);
-    //             } finally {
-    //                 reader.releaseLock();
-    //             }
-    //         }
-    //
-    //         const results = await getSubmissionResults(submissionId);
-    //         const passed = results.filter((r) => r === true).length;
-    //         setStatusRibbon({
-    //             type: "evaluation",
-    //             passed,
-    //             total: results.length,
-    //         });
-    //
-    //         setSubmissions((prev) =>
-    //             prev.map((submission) =>
-    //                 submission.id === submissionId
-    //                     ? { ...submission, testcasespassed: results }
-    //                     : submission
-    //             )
-    //         );
-    //         console.log("Final result", results);
-    //     };
-    //
-    //     submissions
-    //         .filter((submission) => !submission.evaluated)
-    //         .forEach(async (submission) => {
-    //             const token = submission.token;
-    //             const submissionId = submission.id;
-    //             subscribeToSubmission(submissionId, token).then((r) =>
-    //                 console.log(r)
-    //             );
-    //         });
-    // }, [problem.id, session.user.id, submissions]);
+    useEffect(() => {
+        const subscribeToSubmission = (submissionId: string) => {
+            return onSnapshot(
+                doc(db, "submissions", submissionId),
+                async (doc) => {
+                    if (!doc.data()?.status) return;
+                    const results = await getSubmissionResults(submissionId);
+                    const passed = results.filter((r) => r === true).length;
+                    setStatusRibbon({
+                        type: "evaluation",
+                        passed,
+                        total: results.length,
+                    });
+
+                    setSubmissions((prev) =>
+                        prev.map((submission) =>
+                            submission.id === submissionId
+                                ? { ...submission, testcasespassed: results }
+                                : submission
+                        )
+                    );
+                }
+            );
+        };
+
+        const unsub = submissions
+            .filter((submission) => !submission.evaluated)
+            .map((submission) => {
+                const submissionId = submission.id;
+                return subscribeToSubmission(submissionId);
+            });
+        return () => {
+            unsub.forEach((u) => u());
+        };
+    }, [problem.id, session.user.id, submissions]);
 
     return (
         <div
@@ -139,7 +119,7 @@ export default function QuestionPage({
                         {problem.title}
                     </h1>
 
-                    <div className="flex gap-2 absolute right-2 items-center">
+                    {/* <div className="flex gap-2 absolute right-2 items-center">
                         <button
                             type="button"
                             onClick={handlePrevious}
@@ -182,7 +162,7 @@ export default function QuestionPage({
                             Next
                             <FiChevronRight className="inline" />
                         </button>
-                    </div>
+                    </div> */}
                 </div>
                 <div className="w-[90%] h-[87vh] gap-1">
                     <ResizablePanelGroup
@@ -198,7 +178,7 @@ export default function QuestionPage({
                             <div className="flex flex-col justify-evenly h-full">
                                 <ResizablePanelGroup
                                     direction="vertical"
-                                    className="gap-2"
+                                    className="gap-1"
                                 >
                                     <ResizablePanel
                                         defaultSize={50}
@@ -211,6 +191,7 @@ export default function QuestionPage({
                                             desc={desc}
                                         />
                                     </ResizablePanel>
+                                    <ResizableHandle />
                                     <ResizablePanel
                                         defaultSize={50}
                                         minSize={30}

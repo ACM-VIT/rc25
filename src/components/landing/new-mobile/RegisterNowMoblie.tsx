@@ -5,7 +5,7 @@ const RegisterNowMobile: React.FC = () => {
     return (
         <>
             <div className="absolute inset-0 z-20"></div>
-            <div className="absolute bottom-0  z-30 w-full flex flex-row justify-between">
+            <div className="absolute bottom-0 z-10 w-full flex flex-row justify-between">
                 <div className="relative w-20 h-20 translate-y-1">
                     <Image
                         alt="ACM logo"
@@ -26,13 +26,16 @@ const RegisterNowMobile: React.FC = () => {
                 </div>
             </div>
 
-            <div className="absolute inset-0 z-20 w-full h-full flex flex-col content-center">
-                <div className="how-it-works-heading text-white content-center text-center h-full  text-7xl lg:text-[80px] xl:text-[115px]">
+            <div className="absolute inset-0 z-50 w-full h-full flex flex-col content-center">
+                <button
+                    className="how-it-works-heading text-white content-center text-center h-full  text-7xl lg:text-[80px] xl:text-[115px]"
+                    onClick={SignIn}
+                >
                     <h1>
                         REGISTER <br />
                         NOW
                     </h1>
-                </div>
+                </button>
             </div>
 
             <div className="relative w-screen h-screen overflow-hidden">

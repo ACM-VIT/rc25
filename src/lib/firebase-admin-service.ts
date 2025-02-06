@@ -60,37 +60,63 @@ async function deleteQueryBatch(
 
 
 export const firestoreService = {
-    async updateTeam({id, name, score}: { id: string; name: string; score: number }) {
-        const teamRef = db.collection('teams').doc(id);
-        await teamRef.set({name, score}, {merge: true});
-    },
-
-    async clearCollection(collectionPath: string): Promise<void> {
-        try {
-            console.log(`Starting deletion of collection: ${collectionPath}`);
-
-            const batchSize = 100;
-            await deleteQueryBatch(collectionPath, batchSize);
-
-            console.log(`Successfully cleared collection: ${collectionPath}`);
-        } catch (error) {
-            console.error('Error clearing collection:', error);
-            throw new Error(`Failed to clear collection: ${(error as Error).message}`);
-        }
-    },
-
-    async clearAllData(): Promise<void> {
-        try {
-            const collections = ['leaderboard'];
-
-            for (const collectionPath of collections) {
-                await this.clearCollection(collectionPath);
+    leaderboard:
+        {
+            async updateTeam({id, name, score}:
+                                 {
+                                     id: string;
+                                     name: string;
+                                     score: number
+                                 }
+            ) {
+                const teamRef = db.collection('leaderboard').doc(id);
+                await teamRef.set({name, score}, {merge: true});
             }
+            ,
 
-            console.log('Successfully cleared all collections');
-        } catch (error) {
-            console.error('Error clearing all data:', error);
-            throw new Error(`Failed to clear all data: ${(error as Error).message}`);
+            async clearCollection(collectionPath
+                                      :
+                                      string
+            ):
+                Promise<void> {
+                try {
+                    console.log(`Starting deletion of collection: ${collectionPath}`);
+
+                    const batchSize = 100;
+                    await deleteQueryBatch(collectionPath, batchSize);
+
+                    console.log(`Successfully cleared collection: ${collectionPath}`);
+                } catch (error) {
+                    console.error('Error clearing collection:', error);
+                    throw new Error(`Failed to clear collection: ${(error as Error).message}`);
+                }
+            },
+
+            async clearAllData(): Promise<void> {
+                try {
+                    const collections = ['leaderboard'];
+
+                    for (const collectionPath of collections
+                        ) {
+                        await this.clearCollection(collectionPath);
+                    }
+
+                    console.log('Successfully cleared all collections');
+                } catch
+                    (error) {
+                    console.error('Error clearing all data:', error);
+                    throw new Error(`Failed to clear all data: ${(error as Error).message}`);
+                }
+            }
+        },
+    submissions: {
+        async created(id: string) {
+            const submissionRef = db.collection('submissions').doc(id);
+            await submissionRef.set({status: false}, {merge: true});
+        },
+        async processed(id: string) {
+            const submissionRef = db.collection('submissions').doc(id);
+            await submissionRef.set({status: true}, {merge: true});
         }
     }
 };

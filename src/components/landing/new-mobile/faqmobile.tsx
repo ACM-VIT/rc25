@@ -5,7 +5,6 @@ import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
 import SmoothInfiniteScroll from "./infinitescroll";
 
-// 🌀 Magic UI: Embla Carousel Hook
 interface CarouselIndicatorState {
   selectedIndex: number;
   scrollSnaps: number[];
@@ -52,7 +51,6 @@ const useCarouselIndicator = (
   return { selectedIndex, scrollSnaps, onDotButtonClick };
 };
 
-// 🟢 Carousel Indicator Component
 const CarouselIndicator = ({
   onClick,
   className,
@@ -72,28 +70,34 @@ const FaqMobile: React.FC = () => {
 
   const contentBoxes = [
     {
-      defaultText: "What is Magic UI?",
-      alternateText: "Magic UI is a supercharged UI library.",
+      defaultText:
+        "Which programming languages can be used?",
+      alternateText: "You can code in C, C++, Python, Java, JavaScript, Golang and Rust",
     },
     {
-      defaultText: "How does it work?",
-      alternateText: "It uses Embla Carousel with animations.",
+      defaultText:
+        "How many members can there be in a team?",
+      alternateText: "Each team can have 2-4 members. If you don’t have a teammate, you can search for them on our Discord channel.",
     },
     {
-      defaultText: "Is it responsive?",
-      alternateText: "Yes! Fully adaptive for all devices.",
+      defaultText:
+        "Can I change my current team?",
+      alternateText: "Yes, you can leave a team and join another before the competition starts.",
     },
     {
-      defaultText: "Why use this?",
-      alternateText: "For a seamless and dynamic UI experience.",
+      defaultText:
+        "Which teams qualify for Round 2?",
+      alternateText: "It will be decided after looking at the general performance of teams at the end of round 1.",
     },
     {
-      defaultText: "Can I customize it?",
-      alternateText: "Absolutely! Tailor it to your needs.",
+      defaultText:
+        "Is there a registration fee?",
+      alternateText: "No! Reverse Coding is completely free of cost.",
     },
     {
-      defaultText: "Is it hard to implement?",
-      alternateText: "Nope! Just plug and play.",
+      defaultText:
+        "How is the winner decided?",
+      alternateText: "The team who cleared Round 1 and is at the top of the leaderboard by the end of Round 2 will be the winner of Reverse Coding!",
     },
   ];
 
@@ -103,7 +107,6 @@ const FaqMobile: React.FC = () => {
 
   return (
     <div className="relative w-screen h-screen bg-black overflow-hidden">
-      {/* Background Image */}
       <Image
         src="https://rc25-assets.acmvit.in/landing_new/faqbg.png"
         alt="bg"
@@ -112,44 +115,46 @@ const FaqMobile: React.FC = () => {
         className="absolute inset-0 z-0"
       />
 
-      {/* Foreground Content */}
       <div className="relative z-10 flex flex-col h-full">
-        {/* Title */}
         <div className="flex how-it-works-heading text-white justify-center pt-8 pb-2 text-7xl text-center">
           HOLO GUIDE
         </div>
 
-        {/* Carousel Container */}
-        <div className="flex-1 flex items-center justify-center px-4 md:px-20 h-[60vh] mb-36">
+        <div className="flex-1 flex items-center justify-center px-4 md:px-20 h-[70vh] mb-36">
           <div className="w-full max-w-7xl">
-            <div ref={emblaRef} className="overflow-hidden ">
+            <div ref={emblaRef} className="overflow-visible py-8">
               <div className="flex">
                 {contentBoxes.map((box, index) => (
                   <div
                     key={index}
                     className="embla__slide min-w-full flex justify-center"
                   >
-                    <div
-                      className={`bg-[#222222] backdrop-blur w-[70vw] flex items-center justify-center h-[20vh] bg-opacity-80 p-6 phone:p-8 rounded text-white border border-[#9B51E0] border-opacity-50 transition-all duration-300 ease-in-out cursor-pointer sm:text-xl md:text-2xl
-                        ${
-                          activeBox === index
-                            ? "bg-[#424242] shadow-[0_0_10px_rgba(255,255,255,1),0_0_20px_rgba(206,183,255,0.6),0_0_30px_rgba(155,81,224,0.8)] scale-105"
-                            : ""
-                        }`}
-                      onClick={() => handleBoxClick(index)}
-                    >
-                      <span>
-                        {activeBox === index
-                          ? box.alternateText
-                          : box.defaultText}
-                      </span>
+                    <div className="px-4 py-2 w-[70vw]">
+                      <div
+                        className={`bg-[#222222] backdrop-blur flex items-center justify-center 
+                          h-[20vh] bg-opacity-80 p-4 rounded text-white 
+                          transition-all duration-300 ease-in-out cursor-pointer
+                          border border-[#9B51E0] border-opacity-50
+                          outline-none 
+                          ${
+                            activeBox === index
+                              ? "bg-[#424242] shadow-[0_0_10px_rgba(255,255,255,1),0_0_20px_rgba(206,183,255,0.6),0_0_30px_rgba(155,81,224,0.8)] scale-105 outline outline-2 outline-[#9B51E0]"
+                              : ""
+                          }`}
+                        onClick={() => handleBoxClick(index)}
+                      >
+                        <span className="text-sm sm:text-base md:text-lg lg:text-xl text-center max-w-[90%]">
+                          {activeBox === index
+                            ? box.alternateText
+                            : box.defaultText}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Carousel Indicators */}
             <div className="flex justify-center space-x-2 mt-4">
               {scrollSnaps.map((_, index) => (
                 <CarouselIndicator
@@ -166,7 +171,6 @@ const FaqMobile: React.FC = () => {
           </div>
         </div>
 
-        {/* Smooth Infinite Scroll */}
         <div className="absolute bottom-12 w-full z-20 rotate-[-10deg]">
           <SmoothInfiniteScroll
             text="TRY YOU MUST &nbsp; TRY YOU MUST"
@@ -181,5 +185,7 @@ const FaqMobile: React.FC = () => {
     </div>
   );
 };
+
+
 
 export default FaqMobile;

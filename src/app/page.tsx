@@ -6,7 +6,6 @@ import { getTeamRound } from "@/hooks/useTeamRound";
 import type { Metadata } from "next";
 import { FLAGS } from "@/types/flags"
 import { auth } from "./(auth)/auth";
-import WormGraph from "@/app/@admin/livepages/wormgraph";
 // import { use } from "react";
 
 async function getLeaderBoardShowBoolean(): Promise<boolean> {
@@ -274,7 +273,17 @@ export default async function Page() {
 
   return (
     <>
-      <WormGraph/>
+      <Dashboard
+        teamDetails={teamDetails}
+        leaderboard={leaderboard}
+        leaderboardShow={showLeaderboard}
+        questions={questions}
+        roundInfo={{
+          number: roundInfo?.number ?? 0,
+          end: roundInfo?.end ?? new Date(),
+        }}
+        news={news}
+      />
     </>
   );
 }

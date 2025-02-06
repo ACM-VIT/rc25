@@ -55,10 +55,16 @@ const LiveLeaderboard: React.FC = () => {
         <ScrollArea className="justify-center h-[68vh]">
           <ScrollAreaViewport>
             <div className="sticky top-0 z-10 bg-opacity-50">
-              <div className="flex justify-center text-white px-1 text-center w-full h-[8vh] font-['Orbitron']">
-                <span className="w-2/4 text-2xl font-bold text-center">Rank</span>
-                <span className="w-1/2 text-2xl font-bold text-center">Team Name</span>
-                <span className="w-1/4 text-2xl font-bold text-center">Score</span>
+              <div className="flex w-3/4 mx-auto justify-between text-white px-1 text-center h-[8vh] font-['Orbitron']">
+                <span className="w-1/4 flex items-center justify-center text-2xl font-bold">
+                  Rank
+                </span>
+                <span className="w-1/2 flex items-center justify-center text-2xl font-bold">
+                  Team Name
+                </span>
+                <span className="w-1/4 flex items-center justify-center text-2xl font-bold">
+                  Score
+                </span>
               </div>
             </div>
             <ul className="space-y-3 px-1">
@@ -67,24 +73,21 @@ const LiveLeaderboard: React.FC = () => {
                   key={team.id}
                   className="flex w-3/4 mx-auto bg-slate-700 bg-opacity-50 rounded-lg justify-between text-white items-center h-[9.5vh] font-['Orbitron']"
                 >
-                  <div className="flex w-1/4 p-4 items-center justify-center">
-                    {index === 0 && (
+                  <span className="w-1/4 flex items-center justify-center">
+                    {index === 0 ? (
                       <FaCrown size={28} className="text-yellow-500" />
-                    )}
-                    {index === 1 && (
+                    ) : index === 1 ? (
                       <FaCrown size={28} className="text-gray-400" />
-                    )}
-                    {index === 2 && (
+                    ) : index === 2 ? (
                       <FaCrown size={28} className="text-[#CD7F32]" />
-                    )}
-                    {index > 2 && (
+                    ) : (
                       <span className="text-white">{index + 1}</span>
                     )}
-                  </div>
+                  </span>
                   <span className="w-1/2 truncate text-center uppercase">
                     {team.name}
                   </span>
-                  <span className="w-1/4 text-center font-semibold">
+                  <span className="w-1/4 flex items-center justify-center text-center font-semibold">
                     {team.score} pts
                   </span>
                 </li>

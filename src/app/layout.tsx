@@ -145,7 +145,6 @@ export default async function RootLayout({
     }
 
     const teamCheckedIn = user.Team.checkedIn;
-    console.log(user.Team);
     if (!teamCheckedIn) {
         return (
             <html lang="en">

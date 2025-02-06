@@ -135,11 +135,11 @@ export default function CodeEditor({ problem, session, setStatusRibbon, statusRi
                 language,
             });
 
-            console.log("result: ", result);
+            // console.log("result: ", result);
 
             if (result.success && result.submission) {
                 setStatusRibbon({type: "submitted"});
-                console.log("Submission id check:", result.submission.id)
+                // console.log("Submission id check:", result.submission.id)
                 // todo: push into submissions state
                 setSubmissions(prev=>[...prev, result.submission]);
             }

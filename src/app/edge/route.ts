@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     return new Response("No submission ID provided", { status: 400 });
   }
 
-  console.log("Submission ID:", submissionId);
+  // console.log("Submission ID:", submissionId);
 
   const redis = Redis.fromEnv();
   const encoder = new TextEncoder();

@@ -126,7 +126,7 @@ export default async function Page({ params }: PageParams) {
     const currentQuestion = questions.find((q) => q.id === resolvedParams.id);
     const currentSlno = currentQuestion?.slno ?? 1;
 
-    console.log("User:", user);
+    // console.log("User:", user);
 
     if (
         !problem ||

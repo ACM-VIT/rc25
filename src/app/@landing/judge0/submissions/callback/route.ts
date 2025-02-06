@@ -12,7 +12,7 @@ export async function PUT(request: NextRequest) {
     try {
         const body = await request.json();
 
-        console.log("Request body:", body);
+        // console.log("Request body:", body);
         const {token, stdout}: WebhookBody = body;
 
 
@@ -41,16 +41,14 @@ export async function PUT(request: NextRequest) {
             );
         }
 
-        console.log("Submission:", submission);
-
-        console.log(submission);
+        // console.log("Submission:", submission);
 
         // Split stdout using delimiter
         const delimiter = process.env.DELIMITER || "|||";
         const outputs = stdout.split(delimiter);
 
-        console.log("Raw stdout:", stdout); // Debug log
-        console.log("Split outputs:", outputs);
+        // console.log("Raw stdout:", stdout);
+        // console.log("Split outputs:", outputs);
 
         // Retrieve problem to get maxScore for weight calculations
         const problem = await prisma.problem.findUnique({

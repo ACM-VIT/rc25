@@ -16,13 +16,12 @@ function lazyWithPreload<T extends React.ComponentType<any>>(
 }
 
 const Sponsor = lazyWithPreload(() => import("./sponsor"));
-const SecondPage = lazyWithPreload(() => import("./duo-sponsor"));
-const ThirdPage = lazyWithPreload(() => import("../livepages/thirdpage"));
-const WormGraph = lazyWithPreload(() => import("./worm-graph"));
+const DuoSponsor = lazyWithPreload(() => import("./duo-sponsor"));
+// const WormGraph = lazyWithPreload(() => import("./worm-graph"));
 const Sponsor2 = lazyWithPreload(() => import("./sponsor2"));
-const StatisticsDashboardClient = lazyWithPreload(() =>
-  import("./statistics-dashboard-client")
-);
+// const StatisticsDashboardClient = lazyWithPreload(() =>
+//   import("./statistics-dashboard-client")
+// );
 const LiveLeaderboard = lazyWithPreload(() => import("./live-leaderboard"));
 const Counter = lazyWithPreload(() => import("@/components/countdownpage"));
 
@@ -33,7 +32,7 @@ interface Screen {
 
 const screens: Screen[] = [
   { Component: Sponsor, timeout: 5000 },
-  { Component: SecondPage, timeout: 5000 },
+  { Component: DuoSponsor, timeout: 5000 },
   { Component: LiveLeaderboard, timeout: 5000 },
   { Component: Sponsor2, timeout: 5000 },
   { Component: Counter, timeout: 5000 },

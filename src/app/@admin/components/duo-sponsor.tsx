@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 
-const Dashboard: React.FC = () => {
+const DuoSponsor: React.FC = () => {
   return (
     <div className="relative min-h-screen w-full p-3">
       <Image
@@ -40,4 +40,4 @@ const Dashboard: React.FC = () => {
   );
 };
 
-export default Dashboard;
+export default DuoSponsor;

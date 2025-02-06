@@ -1,10 +1,11 @@
 "use client";
 import { Prisma } from "@prisma/client";
+import { SquareChevronLeft } from 'lucide-react';
 // import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import CodeEditor, { StatusRibbonProps } from "./code-editor";
 import QuestionDisplay from "./question-display";
 import WebRunner from "./web-runner";
-// import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import SubmissionSection, {
     SubmissionWithUser,
 } from "@/app/problems/[id]/submission-section";
@@ -43,7 +44,7 @@ export default function QuestionPage({
     // currentSlno,
     desc,
 }: QuestionPageProps) {
-    // const router = useRouter();
+    const router = useRouter();
     // const currentIndex = questions.findIndex((q) => q.slno === currentSlno);
     const [isPending, startTransition] = useTransition();
     const [submissions, setSubmissions] = useState<SubmissionWithUser[]>([]);
@@ -114,12 +115,15 @@ export default function QuestionPage({
             }}
         >
             <div className="rounded-[10px] flex flex-col items-center gap-2 w-full">
-                <div className="flex my-3">
-                    <h1 className="text-white text-4xl font-bold underline uppercase">
+                <div className="relative w-full p-4 ">
+                    <button className="absolute top-3 left-3" onClick={() => router.back()}>
+                        <SquareChevronLeft size={48} color="white"/>
+                    </button>
+                    <h1 className="text-white text-4xl font-bold underline uppercase text-center w-full">
                         {problem.title}
                     </h1>
 
-                    {/* <div className="flex gap-2 absolute right-2 items-center">
+                {/* <div className="flex gap-2 absolute right-2 items-center">
                         <button
                             type="button"
                             onClick={handlePrevious}
@@ -163,15 +167,15 @@ export default function QuestionPage({
                             <FiChevronRight className="inline" />
                         </button>
                     </div> */}
-                </div>
-                <div className="w-[90%] h-[87vh] gap-1">
-                    <ResizablePanelGroup
-                        direction="horizontal"
-                        className="gap-1"
-                    >
-                        {/* Left Resizable Section */}
-                        <ResizablePanel
-                            defaultSize={30}
+            </div>
+            <div className="w-[90%] h-[87vh] gap-1">
+                <ResizablePanelGroup
+                    direction="horizontal"
+                    className="gap-1"
+                >
+                    {/* Left Resizable Section */}
+                    <ResizablePanel
+                        defaultSize={30}
                             minSize={20}
                             maxSize={70}
                         >

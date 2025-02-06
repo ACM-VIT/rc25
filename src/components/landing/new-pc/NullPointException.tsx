@@ -26,7 +26,7 @@ const NullPointException1: React.FC = () => {
             <div className="flex gap-4 ">
               <span>l.</span>
               <p className="text-lg sm:text-xl lg:text-2xl leading-relaxed ">
-                Once the code runs you'll be awarded with points from 0 to 100% of the points dedicated to the question on the basis of number of test cases passed.
+                Once the code runs you&apos;ll be awarded with points from 0 to 100% of the points dedicated to the question on the basis of number of test cases passed.
               </p>
             </div>
 

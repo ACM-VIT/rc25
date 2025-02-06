@@ -14,7 +14,9 @@ export async function PUT(request: NextRequest) {
 
         // console.log("Request body:", body);
         const {token, stdout}: WebhookBody = body;
-
+        
+        // Base64 decode the stdout
+        const decodedStdout = Buffer.from(stdout, 'base64').toString('utf-8');
 
         const submission = await prisma.submission.findUnique({
             relationLoadStrategy: 'join',
@@ -45,7 +47,7 @@ export async function PUT(request: NextRequest) {
 
         // Split stdout using delimiter
         const delimiter = process.env.DELIMITER || "|||";
-        const outputs = stdout.split(delimiter);
+        const outputs = decodedStdout.split(delimiter);
 
         // console.log("Raw stdout:", stdout);
         // console.log("Split outputs:", outputs);

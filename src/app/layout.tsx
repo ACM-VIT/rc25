@@ -133,7 +133,7 @@ export default async function RootLayout({
         );
     }
 
-    if (!user?.Team && !isAdmin) {
+    if (!user?.Team) {
         return (
             <html lang="en">
                 <body className={`${outfit.className}`}>
@@ -188,7 +188,7 @@ export default async function RootLayout({
     }
 
     const memberOfRound = user.Team.TeamRound.find(
-        (tr) => tr.roundId === curOrNextRound.id
+        (tr) => curOrNextRound && tr.roundId === curOrNextRound.id
     );
 
     if (!memberOfRound && !isAdmin) {
@@ -205,7 +205,7 @@ export default async function RootLayout({
 
     // todo round checked in condition
 
-    const roundStarted =
+    const roundStarted = curOrNextRound &&
         getISTTime(curOrNextRound.start) <= getCurrentISTTime();
 
     if (!roundStarted && !isAdmin) {
@@ -221,7 +221,7 @@ export default async function RootLayout({
         );
     }
 
-    const roundEnded = getISTTime(curOrNextRound.end) <= getCurrentISTTime();
+    const roundEnded = curOrNextRound && getISTTime(curOrNextRound.end) <= getCurrentISTTime();
 
     if (roundEnded && !isAdmin) {
         return (

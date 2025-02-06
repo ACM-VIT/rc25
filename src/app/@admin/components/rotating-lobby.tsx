@@ -92,7 +92,7 @@ const RotatingLobby: React.FC = () => {
   return (
     <div className="relative h-screen w-screen">
       <Suspense fallback={<div>Loading...</div>}>
-        <div className={`transition duration-500 ${fade ? "opacity-100" : "opacity-0"}`}>
+        <div className={`transition duration-1 ${fade ? "opacity-100" : "opacity-0"}`}>
           <ActiveComponent />
         </div>
 

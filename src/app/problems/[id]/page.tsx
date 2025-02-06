@@ -131,7 +131,8 @@ export default async function Page({ params }: PageParams) {
     if (
         !problem ||
         ((problem.round.start > new Date() || problem.round.end < new Date()) &&
-            user?.Team?.id !== process.env.ADMIN_TEAM_ID)
+            user?.Team?.id !== process.env.ADMIN_TEAM_ID) ||
+        (problem.isHidden && user?.Team?.id !== process.env.ADMIN_TEAM_ID)
     )
         notFound();
     return (

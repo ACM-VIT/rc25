@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Orbitron } from "next/font/google";
-import { getLatestRound } from "@/app/actions/round-actions";
+import { getLatestRound, refreshRoundCache } from "@/app/actions/round-actions";
 
 const orbitron = Orbitron({
     subsets: ["latin"],
@@ -53,7 +53,7 @@ const CountdownTimer: React.FC = () => {
     
             if (total <= 0) {
                 setTimer("00:00:00");
-                fetchRoundDetails(); // Auto-fetch next round when timer reaches 0
+                refreshRoundCache().then(); // Auto-fetch next round when timer reaches 0
                 return;
             }
     

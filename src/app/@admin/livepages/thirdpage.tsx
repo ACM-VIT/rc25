@@ -1,4 +1,4 @@
-export default function SecondPage(){
+export default function ThirdPage(){
     return(
         <div className="grid grid-cols-2 gap-2 m-3 text-white">
             <div className="flex flex-col justify-center items-center bg-[#606060]/80 p-6 rounded-lg h-[90vh] text-center">

@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import dynamic from "next/dynamic";
 import Dashboard from "./dashboard";
 import SecondPage from "./duo-sponsor";
+import ThirdPage from "../livepages/thirdpage";
+import WormGraph from "./worm-graph";
 
 import LiveLeaderboard from "./live-leaderboard";
 
@@ -16,6 +17,8 @@ const screens: Screen[] = [
   { Component: Dashboard, timeout: 5000 },
   { Component: SecondPage, timeout: 5000 },
   { Component: LiveLeaderboard, timeout: 5000 },
+  // { Component: ThirdPage, timeout: 5000 },
+  // { Component: WormGraph, timeout: 5000 },
 ];
 
 const RotatingLobby: React.FC = () => {
@@ -40,7 +43,7 @@ const RotatingLobby: React.FC = () => {
 
   return (
     <div
-      className={`transition-opacity duration-500 ${fade ? "opacity-100" : "opacity-0"}`}
+      className={`transition duration-1 ${fade ? "opacity-100" : "opacity-100"}`}
     >
       <ActiveComponent />
     </div>

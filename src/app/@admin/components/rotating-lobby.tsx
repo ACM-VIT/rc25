@@ -17,11 +17,7 @@ function lazyWithPreload<T extends React.ComponentType<any>>(
 
 const Sponsor = lazyWithPreload(() => import("./sponsor"));
 const DuoSponsor = lazyWithPreload(() => import("./duo-sponsor"));
-// const WormGraph = lazyWithPreload(() => import("./worm-graph"));
 const Sponsor2 = lazyWithPreload(() => import("./sponsor2"));
-// const StatisticsDashboardClient = lazyWithPreload(() =>
-//   import("./statistics-dashboard-client")
-// );
 const LiveLeaderboard = lazyWithPreload(() => import("./live-leaderboard"));
 const Counter = lazyWithPreload(() => import("@/components/countdownpage"));
 
@@ -36,14 +32,10 @@ const screens: Screen[] = [
   { Component: LiveLeaderboard, timeout: 5000 },
   { Component: Sponsor2, timeout: 5000 },
   { Component: Counter, timeout: 5000 },
-  // { Component: StatisticsDashboardClient, timeout: 5000 },
-  // { Component: ThirdPage, timeout: 5000 },
-  // { Component: WormGraph, timeout: 5000 },
 ];
 
 const RotatingLobby: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const [fade, setFade] = useState<boolean>(true);
 
   useEffect(() => {
     screens.forEach(({ Component }) => {
@@ -54,11 +46,7 @@ const RotatingLobby: React.FC = () => {
   useEffect(() => {
     const { timeout } = screens[currentIndex];
     const timer = setTimeout(() => {
-      setFade(false);
-      setTimeout(() => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % screens.length);
-        setFade(true);
-      }, 500);
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % screens.length);
     }, timeout);
 
     return () => clearTimeout(timer);
@@ -66,19 +54,10 @@ const RotatingLobby: React.FC = () => {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
-        setFade(false);
-        setTimeout(() => {
-          setCurrentIndex((prevIndex) => {
-            if (event.key === "ArrowRight") {
-              return (prevIndex + 1) % screens.length;
-            } else if (event.key === "ArrowLeft") {
-              return (prevIndex - 1 + screens.length) % screens.length;
-            }
-            return prevIndex;
-          });
-          setFade(true);
-        }, 500);
+      if (event.key === "ArrowRight") {
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % screens.length);
+      } else if (event.key === "ArrowLeft") {
+        setCurrentIndex((prevIndex) => (prevIndex - 1 + screens.length) % screens.length);
       }
     };
 
@@ -89,22 +68,9 @@ const RotatingLobby: React.FC = () => {
   const ActiveComponent = screens[currentIndex].Component;
 
   return (
-    <div className="relative h-screen w-screen">
-      <Suspense fallback={<div>Loading...</div>}>
-        <div className={`transition duration-1 ${fade ? "opacity-100" : "opacity-0"}`}>
-          <ActiveComponent />
-        </div>
-
-        {!fade && (
-          <div className="absolute inset-0">
-            <Image
-              src="/dashbg.png"
-              alt="Transition Overlay"
-              fill
-              className="object-cover"
-            />
-          </div>
-        )}
+    <div className="relative h-screen w-screen overflow-hidden bg-black">
+      <Suspense fallback={null}>
+        <ActiveComponent />
       </Suspense>
     </div>
   );

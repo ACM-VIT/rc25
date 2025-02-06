@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { ScrollArea } from "../../../components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "../../../components/ui/scroll-area";
 import Image from "next/image";
 import windows from "../assets/windows.png";
 import mac from "../assets/mac.png";
@@ -39,6 +39,7 @@ export default function QuestionDisplay({
                 <div className="text-white m-4 font-medium max-h-fit">
                     {desc}
                 </div>
+                <ScrollBar orientation="horizontal" />
             </ScrollArea>
             <div className="p-4 flex items-center justify-between mt-auto border-t border-gray-700">
                 <div className="text-white text-sm font-bold">

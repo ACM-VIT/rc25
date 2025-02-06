@@ -21,7 +21,7 @@ const HowItWorksMobile2: React.FC = () => {
         <div className="text-white font-extrabold text-left space-y-8 sm:space-y-12 lg:space-y-16 max-w-3xl">
           <div className="flex items-start justify-start gap-4">
             <div className="text-lg sm:text-xl md:text-3xl lg:text-2xl leading-relaxed">
-            Once the code runs you'll be awarded with points from 0 to 100% of the points dedicated to the question on the basis of number of test cases passed.
+            Once the code runs you&apos;ll be awarded with points from 0 to 100% of the points dedicated to the question on the basis of number of test cases passed.
             </div>
           </div>
 

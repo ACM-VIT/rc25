@@ -23,6 +23,13 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
+import { remark } from 'remark';
+import remarkMdx from 'remark-mdx';
+import remarkGfm from 'remark-gfm';
+import remarkFrontmatter from 'remark-frontmatter';
+import remarkRehype from 'remark-rehype';
+import rehypeStringify from 'rehype-stringify';
+import { reporter } from 'vfile-reporter';
 
 interface QuestionFormProps {
 	initialData?: Problem | null;
@@ -37,88 +44,70 @@ interface MarkdownValidationError {
 	error?: string;
 }
 
-interface MarkdownValidationError {
-	isValid: boolean;
-	error?: string;
-}
-
-const validateMarkdown = (markdown: string): MarkdownValidationError => {
+const validateMarkdown = async (markdown: string): Promise<MarkdownValidationError> => {
 	if (!markdown || typeof markdown !== "string") {
 		return { isValid: false, error: "Description is required" };
 	}
 
 	try {
-		// Check for unmatched backticks
-		const backtickCount = (markdown.match(/`/g) || []).length;
-		if (backtickCount % 2 !== 0) {
-			return { isValid: false, error: "Unmatched code backticks found" };
+		const file = await remark()
+			.use(remarkMdx)
+			.use(remarkGfm)
+			.use(remarkFrontmatter)
+			.use(remarkRehype)
+			.use(rehypeStringify)
+			.process(markdown);
+
+		const report = reporter(file);
+		
+		// If there are any warnings or errors
+		if (report && report !== 'no issues found') {
+			return { 
+				isValid: false, 
+				error: `MDX validation issues:\n${report}` 
+			};
 		}
 
-		// Check for unmatched triple backticks
-		const tripleBacktickCount = (markdown.match(/```/g) || []).length;
-		if (tripleBacktickCount % 2 !== 0) {
-			return { isValid: false, error: "Unmatched code block markers found" };
-		}
-
-		// Check for unmatched square brackets
-		const openSquareBrackets = (markdown.match(/\[/g) || []).length;
-		const closeSquareBrackets = (markdown.match(/\]/g) || []).length;
-		if (openSquareBrackets !== closeSquareBrackets) {
-			return { isValid: false, error: "Unmatched square brackets found" };
-		}
-
-		// Check for unmatched parentheses
-		const openParentheses = (markdown.match(/\(/g) || []).length;
-		const closeParentheses = (markdown.match(/\)/g) || []).length;
-		if (openParentheses !== closeParentheses) {
-			return { isValid: false, error: "Unmatched parentheses found" };
-		}
-
-		// Check for unmatched curly braces
-		const openCurlyBraces = (markdown.match(/\{/g) || []).length;
-		const closeCurlyBraces = (markdown.match(/\}/g) || []).length;
-		if (openCurlyBraces !== closeCurlyBraces) {
-			return { isValid: false, error: "Unmatched curly braces found" };
-		}
-
-		// Check for unmatched asterisks for bold/italic
-		const asteriskCount = (markdown.match(/\*/g) || []).length;
-		if (asteriskCount % 2 !== 0) {
-			return { isValid: false, error: "Unmatched asterisks found" };
-		}
-
-		// Check for unmatched underscores for bold/italic
-		const underscoreCount = (markdown.match(/_/g) || []).length;
-		if (underscoreCount % 2 !== 0) {
-			return { isValid: false, error: "Unmatched underscores found" };
-		}
-
-		// Check for unmatched HTML tags
-		const htmlTags = markdown.match(/<[^>]+>/g) || [];
-		const unclosedTags = htmlTags.filter((tag) => !tag.startsWith("</")).length;
-		const closingTags = htmlTags.filter((tag) => tag.startsWith("</")).length;
-		if (unclosedTags !== closingTags) {
-			return { isValid: false, error: "Unmatched HTML tags found" };
-		}
-
-		// Check for unmatched Markdown links
-		const linkPattern = /\[([^\]]+)\]\(([^)]+)\)/g;
-		const links = markdown.match(linkPattern) || [];
-		const linkTexts = markdown.match(/\[([^\]]+)\]/g) || [];
-		const linkUrls = markdown.match(/\(([^)]+)\)/g) || [];
-		if (links.length !== linkTexts.length || links.length !== linkUrls.length) {
-			return { isValid: false, error: "Unmatched Markdown links found" };
-		}
-
-		const equalSignMisuse = markdown.match(/(^|\s)=\s*[^=]|\s=\s*$/gm);
-		if (equalSignMisuse && equalSignMisuse.length > 0) {
-			return { isValid: false, error: "Misuse of equal sign (=) found" };
+		// Additional custom checks for specific requirements
+		const validation = validateMDXRules(markdown);
+		if (!validation.isValid) {
+			return validation;
 		}
 
 		return { isValid: true };
 	} catch (error) {
-		return { isValid: false, error: "Error validating markdown"+error };
+		return { 
+			isValid: false, 
+			error: `Error validating MDX: ${error}` 
+		};
 	}
+};
+
+const validateMDXRules = (markdown: string): MarkdownValidationError => {
+	// Check for unmatched MDX component tags
+	const componentTags = markdown.match(/<[^>]+>/g) || [];
+	const openTags = componentTags.filter(tag => !tag.includes('/>') && !tag.startsWith('</'));
+	const closeTags = componentTags.filter(tag => tag.startsWith('</'));
+	
+	if (openTags.length !== closeTags.length) {
+		return { isValid: false, error: "Unmatched MDX component tags found" };
+	}
+
+	// Check for invalid JSX expressions
+	const jsxExpressions = markdown.match(/{[^}]+}/g) || [];
+	for (const expr of jsxExpressions) {
+		if (expr.includes('{{') || expr.includes('}}')) {
+			return { isValid: false, error: "Invalid JSX expression syntax" };
+		}
+	}
+
+	// Existing custom rules
+	const tripleBacktickCount = (markdown.match(/```/g) || []).length;
+	if (tripleBacktickCount % 2 !== 0) {
+		return { isValid: false, error: "Unmatched code block markers found" };
+	}
+
+	return { isValid: true };
 };
 
 export function QuestionForm({
@@ -170,8 +159,11 @@ export function QuestionForm({
 
 	useEffect(() => {
 		if (formData.description) {
-			const validation = validateMarkdown(formData.description);
-			setMarkdownError(validation.error || "");
+			const validate = async () => {
+				const validation = await validateMarkdown(formData.description || "");
+				setMarkdownError(validation.error || "");
+			};
+			validate();
 		}
 	}, [formData.description]);
 
@@ -180,11 +172,11 @@ export function QuestionForm({
 			e.preventDefault();
 
 			// Validate markdown before submission
-			// const markdownValidation = validateMarkdown(formData.description || "");
-			// if (!markdownValidation.isValid) {
-			// 	alert(markdownValidation.error);
-			// 	return;
-			// }
+			const markdownValidation = await validateMarkdown(formData.description || "");
+			if (!markdownValidation.isValid) {
+				alert(markdownValidation.error);
+				return;
+			}
 
 			// Add validation
 			if ((formData.normal_cases ?? 0) < 0 || (formData.edge_cases ?? 0) < 0) {

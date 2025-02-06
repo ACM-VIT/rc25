@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import { FaCrown } from "react-icons/fa";
 import {
   ScrollArea,
@@ -38,17 +39,21 @@ const LiveLeaderboard: React.FC = () => {
   }, []);
 
   return (
-    <div
-      className="min-h-screen w-full bg-cover bg-center bg-no-repeat p-2"
-      style={{ backgroundImage: 'url("/dashbg.png")' }}
-    >
-      <div className="h-full bg-transparent overflow-x-hidden justify-center m-2 backdrop-blur-md">
+    <div className="min-h-screen w-full relative p-2">
+      <Image
+        src="/dashbg.png"
+        alt="Background"
+        fill
+        className="object-cover"
+        priority
+      />
+
+      <div className="h-full bg-transparent overflow-x-hidden justify-center m-2 backdrop-blur-md relative z-10">
         <p className="text-4xl text-white bg-transparent border-b-2 pb-4 mb-4 text-center h-[10vh] font-['Orbitron']">
           Leaderboard
         </p>
         <ScrollArea className="justify-center h-[68vh]">
           <ScrollAreaViewport>
-            {/* Sticky header */}
             <div className="sticky top-0 z-10 bg-opacity-50">
               <div className="flex justify-center text-white px-1 text-center w-full h-[8vh] font-['Orbitron']">
                 <span className="w-2/4 text-2xl font-bold text-center">Rank</span>

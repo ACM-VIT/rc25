@@ -10,9 +10,15 @@ interface TeamMembersProps {
   teamMembers: User[];
   teamName: string | "";
   code: string;
+  min_team_size: number;
 }
 
-export function TeamMembers({ teamMembers, teamName, code }: TeamMembersProps) {
+export function TeamMembers({
+  teamMembers,
+  teamName,
+  code,
+  min_team_size,
+}: TeamMembersProps) {
   const [showToast, setShowToast] = useState(false);
 
   const handleCopy = async () => {
@@ -26,7 +32,7 @@ export function TeamMembers({ teamMembers, teamName, code }: TeamMembersProps) {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center text-white">
+    <div className="min-h-screen w-full flex flex-col justify-center items-center text-white">
       {/* Toast Notification */}
       <div
         className={`fixed top-4 flex justify-center bg-black/80 backdrop-blur-sm border border-weirdPurple text-white px-4 py-2 rounded 
@@ -93,8 +99,8 @@ export function TeamMembers({ teamMembers, teamName, code }: TeamMembersProps) {
 
           {/* Content box */}
           <div
-            className="w-full bg-black/50 border-4 border-weirdPurple 
-            p-4 md:p-8 lg:p-16"
+            className="w-full h-[65vh] md:h-auto bg-black/50 border-4 border-weirdPurple 
+            p-4 md:p-8 lg:p-16 overflow-y-auto"
           >
             {/* Header section */}
             <div className="mb-8 space-y-4">
@@ -120,9 +126,9 @@ export function TeamMembers({ teamMembers, teamName, code }: TeamMembersProps) {
               </div>
 
               <h3 className="text-center text-lg md:text-xl text-[#EB5757] font-bold">
-                {teamMembers.length === 1
+                {teamMembers.length < min_team_size
                   ? "A BIT LONELY, IT FEELS. A SQUAD OF AT LEAST TWO, YOU MUST GATHER!"
-                  : ""}
+                  : null}
               </h3>
             </div>
             <div className="w-full flex flex-col item-center justify-center text-2xl md:text-4xl text-weirdPurple font-custom">
@@ -138,8 +144,8 @@ export function TeamMembers({ teamMembers, teamName, code }: TeamMembersProps) {
                   className="flex flex-col items-center space-y-4 px-4"
                 >
                   <div className="flex flex-col items-center gap-4 w-full">
-                    <p className="font-custom text-base md:text-lg">
-                      {member.name}
+                    <p className="font-custom text-base md:text-lg tracking-wider">
+                      {(member.name ?? "").split(" ").slice(0, -1).join(" ")}
                     </p>
                     <div className="border border-weirdPurple w-full max-w-md h-2 md:h-2" />
                   </div>

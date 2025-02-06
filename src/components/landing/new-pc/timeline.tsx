@@ -3,15 +3,15 @@ import Image from "next/image";
 import timelinebg from "@/app/assets/timelinebg.svg";
 import upper from "@/app/assets/upperbracket.svg";
 import lower from "@/app/assets/lowerbracket.svg";
-
 const timelineData = [
   /* change datatatataata */
-  { notation: "8:00am", value: "Start" },
-  { notation: "9:00am", value: "Breakfast" },
-  { notation: "10:00am", value: "Nap" },
-  { notation: "11:00am", value: "Snack" },
-  { notation: "12:00pm", value: "Lunch" },
-  { notation: "1:00pm", value: "Nap" },
+  { notation: "8:00 am", value: "Gates Open" },
+  { notation: "8:30 am", value: "Opening Ceremony" },
+  { notation: "9:00 am", value: "Round-1 Begins" },
+  { notation: "12:00 pm", value: "Speaker Session" },
+  { notation: "1:00 pm", value: "Lunch & Round-1 Results" },
+  { notation: "2:30 pm", value: "Round-2 Begins" },
+  { notation: "6:30 pm", value: "Closing Ceremony" },
 ];
 
 const textGlowStyle = {
@@ -22,7 +22,7 @@ const TimeLine: React.FC = () => {
   return (
     <div className="relative w-screen h-screen bg-black overflow-y-hidden">
       <div
-        className="absolute left-4 top-4 h-full flex items-center z-20"
+        className="absolute top-4 left-1 h-full flex items-center z-20"
         style={{
           writingMode: "vertical-lr",
           fontFamily: "Death Star, sans-serif",
@@ -30,13 +30,13 @@ const TimeLine: React.FC = () => {
           WebkitTextStroke: "1px rgba(255, 255, 255, 1)", // White outline with 80% opacity
         }}
       >
-        <span className="text-[35px] sm:text-[20px] md:text-[30px] lg:text-[30px] xl:text-[45px] transform text-glow how-it-works-heading rotate-180 text-4xl tracking-wider">
+        <span className="-m-3 text-glow font-extrabold lg:text-[30px] xl:text-[45px] transform text-glow how-it-works-heading rotate-180 tracking-wider">
           TRY YOU MUST
         </span>
       </div>
 
       <div
-        className="absolute right-4 bottom-4 flex items-center z-20"
+        className="absolute right-3 bottom-4 flex items-center z-20"
         style={{
           writingMode: "vertical-rl",
           fontFamily: "Death Star, sans-serif",
@@ -44,7 +44,7 @@ const TimeLine: React.FC = () => {
           WebkitTextStroke: "1px rgba(255, 255, 255, 1)", // White outline with 80% opacity
         }}
       >
-        <span className=" text-[35px] sm:text-[20px] md:text-[30px] lg:text-[30px] xl:text-[45px] transform text-glow how-it-works-heading rotate-180 text-4xl  tracking-wider">
+        <span className="text-glow font-extrabold text-[35px] right-1 sm:text-[20px] md:text-[30px] lg:text-[30px] xl:text-[45px] transform text-glow how-it-works-heading rotate-180 text-4xl  tracking-wider">
           UNTIL THE TASK IS DONE.
         </span>
       </div>
@@ -57,7 +57,7 @@ const TimeLine: React.FC = () => {
       />
 
       <div className="flex flex-col relative z-10 h-full justify">
-        <div className="flex how-it-works-heading text-white   justify-center pt-8 sm:pt-12 md:pt-12 lg:pt-12 text-6xl sm:text-7xl md:text-8xl lg:text-9xl text-center">
+        <div className="flex how-it-works-heading text-white   justify-center lg:text-[80px] xl:text-[115px] text-center">
           TIMELINE
         </div>
 
@@ -66,7 +66,7 @@ const TimeLine: React.FC = () => {
             <div
               key={index}
               className={`relative group w-48 h-32 md:w-64 md:h-36 overflow-visible
-                        bg-white/40 border border-[#CEB7FF]
+                        bg-white/40 border
                         transition-all duration-300 ease-in-out
                         hover:bg-white/20
                         border-[#CEB7FF] `}

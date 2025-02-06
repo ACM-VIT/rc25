@@ -9,6 +9,7 @@ async function getTeamMembers() {
   const prisma = new PrismaClient();
   try {
     const user = await prisma.user.findUnique({
+      relationLoadStrategy: 'join',
       where: { email: session.user.email },
       include: {
         Team: {
@@ -39,11 +40,12 @@ async function getTeamMembers() {
 }
 async function getTeamName() {
   const session = await auth();
-  if (!session?.user?.email) return "";
+  if (!session?.user?.email) throw "No session found";
 
   const prisma = new PrismaClient();
   try {
     const user = await prisma.user.findUnique({
+      relationLoadStrategy: 'join',
       where: { email: session.user.email },
       include: {
         Team: {
@@ -68,6 +70,7 @@ async function getTeamCode() {
   const prisma = new PrismaClient();
   try {
     const user = await prisma.user.findUnique({
+      relationLoadStrategy: 'join',
       where: { email: session.user.email },
       include: {
         Team: {
@@ -90,6 +93,6 @@ export default async function TeamMembersAndLeaveButton() {
   const teamName = await getTeamName();
   const code = await getTeamCode();
   return (
-    <TeamMembers teamMembers={teamMembers} teamName={teamName} code={code} />
+    <TeamMembers teamMembers={teamMembers} teamName={teamName} code={code} min_team_size={Number.parseInt(process.env.MIN_TEAM_CAPACITY || "2")} />
   );
 }

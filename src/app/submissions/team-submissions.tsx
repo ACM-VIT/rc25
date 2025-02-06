@@ -17,7 +17,7 @@ const TeamSubmissions: React.FC<TeamSubmissionProps> = ({ submissions, teamName 
         style={{ backgroundImage: "url('./submissionsbg.png')", backgroundSize: "cover" }}
       >
         <div className="p-2 justify-center items-center">
-          <p className="font-bold text-2xl font-[Audiowide] underline underline-offset-4 decoration-white">
+          <p className="font-bold text-2xl font-custom underline underline-offset-4 decoration-white">
             {teamName}&apos;s Submissions
           </p>
         </div>
@@ -27,7 +27,7 @@ const TeamSubmissions: React.FC<TeamSubmissionProps> = ({ submissions, teamName 
               <p className="text-xl font-semibold border-b-2 text-center border-white pt-0 pb-4">
                 Submissions
               </p>
-              <div className="flex flex-row border-b-2 pb-4 w-full">
+              <div className="flex flex-row border-b-2 py-4 w-full">
                 <h1 className="w-1/6 text-xs md:text-sm font-bold text-center">Sl. No</h1>
                 <h1 className="w-1/6 text-xs md:text-sm font-bold text-center">Time</h1>
                 <h1 className="w-1/6 text-xs md:text-sm font-bold text-center">Name</h1>
@@ -36,17 +36,17 @@ const TeamSubmissions: React.FC<TeamSubmissionProps> = ({ submissions, teamName 
                 <h1 className="w-1/6 text-xs md:text-sm font-bold text-center">Status</h1>
               </div>
               <ScrollArea className="h-[55vh] rounded-md">
-                <div className="space-y-4">
+                <div className="space-y-0">
                   {submissions.map((sub, index) => (
-                    <div key={sub.id} className="flex flex-row border-b border-gray-700 p-2">
-                      <p className="w-1/6 text-center p-2">{index + 1}</p>
-                      <p className="w-1/6 text-center p-2">
+                    <div key={sub.id} className="flex flex-row border-b border-gray-700 py-4">
+                      <p className="w-1/6 text-center p-2 py-0">{index + 1}</p>
+                      <p className="w-1/6 text-center p-2 py-0">
                         {new Date(sub.createdAt).toLocaleTimeString()}
                       </p>
-                      <p className="w-1/6 text-center p-2">{sub.user.name}</p>
-                      <p className="w-1/6 text-center p-2">{sub.problem.title}</p>
-                      <p className="w-1/6 text-center p-2">{sub.problem.difficulty}</p>
-                      <p className="w-1/6 text-center p-2">
+                      <p className="w-1/6 text-center p-2 py-0">{sub.user.name}</p>
+                      <p className="w-1/6 text-center p-2 py-0">{sub.problem.title}</p>
+                      <p className="w-1/6 text-center p-2 py-0">{sub.problem.difficulty}</p>
+                      <p className="w-1/6 text-center p-2 py-0">
                         {sub.testcasespassed.filter(Boolean).length}/{sub.testcasespassed.length}
                       </p>
                     </div>

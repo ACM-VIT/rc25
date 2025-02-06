@@ -166,7 +166,15 @@
     }
 
 }
-
+@font-face {
+    font-family: 'Outfit';
+    src: url('/fonts/Outfit-Bold.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+.outfit {
+    font-family: 'Outfit', sans-serif;
+}
 @font-face {
     font-family: 'Orbitron';
     src: url('/Orbitron-Regular.ttf') format('truetype');
@@ -194,7 +202,7 @@
 @media (max-width: 1023px) {
     html,
     body {
-      overflow: hidden;
+      /* overflow: hidden; */ /* Uncomment this line to disable scrolling */
       height: 100%;
     }
   

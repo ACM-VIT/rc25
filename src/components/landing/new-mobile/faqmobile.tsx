@@ -1,45 +1,104 @@
 "use client";
 
-import type React from "react";
-import { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
+import useEmblaCarousel from "embla-carousel-react";
 import faqbg from "../../../../public/landing_new/faqbg.png";
 import SmoothInfiniteScroll from "./infinitescroll";
 
+interface CarouselIndicatorState {
+  selectedIndex: number;
+  scrollSnaps: number[];
+  onDotButtonClick: (index: number) => void;
+}
+
+import { EmblaCarouselType } from "embla-carousel";
+
+interface EmblaApiType extends EmblaCarouselType {
+  selectedScrollSnap: () => number;
+  scrollSnapList: () => number[];
+  scrollTo: (index: number) => void;
+}
+
+const useCarouselIndicator = (
+  emblaApi: EmblaApiType | undefined
+): CarouselIndicatorState => {
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
+  const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setSelectedIndex(emblaApi.selectedScrollSnap());
+  }, [emblaApi]);
+
+  const onDotButtonClick = useCallback(
+    (index: number) => {
+      if (!emblaApi) return;
+      emblaApi.scrollTo(index);
+    },
+    [emblaApi]
+  );
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    setScrollSnaps(emblaApi.scrollSnapList());
+    onSelect();
+    emblaApi.on("select", onSelect);
+    return () => {
+      emblaApi.off("select", onSelect);
+    };
+  }, [emblaApi, onSelect]);
+
+  return { selectedIndex, scrollSnaps, onDotButtonClick };
+};
+
+const CarouselIndicator = ({
+  onClick,
+  className,
+}: {
+  onClick: () => void;
+  className: string;
+}) => <button onClick={onClick} className={className} />;
+
 const FaqMobile: React.FC = () => {
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: true,
+    dragFree: false,
+  });
+  const { selectedIndex, scrollSnaps, onDotButtonClick } =
+    useCarouselIndicator(emblaApi);
   const [activeBox, setActiveBox] = useState<number | null>(null);
 
   const contentBoxes = [
     {
       defaultText:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do Lorem ipsum dolor sit amet",
-      alternateText:
-        "May the Force flow through your code like a mighty stream",
+        "Which programming languages can be used?",
+      alternateText: "You can code in C, C++, Python, Java, JavaScript, Golang and Rust",
     },
     {
       defaultText:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do",
-      alternateText: "Debug or debug not, there is no try-catch",
+        "How many members can there be in a team?",
+      alternateText: "Each team can have 2-4 members. If you don’t have a teammate, you can search for them on our Discord channel.",
     },
     {
       defaultText:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do Lorem ipsum dolor sit amet",
-      alternateText: "In the matrix of possibilities, a solution always exists",
+        "Can I change my current team?",
+      alternateText: "Yes, you can leave a team and join another before the competition starts.",
     },
     {
       defaultText:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do",
-      alternateText: "The path to wisdom requires patience, young programmer",
+        "Which teams qualify for Round 2?",
+      alternateText: "It will be decided after looking at the general performance of teams at the end of round 1.",
     },
     {
       defaultText:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do Lorem ",
-      alternateText: "When code breaks, breathe deep and let clarity guide you",
+        "Is there a registration fee?",
+      alternateText: "No! Reverse Coding is completely free of cost.",
     },
     {
       defaultText:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do Lorem ipsum ",
-      alternateText: "Trust in the Force, but validate your inputs you must",
+        "How is the winner decided?",
+      alternateText: "The team who cleared Round 1 and is at the top of the leaderboard by the end of Round 2 will be the winner of Reverse Coding!",
     },
   ];
 
@@ -48,8 +107,7 @@ const FaqMobile: React.FC = () => {
   };
 
   return (
-    <div className=" inset-0 w-screen h-screen bg-black overflow-hidden">
-      {/* Background image */}
+    <div className="relative w-screen h-screen bg-black overflow-hidden">
       <Image
         src={faqbg || "/placeholder.svg"}
         alt="bg"
@@ -58,39 +116,62 @@ const FaqMobile: React.FC = () => {
         className="absolute inset-0 z-0"
       />
 
-      {/* Foreground content */}
       <div className="relative z-10 flex flex-col h-full">
-        {/* Title */}
-        <div className="flex how-it-works-heading text-white justify-center pt-8 text-3xl pb-2 phone:text-8xl xs-sm:text-8xl xs:text-7xl sm:text-7xl md:text-7xl text-center">
+        <div className="flex how-it-works-heading text-white justify-center pt-8 pb-2 text-7xl text-center">
           HOLO GUIDE
         </div>
 
-        {/* Content container */}
-        <div className="flex-1 flex items-center justify-center px-2 phone:px-8 xs:px-12 sm:px-16 md:px-20 h-[60v]">
+        <div className="flex-1 flex items-center justify-center px-4 md:px-20 h-[70vh] mb-36">
           <div className="w-full max-w-7xl">
-            {/* Grid container */}
-            <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 phone:gap-6 xs:gap-6 sm:gap-6 md:gap-8">
-              {contentBoxes.map((box, index) => (
-                <div
+            <div ref={emblaRef} className="overflow-visible py-8">
+              <div className="flex">
+                {contentBoxes.map((box, index) => (
+                  <div
+                    key={index}
+                    className="embla__slide min-w-full flex justify-center"
+                  >
+                    <div className="px-4 py-2 w-[70vw]">
+                      <div
+                        className={`bg-[#222222] backdrop-blur flex items-center justify-center 
+                          h-[20vh] bg-opacity-80 p-4 rounded text-white 
+                          transition-all duration-300 ease-in-out cursor-pointer
+                          border border-[#9B51E0] border-opacity-50
+                          outline-none 
+                          ${
+                            activeBox === index
+                              ? "bg-[#424242] shadow-[0_0_10px_rgba(255,255,255,1),0_0_20px_rgba(206,183,255,0.6),0_0_30px_rgba(155,81,224,0.8)] scale-105 outline outline-2 outline-[#9B51E0]"
+                              : ""
+                          }`}
+                        onClick={() => handleBoxClick(index)}
+                      >
+                        <span className="text-sm sm:text-base md:text-lg lg:text-xl text-center max-w-[90%]">
+                          {activeBox === index
+                            ? box.alternateText
+                            : box.defaultText}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex justify-center space-x-2 mt-4">
+              {scrollSnaps.map((_, index) => (
+                <CarouselIndicator
                   key={index}
-                  className={`bg-[#222222] backdrop-blur bg-opacity-80 p-3 phone:p-6 xs:p-4 font-outfit rounded text-white border border-[#9B51E0] border-opacity-50 transition-all duration-200 ease-in-out cursor-pointer text-xs phone:text-base xs:text-sm sm:text-sm md:text-sm
-                        ${
-                          activeBox === index
-                            ? "bg-[#424242] shadow-[0_0_6px_rgba(255,255,255,1),0_0_15px_rgba(206,183,255,0.6),0_0_25px_rgba(155,81,224,0.7)]"
-                            : ""
-                        }`}
-                  onClick={() => handleBoxClick(index)}
-                >
-                  <span>
-                    {activeBox === index ? box.alternateText : box.defaultText}
-                  </span>
-                </div>
+                  onClick={() => onDotButtonClick(index)}
+                  className={`w-3 h-1 rounded-full mt-8 ${
+                    index === selectedIndex
+                      ? "bg-white scale-125"
+                      : "bg-gray-500"
+                  } transition-transform duration-300`}
+                />
               ))}
             </div>
           </div>
         </div>
 
-        {/* Smooth Infinite Scroll */}
         <div className="absolute bottom-12 w-full z-20 rotate-[-10deg]">
           <SmoothInfiniteScroll
             text="TRY YOU MUST &nbsp; TRY YOU MUST"
@@ -105,5 +186,7 @@ const FaqMobile: React.FC = () => {
     </div>
   );
 };
+
+
 
 export default FaqMobile;

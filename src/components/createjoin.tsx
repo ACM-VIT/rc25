@@ -59,12 +59,12 @@ export default function Team({ name }: { name: string }) {
       </div>
 
       <div className="relative px-6 py-2 flex justify-center items-center w-[85vw] motion-preset-slide-down-sm">
-        <Image
+        {/* <Image
           src="/frameDecoration.svg"
           alt="rclogo"
           width={190}
           height={100}
-          className="absolute w-auto top-0 left-0 h-[100px] z-50"
+          className="absolute w-auto lg:top-0 xs:left-5 xs:-top-6 lg:left-0 h-[100px] z-50 sm:top-12"
         />
 
         <Image
@@ -72,12 +72,12 @@ export default function Team({ name }: { name: string }) {
           alt="rclogo"
           width={190}
           height={100}
-          className="rotate-180 absolute py-2 w-auto -bottom-4 right-0 h-[100px] z-50"
-        />
+          className="rotate-180 absolute py-2 w-auto lg:-bottom-4 xs:right-6 xs:-bottom-6 lg:right-0 h-[100px] z-50 sm:bottom-0"
+        /> */}
 
         <div
-          className="w-[65vw] lg:w-full sm:w-[75vw] phone:w-[85vw] sm:mt-[8%] md:mt-[10%]
-                      p-16 phone:p-3 lg:mt-5 flex flex-col items-center box-border backdrop-blur-lg bg-black/50 border-4 border-weirdPurple "
+          className="w-[70vw] h-[65vh] md:h-auto lg:w-full sm:w-[80vw] phone:w-[90vw] sm:mt-[8%] md:mt-[10%]
+                      p-16 phone:p-3 lg:mt-5 flex flex-col items-center box-border backdrop-blur-lg bg-black/50 border-4 border-weirdPurple overflow-y-auto"
         >
           <div className="w-full mb-3 flex flex-col items-center justify-start gap-4">
             <div className="flex justify-center items-center gap-2 w-full">
@@ -98,13 +98,13 @@ export default function Team({ name }: { name: string }) {
               </h4>
               <div className="border border-weirdPurple w-1/2 h-3" />
             </div>
-            <h1 className="text-4xl font-bold font-custom mb-4 text-center tracking-[3.5px]">
+            <h1 className="text-3xl font-bold font-custom mb-4 text-center tracking-[3.5px]">
               {mode === "CREATE" ? "CREATE A SQUADRON!" : "JOIN A TEAM!"}
             </h1>
             <h3 className="text-center text-xl text-weirdPurple">
               {mode === "CREATE"
                 ? "What’s your squads’s epic name?"
-                : "Toss in the funky code of the team you’re eager to hop into!"}
+                : "Toss in the funky code of the squad you’re eager to hop into!"}
             </h3>
           </div>
           <div className="md:w-1/2 w-full flex flex-col items-center">

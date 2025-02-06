@@ -13,7 +13,7 @@ const config: Config = {
 	theme: {
 		screens: {
 			'phone':{'min':'220px','max':'480px'},
-			"xs-sm": "410px",
+			"xs-sm": "380px",
 			'xs':'480px',
 			
 			'sm': '640px',
@@ -90,7 +90,8 @@ const config: Config = {
 	
 	plugins: [
 		nextui(),
-		require("tailwindcss-motion") 
+		// eslint-disable-next-line @typescript-eslint/no-require-imports
+		require("tailwindcss-motion")
 	  ],
 	
 };

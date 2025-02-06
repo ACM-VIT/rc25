@@ -4,6 +4,7 @@ import RoundClient from "./RoundClient";
 async function getRounds() {
   try {
     const rounds = await prisma.round.findMany({
+      relationLoadStrategy: 'join',
       orderBy: {
         number: "asc",
       },

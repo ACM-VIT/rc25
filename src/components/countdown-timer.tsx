@@ -1,95 +1,103 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { Orbitron } from "next/font/google";
+import { getLatestRound } from "@/app/actions/round-actions";
 
-interface CountdownTimerProps {
-    getTimeUntil: string;
-}
+const orbitron = Orbitron({
+    subsets: ["latin"],
+    weight: ["400"],
+    display: "swap",
+});
 
-const CountdownTimer: React.FC<CountdownTimerProps> = ({ getTimeUntil }) => {
+const CountdownTimer: React.FC = () => {
     const [timer, setTimer] = useState<string>("00:00:00");
+    const [roundNumber, setRoundNumber] = useState<number | null>(null);
+    const [status, setStatus] = useState<string>("Fetching...");
+    const [timeUntil, setTimeUntil] = useState<number | null>(null);
 
-    const getTimeRemaining = (end: string) => {
-        const total = new Date(end).getTime() - new Date().getTime();
-        if (total < 0) {
-            return {
-                total: 0,
-                hours: 0,
-                minutes: 0,
-                seconds: 0,
-            };
+    const fetchRoundDetails = async () => {
+        try {
+            const round = await getLatestRound();
+            // console.log("Fetched Round Data:", round);
+
+            if (!round) {
+                setStatus("No Active Round");
+                return;
+            }
+
+            // ✅ Convert stored UTC time to user's local time
+            const roundTimeUTC = new Date(round.timeUntil);
+            const roundTimeLocal = roundTimeUTC.getTime() - new Date().getTimezoneOffset() * 60000;
+
+            setRoundNumber(round.number);
+            setStatus(round.status);
+            setTimeUntil(roundTimeLocal);
+        } catch (error) {
+            console.error("Error fetching round details:", error);
+            setStatus("Error Fetching Data");
         }
-        const seconds = Math.floor((total / 1000) % 60);
-        const minutes = Math.floor((total / 1000 / 60) % 60);
-        const hours = Math.floor((total / 1000 / 60 / 60) % 24);
-        return {
-            total: total,
-            hours: hours,
-            minutes: minutes,
-            seconds: seconds,
-        };
     };
 
     useEffect(() => {
-        if (isNaN(Date.parse(getTimeUntil))) {
-            console.error(
-                "Invalid date format for `getTimeUntil`:",
-                getTimeUntil
-            );
-            console.log(Date.now());
-        }
+        fetchRoundDetails();
+    }, []);
+    useEffect(() => {
+        if (!timeUntil) return;
+    
         const updateTimer = () => {
-            const timeRemaining = getTimeRemaining(getTimeUntil);
+            const nowUTC = new Date().getTime(); // Current time in UTC
+            const targetUTC = new Date(timeUntil).getTime(); // Stored UTC time
+            const targetIST = targetUTC - (5.5 * 60 * 60 * 1000); // ✅ Convert from UTC to IST by subtracting 5.5 hours
+    
+            const total = targetIST - nowUTC; // Corrected difference
+    
+            if (total <= 0) {
+                setTimer("00:00:00");
+                fetchRoundDetails(); // Auto-fetch next round when timer reaches 0
+                return;
+            }
+    
+            const hours = Math.floor(total / (1000 * 60 * 60));
+            const minutes = Math.floor((total / (1000 * 60)) % 60);
+            const seconds = Math.floor((total / 1000) % 60);
+    
             setTimer(
-                `${String(timeRemaining.hours).padStart(2, "0")}:${String(
-                    timeRemaining.minutes
-                ).padStart(2, "0")}:${String(timeRemaining.seconds).padStart(
-                    2,
-                    "0"
-                )}`
+                `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`
             );
         };
-        setTimer(
-            `${getTimeRemaining(getTimeUntil).hours}:${
-                getTimeRemaining(getTimeUntil).minutes
-            }:${getTimeRemaining(getTimeUntil).seconds}`
-        );
+    
         updateTimer();
         const interval = setInterval(updateTimer, 1000);
         return () => clearInterval(interval);
-    }, [getTimeUntil]);
+    }, [timeUntil]);
+    
+
     return (
-        <div>
-            <div
-                style={{
-                    background: `linear-gradient(0deg, rgba(57, 35, 78, 0.25), rgba(57, 35, 78, 0.25)),
-                 linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03))`,
-                }}
-                className="flex items-center justify-center gap-1 md:gap-2 p-6 mt-2 shadow-lg rounded-lg text-white"
-            >
-                <div className="flex flex-col items-center">
-                    <span className="text-base md:text-xl font-mono font-bold">
-                        {timer[0] + timer[1]}
-                    </span>
-                    <span className="text-xs md:text-sm mt-1">Hours</span>
-                </div>
+        <div className="flex flex-col items-center w-full">
+            <div className="flex flex-col items-center space-y-1 gap-2 mb-1">
+                <h1 className="text-white text-sm md:text-lg lg:text-lg how-it-works-heading tracking-wider">
+                    {roundNumber !== null ? (
+                        <>
+                            <span className="text-[#F04D4E]">ROUND {roundNumber} </span> {status}
+                        </>
+                    ) : (
+                        "No Active Round"
+                    )}
+                </h1>
+            </div>
 
-                <span className="text-base font-bold mb-5">:</span>
-
-                <div className="flex flex-col items-center">
-                    <span className="text-base md:text-xl font-mono font-bold">
-                        {timer[3] + timer[4]}
-                    </span>
-                    <span className="text-xs md:text-sm mt-1">Minutes</span>
-                </div>
-
-                <span className="text-base font-bold mb-5">:</span>
-
-                <div className="flex flex-col items-center">
-                    <span className="text-base md:text-xl font-mono font-bold">
-                        {timer[6] + timer[7]}
-                    </span>
-                    <span className="text-xs md:text-sm mt-1">Seconds</span>
-                </div>
+            <div className={`flex items-center justify-center md:gap-1 lg:gap-1 ${orbitron.className}`}>
+                <span className="md:text-sm lg:text-xl xl:text-2xl text-white md:px-1 xl:px-2 py-1 md:min-w-[30px] xl:min-w-[48px] text-center">
+                    {timer[0]}{timer[1]}
+                </span>
+                <span className="lg:text-xl xl:text-2xl text-white">:</span>
+                <span className="lg:text-xl xl:text-2xl text-white md:px-1 xl:px-3 py-1 md:min-w-[30px] xl:min-w-[48px] text-center">
+                    {timer[3]}{timer[4]}
+                </span>
+                <span className="lg:text-xl xl:text-2xl text-white">:</span>
+                <span className="lg:text-xl xl:text-2xl text-white md:px-1 xl:px-3 py-1 md:min-w-[30px] xl:min-w-[48px] text-center">
+                    {timer[6]}{timer[7]}
+                </span>
             </div>
         </div>
     );

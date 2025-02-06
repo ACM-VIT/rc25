@@ -3,14 +3,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import rock2 from "@/app/assets/rock2.svg";
-import { Audiowide } from "next/font/google";
 import { Outfit } from "next/font/google";
-
-const audiowide = Audiowide({
-    subsets: ['latin'], 
-    weight: ['400'] ,
-    display: 'swap',
-  });
 
 const outfit= Outfit({
     subsets: ['latin'], 
@@ -75,7 +68,7 @@ export default function HowItWorks() {
     <div className="flex flex-col min-h-screen w-full bg-black overflow-x-hidden">
       {/* Header Section */}
       <div className="flex h-full items-center justify-center">
-        <div className={`bg-gradient-to-b from-[#F0F1FA] to-[#ACADB5] bg-clip-text text-transparent text-center phone:text-[4rem] xs:text-[6rem] sm:text-[4rem] md:text-[4rem] lg:text-[4rem] xl:text-[1rem] overflow-y-auto ${audiowide.className}`}>
+        <div className={`bg-gradient-to-b from-[#F0F1FA] to-[#ACADB5] bg-clip-text text-transparent text-center phone:text-[4rem] xs:text-[6rem] sm:text-[4rem] md:text-[4rem] lg:text-[4rem] xl:text-[1rem] overflow-y-auto`}>
           HOW IT WORKS?
         </div>
       </div>
@@ -118,7 +111,7 @@ export default function HowItWorks() {
   {/* Vertical Text */}
   <div className="w-[10%] flex items-center justify-center mt-8 phone:mt-[-2%] xs:mt-[1%] sm:mt-[-2%] md:mt-[1%] lg:mt-[-1%] xl:mt-[1%]">
       <p 
-        className={`text-[85%] phone:text-[70%] sm:text-[95%] md:text-[95%] lg:text-[110%] xl:text-[110%] tracking-[0.2em] uppercase  -rotate-90 whitespace-nowrap transform origin-center ${audiowide.className}`}
+        className={`text-[85%] phone:text-[70%] sm:text-[95%] md:text-[95%] lg:text-[110%] xl:text-[110%] tracking-[0.2em] uppercase  -rotate-90 whitespace-nowrap transform origin-center`}
         style={{
           color: 'transparent',
           WebkitTextStroke: '1px white',
@@ -150,7 +143,7 @@ export default function HowItWorks() {
   <div className="flex flex-row mb-20">
     {/* Vertical Text */}
     <div className="absolute top-1/2 left-0  transform -translate-y-1/2 w-[2%] phone:top-[15%] xs:top-[14%] sm:top-[7%] xl:top-[8%] md:top-[10%]">
-      <p className={`text-white outline-4 phone:text-[80%] xs:text-[95%] sm:text-[90%] md:text-[100%] lg:text-[110%] xl:text-[120%] tracking-[0.2em] uppercase rotate-90 whitespace-nowrap origin-center ${audiowide.className}`}
+      <p className={`text-white outline-4 phone:text-[80%] xs:text-[95%] sm:text-[90%] md:text-[100%] lg:text-[110%] xl:text-[120%] tracking-[0.2em] uppercase rotate-90 whitespace-nowrap origin-center`}
        style={{
         color: 'transparent',
         WebkitTextStroke: '1px white',

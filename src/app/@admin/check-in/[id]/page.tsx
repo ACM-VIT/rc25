@@ -13,6 +13,7 @@ export default async function Page({ params }: PageParams) {
 	const prisma = new PrismaClient();
 	const param = await params;
 	const team = await prisma.team.findUnique({
+		relationLoadStrategy: 'join',
 		where: {
 			id: param.id,
 		},
@@ -27,6 +28,7 @@ export default async function Page({ params }: PageParams) {
 	}
 
 	const uniregs = await prisma.uniReg.findMany({
+		relationLoadStrategy: 'join',
 		where: {
 			regNo: {
 				in: team.members

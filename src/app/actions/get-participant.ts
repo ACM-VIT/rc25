@@ -4,6 +4,7 @@ import { PrismaClient } from '@prisma/client';
 export default async function GetParicipant(regNo: string) {
     const prisma = new PrismaClient();
     const promises = [prisma.user.findFirst({
+        relationLoadStrategy: 'join',
         where: {
             name: {
                 endsWith: regNo

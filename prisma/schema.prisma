@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["relationJoins"]
 }
 
 datasource db {
@@ -118,12 +119,14 @@ model Submission {
   code            String
   problemId       String
   userId          String
+  token           String?              @unique
   score           Int?                 @default(0)
   testcasespassed Boolean[]            @default([])
   createdAt       DateTime             @default(now())
   updatedAt       DateTime             @updatedAt
   problem         Problem              @relation(fields: [problemId], references: [id], onDelete: Cascade)
   user            User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  evaluated       Boolean              @default(false)
   testcases       TestcaseSubmission[]
 }
 
@@ -155,6 +158,11 @@ model Admin {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model Flags {
+  name  String  @unique
+  value Boolean
+}
+
 enum Gender {
   male
   female
@@ -164,4 +172,12 @@ enum Difficulty {
   EASY
   MEDIUM
   HARD
+}
+
+
+model News {
+  id      String   @id @default(cuid())
+  content String
+  title   String
+  time    DateTime
 }

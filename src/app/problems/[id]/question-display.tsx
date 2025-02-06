@@ -17,7 +17,13 @@ interface Problem {
     win_dl: string;
 }
 
-export default function QuestionDisplay({ problem }: { problem: Problem }) {
+export default function QuestionDisplay({
+    problem,
+    desc,
+}: {
+    problem: Problem;
+    desc: React.ReactElement;
+}) {
     return (
         <DashboardBox className="rounded-[10px] flex flex-col h-full">
             <ScrollArea className="rounded-[10px] flex-grow w-full">
@@ -31,7 +37,7 @@ export default function QuestionDisplay({ problem }: { problem: Problem }) {
                 </div>
                 <hr className="border-t border-gray-700 mx-4 my-2" />
                 <div className="text-white m-4 font-medium max-h-fit">
-                    {problem.description}
+                    {desc}
                 </div>
             </ScrollArea>
             <div className="p-4 flex items-center justify-between mt-auto border-t border-gray-700">

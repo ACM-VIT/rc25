@@ -1,5 +1,5 @@
 'use server'
-import { PrismaClient } from "@prisma/client";
+import {PrismaClient} from "@prisma/client";
 
 export async function getTeamId(userId: string) {
     const prisma = new PrismaClient();
@@ -18,7 +18,7 @@ export async function getTeamSubmissions(userId: string, problemId: string) {
     select: { teamId: true }
   });
 
-  if (!user?.teamId) return { latest: null, best: null };
+  if (!user?.teamId) return [];
 
   // Get all team members
   const teamMembers = await prisma.user.findMany({
@@ -29,21 +29,20 @@ export async function getTeamSubmissions(userId: string, problemId: string) {
   const userIds = teamMembers.map(member => member.id);
 
   // Get all submissions
-  const submissions = await prisma.submission.findMany({
+  // Get latest and best submissions
+  // const latest = submissions[0] || null;
+  // const best = submissions.reduce((best, current) => {
+  //   const currentPassed = current.testcasespassed.filter(Boolean).length;
+  //   const bestPassed = best ? best.testcasespassed.filter(Boolean).length : -1;
+  //   return currentPassed > bestPassed ? current : best;
+  // }, submissions[0] || null);
+
+  return prisma.submission.findMany({
     where: {
-      userId: { in: userIds },
+      userId: {in: userIds},
       problemId: problemId
     },
-    orderBy: { createdAt: 'desc' }
+    orderBy: {createdAt: 'desc'},
+    include: {user: true}
   });
-
-  // Get latest and best submissions
-  const latest = submissions[0] || null;
-  const best = submissions.reduce((best, current) => {
-    const currentPassed = current.testcasespassed.filter(Boolean).length;
-    const bestPassed = best ? best.testcasespassed.filter(Boolean).length : -1;
-    return currentPassed > bestPassed ? current : best;
-  }, submissions[0] || null);
-
-  return { latest, best };
 }

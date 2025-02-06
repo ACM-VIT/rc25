@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import {useTransition} from "react";
+import { useTransition } from "react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import type { Problem, Difficulty } from "@prisma/client";
@@ -23,6 +23,13 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
+import { remark } from 'remark';
+import remarkMdx from 'remark-mdx';
+import remarkGfm from 'remark-gfm';
+import remarkFrontmatter from 'remark-frontmatter';
+import remarkRehype from 'remark-rehype';
+import rehypeStringify from 'rehype-stringify';
+import { reporter } from 'vfile-reporter';
 
 interface QuestionFormProps {
 	initialData?: Problem | null;
@@ -32,6 +39,76 @@ interface QuestionFormProps {
 	open?: boolean;
 	rounds?: { id: string; number: number }[];
 }
+interface MarkdownValidationError {
+	isValid: boolean;
+	error?: string;
+}
+
+const validateMarkdown = async (markdown: string): Promise<MarkdownValidationError> => {
+	if (!markdown || typeof markdown !== "string") {
+		return { isValid: false, error: "Description is required" };
+	}
+
+	try {
+		const file = await remark()
+			.use(remarkMdx)
+			.use(remarkGfm)
+			.use(remarkFrontmatter)
+			.use(remarkRehype)
+			.use(rehypeStringify)
+			.process(markdown);
+
+		const report = reporter(file);
+		
+		// If there are any warnings or errors
+		if (report && report !== 'no issues found') {
+			return { 
+				isValid: false, 
+				error: `MDX validation issues:\n${report}` 
+			};
+		}
+
+		// Additional custom checks for specific requirements
+		const validation = validateMDXRules(markdown);
+		if (!validation.isValid) {
+			return validation;
+		}
+
+		return { isValid: true };
+	} catch (error) {
+		return { 
+			isValid: false, 
+			error: `Error validating MDX: ${error}` 
+		};
+	}
+};
+
+const validateMDXRules = (markdown: string): MarkdownValidationError => {
+	// Check for unmatched MDX component tags
+	const componentTags = markdown.match(/<[^>]+>/g) || [];
+	const openTags = componentTags.filter(tag => !tag.includes('/>') && !tag.startsWith('</'));
+	const closeTags = componentTags.filter(tag => tag.startsWith('</'));
+	
+	if (openTags.length !== closeTags.length) {
+		return { isValid: false, error: "Unmatched MDX component tags found" };
+	}
+
+	// Check for invalid JSX expressions
+	const jsxExpressions = markdown.match(/{[^}]+}/g) || [];
+	for (const expr of jsxExpressions) {
+		if (expr.includes('{{') || expr.includes('}}')) {
+			return { isValid: false, error: "Invalid JSX expression syntax" };
+		}
+	}
+
+	// Existing custom rules
+	const tripleBacktickCount = (markdown.match(/```/g) || []).length;
+	if (tripleBacktickCount % 2 !== 0) {
+		return { isValid: false, error: "Unmatched code block markers found" };
+	}
+
+	return { isValid: true };
+};
 
 export function QuestionForm({
 	initialData,
@@ -42,6 +119,7 @@ export function QuestionForm({
 	rounds = [],
 }: QuestionFormProps) {
 	const router = useRouter();
+	const [markdownError, setMarkdownError] = useState<string>("");
 	const [isPending, startTransition] = useTransition();
 	const [formData, setFormData] = useState<Partial<Problem>>({
 		title: "",
@@ -79,9 +157,26 @@ export function QuestionForm({
 		}
 	}, [initialData]);
 
+	useEffect(() => {
+		if (formData.description) {
+			const validate = async () => {
+				const validation = await validateMarkdown(formData.description || "");
+				setMarkdownError(validation.error || "");
+			};
+			validate();
+		}
+	}, [formData.description]);
+
 	const handleSubmit = (e: React.FormEvent) => {
-		startTransition(async ()=> {
+		startTransition(async () => {
 			e.preventDefault();
+
+			// Validate markdown before submission
+			const markdownValidation = await validateMarkdown(formData.description || "");
+			if (!markdownValidation.isValid) {
+				alert(markdownValidation.error);
+				return;
+			}
 
 			// Add validation
 			if ((formData.normal_cases ?? 0) < 0 || (formData.edge_cases ?? 0) < 0) {
@@ -115,7 +210,7 @@ export function QuestionForm({
 			} catch (error) {
 				console.error("Error submitting question:", error);
 			}
-		})
+		});
 	};
 
 	const handleFileChange = (
@@ -163,12 +258,15 @@ export function QuestionForm({
 					<Textarea
 						id="description"
 						placeholder="Question description"
-						className="min-h-[100px]"
+						className={`min-h-[100px] ${markdownError ? "border-red-500" : ""}`}
 						value={formData.description || ""}
 						onChange={(e) =>
 							setFormData((prev) => ({ ...prev, description: e.target.value }))
 						}
 					/>
+					{markdownError && (
+						<p className="text-sm text-red-500">{markdownError}</p>
+					)}
 				</div>
 
 				<div className="space-y-2">
@@ -211,27 +309,24 @@ export function QuestionForm({
 						<Select
 							value={formData.roundId}
 							onValueChange={(value) =>
-							setFormData((prev) => ({
-								...prev,
-								roundId: value
-							}))
+								setFormData((prev) => ({
+									...prev,
+									roundId: value,
+								}))
 							}
 						>
 							<SelectTrigger>
-							<SelectValue placeholder="Select round" />
+								<SelectValue placeholder="Select round" />
 							</SelectTrigger>
 							<SelectContent>
-							{rounds.map((round) => (
-								<SelectItem
-								key={round.id}
-								value={round.id}
-								>
-								Round {round.number}
-								</SelectItem>
-							))}
+								{rounds.map((round) => (
+									<SelectItem key={round.id} value={round.id}>
+										Round {round.number}
+									</SelectItem>
+								))}
 							</SelectContent>
 						</Select>
-					</div>					
+					</div>
 					<div className="space-y-2">
 						<Label htmlFor="maxScore">Max Score</Label>
 						<Input

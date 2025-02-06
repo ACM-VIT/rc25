@@ -1,9 +1,11 @@
 import * as readline from "node:readline/promises";
 import { PrismaClient } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import fs from "node:fs/promises";
 
 const prisma = new PrismaClient();
 const adminTeamId = process.env.ADMIN_TEAM_ID;
+const CSV_FILE_PATH = "./whitelist_test.csv";
 
 if (!adminTeamId) {
     throw new Error("Set ADMIN_TEAM_ID in .env");
@@ -29,6 +31,7 @@ async function createRound({ start, end, result }) {
             });
 
             const rounds = await prisma.round.findMany({
+                relationLoadStrategy: 'join',
                 select: {
                     id: true,
                     start: true,
@@ -69,6 +72,7 @@ async function deleteRound(roundId) {
         });
 
         const rounds = await prisma.round.findMany({
+            relationLoadStrategy: 'join',
             select: {
                 id: true,
                 start: true,
@@ -134,6 +138,7 @@ async function deleteAdmin({ email }) {
 
     try {
         const admin = await prisma.admin.findFirstOrThrow({
+            relationLoadStrategy: 'join',
             where: { user: { email } },
         });
 
@@ -154,6 +159,41 @@ async function deleteAdmin({ email }) {
     }
 }
 
+async function whitelist() {
+    try {
+        const data = await fs.readFile(CSV_FILE_PATH, "utf-8");
+        const lines = data.split("\n").filter((line) => line.trim() !== "");
+        // Remove header line
+        const rows = lines.slice(1);
+        const createPromises = rows.map(async (line) => {
+            const fields = line.split(",").map((f) => f.trim());
+            // CSV columns: [S.No., ParticipantId, Participant Name, School, Session Attended, Mobile Number, EmailID]
+            const regNo = fields[1];
+            const name = fields[2];
+            const phone = fields[5];
+            const email = fields[6];
+            const exists = await prisma.uniReg.findUnique({relationLoadStrategy: 'join', where: { email } });
+            if (!exists) {
+                return prisma.uniReg.create({
+                    data: {
+                        regNo,
+                        name,
+                        phone,
+                        email,
+                    },
+                });
+            }
+            console.log(`Email ${email} already exists. Skipping.`);
+            return null;
+        });
+        await Promise.all(createPromises);
+        console.log("Whitelist data processed successfully.");
+    } catch (e) {
+        console.error("Error processing whitelist data:", e);
+    }
+}
+
+// MODIFY main() to include option 5 for whitelist
 async function main() {
     const args = process.argv.slice(2);
     const action = args[0];
@@ -165,8 +205,9 @@ async function main() {
         console.log("2. Delete Round");
         console.log("3. Add Admin");
         console.log("4. Delete Admin");
+        console.log("5. Whitelist");
 
-        const choice = await rl.question("Enter your choice (1-4): ");
+        const choice = await rl.question("Enter your choice (1-5): ");
 
         if (choice === "1") {
             const start = new Date(await rl.question("Enter round start date (YYYY-MM-DD): "));
@@ -175,9 +216,9 @@ async function main() {
 
             await createRound({ start, end, result });
         } else if (choice === "2") {
-            const roundId = parseInt(await rl.question("Enter round ID to delete: "), 10);
+            const roundId = Number.parseInt(await rl.question("Enter round ID to delete: "), 10);
 
-            if (isNaN(roundId)) {
+            if (Number.isNaN(roundId)) {
                 console.error("Invalid round ID.");
                 return;
             }
@@ -185,11 +226,13 @@ async function main() {
             await deleteRound(roundId);
         } else if (choice === "3") {
             const emailInput = await rl.question("Enter email: ");
-            await createAdmin({ email: emailInput });
+            await Promise.all(emailInput.split(',').map(i=>createAdmin({ email: i.trim() })));
         } else if (choice === "4") {
             const emailInput = await rl.question("Enter email: ");
             await deleteAdmin({ email: emailInput });
-        } else {
+        } else if (choice === "5") {
+            await whitelist();
+        } else if (choice === "6") {
             console.log("Invalid choice.");
         }
     } else if (action === "round_add") {
@@ -199,21 +242,22 @@ async function main() {
 
         await createRound({ start, end, result });
     } else if (action === "round_delete") {
-        const roundId = parseInt(await rl.question("Enter round ID to delete: "), 10);
+        const roundId = Number.parseInt(await rl.question("Enter round ID to delete: "), 10);
 
-        if (isNaN(roundId)) {
+        if (Number.isNaN(roundId)) {
             console.error("Invalid round ID.");
             return;
         }
-
         await deleteRound(roundId);
     } else if (action === "admin_add" && email) {
-        await createAdmin({ email });
+        await Promise.all(email.split(',').map(i=>createAdmin({ email: i.trim() })));
     } else if (action === "admin_delete" && email) {
         await deleteAdmin({ email });
+    } else if (action === "whitelist") {
+        await whitelist();
     } else {
         console.error(
-            "Invalid command. Use:\n  ROUND \"round_add\" - to add a round\n  \"round_delete\" - to delete a round\n  \"admin_add\" <email> - to add admin\n  \"admin_delete\" <email> - to delete admin"
+            "Invalid command. Use:\n  ROUND \"round_add\" - to add a round\n  \"round_delete\" - to delete a round\n  \"admin_add\" <email> - to add admin\n  \"admin_delete\" <email> - to delete admin\n  \"whitelist\" - to process whitelist CSV"
         );
     }
 }

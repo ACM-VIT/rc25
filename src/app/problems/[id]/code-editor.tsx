@@ -1,15 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect, useTransition} from "react";
 import Editor from "@monaco-editor/react";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import createSubmission from "@/app/actions/create-submission";
-import getSubmissionResults from "@/app/actions/get-submission-results";
 import {
     SUPPORTED_LANGUAGES,
     type SupportedLanguage,
 } from "@/utils/judge0-langs";
+import {Prisma} from "@prisma/client";
 
 const LANGUAGE_STORAGE_KEY = "preferred-language" as const;
 const CODE_STORAGE_KEY = "code-snippets" as const;
+
+type SubmissionWithUser = Prisma.SubmissionGetPayload<{
+    include: {user: {select: {name: true}}}
+}>
 
 interface Problem {
     id: string;
@@ -20,7 +24,27 @@ interface Problem {
 interface CodeEditorProps {
     problem: Problem;
     session: { user: { id: string } };
+    setStatusRibbon: React.Dispatch<React.SetStateAction<StatusRibbonProps>>;
+    statusRibbon: StatusRibbonProps;
+    setSubmissions: React.Dispatch<React.SetStateAction<SubmissionWithUser[]>>;
 }
+
+interface SubmittedStatusRibbonProps {
+    type: "submitted";
+}
+
+interface EvaluationStatusRibbonProps {
+    type: "evaluation";
+    passed: number;
+    total: number;
+}
+
+interface ErrorStatusRibbonProps {
+    type: "error";
+    message: string;
+}
+
+export type StatusRibbonProps = SubmittedStatusRibbonProps | EvaluationStatusRibbonProps | ErrorStatusRibbonProps | null;
 
 interface CodeSnippets {
     [key: string]: {
@@ -49,14 +73,17 @@ const validateCode = (
     return null;
 };
 
-export default function CodeEditor({ problem, session }: CodeEditorProps) {
-    const [language, setLanguage] = useState<SupportedLanguage>(() => {
-        if (typeof window === "undefined") return "c";
-        return (
-            (localStorage.getItem(LANGUAGE_STORAGE_KEY) as SupportedLanguage) ||
-            "c"
-        );
-    });
+export default function CodeEditor({ problem, session, setStatusRibbon, statusRibbon, setSubmissions }: CodeEditorProps) {
+    const [language, setLanguage] = useState<SupportedLanguage>("c");
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const storedLanguage = localStorage.getItem(LANGUAGE_STORAGE_KEY) as SupportedLanguage;
+            if (storedLanguage) {
+                setLanguage(storedLanguage);
+            }
+        }
+    }, []);
 
     const [code, setCode] = useState<string>(() => {
         if (typeof window === "undefined")
@@ -70,15 +97,12 @@ export default function CodeEditor({ problem, session }: CodeEditorProps) {
         );
     });
 
+    const [isPending, startTransition] = useTransition()
     const [dropdownOpen, setDropdownOpen] = useState(false);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [submissionStatus, setSubmissionStatus] = useState("");
-    const [testResults, setTestResults] = useState<{
-        passed: number;
-        total: number;
-    } | null>(null);
 
+    const setError = (message: string) => {
+        setStatusRibbon({ type: "error", message });
+    }
     useEffect(() => {
         const snippets: CodeSnippets = JSON.parse(
             localStorage.getItem(CODE_STORAGE_KEY) || "{}"
@@ -102,9 +126,7 @@ export default function CodeEditor({ problem, session }: CodeEditorProps) {
         }
 
         try {
-            setIsSubmitting(true);
-            setError(null);
-            setSubmissionStatus("Submitting...");
+            setStatusRibbon(null);
 
             const result = await createSubmission({
                 code: code,
@@ -113,54 +135,19 @@ export default function CodeEditor({ problem, session }: CodeEditorProps) {
                 language,
             });
 
-            console.log("result: ", result);
+            // console.log("result: ", result);
 
             if (result.success && result.submission) {
-                setSubmissionStatus("Submitted successfully!");
-                console.log("Submission id check:", result.submission.id)
-                const finalResult = await fetch(
-                    `/edge?submissionId=${result.submission.id}&token=${result.token}`,
-                    {
-                        method: "GET",
-                    }
-                );
-
-                const reader = finalResult.body?.getReader();
-                const decoder = new TextDecoder();
-
-                if (reader) {
-                    try {
-                        while (true) {
-                            const { done, value } = await reader.read();
-                            if (done) break;
-                            const chunk = decoder.decode(value);
-                            console.log("Received chunk:", chunk);
-                        }
-                    } catch (error) {
-                        console.error("Error reading stream:", error);
-                    } finally {
-                        reader.releaseLock();
-                    }
-                }
-
-                const results = await getSubmissionResults(
-                    result.submission.id
-                );
-                const passed = results.filter((r) => r === true).length;
-                setTestResults({
-                    passed,
-                    total: results.length,
-                });
-
-                console.log("Final result", results);
+                setStatusRibbon({type: "submitted"});
+                // console.log("Submission id check:", result.submission.id)
+                // todo: push into submissions state
+                setSubmissions(prev=>[...prev, result.submission]);
             }
             if (!result.success) {
                 setError(result.error || "Submission failed");
             }
         } catch (err) {
             setError(err instanceof Error ? err.message : "Submission failed");
-        } finally {
-            setIsSubmitting(false);
         }
     };
 
@@ -242,26 +229,40 @@ export default function CodeEditor({ problem, session }: CodeEditorProps) {
                     </div>
                     <button
                         type="button"
-                        onClick={handleSubmit}
-                        disabled={isSubmitting}
+                        onClick={()=>startTransition(handleSubmit)}
+                        disabled={isPending}
                         className="px-3 py-1 rounded-md text-xs font-semibold  text-white bg-primary hover:bg-secondary disabled:opacity-50"
                     >
-                        {isSubmitting ? "Submitting..." : "Submit"}
+                        {isPending ? "Submitting..." : "Submit"}
                     </button>
                 </div>
             </div>
 
-            {error && (
+            {statusRibbon?.type === "error" && (
                 <div className="top-[5vh]  p-2 bg-red-100 text-red-700 text-sm">
-                    {error}
+                    {statusRibbon.message}
                 </div>
             )}
 
-            {submissionStatus && !error && (
+            {statusRibbon?.type === "submitted" && (
                 <div className="top-[5vh] p-2 bg-green-100 text-green-700 text-sm">
-                    {submissionStatus}
+                    Submitted successfully!
                 </div>
             )}
+
+            {statusRibbon?.type === "evaluation" && statusRibbon.passed === statusRibbon.total && (
+                <div className="top-[5vh] p-2 bg-green-100 text-green-700 text-sm">
+                    All testcases passed!
+                </div>
+            )}
+
+            {statusRibbon?.type === "evaluation" && statusRibbon.passed !== statusRibbon.total && (
+                <div className="top-[5vh] p-2 bg-yellow-300 text-green-700 text-sm">
+                    {statusRibbon.passed}/{statusRibbon.total} testcases passed
+                </div>
+            )}
+
+
 
             <Editor
                 height="calc(100% - 5vh)"
@@ -285,11 +286,6 @@ export default function CodeEditor({ problem, session }: CodeEditorProps) {
                 language={language}
                 className="rounded-b-lg"
             />
-            {testResults && (
-                <div className="absolute top-[8vh] w-full p-2 bg-blue-100 text-blue-700 text-sm">
-                    Test Cases: {testResults.passed}/{testResults.total} passed
-                </div>
-            )}
         </div>
     );
 }

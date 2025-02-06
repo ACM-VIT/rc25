@@ -63,6 +63,7 @@
     "react-lottie": "^1.2.10",
     "react-resizable-panels": "^2.1.7",
     "react-responsive": "^10.0.0",
+    "recharts": "^2.15.1",
     "rehype-stringify": "^10.0.1",
     "remark": "^15.0.1",
     "remark-frontmatter": "^5.0.0",

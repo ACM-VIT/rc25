@@ -1,18 +1,19 @@
 import React from 'react';
-import Footer from './footer';
+ 
 import Image from 'next/image';
-import elimination from "@/app/assets/elimination.png";
 
-const EliminationScreen = () => {
+import ButThe from "../../public/butthe.svg"; 
+
+const MemeDisplay: React.FC = () => {
   return (
-      <div className="flex flex-row items-center justify-center text-left mb-10 mt-20">
-        <Image src={elimination} alt="Eliminated" width={300} height={400} className="mr-10" />
-        <p className="font-bold text-black text-7xl max-w-xl">
-          Fair attempt, Better Luck Next Time!
-        </p>
-      <Footer />
-      </div>
+    <div className="fixed inset-0 flex flex-col items-center justify-center bg-[#0d0b17] text-white text-center overflow-hidden">
+      <Image src={ButThe} alt="Centered SVG" className="w-1/3 h-auto" />
+      <p className="text-4xl font-bold mt-6"  style={{ fontFamily: 'Death Star, sans-serif' }}>
+        NEXT TIME, LUCK BETTER IT MAY BE, HMMM?
+      </p>
+       
+    </div>
   );
 };
 
-export default EliminationScreen;
+export default MemeDisplay;

@@ -120,7 +120,7 @@ CREATE TABLE "Submission" (
     "code" STRING NOT NULL,
     "problemId" STRING NOT NULL,
     "userId" STRING NOT NULL,
-    "token" STRING NOT NULL DEFAULT '',
+    "token" STRING,
     "score" INT4 DEFAULT 0,
     "testcasespassed" BOOL[] DEFAULT ARRAY[]::BOOL[],
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -195,6 +195,9 @@ CREATE UNIQUE INDEX "Team_shortCode_key" ON "Team"("shortCode");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "TeamRound_teamId_roundId_key" ON "TeamRound"("teamId", "roundId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Submission_token_key" ON "Submission"("token");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "TestcaseSubmission_testcaseId_submissionId_key" ON "TestcaseSubmission"("testcaseId", "submissionId");

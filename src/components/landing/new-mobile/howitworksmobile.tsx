@@ -24,23 +24,19 @@ const HowItWorksMobile: React.FC = () => {
         <div className="text-white font-extrabold text-left space-y-8 sm:space-y-12 lg:space-y-16 max-w-3xl">
           <div className="flex items-start justify-start gap-4">
             <div className="text-lg sm:text-xl md:text-3xl lg:text-2xl leading-relaxed">
-              Participants are given runnable files that <br />
-              display input-output test cases.
+               All participants will be given executable files that display input-output test cases.
             </div>
           </div>
 
           <div className="flex items-start justify-start gap-4">
             <div className="text-lg sm:text-xl md:text-3xl lg:text-2xl leading-relaxed">
-              After deciphering the logic based on these input-output patterns,
-              they need to come up with a code that will fulfill some hidden
-              test cases.
+              The code you write should implement the logic based on these input-output files and also fulfill some hidden test cases.
             </div>
           </div>
 
           <div className="flex items-start justify-start gap-4">
             <div className="text-lg sm:text-xl md:text-3xl lg:text-2xl leading-relaxed">
-              The fifteen best-performing teams of Round
-              <br /> One advance to Round Two.
+              The best performing teams of round 1 will advance to round 2.
             </div>
           </div>
         </div>

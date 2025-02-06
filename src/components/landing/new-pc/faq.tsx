@@ -6,33 +6,33 @@ const Faq: React.FC = () => {
   const contentBoxes = [
     {
       defaultText:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do",
-      hoverText: "May the Force flow through your code like a mighty stream",
+        "Which programming languages can be used?",
+      hoverText: "You can code in C, C++, Python, Java, JavaScript, Golang and Rust",
     },
     {
       defaultText:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do",
-      hoverText: "Debug or debug not, there is no try-catch",
+        "How many members can there be in a team?",
+      hoverText: "Each team can have 2-4 members. If you don’t have a teammate, you can search for them on our Discord channel.",
     },
     {
       defaultText:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do",
-      hoverText: "In the matrix of possibilities, a solution always exists",
+        "Can I change my current team?",
+      hoverText: "Yes, you can leave a team and join another before the competition starts.",
     },
     {
       defaultText:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do",
-      hoverText: "The path to wisdom requires patience, young programmer",
+        "Which teams qualify for Round 2?",
+      hoverText: "It will be decided after looking at the general performance of teams at the end of round 1.",
     },
     {
       defaultText:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do",
-      hoverText: "When code breaks, breathe deep and let clarity guide you",
+        "Is there a registration fee?",
+      hoverText: "No! Reverse Coding is completely free of cost.",
     },
     {
       defaultText:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do",
-      hoverText: "Trust in the Force, but validate your inputs you must",
+        "How is the winner decided?",
+      hoverText: "The team who cleared Round 1 and is at the top of the leaderboard by the end of Round 2 will be the winner of Reverse Coding!",
     },
   ];
 

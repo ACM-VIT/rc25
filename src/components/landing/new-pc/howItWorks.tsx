@@ -1,12 +1,11 @@
 import type React from "react";
 import Image from "next/image";
-import bg from "../../../../public/landing_new/howitworks.png";
 
 const HowItWorks: React.FC = () => {
   return (
     <div className="relative w-screen h-screen overflow-hidden">
       <Image
-        src={bg || "/placeholder.svg"}
+        src="https://rc25-assets.acmvit.in/landing_new/howitworks.png"
         alt="bg"
         layout="fill"
         objectFit="cover"

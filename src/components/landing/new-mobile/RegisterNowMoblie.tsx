@@ -1,15 +1,5 @@
 import type React from "react";
 import Image from "next/image";
-import bg from "../../../../public/RegisterNowMobile.png";
-import v1 from "../../../../public/Vector.svg";
-import v2 from "../../../../public/Vector(1).svg";
-import v3 from "../../../../public/Vector(2).svg";
-import v5 from "../../../../public/Vector(3).svg";
-import v7 from "../../../../public/Vector(4).svg";
-import v8 from "../../../../public/Vector(5).svg";
-import acm from "../../../../public/ACMlLogo2.png";
-import rc from "../../../../public/RClogo2.png";
-import SignIn from "@/app/(auth)/authactions/signin";
 
 const RegisterNowMobile: React.FC = () => {
     return (
@@ -19,7 +9,7 @@ const RegisterNowMobile: React.FC = () => {
                 <div className="relative w-20 h-20 translate-y-1">
                     <Image
                         alt="ACM logo"
-                        src={acm}
+                        src="https://rc25-assets.acmvit.in/ACMlLogo2.png"
                         fill
                         className="object-contain scale-50"
                         priority
@@ -28,7 +18,7 @@ const RegisterNowMobile: React.FC = () => {
                 <div className="relative w-20 h-20  ">
                     <Image
                         alt="RC logo"
-                        src={rc}
+                        src="https://rc25-assets.acmvit.in/RClogo2.png"
                         fill
                         className="object-contain scale-50"
                         priority
@@ -51,7 +41,7 @@ const RegisterNowMobile: React.FC = () => {
             <div className="relative w-screen h-screen overflow-hidden">
                 <div className="absolute inset-0 z-10">
                     <Image
-                        src={bg}
+                        src="https://rc25-assets.acmvit.in/RegisterNowMobile.png"
                         alt="bg"
                         layout="fill"
                         objectFit="cover"
@@ -65,21 +55,21 @@ const RegisterNowMobile: React.FC = () => {
                         <p>Reach us at</p>
                         <div className="flex flex-row justify-center content-center m-8 items-start gap-6">
                             {[
-                                { src: v2, href: "https://github.com/ACM-VIT" },
+                                { src: "https://rc25-assets.acmvit.in/Vector(1).svg", href: "https://github.com/ACM-VIT" },
                                 {
-                                    src: v1,
+                                    src: "https://rc25-assets.acmvit.in/Vector.svg",
                                     href: "https://www.instagram.com/acmvit/",
                                 },
                                 {
-                                    src: v5,
+                                    src: "https://rc25-assets.acmvit.in/Vector(3).svg",
                                     href: "https://www.linkedin.com/company/acmvit/",
                                 },
                                 {
-                                    src: v3,
+                                    src: "https://rc25-assets.acmvit.in/Vector(2).svg",
                                     href: "https://www.facebook.com/acmvitvellore/",
                                 },
-                                { src: v7, href: "https://x.com/ACM_VIT" },
-                                { src: v8, href: "https://blog.acmvit.in/" },
+                                { src:"https://rc25-assets.acmvit.in/Vector(4).svg", href: "https://x.com/ACM_VIT" },
+                                { src: "https://rc25-assets.acmvit.in/Vector(5).svg", href: "https://blog.acmvit.in/" },
                             ].map((item, index) => (
                                 <a
                                     key={`vector-${index}`}

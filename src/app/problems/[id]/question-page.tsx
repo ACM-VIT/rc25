@@ -109,7 +109,7 @@ export default function QuestionPage({
         <div
             className="min-h-screen"
             style={{
-                backgroundImage: "url('../problembg.png')",
+                backgroundImage: "url(https://rc25-assets.acmvit.in/problembg.png)",
                 backgroundSize: "cover",
             }}
         >

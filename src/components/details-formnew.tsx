@@ -7,7 +7,7 @@ import parsePhoneNumber from "libphonenumber-js";
 import Image from "next/image";
 import bg from "@/app/assets/detailsbg.svg";
 import SignOut from "@/app/(auth)/authactions/signout";
-import RC from "../../public/RCLogo.svg";
+
 
 import { Outfit } from "next/font/google";
 
@@ -244,7 +244,7 @@ export default function OnboardingForm() {
         <div className="absolute bottom-0 left-0 p-4">
           <Image
             alt="Reverse Coding Logo"
-            src={RC || "/placeholder.svg"}
+            src="https://rc25-assets.acmvit.in/RCLogo.svg"
             width={100}
             height={100}
             className="transform scale-100"

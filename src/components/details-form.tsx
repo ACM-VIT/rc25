@@ -21,7 +21,7 @@ export default function OnboardingForm({ name }: { name: string }) {
       <div
         className="fixed inset-0 w-full h-full bg-black"
         style={{
-          backgroundImage: `url('/backgrounds/createTeamBg.png')`,
+          backgroundImage: `url('https://rc25-assets.acmvit.in/backgrounds/createTeamBg.png')`,
           backgroundPosition: "center",
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
@@ -214,7 +214,7 @@ export default function OnboardingForm({ name }: { name: string }) {
 
       <div className="relative px-6 py-2 flex justify-center items-center w-[85vw] motion-preset-slide-down-sm">
         <Image
-          src="/frameDecoration.svg"
+          src="https://rc25-assets.acmvit.in/frameDecoration.svg"
           alt="rclogo"
           width={190}
           height={100}
@@ -222,7 +222,7 @@ export default function OnboardingForm({ name }: { name: string }) {
         />
 
         <Image
-          src="/frameDecoration.svg"
+          src="https://rc25-assets.acmvit.in/frameDecoration.svg"
           alt="rclogo"
           width={190}
           height={100}

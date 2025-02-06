@@ -67,7 +67,7 @@ const Faq: React.FC = () => {
       </div>
 
       <Image
-        src={faqbg || "/placeholder.svg"}
+        src="https://rc25-assets.acmvit.in/landing_new/faqbg.png"
         alt="bg"
         layout="fill"
         objectFit="cover"

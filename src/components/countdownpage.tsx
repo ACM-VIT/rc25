@@ -22,7 +22,7 @@ const Counter: React.FC = () => {
                 {/* Background */}
                 <div className="absolute inset-0 z-5">
                     <Image
-                        src={bg}
+                        src="https://rc25-assets.acmvit.in/backgroundone.svg"
                         alt="background"
                         fill
                         className="object-cover object-center"

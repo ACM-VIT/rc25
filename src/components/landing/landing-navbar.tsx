@@ -2,7 +2,6 @@
 
 import type React from "react";
 import Image from "next/image";
-import RCLogo from "@/app/assets/RCLogo.svg";
 import SignIn from "@/app/(auth)/authactions/signin";
 import Link from "next/link";
 
@@ -18,7 +17,7 @@ const LandingNavbar: React.FC = () => {
         {/* Logo */}
         <div className="flex-shrink-0">
           <Image
-            src={RCLogo}
+            src="https://rc25-assets.acmvit.in/RCLogo.svg"
             alt="ze rc logo"
             className="w-[100px] sm:w-[100px] md:w-[130px] lg:w-[160px] xl:w-[190px] 2xl:w[200px] 3xl:w[230px] 4xl:w[300px]h-auto"
           />

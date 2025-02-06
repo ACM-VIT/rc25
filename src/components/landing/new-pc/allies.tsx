@@ -4,8 +4,6 @@ import Image from "next/image";
 import bg from "@/app/assets/bgally.svg";
 import upper from "@/app/assets/upperbracket.svg";
 import lower from "@/app/assets/lowerbracket.svg";
-import judge0 from "../../../../public/judge0.svg";
-import easeMyTrip from "../../../../public/easemytrip.svg";
 
 // Reusable clickable component
 
@@ -46,7 +44,7 @@ export default function Allies() {
 
                         {/* Main Image */}
                         <Image
-                            src={judge0}
+                            src="https://rc25-assets.acmvit.in/judge0.svg"
                             alt="Judge0"
                             width={350}
                             height={350}
@@ -86,7 +84,7 @@ export default function Allies() {
 
                         {/* Main Image */}
                         <Image
-                            src={easeMyTrip}
+                            src="https://rc25-assets.acmvit.in/easemytrip.svg"
                             alt="EaseMyTrip"
                             width={350}
                             height={350}

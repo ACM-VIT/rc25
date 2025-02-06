@@ -101,6 +101,7 @@ model Problem {
   round        Round        @relation(fields: [roundId], references: [id], onDelete: Cascade)
   submissions  Submission[]
   Testcase     Testcase[]
+  isHidden     Boolean      @default(false)
 }
 
 model Testcase {
@@ -124,9 +125,9 @@ model Submission {
   testcasespassed Boolean[]            @default([])
   createdAt       DateTime             @default(now())
   updatedAt       DateTime             @updatedAt
-  evaluated       Boolean              @default(false)
   problem         Problem              @relation(fields: [problemId], references: [id], onDelete: Cascade)
   user            User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  evaluated       Boolean              @default(false)
   testcases       TestcaseSubmission[]
 }
 
@@ -163,13 +164,6 @@ model Flags {
   value Boolean
 }
 
-model News {
-  id      String   @id @default(cuid())
-  content String
-  title   String
-  time    DateTime
-}
-
 enum Gender {
   male
   female
@@ -179,4 +173,12 @@ enum Difficulty {
   EASY
   MEDIUM
   HARD
+}
+
+
+model News {
+  id      String   @id @default(cuid())
+  content String
+  title   String
+  time    DateTime
 }

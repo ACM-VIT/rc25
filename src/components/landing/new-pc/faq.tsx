@@ -12,7 +12,7 @@ const Faq: React.FC = () => {
     {
       defaultText:
         "How many members can there be in a team?",
-      hoverText: "Each team can have 2-4 members. If you don’t have a teammate, you can search for them on our Discord channel.",
+      hoverText: "Each team can have 2-4 members. If you don't have a teammate, you can search for them on our Discord channel.",
     },
     {
       defaultText:
@@ -80,14 +80,16 @@ const Faq: React.FC = () => {
         </div>
 
         <div className="flex flex-col h-full justify-center items-center px-80 lg:px-48 md:px-28 sm:px-24 xs:px-20 py-16">
-          <div className="grid grid-cols-2 gap-x-20 gap-y-8 xl:gap-x-20 xl:gap-y-8 md:gap-x-12 md:gap-y-4 sm:gap-x-8 sm:gap-y-4 xs:gap-4  mb-16">
+          <div className="grid grid-cols-2 gap-x-20 gap-y-8 xl:gap-x-20 xl:gap-y-8 md:gap-x-12 md:gap-y-4 sm:gap-x-8 sm:gap-y-4 xs:gap-4 mb-16">
             {contentBoxes.map((box, index) => (
               <div
                 key={index}
-                className="flex space-x-12 items-center justify-center h-[12vh] w-[30vw] xl:w-[35vw] bg-[#222222] backdrop-blur bg-opacity-80 hover:bg-[#424242] hover:bg-opcaity-20 p-4 font-outfit rounded text-white border border-[#9B51E0] border-opacity-50 transition-all duration-200 ease-in-out shadow-[0_0_6px_rgba(255,255,255,1),0_0_15px_rgba(206,183,255,0.6),0_0_25px_rgba(155,81,224,0.7)] group"
+                className="flex space-x-12 items-center justify-center h-[14vh] xl:h-[16vh] lg:h-[14vh] md:h-[12vh] w-[30vw] xl:w-[35vw] bg-[#222222] backdrop-blur bg-opacity-80 hover:bg-[#424242] hover:p-4 font-outfit rounded text-white border border-[#9B51E0] border-opacity-50 transition-all duration-200 ease-in-out shadow-[0_0_6px_rgba(255,255,255,1),0_0_15px_rgba(206,183,255,0.6),0_0_25px_rgba(155,81,224,0.7)] group"
               >
-                <span className="group-hover:hidden">{box.defaultText}</span>
-                <span className="hidden group-hover:inline">
+                <span className="group-hover:hidden text-center text-base xl:text-lg lg:text-base md:text-sm">
+                  {box.defaultText}
+                </span>
+                <span className="hidden group-hover:inline text-center text-base xl:text-lg lg:text-base md:text-sm">
                   {box.hoverText}
                 </span>
               </div>

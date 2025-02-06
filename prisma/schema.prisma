@@ -68,7 +68,6 @@ model Team {
   checkedIn  Boolean     @default(false)
   score      Int         @default(0)
   disqualify Boolean     @default(false)
-  venue      Venue?
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
   TeamRound  TeamRound[]
@@ -175,10 +174,6 @@ enum Difficulty {
   HARD
 }
 
-enum Venue {
-  CS
-  CHANNA
-}
 
 model News {
   id      String   @id @default(cuid())

@@ -3,6 +3,8 @@
 import DashboardBox from "@/components/DashboardBox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
+// TODO: Update instructions
+
 export default function Instructions() {
     const instructions = [
         {
@@ -43,7 +45,7 @@ export default function Instructions() {
         {
             title: "Miscellaneous",
             description:
-                "• Hardware and Venue: If in-person, bring necessary hardware (laptops, chargers, etc.). Wi-Fi and power outlets will be provided.\n• Breaks and Refreshments: Stay hydrated and take regular breaks! Food and refreshments will be available [details].\n• Have Fun! The hackathon is a great opportunity to learn, collaborate, and innovate. Good luck and happy hacking! 🚀",
+                "• Hardware and Venue: If in-person, bring necessary hardware (laptops, chargers, etc.). Wi-Fi and power outlets will be provided.\n• Breaks and Refreshments: Stay hydrated and take regular breaks! Food and refreshments will be available [details].\n• Have Fun!",
         },
     ];
 

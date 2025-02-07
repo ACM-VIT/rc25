@@ -4,7 +4,8 @@ import React from "react";
 import Image from "next/image";
 import bg from "@/app/assets/backgroundone.svg";
 import earthone from "@/app/assets/rounded_earth.svg";
-
+import CountdownTimer from "@/components/countdown-timer";
+import SignOut from "@/app/(auth)/authactions/signout";
 const Counter: React.FC = () => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   //use effect to highlight the iframe when the page is opened
@@ -28,7 +29,16 @@ const Counter: React.FC = () => {
             style={{ filter: "grayscale(50%) brightness(80%) contrast(90%)" }}
           />
         </div>
-
+        <div className="fixed top-0 w-full p-4 flex justify-end cursor-pointer z-50">
+          <button
+            type="button"
+            onClick={SignOut}
+            className="transition-colors duration-150 px-4 py-2 border border-primary 
+                  text-text hover:bg-white/20 bg-black/50 backdrop-blur-lg"
+          >
+            LOGOUT
+          </button>
+        </div>
         {/* Title Section */}
         <div className="absolute top-14 text-center text-white z-10">
           <h1 className="text-3xl sm:text-4xl md:text-6xl how-it-works-heading tracking-widest">
@@ -48,9 +58,12 @@ const Counter: React.FC = () => {
             </span>
           </h2>
         </div>
-
+        {/* Countdown Timer */}
+        <div className="z-10 backdrop-blur-xl xl:scael-[1] scale-[0.9] mt-6 bg-white/10 py-4 px-2 md:min-w-[20%] lg:min-w-[17%] rounded-lg phone:translate-y-[230%] xs:translate-y-[250%] md:translate-y-[240%] lg:translate-y-[210%]">
+          <CountdownTimer />
+        </div>
         {/* Board */}
-        <div className="absolute mt-2 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/4 z-50 scale-[0.9]">
+        <div className="absolute mt-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/4 z-50 scale-[0.6] xl:scale-[0.7] 2xl:scale-[0.9]">
           <iframe
             ref={iframeRef}
             src="https://2048-main-delta.vercel.app/"

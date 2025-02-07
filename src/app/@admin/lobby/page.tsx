@@ -1,10 +1,5 @@
-"use client";
+import RotatingLobbyWrapper from "@/app/@admin/components/rotating-lobby-wrapper";
 
-import React from "react";
-import RotatingLobby from "../components/rotating-lobby";
-
-const HomePage: React.FC = () => {
-  return <RotatingLobby />;
-};
-
-export default HomePage;
+export default function HomePage() {
+  return <RotatingLobbyWrapper />;
+}

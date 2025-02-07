@@ -11,6 +11,6 @@ async function getLeaderBoardShowBoolean(): Promise<boolean> {
 
 export default async function RotatingLobbyWrapper() {
   const isScoreboardVisible = await getLeaderBoardShowBoolean();
-  console.log("Scoreboard visible:", isScoreboardVisible);
+  //console.log("Scoreboard visible:", isScoreboardVisible);
   return <RotatingLobby isScoreboardVisible={isScoreboardVisible} />;
 }

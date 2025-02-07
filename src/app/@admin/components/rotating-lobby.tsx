@@ -28,11 +28,11 @@ const LiveLeaderboard = lazyWithPreload(() => import("./live-leaderboard"));
 const Counter = lazyWithPreload(() => import("./lobby-counter"));
 
 const baseScreens: Screen[] = [
-  { Component: Sponsor, timeout: 5000, id: "sponsor1" },
-  { Component: DuoSponsor, timeout: 5000, id: "duoSponsor" },
-  { Component: LiveLeaderboard, timeout: 10000, id: "leaderboard" },
-  { Component: Sponsor2, timeout: 5000, id: "sponsor2" },
-  { Component: Counter, timeout: 5000, id: "counter" },
+  { Component: Sponsor, timeout: 20000, id: "sponsor1" },
+  { Component: DuoSponsor, timeout: 20000, id: "duoSponsor" },
+  { Component: LiveLeaderboard, timeout: 45000, id: "leaderboard" },
+  { Component: Sponsor2, timeout: 20000, id: "sponsor2" },
+  { Component: Counter, timeout: 30000, id: "counter" },
 ];
 
 interface RotatingLobbyProps {

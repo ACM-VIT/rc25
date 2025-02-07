@@ -17,7 +17,7 @@ export default async function AddToTeam(userId: string, teamId: string) {
 			return false
 		}
 		if (
-			team.members.length >= Number.parseInt(process.env.TEAM_CAPACITY || "4")
+			team.members.length >= Number.parseInt(process.env.MAX_TEAM_SIZE || "4")
 		) {
 			return false;
 		}

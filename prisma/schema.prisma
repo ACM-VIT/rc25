@@ -128,6 +128,7 @@ model Submission {
   problem         Problem              @relation(fields: [problemId], references: [id], onDelete: Cascade)
   user            User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   evaluated       Boolean              @default(false)
+  evaluationStatus EvalEnum?
   testcases       TestcaseSubmission[]
 }
 
@@ -174,6 +175,12 @@ enum Difficulty {
   EASY
   MEDIUM
   HARD
+}
+
+enum EvalEnum {
+  ACCEPTED
+  RUNTIME_ERROR
+  COMPILE_ERROR
 }
 
 model News {

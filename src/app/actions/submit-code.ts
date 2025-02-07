@@ -135,7 +135,7 @@ export async function judgeSolution(
             return {success: false, error: "No submission token received"};
         }
 
-        // console.log("postResultWithToken: ", postResult)
+        console.log("postResultWithToken: ", postResult)
 
         await firestoreService.submissions.created(submissionId);
         return {

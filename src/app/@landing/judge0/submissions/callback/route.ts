@@ -1,11 +1,14 @@
 import {type NextRequest, NextResponse} from "next/server";
 import {prisma} from "@/utils/prisma";
 import {firestoreService} from "@/lib/firebase-admin-service";
+import {EvalEnum} from "@prisma/client";
 
 interface WebhookBody {
     token: string;
     stdout: string;
     status?: string;
+    stderr?: string;
+    compile_output?: string;
 }
 
 export async function PUT(request: NextRequest) {
@@ -13,7 +16,7 @@ export async function PUT(request: NextRequest) {
         const body = await request.json();
 
         // console.log("Request body:", body);
-        const {token, stdout}: WebhookBody = body;
+        const {token, stdout, stderr, compile_output }: WebhookBody = body;
         
         // Base64 decode the stdout
         const decodedStdout = Buffer.from(stdout, 'base64').toString('utf-8');
@@ -43,6 +46,34 @@ export async function PUT(request: NextRequest) {
             return NextResponse.json(
                 {message: "Submission not found"},
                 {status: 404}
+            );
+        }
+
+        if (compile_output) {
+            await prisma.submission.update({
+                where: {id: submission.id},
+                data: {
+                    evaluated: true,
+                    evaluationStatus: EvalEnum.COMPILE_ERROR
+                },
+            });
+            return NextResponse.json(
+                {message: "Submission failed with compile error"},
+                {status: 200}
+            );
+        }
+
+        if (stderr) {
+            await prisma.submission.update({
+                where: {id: submission.id},
+                data: {
+                    evaluated: true,
+                    evaluationStatus: EvalEnum.RUNTIME_ERROR
+                },
+            });
+            return NextResponse.json(
+                {message: "Submission failed with runtime error"},
+                {status: 200}
             );
         }
 
@@ -156,6 +187,7 @@ export async function PUT(request: NextRequest) {
                     testcasespassed: finalTestCasesPassed,
                     score: invidualSubmissionScore,
                     evaluated: true,
+                    evaluationStatus: EvalEnum.ACCEPTED
                 },
             }), prisma.team.update({
                 where: {id: user.Team!.id},

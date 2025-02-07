@@ -40,7 +40,30 @@ function cin(type: string) {
       if (buffer.startsWith("\n")) buffer = buffer.substring(1);
       return line;
     }
-
+    case "float": {
+      // Extract the float/double using modified logic
+      let floatStr = "";
+      buffer = buffer.trimStart();
+      // Check for negative sign
+      if (buffer[0] === "-") {
+        floatStr += "-";
+        buffer = buffer.substring(1);
+      }
+      while (
+        buffer.length > 0 &&
+        (buffer[0] === "." || !Number.isNaN(Number.parseInt(buffer[0], 10))) &&
+        buffer[0] !== " "
+      ) {
+        floatStr += buffer[0];
+        buffer = buffer.substring(1);
+      }
+      if (buffer.startsWith("\n")) {
+        buffer = buffer.substring(1);
+      }
+      // Parse the float string to a number. Return null if no digits were found.
+      return Number.parseFloat(floatStr) ?? null;
+    }
+      
     case "vector": {
       let vector = [];
       let vectorLine = "";

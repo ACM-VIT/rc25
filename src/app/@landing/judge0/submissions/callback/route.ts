@@ -49,7 +49,7 @@ export async function PUT(request: NextRequest) {
             );
         }
 
-        if (compile_output !== "") {
+        if (compile_output) {
             await prisma.submission.update({
                 where: {id: submission.id},
                 data: {
@@ -63,7 +63,7 @@ export async function PUT(request: NextRequest) {
             );
         }
 
-        if (stderr !== "") {
+        if (stderr) {
             await prisma.submission.update({
                 where: {id: submission.id},
                 data: {

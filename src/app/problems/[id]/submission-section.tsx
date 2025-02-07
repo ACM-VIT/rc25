@@ -4,7 +4,7 @@ import {useState, useEffect} from "react";
 import type {Prisma} from "@prisma/client";
 import Lottie from "lottie-react";
 import animationData from "../../../../public/loading.json";
-import {ScrollArea} from "../../../components/ui/scroll-area";
+import {ScrollArea} from "@/components/ui/scroll-area";
 
 interface SubmissionSectionProps {
     isPending: boolean;
@@ -56,6 +56,8 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
                 </div>
             );
 
+
+
         const passedCount = submission.testcasespassed.filter(Boolean).length;
         const totalTests = submission.testcasespassed.length;
 
@@ -75,15 +77,23 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
                     <span className="font-bold">{submission.user.name}</span>
                 </div>
                 <div className="flex flex-col items-center justify-between gap-1 space-x-2">
-                    {isBest && (
+                    {submission.evaluationStatus === "ACCEPTED" && isBest && (
                         <span
                             className="m-0 px-1 py-0 text-[0.5rem] font-semibold text-purple-500 border border-purple-500 rounded-md">
                             Best Submission
                         </span>
                     )}
+                    {submission.evaluationStatus === "ACCEPTED" && (
                     <span>
                         {passedCount}/{totalTests} Test Cases Passed
                     </span>
+                    )}
+                    {submission.evaluationStatus === "COMPILE_ERROR" && (
+                        <span>Compile Error</span>
+                    )}
+                    {submission.evaluationStatus === "RUNTIME_ERROR" && (
+                        <span>Runtime Error</span>
+                    )}
                 </div>
                 <div>
                     {new Date(submission.updatedAt).toLocaleTimeString([], {

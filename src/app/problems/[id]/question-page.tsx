@@ -1,16 +1,16 @@
 "use client";
-import { Prisma } from "@prisma/client";
-import { SquareChevronLeft } from 'lucide-react';
+import {Prisma} from "@prisma/client";
+import {SquareChevronLeft} from 'lucide-react';
 // import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
-import CodeEditor, { StatusRibbonProps } from "./code-editor";
+import CodeEditor, {StatusRibbonProps} from "./code-editor";
 import QuestionDisplay from "./question-display";
 import WebRunner from "./web-runner";
-import { useRouter } from "next/navigation";
+import {useRouter} from "next/navigation";
 import SubmissionSection, {
     SubmissionWithUser,
 } from "@/app/problems/[id]/submission-section";
-import React, { useEffect, useState, useTransition } from "react";
-import { getTeamSubmissions } from "@/app/problems/[id]/actions";
+import React, {useEffect, useState, useTransition} from "react";
+import {getTeamSubmissions} from "@/app/problems/[id]/actions";
 import getSubmissionResults from "@/app/actions/get-submission-results";
 
 import {
@@ -18,8 +18,8 @@ import {
     ResizablePanel,
     ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { doc, onSnapshot } from "@firebase/firestore";
-import { db } from "@/lib/firebase-service";
+import {doc, onSnapshot} from "@firebase/firestore";
+import {db} from "@/lib/firebase-service";
 
 type ProblemWithRelations = Prisma.ProblemGetPayload<{
     include: { Testcase: true; round: true };
@@ -38,12 +38,12 @@ interface QuestionPageProps {
 }
 
 export default function QuestionPage({
-    problem,
-    session,
-    // questions,
-    // currentSlno,
-    desc,
-}: QuestionPageProps) {
+                                         problem,
+                                         session,
+                                         // questions,
+                                         // currentSlno,
+                                         desc,
+                                     }: QuestionPageProps) {
     const router = useRouter();
     // const currentIndex = questions.findIndex((q) => q.slno === currentSlno);
     const [isPending, startTransition] = useTransition();
@@ -77,18 +77,28 @@ export default function QuestionPage({
                 async (doc) => {
                     if (!doc.data()?.status) return;
                     const results = await getSubmissionResults(submissionId);
-                    const passed = results.filter((r) => r === true).length;
-                    setStatusRibbon({
-                        type: "evaluation",
-                        passed,
-                        total: results.length,
-                    });
+                    const passed = results.testcasespassed.filter((r) => r === true).length;
+                    if (results.evaluationStatus === "ACCEPTED")
+                        setStatusRibbon({
+                            type: "evaluation",
+                            passed,
+                            total: results.testcasespassed.length,
+                        })
+                    else if (results.evaluationStatus === "COMPILE_ERROR")
+                        setStatusRibbon({
+                            type: "error",
+                            message: "Compile Error",
+                        })
+                    else if (results.evaluationStatus === "RUNTIME_ERROR")
+                        setStatusRibbon({
+                            type: "error",
+                            message: "Runtime Error",
+                        })
 
                     setSubmissions((prev) =>
                         prev.map((submission) =>
                             submission.id === submissionId
-                                ? { ...submission, testcasespassed: results, evaluated: true,  }
-                                : submission
+                                ? results : submission
                         )
                     );
                 }
@@ -123,7 +133,7 @@ export default function QuestionPage({
                         {problem.title}
                     </h1>
 
-                {/* <div className="flex gap-2 absolute right-2 items-center">
+                    {/* <div className="flex gap-2 absolute right-2 items-center">
                         <button
                             type="button"
                             onClick={handlePrevious}
@@ -167,15 +177,15 @@ export default function QuestionPage({
                             <FiChevronRight className="inline" />
                         </button>
                     </div> */}
-            </div>
-            <div className="w-[90%] h-[87vh] gap-1">
-                <ResizablePanelGroup
-                    direction="horizontal"
-                    className="gap-1"
-                >
-                    {/* Left Resizable Section */}
-                    <ResizablePanel
-                        defaultSize={30}
+                </div>
+                <div className="w-[90%] h-[87vh] gap-1">
+                    <ResizablePanelGroup
+                        direction="horizontal"
+                        className="gap-1"
+                    >
+                        {/* Left Resizable Section */}
+                        <ResizablePanel
+                            defaultSize={30}
                             minSize={20}
                             maxSize={70}
                         >
@@ -195,21 +205,21 @@ export default function QuestionPage({
                                             desc={desc}
                                         />
                                     </ResizablePanel>
-                                    <ResizableHandle />
+                                    <ResizableHandle/>
                                     <ResizablePanel
                                         defaultSize={50}
                                         minSize={30}
                                         maxSize={70}
                                         // className="h-[45%]"
                                     >
-                                        <WebRunner problem={problem} />
+                                        <WebRunner problem={problem}/>
                                     </ResizablePanel>
                                 </ResizablePanelGroup>
                             </div>
                         </ResizablePanel>
 
                         {/* Resizable Handle */}
-                        <ResizableHandle />
+                        <ResizableHandle/>
 
                         {/* Right Resizable Section */}
                         <ResizablePanel
@@ -236,7 +246,7 @@ export default function QuestionPage({
                                             session={session}
                                         />
                                     </ResizablePanel>
-                                    <ResizableHandle />
+                                    <ResizableHandle/>
                                     <ResizablePanel
                                         defaultSize={30}
                                         minSize={30}

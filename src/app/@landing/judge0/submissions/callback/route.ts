@@ -6,9 +6,9 @@ import {EvalEnum} from "@prisma/client";
 interface WebhookBody {
     token: string;
     stdout: string;
-    status?: string;
-    stderr?: string;
-    compile_output?: string;
+    status: string | null;
+    stderr: string | null;
+    compile_output: string | null;
 }
 
 export async function PUT(request: NextRequest) {
@@ -17,10 +17,8 @@ export async function PUT(request: NextRequest) {
 
         // console.log("Request body:", body);
         const {token, stdout, stderr, compile_output }: WebhookBody = body;
-        
-        // Base64 decode the stdout
-        const decodedStdout = Buffer.from(stdout, 'base64').toString('utf-8');
 
+        // Base64 decode the stdout
         const submission = await prisma.submission.findUnique({
             relationLoadStrategy: 'join',
             where: {token: token},
@@ -57,6 +55,7 @@ export async function PUT(request: NextRequest) {
                     evaluationStatus: EvalEnum.COMPILE_ERROR
                 },
             });
+            await firestoreService.submissions.processed(submission.id);
             return NextResponse.json(
                 {message: "Submission failed with compile error"},
                 {status: 200}
@@ -71,6 +70,7 @@ export async function PUT(request: NextRequest) {
                     evaluationStatus: EvalEnum.RUNTIME_ERROR
                 },
             });
+            await firestoreService.submissions.processed(submission.id);
             return NextResponse.json(
                 {message: "Submission failed with runtime error"},
                 {status: 200}
@@ -78,6 +78,7 @@ export async function PUT(request: NextRequest) {
         }
 
         // console.log("Submission:", submission);
+        const decodedStdout = Buffer.from(stdout, 'base64').toString('utf-8');
 
         // Split stdout using delimiter
         const delimiter = process.env.DELIMITER || "|||";

@@ -288,15 +288,10 @@ const Dashboard: React.FC<DashboardProps> = ({
                     zIndex: -1,
                 }}
             />
-            <div className="flex md:hidden min-h-screen items-center justify-center">
-                <h1 className="text-white font-semibold text-lg w-[70%] text-center">
-                    Oops! It looks like you&apos;re using a smaller screen.
-                </h1>
-            </div>
 
             <FloatingDock />
 
-            <div className="hidden md:flex flex-col items-center justify-between w-full h-[85vh] text-white">
+            <div className="flex flex-col items-center justify-between w-full h-[85vh] text-white">
                 <div className="flex flex-row w-full justify-center gap-4 h-full">
                     {/* Left Column - Team, News, and Timer */}
                     <div className="flex flex-col w-1/5 gap-4 h-full">
@@ -381,7 +376,6 @@ const Dashboard: React.FC<DashboardProps> = ({
                                     {questions
                                       .filter((question) => !question.isHidden)
                                       .map((question) => (
-                                        console.log(question),
                                         <Link
                                           href={`/problems/${question.id}`}
                                           key={question.id}
@@ -480,8 +474,8 @@ const Dashboard: React.FC<DashboardProps> = ({
                                 <p className="text-2xl overflow-x-hidden font-custom border-b-2 border-rcgrey/20 pb-4 mb-4">
                                     Leaderboard
                                 </p>
-                                <div className="flex justify-center items-center h-full">
-                                    <p className="text-xl font-semibold">
+                                <div className="flex justify-center items-center ">
+                                    <p className="text-xl font-semibold text-center mt-10">
                                         The dark side of suspense is strong. Wait, you must, for the leaderboard to reveal itself.
                                     </p>
                                 </div>

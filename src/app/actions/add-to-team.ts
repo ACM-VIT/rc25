@@ -19,6 +19,7 @@ export default async function AddToTeam(userId: string, teamId: string) {
 		if (
 			team.members.length >= Number.parseInt(process.env.MAX_TEAM_SIZE || "4")
 		) {
+			console.log(team.members.length);
 			return false;
 		}
 		try {

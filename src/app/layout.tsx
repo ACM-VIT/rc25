@@ -16,7 +16,6 @@ import { cookies } from "next/headers";
 import SwitchAdminModeButton from "@/components/switch-admin-mode-button";
 import { SessionProvider } from "next-auth/react";
 import type { Metadata } from "next";
-import FloatingDock from "@/components/FloatingDock";
 import moment from "moment-timezone";
 import { Toaster } from "@/components/ui/toaster";
 

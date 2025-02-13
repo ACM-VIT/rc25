@@ -96,42 +96,13 @@ export default async function createSubmission(data: {
             throw new Error("Problem not found");
         }
 
-        const userTeam = await prisma.team.findFirst({
-            relationLoadStrategy: 'join',
-            where: {
-                members: {
-                    some: {
-                        id: data.userId,
-                    },
-                },
-            },
-        });
 
-        if (!userTeam) {
-            throw new Error("User is not part of any team");
-        }
-
-        if (userTeam.disqualify) {
-            throw new Error("User's team has been disqualified");
-        }
-
-        if (userTeam.id !== process.env.ADMIN_TEAM_ID) {
-            const currentTime = new Date();
-            if (currentTime < problem.round.start) {
-                throw new Error("Round has not started yet");
-            }
-            if (currentTime > problem.round.end) {
-                throw new Error("Round has ended");
-            }
-        }
-
-        // Get all testcases
-        const allTestcases = await prisma.testcase.findMany({
-            relationLoadStrategy: 'join',
-            where: {
-                problemId: data.problemId,
-            },
-        });
+    const allTestcases = await prisma.testcase.findMany({
+      relationLoadStrategy: "join",
+      where: {
+        problemId: data.problemId,
+      },
+    });
 
         // Split into normal and edge cases
         const normalCases = allTestcases.filter((tc) => !tc.isEdge);

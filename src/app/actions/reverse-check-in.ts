@@ -31,6 +31,14 @@ export default async function ReverseCheckIn(teamId: string) {
 			}
 		},
 	});
+	await prisma.team.update({
+		where: {
+			id: teamId,
+		},
+		data: {
+			checkedIn: false,
+		},
+	});
 
 	await prisma.$disconnect();
 

@@ -86,6 +86,7 @@ export default async function Page() {
     const passCount = passedArray.filter(Boolean).length;
     const total = passedArray.length;
     const status = total > 0 ? `${passCount}/${total}` : "Not Attempted";
+    const isHidden = problem.isHidden;
 
     return {
       slno: index + 1,

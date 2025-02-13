@@ -114,7 +114,7 @@ export default async function createSubmission(data: {
             return shuffled.slice(0, n);
         };
 
-        console.log(problem.normal_cases, problem.edge_cases);
+        // console.log(problem.normal_cases, problem.edge_cases);
 
         // Access scalar fields directly because they are always returned
         const selectedNormalCases = getRandomElements(
@@ -129,7 +129,7 @@ export default async function createSubmission(data: {
         // Initialize testcases passed array
         const testcasespassed = selectedTestcases.map(() => false);
 
-        console.log(selectedTestcases);
+        // console.log(selectedTestcases);
 
         // Create submission record
         const submission = await prisma.submission.create({
@@ -140,10 +140,11 @@ export default async function createSubmission(data: {
                 testcasespassed: testcasespassed,
                 evaluated: false,
                 testcases: {
-                    create: selectedTestcases.map((tc) => ({
+                    create: selectedTestcases.map((tc, index) => ({
                         testcase: {
                             connect: {id: tc.id}
-                        }
+                        },
+                        sequence: index
                     })),
                 },
             },
@@ -152,7 +153,7 @@ export default async function createSubmission(data: {
         // Combine selected inputs with newlines
         const combinedInput = selectedTestcases.map((tc) => tc.input).join("\n");
 
-        console.log("combinedInput: ", combinedInput);
+        // console.log("combinedInput: ", combinedInput);
 
         // Get number of testcases
         const numTestcases = selectedTestcases.length;
@@ -167,7 +168,7 @@ export default async function createSubmission(data: {
         // Remove duplicated imports from the final code
         transformedCode = removeDuplicateImports(transformedCode, data.language);
 
-        console.log("code: \n", transformedCode);
+        // console.log("code: \n", transformedCode);
 
         // Submit to Judge0
         const judgeResult = await judgeSolution(
@@ -177,7 +178,7 @@ export default async function createSubmission(data: {
             submission.id
         );
 
-        console.log("judge submit", judgeResult);
+        // console.log("judge submit", judgeResult);
 
         if (!judgeResult.success) {
             return {
@@ -195,10 +196,9 @@ export default async function createSubmission(data: {
             },
         });
 
-
         return {
             success: true,
-            submission,
+            submission: {...submission, user: {name: user.name}},
             token: judgeResult.token,
         };
     } catch (error: unknown) {

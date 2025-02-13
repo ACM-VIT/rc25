@@ -1,16 +1,20 @@
 "use client";
 import type React from "react";
-import { useState, useEffect } from "react";
-import type { Submission } from "@prisma/client";
+import {useState, useEffect} from "react";
+import type {Prisma} from "@prisma/client";
 import Lottie from "lottie-react";
 import animationData from "../../../../public/loading.json";
-import { ScrollArea } from "../../../components/ui/scroll-area";
+import {ScrollArea} from "@/components/ui/scroll-area";
 
 interface SubmissionSectionProps {
     isPending: boolean;
-    submissions: Submission[];
-    setSubmissions: React.Dispatch<React.SetStateAction<Submission[]>>;
+    submissions: SubmissionWithUser[];
+    setSubmissions: React.Dispatch<React.SetStateAction<SubmissionWithUser[]>>;
 }
+
+export type SubmissionWithUser = Prisma.SubmissionGetPayload<{
+    include: { user: { select: { name: true } } };
+}>;
 
 const noSubmissionMessages = [
     "Ain't nobody dropped a thing yet. Either folks are slacking or they got cold feet.",
@@ -23,16 +27,13 @@ const noSubmissionMessages = [
 const getRandomMessage = () => {
     return noSubmissionMessages[
         Math.floor(Math.random() * noSubmissionMessages.length)
-    ];
+        ];
 };
 
 const SubmissionSection: React.FC<SubmissionSectionProps> = ({
-    isPending,
-    submissions,
-}) => {
-    console.log("Submissions array:", submissions);
-    console.log("Submissions length:", submissions.length);
-
+                                                                 isPending,
+                                                                 submissions,
+                                                             }) => {
     const [randomMessage, setRandomMessage] = useState<string>("");
 
     useEffect(() => {
@@ -40,11 +41,10 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
             return a.updatedAt > b.updatedAt ? -1 : 1;
         });
         setRandomMessage(getRandomMessage());
-        console.log('manan  chutiya hai');
     }, [submissions]); // Runs only once after mount
 
     const renderSubmission = (
-        submission: Submission | null,
+        submission: SubmissionWithUser | null,
         isBest: boolean
     ) => {
         if (isPending) return <p>Loading submissions...</p>;
@@ -55,6 +55,8 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
                     Submission is being evaluated...
                 </div>
             );
+
+
 
         const passedCount = submission.testcasespassed.filter(Boolean).length;
         const totalTests = submission.testcasespassed.length;
@@ -67,22 +69,31 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
                         passedCount === totalTests
                             ? "#27AE60"
                             : passedCount / totalTests <= 0.4
-                            ? "#EB5757"
-                            : "#F2994A",
+                                ? "#EB5757"
+                                : "#F2994A",
                 }}
             >
-                <div className="flex items-center space-x-2">
-                    <span className="font-bold">{submission.userId}</span>
+                <div className="flex flex-col items-start space-x-2">
+                    <span className="font-bold">{submission.user.name}</span>
                 </div>
-                <div className="flex flex-col items-center justify-between gap-2 space-x-2">
-                    {isBest && (
-                        <span className="m-0 px-2 py-1 text-xs font-semibold text-purple-500 border border-purple-500 rounded-md">
+                <div className="flex flex-col items-center justify-between gap-1 space-x-2">
+                    {submission.evaluationStatus === "ACCEPTED" && isBest && (
+                        <span
+                            className="m-0 px-1 py-0 text-[0.5rem] font-semibold text-purple-500 border border-purple-500 rounded-md">
                             Best Submission
                         </span>
                     )}
+                    {submission.evaluationStatus === "ACCEPTED" && (
                     <span>
                         {passedCount}/{totalTests} Test Cases Passed
                     </span>
+                    )}
+                    {submission.evaluationStatus === "COMPILE_ERROR" && (
+                        <span>Compile Error</span>
+                    )}
+                    {submission.evaluationStatus === "RUNTIME_ERROR" && (
+                        <span>Runtime Error</span>
+                    )}
                 </div>
                 <div>
                     {new Date(submission.updatedAt).toLocaleTimeString([], {
@@ -107,13 +118,12 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
                     }}
                 >
                     {submissions.length === 0 ? (
-                        // Case 1: No submissions so far
-                        <div className="w-full flex items-center justify-center border-[#EB5757] border-1 py-2 rounded-md">
+                        <div
+                            className="w-full flex items-center justify-center border-[#EB5757] border-1 py-2 rounded-md">
                             {randomMessage}
                         </div>
                     ) : submissions.length === 1 &&
-                      !submissions[0].evaluated ? (
-                        // Case 2: No previous submissions, first submission created and still evaluating
+                    !submissions[0].evaluated ? (
                         <div className="w-full h-full border-2 border-[#EB5757] px-4 py-2 rounded-md">
                             <p className="text-[#F8CC22] font-outfit text-center">
                                 The first record is now under scrutiny. The
@@ -124,7 +134,7 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
                                     animationData={animationData}
                                     loop
                                     autoplay
-                                    style={{ width: "25%" }}
+                                    style={{width: "25%"}}
                                 />
                             </div>
                         </div>
@@ -135,20 +145,20 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
                                     {renderSubmission(
                                         submission,
                                         index ===
-                                            submissions.findIndex(
-                                                (s) =>
-                                                    s.testcasespassed.filter(
-                                                        Boolean
-                                                    ).length ===
-                                                    Math.max(
-                                                        ...submissions.map(
-                                                            (sub) =>
-                                                                sub.testcasespassed.filter(
-                                                                    Boolean
-                                                                ).length
-                                                        )
+                                        submissions.findIndex(
+                                            (s) =>
+                                                s.testcasespassed.filter(
+                                                    Boolean
+                                                ).length ===
+                                                Math.max(
+                                                    ...submissions.map(
+                                                        (sub) =>
+                                                            sub.testcasespassed.filter(
+                                                                Boolean
+                                                            ).length
                                                     )
-                                            ) // The submission with the highest score gets the "Best Submission" tag
+                                                )
+                                        )
                                     )}
                                 </div>
                             ))}

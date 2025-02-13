@@ -57,7 +57,7 @@ const HowItWorks: React.FC = () => {
 
           <div className="flex items-start justify-end gap-4">
             <div className="text-lg sm:text-xl lg:text-2xl leading-relaxed">
-              The fifteen best-performing teams of Round
+              The best-performing teams of Round
               <br /> One advance to Round Two.
             </div>
             <div className="text-lg sm:text-xl lg:text-2xl">k)</div>

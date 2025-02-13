@@ -6,10 +6,14 @@ import {
     SUPPORTED_LANGUAGES,
     type SupportedLanguage,
 } from "@/utils/judge0-langs";
-import {Submission} from "@prisma/client";
+import {Prisma} from "@prisma/client";
 
 const LANGUAGE_STORAGE_KEY = "preferred-language" as const;
 const CODE_STORAGE_KEY = "code-snippets" as const;
+
+type SubmissionWithUser = Prisma.SubmissionGetPayload<{
+    include: {user: {select: {name: true}}}
+}>
 
 interface Problem {
     id: string;
@@ -22,7 +26,7 @@ interface CodeEditorProps {
     session: { user: { id: string } };
     setStatusRibbon: React.Dispatch<React.SetStateAction<StatusRibbonProps>>;
     statusRibbon: StatusRibbonProps;
-    setSubmissions: React.Dispatch<React.SetStateAction<Submission[]>>;
+    setSubmissions: React.Dispatch<React.SetStateAction<SubmissionWithUser[]>>;
 }
 
 interface SubmittedStatusRibbonProps {
@@ -131,11 +135,11 @@ export default function CodeEditor({ problem, session, setStatusRibbon, statusRi
                 language,
             });
 
-            console.log("result: ", result);
+            // console.log("result: ", result);
 
             if (result.success && result.submission) {
                 setStatusRibbon({type: "submitted"});
-                console.log("Submission id check:", result.submission.id)
+                // console.log("Submission id check:", result.submission.id)
                 // todo: push into submissions state
                 setSubmissions(prev=>[...prev, result.submission]);
             }
@@ -248,13 +252,13 @@ export default function CodeEditor({ problem, session, setStatusRibbon, statusRi
 
             {statusRibbon?.type === "evaluation" && statusRibbon.passed === statusRibbon.total && (
                 <div className="top-[5vh] p-2 bg-green-100 text-green-700 text-sm">
-                    Submitted successfully!
+                    All testcases passed!
                 </div>
             )}
 
             {statusRibbon?.type === "evaluation" && statusRibbon.passed !== statusRibbon.total && (
                 <div className="top-[5vh] p-2 bg-yellow-300 text-green-700 text-sm">
-                    Submitted successfully!
+                    {statusRibbon.passed}/{statusRibbon.total} testcases passed
                 </div>
             )}
 

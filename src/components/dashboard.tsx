@@ -50,7 +50,7 @@ const Dashboard: React.FC<DashboardProps> = ({ questions }) => {
         }}
       />
 
-      <FloatingDock />
+            <FloatingDock />
 
       <div className="w-full max-w-screen-xl mx-auto px-8 py-8">
         <div className="flex flex-col items-center justify-center w-full h-[85vh] text-white">

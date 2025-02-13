@@ -163,30 +163,35 @@ async function whitelist() {
     try {
         const data = await fs.readFile(CSV_FILE_PATH, "utf-8");
         const lines = data.split("\n").filter((line) => line.trim() !== "");
-        // Remove header line
         const rows = lines.slice(1);
-        const createPromises = rows.map(async (line) => {
-            const fields = line.split(",").map((f) => f.trim());
-            // CSV columns: [S.No., ParticipantId, Participant Name, School, Session Attended, Mobile Number, EmailID]
-            const regNo = fields[1];
-            const name = fields[2];
-            const phone = fields[5];
-            const email = fields[6];
-            const exists = await prisma.uniReg.findUnique({relationLoadStrategy: 'join', where: { email } });
-            if (!exists) {
-                return prisma.uniReg.create({
-                    data: {
-                        regNo,
-                        name,
-                        phone,
-                        email,
-                    },
-                });
+
+        await prisma.$transaction(async (tx) => {
+            for (const line of rows) {
+                const fields = line.split(",").map((f) => f.trim());
+                
+                const regNo = fields[1];
+                const name = fields[2];
+                const phone = fields[5];
+                const email = fields[6];
+
+                if (!regNo || !name || !phone || !email) {
+                    console.error(`Skipping invalid row: ${line}`);
+                    continue;
+                }
+
+                try {
+                    await tx.uniReg.upsert({
+                        where: { email },
+                        update: { regNo, name, phone },
+                        create: { regNo, name, phone, email }
+                    });
+                    console.log(`Processed: ${email}`);
+                } catch (err) {
+                    console.error(`Error processing row: ${line}`, err);
+                }
             }
-            console.log(`Email ${email} already exists. Skipping.`);
-            return null;
         });
-        await Promise.all(createPromises);
+
         console.log("Whitelist data processed successfully.");
     } catch (e) {
         console.error("Error processing whitelist data:", e);
@@ -210,9 +215,9 @@ async function main() {
         const choice = await rl.question("Enter your choice (1-5): ");
 
         if (choice === "1") {
-            const start = new Date(await rl.question("Enter round start date (YYYY-MM-DD): "));
-            const end = new Date(await rl.question("Enter round end date (YYYY-MM-DD): "));
-            const result = new Date(await rl.question("Enter round result date (YYYY-MM-DD): "));
+            const start = new Date();
+            const end = new Date();
+            const result = new Date();
 
             await createRound({ start, end, result });
         } else if (choice === "2") {
@@ -236,9 +241,9 @@ async function main() {
             console.log("Invalid choice.");
         }
     } else if (action === "round_add") {
-        const start = new Date(await rl.question("Enter round start date (YYYY-MM-DD): "));
-        const end = new Date(await rl.question("Enter round end date (YYYY-MM-DD): "));
-        const result = new Date(await rl.question("Enter round result date (YYYY-MM-DD): "));
+        const start = new Date();
+        const end = new Date();
+        const result = new Date();
 
         await createRound({ start, end, result });
     } else if (action === "round_delete") {

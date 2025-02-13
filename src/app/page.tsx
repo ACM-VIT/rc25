@@ -119,6 +119,7 @@ export default async function Page() {
     difficulty: string;
     roundId: string;
     submissions: SubmissionType[];
+    isHidden: boolean;
   }
 
   let teamData = teamRound ? await prisma.team.findUnique({
@@ -204,6 +205,7 @@ export default async function Page() {
     const passCount = passedArray.filter(Boolean).length;
     const total = passedArray.length;
     const status = total > 0 ? `${passCount}/${total}` : "Not Attempted";
+    const isHidden = problem.isHidden;
 
     return {
       slno: index + 1,
@@ -211,6 +213,7 @@ export default async function Page() {
       questionName: problem.title,
       difficulty: problem.difficulty,
       status,
+      isHidden,
     };
   });
 

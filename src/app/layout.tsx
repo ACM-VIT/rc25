@@ -3,58 +3,56 @@ import DetailsForm from "@/components/details-formnew";
 import Disqualified from "@/components/disqualifed";
 import EliminationScreen from "@/components/elimination-screen";
 import TeamMembersAndLeaveButton from "@/components/team-dashboard/team-dashboard";
-import Winners from "@/components/winners";
 import React, {type ReactNode} from "react";
 import {auth} from "./(auth)/auth";
 import {prisma} from "@/utils/prisma";
 import "./globals.css";
 import {Outfit} from "next/font/google";
-// import Dashboard from "@/components/dashboard";
 import Navbar from "@/components/Navbar";
-import SignOutButton from "@/components/buttons/sign-out";
 import Team from "@/components/createjoin";
 import {cookies} from "next/headers";
 import SwitchAdminModeButton from "@/components/switch-admin-mode-button";
 import {SessionProvider} from "next-auth/react";
 import type {Metadata} from "next";
-import FloatingDock from "@/components/FloatingDock";
 import moment from "moment-timezone";
-import { Toaster } from "@/components/ui/toaster";
+import {Toaster} from "@/components/ui/toaster";
+import SmallViewportWrapper from "@/components/SmallViewportWrapper";
+import ThankYouScreen from "@/components/Thankyou";
 
 const getISTTime = (date: Date) => {
-	return moment(date).tz("Asia/Kolkata");
+    return moment(date).tz("Asia/Kolkata");
 };
 
 const getCurrentISTTime = () => {
-	return moment().tz("Asia/Kolkata");
+    return moment().tz("Asia/Kolkata");
 };
 
 // import SwitchAdminModeButton from "@/components/switch-admin-mode-button";
 // import TeamSubmissions from "@/components/team-submissions";
 
 export const metadata: Metadata = {
-	title: "Reverse Coding | ACM-VIT",
-	description: "ACM-VIT's premier competitive coding event",
-	openGraph: {
-		title: "Reverse Coding | ACM-VIT",
-		description: "ACM-VIT's premier competitive coding event",
-		type: "website",
-	},
-	robots: {
-		index: true,
-		follow: true,
-	},
-	icons: {
-		icon: "/favicon.ico",
-	},
+    title: "Reverse Coding | ACM-VIT",
+    description: "ACM-VIT's premier competitive coding event",
+    openGraph: {
+        title: "Reverse Coding | ACM-VIT",
+        description: "ACM-VIT's premier competitive coding event",
+        type: "website",
+    },
+    robots: {
+        index: true,
+        follow: true,
+    },
+    icons: {
+        icon: "/favicon.ico",
+    },
 };
 
 const outfit = Outfit({subsets: ["latin"]});
 
 interface LayoutProps {
-	children: ReactNode;
-	admin: ReactNode;
-	landing: ReactNode;
+    children: ReactNode;
+    admin: ReactNode;
+    landing: ReactNode;
 }
 
 export default async function RootLayout({
@@ -71,37 +69,37 @@ export default async function RootLayout({
         );
     }
 
-	const user = await prisma.user.findUnique({
-		relationLoadStrategy: "join",
-		where: {
-			email: session.user.email,
-		},
-		include: {
-			Team: {
-				include: {TeamRound: true},
-			},
-			Admin: {
-				select: {
-					id: true,
-				},
-			},
-		},
-	});
+    const user = await prisma.user.findUnique({
+        relationLoadStrategy: "join",
+        where: {
+            email: session.user.email,
+        },
+        include: {
+            Team: {
+                include: {TeamRound: true},
+            },
+            Admin: {
+                select: {
+                    id: true,
+                },
+            },
+        },
+    });
 
-	const curOrNextRound = await prisma.round.findFirst({
-		relationLoadStrategy: "join",
-		where: {
-			result: {
-				gte: new Date(),
-			},
-		},
-		orderBy: {
-			start: "asc",
-		},
-	});
+    const curOrNextRound = await prisma.round.findFirst({
+        relationLoadStrategy: "join",
+        where: {
+            result: {
+                gte: new Date(),
+            },
+        },
+        orderBy: {
+            start: "asc",
+        },
+    });
 
-	const isAdmin = !!user?.Admin;
-	const detailsFilled = !!user?.phone && !!user?.gender && !!user?.phone.length;
+    const isAdmin = !!user?.Admin;
+    const detailsFilled = !!user?.phone && !!user?.gender && !!user?.phone.length;
 
     const cookieStore = await cookies();
     const mode = cookieStore.get("mode")?.value !== "user";
@@ -111,14 +109,13 @@ export default async function RootLayout({
             <html lang="en">
             <body className={outfit.className}>
             {admin}
-            <SignOutButton />
-					<Toaster />
-				</body>
-			</html>
-		);
-	}
+            <Toaster/>
+            </body>
+            </html>
+        );
+    }
 
-    if (!detailsFilled) {
+    if (!detailsFilled && !isAdmin) {
         return (
             <html lang="en">
             <body>
@@ -146,8 +143,7 @@ export default async function RootLayout({
     }
 
     const teamCheckedIn = user.Team.checkedIn;
-    console.log(user.Team);
-    if (!teamCheckedIn) {
+    if (!teamCheckedIn && !isAdmin) {
         return (
             <html lang="en">
             <body>
@@ -158,9 +154,9 @@ export default async function RootLayout({
         );
     }
 
-	const disqualified = Boolean(user.Team.disqualify);
+    const disqualified = Boolean(user.Team.disqualify);
 
-    if (disqualified) {
+    if (disqualified && !isAdmin) {
         return (
             <html lang="en">
             <body>
@@ -174,14 +170,14 @@ export default async function RootLayout({
         );
     }
 
-	const winnerScreen = !curOrNextRound;
+    const winnerScreen = !curOrNextRound;
 
-    if (winnerScreen) {
+    if (winnerScreen && !isAdmin) {
         return (
             <html lang="en">
             <body>
             <Navbar name={session.user.name ?? "User"}/>
-            <Winners/>
+            <ThankYouScreen/>
             {/* todo */}
             {isAdmin && <SwitchAdminModeButton/>}
             </body>
@@ -189,11 +185,11 @@ export default async function RootLayout({
         );
     }
 
-	const memberOfRound = user.Team.TeamRound.find(
-        (tr) => tr.roundId === curOrNextRound.id,
+    const memberOfRound = user.Team.TeamRound.find(
+        (tr) => curOrNextRound && tr.roundId === curOrNextRound.id
     );
 
-    if (!memberOfRound) {
+    if (!memberOfRound && !isAdmin) {
         return (
             <html lang="en">
             <body>
@@ -205,37 +201,35 @@ export default async function RootLayout({
         );
     }
 
-	// todo round checked in condition
+    // todo round checked in condition
 
-	const roundStarted = getISTTime(curOrNextRound.start) <= getCurrentISTTime();
+    const roundStarted =
+        curOrNextRound && getISTTime(curOrNextRound.start) <= getCurrentISTTime();
 
-    if (!roundStarted) {
-
-
+    if (!roundStarted && !isAdmin) {
         return (
             <html lang="en">
             <body>
-            <Counter/>
-            {/*todo*/}
-            <FloatingDock/>
-            {isAdmin && <SwitchAdminModeButton/>}
+            <SmallViewportWrapper>
+                <Counter/>
+                {isAdmin && <SwitchAdminModeButton/>}
+            </SmallViewportWrapper>
             </body>
             </html>
         );
     }
 
-	const roundEnded = getISTTime(curOrNextRound.end) <= getCurrentISTTime();
+    const roundEnded =
+        curOrNextRound && getISTTime(curOrNextRound.end) <= getCurrentISTTime();
 
-    if (roundEnded) {
-
-
+    if (roundEnded && !isAdmin) {
         return (
             <html lang="en">
             <body>
-            <Counter/>
-            {/*todo*/}
-            <FloatingDock/>
-            {isAdmin && <SwitchAdminModeButton/>}
+            <SmallViewportWrapper>
+                <Counter/>
+                {isAdmin && <SwitchAdminModeButton/>}
+            </SmallViewportWrapper>
             </body>
             </html>
         );
@@ -251,10 +245,12 @@ export default async function RootLayout({
                 backgroundAttachment: "fixed",
             }}
         >
-        <div className="min-h-[80%] max-h-[80%]">
-            {children}
-            {isAdmin && <SwitchAdminModeButton/>}
-        </div>
+        <SmallViewportWrapper>
+            <div className="min-h-[80%] max-h-[80%]">
+                {children}
+                {isAdmin && <SwitchAdminModeButton/>}
+            </div>
+        </SmallViewportWrapper>
         </body>
         </html>
     );

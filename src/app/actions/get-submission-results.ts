@@ -1,17 +1,19 @@
 'use server'
 
-import { PrismaClient } from '@prisma/client';
+import {PrismaClient} from '@prisma/client';
 
 export default async function getSubmissionResults(submissionId: string) {
     const prisma = new PrismaClient();
-    const submission = await prisma.submission.findUnique({
+    return prisma.submission.findUniqueOrThrow({
         where: {
-        id: submissionId
+            id: submissionId
         },
-        select: {
-        testcasespassed: true
+        include: {
+            user: {
+                select: {
+                    name: true
+                }
+            }
         }
     });
-
-  return submission?.testcasespassed || [];
 }

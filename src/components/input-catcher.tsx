@@ -29,7 +29,6 @@ function InputCatcher({
 					!e.metaKey &&
 					!e.altKey
 				) {
-					console.log(e.key);
 					setInput((i) => i + (i.length < 9 ? e.key.toUpperCase() : ""));
 				}
 			}

@@ -101,7 +101,7 @@ export default function HowItWorks() {
       that will fulfil some hidden test cases.
     </p>
     <p className={`text-white text-center phone:text-right xs:text-right text-base phone:text-[80%] xs:text-lg md:text-xl lg:text-2xl xl:text-3xl font-para whitespace-nowrap ${outfit.className}`}>
-      The fifteen best-performing teams of Round
+      The best-performing teams of Round
     </p>
     <p className={`text-white text-center phone:text-right xs:text-right text-base phone:text-[80%] xs:text-lg md:text-xl lg:text-2xl xl:text-3xl font-para whitespace-nowrap${outfit.className}`}>
       One advance to Round Two.

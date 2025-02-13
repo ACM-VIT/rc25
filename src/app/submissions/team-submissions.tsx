@@ -1,5 +1,5 @@
+// src/app/submissions/team-submissions.tsx
 "use client";
-
 import React from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import DashboardBox from "@/components/DashboardBox";
@@ -16,9 +16,9 @@ const TeamSubmissions: React.FC<TeamSubmissionProps> = ({ submissions, teamName 
         className="hidden md:flex flex-col w-full h-[90%] items-center gap-4 text-white p-4 pb-0 min-h-screen"
         style={{ backgroundImage: "url('./submissionsbg.png')", backgroundSize: "cover" }}
       >
-        <div className="p-2 justify-center items-center">
+        <div className="p-2 flex justify-center items-center">
           <p className="font-bold text-2xl font-custom underline underline-offset-4 decoration-white">
-            {teamName}&apos;s Submissions
+            {teamName}'s Submissions
           </p>
         </div>
         <div className="flex justify-center w-full h-[85%]">

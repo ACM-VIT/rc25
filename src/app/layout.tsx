@@ -123,7 +123,6 @@ export default async function RootLayout({ children }: LayoutProps) {
         }}
       >
         {/* <SmallViewportWrapper> */}
-          <Navbar name="Dashboard" />
           {children}
           <Toaster />
         {/* </SmallViewportWrapper> */}

@@ -2,13 +2,11 @@ import { prisma } from "@/utils/prisma";
 import Dashboard from "@/components/dashboard";
 import type { Metadata } from "next";
 import type { DashboardProps } from "@/types/dashboard";
+import { auth } from "./(auth)/auth";
 
 export async function generateMetadata(): Promise<Metadata> {
   const roundInfo = await prisma.round.findFirst({
-    where: {
-      start: { lte: new Date() },
-      end: { gte: new Date() },
-    },
+    where: { start: { lte: new Date() }, end: { gte: new Date() } },
     select: { number: true },
   });
 
@@ -28,24 +26,22 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: `Round ${roundInfo.number} Dashboard`,
     description: "Dashboard",
-    openGraph: {
-      title: `Round ${roundInfo.number}`,
-      description: "Dashboard",
-    },
+    openGraph: { title: `Round ${roundInfo.number}`, description: "Dashboard" },
     icons: { icon: "/favicon.ico" },
   };
 }
 
 export default async function Page() {
+  const session = await auth();
+  if (!session?.user?.email) {
+    return <div>Please sign in to continue</div>;
+  }
+
   // Get current round info (if any)
   const roundInfo = await prisma.round.findFirst({
-    where: {
-      start: { lte: new Date() },
-      end: { gte: new Date() },
-    },
+    where: { start: { lte: new Date() }, end: { gte: new Date() } },
     select: { number: true, end: true, id: true },
   });
-
   if (!roundInfo) {
     return <div>No active round found</div>;
   }
@@ -55,10 +51,7 @@ export default async function Page() {
     orderBy: { id: "asc" },
     include: {
       submissions: {
-        select: {
-          testcasespassed: true,
-          createdAt: true,
-        },
+        select: { testcasespassed: true, createdAt: true },
       },
     },
   });
@@ -85,12 +78,10 @@ export default async function Page() {
       },
       null as SubmissionType | null
     );
-
     const passedArray = bestSubmission?.testcasespassed || [];
     const passCount = passedArray.filter(Boolean).length;
     const total = passedArray.length;
     const status = total > 0 ? `${passCount}/${total}` : "Not Attempted";
-
     return {
       slno: index + 1,
       id: problem.id,

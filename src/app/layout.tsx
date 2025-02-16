@@ -6,14 +6,10 @@ import Navbar from "@/components/Navbar";
 import { Toaster } from "@/components/ui/toaster";
 import moment from "moment-timezone";
 import type { Metadata } from "next";
+import { auth } from "./(auth)/auth";
 
-const getISTTime = (date: Date) => {
-  return moment(date).tz("Asia/Kolkata");
-};
-
-const getCurrentISTTime = () => {
-  return moment().tz("Asia/Kolkata");
-};
+const getISTTime = (date: Date) => moment(date).tz("Asia/Kolkata");
+const getCurrentISTTime = () => moment().tz("Asia/Kolkata");
 
 export const metadata: Metadata = {
   title: "Reverse Coding | ACM-VIT",
@@ -23,13 +19,8 @@ export const metadata: Metadata = {
     description: "ACM-VIT's premier competitive coding event",
     type: "website",
   },
-  robots: {
-    index: true,
-    follow: true,
-  },
-  icons: {
-    icon: "/favicon.ico",
-  },
+  robots: { index: true, follow: true },
+  icons: { icon: "/favicon.ico" },
 };
 
 const outfit = Outfit({ subsets: ["latin"] });
@@ -39,6 +30,21 @@ interface LayoutProps {
 }
 
 export default async function RootLayout({ children }: LayoutProps) {
+  const session = await auth();
+  if (!session?.user?.email) {
+    return (
+      <html lang="en">
+        <body className={outfit.className}>
+          <Navbar name="Dashboard" />
+          <div className="flex h-screen items-center justify-center">
+            <h1 className="text-4xl text-white">Please sign in to continue</h1>
+          </div>
+          <Toaster />
+        </body>
+      </html>
+    );
+  }
+
   const roundInfo = await prisma.round.findFirst({
     where: {
       start: { lte: new Date() },
@@ -66,14 +72,7 @@ export default async function RootLayout({ children }: LayoutProps) {
   const problems = await prisma.problem.findMany({
     where: { roundId: roundInfo.id },
     orderBy: { id: "asc" },
-    include: {
-      submissions: {
-        select: {
-          testcasespassed: true,
-          createdAt: true,
-        },
-      },
-    },
+    include: { submissions: { select: { testcasespassed: true, createdAt: true } } },
   });
 
   interface SubmissionType {
@@ -97,12 +96,10 @@ export default async function RootLayout({ children }: LayoutProps) {
       },
       null as SubmissionType | null
     );
-
     const passedArray = bestSubmission?.testcasespassed || [];
     const passCount = passedArray.filter(Boolean).length;
     const total = passedArray.length;
     const status = total > 0 ? `${passCount}/${total}` : "Not Attempted";
-
     return {
       slno: index + 1,
       id: problem.id,
@@ -125,7 +122,7 @@ export default async function RootLayout({ children }: LayoutProps) {
         style={{
           backgroundImage: "url('./dashbg.png')",
           backgroundSize: "cover",
-          backgroundAttachment: "fixed",
+          backgroundAttachment: "fixed",  
         }}
       >
         {children}

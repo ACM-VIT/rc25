@@ -8,8 +8,7 @@ import moment from "moment-timezone";
 import type { Metadata } from "next";
 import { auth } from "./(auth)/auth";
 
-const getISTTime = (date: Date) => moment(date).tz("Asia/Kolkata");
-const getCurrentISTTime = () => moment().tz("Asia/Kolkata");
+const outfit = Outfit({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Reverse Coding | ACM-VIT",
@@ -23,13 +22,13 @@ export const metadata: Metadata = {
   icons: { icon: "/favicon.ico" },
 };
 
-const outfit = Outfit({ subsets: ["latin"] });
-
 interface LayoutProps {
   children: ReactNode;
+  admin: ReactNode;
+  landing: ReactNode;
 }
 
-export default async function RootLayout({ children }: LayoutProps) {
+export default async function RootLayout({ children, admin, landing }: LayoutProps) {
   const session = await auth();
   if (!session?.user?.email) {
     return (
@@ -122,9 +121,10 @@ export default async function RootLayout({ children }: LayoutProps) {
         style={{
           backgroundImage: "url('./dashbg.png')",
           backgroundSize: "cover",
-          backgroundAttachment: "fixed",  
+          backgroundAttachment: "fixed",
         }}
       >
+        {/* <Navbar name={session.user.name || "User"} /> */}
         {children}
         <Toaster />
       </body>

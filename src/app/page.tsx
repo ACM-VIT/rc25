@@ -37,7 +37,6 @@ export default async function Page() {
     return <div>Please sign in to continue</div>;
   }
 
-  // Get current round info (if any)
   const roundInfo = await prisma.round.findFirst({
     where: { start: { lte: new Date() }, end: { gte: new Date() } },
     select: { number: true, end: true, id: true },
@@ -50,9 +49,7 @@ export default async function Page() {
     where: { roundId: roundInfo.id },
     orderBy: { id: "asc" },
     include: {
-      submissions: {
-        select: { testcasespassed: true, createdAt: true },
-      },
+      submissions: { select: { testcasespassed: true, createdAt: true } },
     },
   });
 
@@ -60,15 +57,6 @@ export default async function Page() {
     testcasespassed: boolean[];
     createdAt: Date;
   }
-  interface ProblemType {
-    id: string;
-    title: string;
-    difficulty: string;
-    roundId: string;
-    submissions: SubmissionType[];
-    isHidden: boolean;
-  }
-
   const questions = problems.map((problem, index) => {
     const bestSubmission = problem.submissions.reduce(
       (best, current) => {

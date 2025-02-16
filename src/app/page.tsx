@@ -21,9 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
         description: "Join ACM-VIT's premier coding competition",
         type: "website",
       },
-      icons: {
-        icon: "/favicon.ico",
-      },
+      icons: { icon: "/favicon.ico" },
     };
   }
 
@@ -34,9 +32,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title: `Round ${roundInfo.number}`,
       description: "Dashboard",
     },
-    icons: {
-      icon: "/favicon.ico",
-    },
+    icons: { icon: "/favicon.ico" },
   };
 }
 
@@ -58,7 +54,12 @@ export default async function Page() {
     where: { roundId: roundInfo.id },
     orderBy: { id: "asc" },
     include: {
-      submissions: true,
+      submissions: {
+        select: {
+          testcasespassed: true,
+          createdAt: true,
+        },
+      },
     },
   });
 
@@ -76,17 +77,19 @@ export default async function Page() {
   }
 
   const questions = problems.map((problem, index) => {
-    const bestSubmission = problem.submissions.reduce((best, current) => {
-      const currentPassed = current.testcasespassed.filter(Boolean).length;
-      const bestPassed = best ? best.testcasespassed.filter(Boolean).length : -1;
-      return currentPassed > bestPassed ? current : best;
-    }, null as SubmissionType | null);
+    const bestSubmission = problem.submissions.reduce(
+      (best, current) => {
+        const currentPassed = current.testcasespassed.filter(Boolean).length;
+        const bestPassed = best ? best.testcasespassed.filter(Boolean).length : -1;
+        return currentPassed > bestPassed ? current : best;
+      },
+      null as SubmissionType | null
+    );
 
     const passedArray = bestSubmission?.testcasespassed || [];
     const passCount = passedArray.filter(Boolean).length;
     const total = passedArray.length;
     const status = total > 0 ? `${passCount}/${total}` : "Not Attempted";
-    const isHidden = problem.isHidden;
 
     return {
       slno: index + 1,
@@ -110,7 +113,6 @@ export default async function Page() {
     score: 0,
     members: [],
   };
-
   const leaderboard: DashboardProps["leaderboard"] = [];
   const leaderboardShow = false;
 

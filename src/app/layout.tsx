@@ -3,7 +3,6 @@ import { prisma } from "@/utils/prisma";
 import "./globals.css";
 import { Outfit } from "next/font/google";
 import Navbar from "@/components/Navbar";
-// import SmallViewportWrapper from "@/components/SmallViewportWrapper";
 import { Toaster } from "@/components/ui/toaster";
 import moment from "moment-timezone";
 import type { Metadata } from "next";
@@ -67,7 +66,14 @@ export default async function RootLayout({ children }: LayoutProps) {
   const problems = await prisma.problem.findMany({
     where: { roundId: roundInfo.id },
     orderBy: { id: "asc" },
-    include: { submissions: true },
+    include: {
+      submissions: {
+        select: {
+          testcasespassed: true,
+          createdAt: true,
+        },
+      },
+    },
   });
 
   interface SubmissionType {
@@ -122,10 +128,8 @@ export default async function RootLayout({ children }: LayoutProps) {
           backgroundAttachment: "fixed",
         }}
       >
-        {/* <SmallViewportWrapper> */}
-          {children}
-          <Toaster />
-        {/* </SmallViewportWrapper> */}
+        {children}
+        <Toaster />
       </body>
     </html>
   );

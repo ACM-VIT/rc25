@@ -21,7 +21,9 @@ type ProblemPayload = Prisma.ProblemGetPayload<{
   };
 }>;
 
-type ProblemWithSolution = Omit<ProblemPayload, "solution"> & { solution?: { code: string; explanation: string } };
+type ProblemWithSolution = Omit<ProblemPayload, "solution"> & {
+  solution?: { code: string; explanation: string };
+};
 
 interface QuestionPageProps {
   problem: ProblemWithSolution & { solutionExplanation?: string };
@@ -51,6 +53,7 @@ export default function QuestionPage({
     });
   }, [problem.id, session.user.id]);
 
+  // Subscribe to real-time submission updates.
   useEffect(() => {
     const subscribeToSubmission = (submissionId: string) => {
       return onSnapshot(doc(db, "submissions", submissionId), async (docSnapshot) => {
@@ -123,6 +126,7 @@ export default function QuestionPage({
               </div>
             </ResizablePanel>
             <ResizableHandle />
+            {/* Right Resizable Section */}
             <ResizablePanel defaultSize={50} minSize={30} maxSize={70}>
               <div className="flex flex-col justify-evenly h-full">
                 <ResizablePanelGroup direction="vertical" className="gap-1">
@@ -139,11 +143,20 @@ export default function QuestionPage({
                   </ResizablePanel>
                   <ResizableHandle />
                   <ResizablePanel defaultSize={30} minSize={30} maxSize={70}>
-                    <SubmissionSection
-                      isPending={isPending}
-                      setSubmissions={setSubmissions}
-                      submissions={submissions}
-                    />
+                    {showSolution ? (
+                      <div className="rounded-lg flex flex-col h-full bg-black/50 border-2 border-weirdPurple hover:border-primary">
+                        <div className="w-full rounded-lg p-4 text-white h-full overflow-y-auto" style={{ borderRadius: "8px", backdropFilter: "blur(2.5px)", WebkitBackdropFilter: "blur(2.5px)" }}>
+                          <h2 className="text-xl font-bold mb-2">Solution Explanation</h2>
+                          <p>{problem.solutionExplanation || "No explanation provided."}</p>
+                        </div>
+                      </div>
+                    ) : (
+                      <SubmissionSection
+                        isPending={isPending}
+                        setSubmissions={setSubmissions}
+                        submissions={submissions}
+                      />
+                    )}
                   </ResizablePanel>
                 </ResizablePanelGroup>
               </div>

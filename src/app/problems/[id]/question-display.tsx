@@ -1,5 +1,4 @@
-"use client";
-import React from "react";
+import React, { useState } from "react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import Image from "next/image";
 import windows from "../assets/windows.png";
@@ -8,7 +7,6 @@ import linux from "../assets/linux.png";
 import { Button } from "@/components/ui/button";
 import DashboardBox from "../../../components/DashboardBox";
 import { FaCircleExclamation } from "react-icons/fa6";
-import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
@@ -30,32 +28,32 @@ export default function QuestionDisplay({
 }: {
     problem: Problem;
     desc: React.ReactElement;
-      showSolution: boolean;
-  setShowSolution: React.Dispatch<React.SetStateAction<boolean>>;
+    showSolution: boolean;
+    setShowSolution: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
         <DashboardBox className="rounded-[10px] flex flex-col h-full w-full">
-            {/* Main Content Area (Expands) */}
             <ScrollArea className="rounded-[10px] w-full min-h-0 flex-1">
                 <div className="flex items-center justify-between m-4 flex-wrap">
-                    <span className="font-bold text-2xl text-white break-words max-w-[70%]">
-                        Problem Details
-                    </span>
+                    <div className="flex items-center space-x-2">
+                        <span className="font-bold text-2xl text-white break-words">
+                            Problem Details
+                        </span>
+                        <button onClick={() => setShowSolution(!showSolution)} title="Toggle Solution">
+                            {showSolution ? (
+                                <FiEyeOff className="text-white" size={20} />
+                            ) : (
+                                <FiEye className="text-white" size={20} />
+                            )}
+                        </button>
+                    </div>
                     <span className="text-green-500 font-bold text-lg">
                         {problem.difficulty} - {problem.maxScore} points
                     </span>
-                    <button onClick={() => setShowSolution(!showSolution)} title="Toggle Solution">
-              {showSolution ? (
-                <FiEyeOff className="text-white" size={20} />
-              ) : (
-                <FiEye className="text-white" size={20} />
-              )}
-            </button>
                 </div>
                 <div className="ml-4 w-[60%] border border-purple-700 rounded-lg">
-                    {/* Accordion Header */}
                     <button
                         onClick={() => setIsOpen(!isOpen)}
                         className="text-xs text-[#A2A2A2] p-2 flex items-center gap-2 w-full justify-between bg-[#1E1E1E] rounded-lg"
@@ -71,7 +69,6 @@ export default function QuestionDisplay({
                         )}
                     </button>
 
-                    {/* Accordion Content */}
                     {isOpen && (
                         <div className="p-2 border-t border-purple-700 bg-[#121212] rounded-lg">
                             <p className="text-[#A2A2A2] text-xs md:text-[60%] xl:text-xs">
@@ -94,8 +91,6 @@ export default function QuestionDisplay({
 
             {/* Footer Sections Container */}
             <div className="flex flex-col w-full">
-                {/* Important Detail Section */}
-
                 {/* Run On Your Device */}
                 <div className="p-1 flex flex-col md:flex-row items-center justify-between border-t border-gray-700 w-full">
                     <div className="text-white text-xs font-bold">

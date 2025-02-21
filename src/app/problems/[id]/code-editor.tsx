@@ -26,8 +26,8 @@ interface Problem {
 }
 
 interface SessionUser {
-    id: string;
-    name?: string | null;
+  id: string;
+  name?: string | null;
 }
 
 interface CodeEditorProps {
@@ -95,14 +95,17 @@ export default function CodeEditor({
 }: CodeEditorProps) {
   const [language, setLanguage] = useState<SupportedLanguage>("c");
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedLanguage = localStorage.getItem(LANGUAGE_STORAGE_KEY) as SupportedLanguage;
-      if (storedLanguage) setLanguage(storedLanguage);
-    }
-  }, []);
+  const [userCode, setUserCode] = useState<string>(() => {
+    if (typeof window === "undefined")
+      return SUPPORTED_LANGUAGES["c"].defaultCode;
+    const snippets: CodeSnippets = JSON.parse(
+      localStorage.getItem(CODE_STORAGE_KEY) || "{}"
+    );
+    return snippets[problem.id]?.[language] ||
+      SUPPORTED_LANGUAGES[language].defaultCode;
+  });
 
-  const updateUserCode = () => {
+  useEffect(() => {
     if (typeof window !== "undefined") {
       const snippets: CodeSnippets = JSON.parse(
         localStorage.getItem(CODE_STORAGE_KEY) || "{}"
@@ -111,24 +114,8 @@ export default function CodeEditor({
         snippets[problem.id]?.[language] ||
         SUPPORTED_LANGUAGES[language].defaultCode;
       setUserCode(newCode);
-      // Only update editor if not showing solution.
-      if (editorRef.current && !showSolution) {
-        editorRef.current.setValue(newCode);
-      }
+      localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
     }
-  };
-
-  const [userCode, setUserCode] = useState<string>(() => {
-    if (typeof window === "undefined") return SUPPORTED_LANGUAGES["c"].defaultCode;
-    const snippets: CodeSnippets = JSON.parse(
-      localStorage.getItem(CODE_STORAGE_KEY) || "{}"
-    );
-    return snippets[problem.id]?.[language] || SUPPORTED_LANGUAGES[language].defaultCode;
-  });
-
-  useEffect(() => {
-    updateUserCode();
-    localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
   }, [language, problem.id]);
 
   const [isPending, startTransition] = useTransition();
@@ -158,9 +145,7 @@ export default function CodeEditor({
         setStatusRibbon({ type: "submitted" });
         const submissionWithUser: SubmissionWithUser = {
           ...result.submission,
-          user: {
-            name: session.user.name ?? null
-          }
+          user: { name: session.user.name ?? null },
         };
         setSubmissions((prev) => [...prev, submissionWithUser]);
       } else {
@@ -176,26 +161,56 @@ export default function CodeEditor({
     label: data.name.split(" ")[0],
   }));
 
-  const editorRef = useRef<any>(null);
-  const handleEditorDidMount = (editor: any) => {
-    editorRef.current = editor;
-  };
+  const renderEditor = () => (
+    <Editor
+      key="user-editor"
+      height="calc(100% - 5vh)"
+      theme="vs-dark"
+      value={userCode}
+      onChange={(value) => {
+        if (!value) return;
+        setUserCode(value);
+        if (typeof window !== "undefined") {
+          const snippets: CodeSnippets = JSON.parse(
+            localStorage.getItem(CODE_STORAGE_KEY) || "{}"
+          );
+          const defaultCode = SUPPORTED_LANGUAGES[language].defaultCode;
+          if (value !== defaultCode) {
+            snippets[problem.id] = {
+              ...snippets[problem.id],
+              [language]: value,
+            };
+          } else if (snippets[problem.id]) {
+            delete snippets[problem.id][language];
+          }
+          localStorage.setItem(CODE_STORAGE_KEY, JSON.stringify(snippets));
+        }
+      }}
+      language={language}
+      className="rounded-b-lg"
+      options={{ readOnly: false }}
+    />
+  );
 
-  useEffect(() => {
-    if (editorRef.current) {
-      if (showSolution) {
-        editorRef.current.setValue(solutionCode || "");
-      } else {
-        editorRef.current.setValue(userCode);
-      }
-    }
-  }, [showSolution, solutionCode]);
+  const renderSolutionEditor = () => (
+    <Editor
+      key="solution-editor"
+      height="calc(100% - 5vh)"
+      theme="vs-dark"
+      value={solutionCode || ""}
+      language={language}
+      className="rounded-b-lg"
+      options={{ readOnly: true }}
+    />
+  );
 
   return (
     <div className="w-full border rounded-lg shadow-lg overflow-hidden h-full">
       <div
         className="w-full h-[5vh] rounded-t-lg flex items-center justify-between px-4 text-white"
-        style={{ background: "radial-gradient(circle, #241F2A 80%, #39234E 110%)" }}
+        style={{
+          background: "radial-gradient(circle, #241F2A 80%, #39234E 110%)",
+        }}
       >
         <span className="font-medium">Code</span>
         <div className="flex items-center space-x-3 relative">
@@ -204,20 +219,31 @@ export default function CodeEditor({
               type="button"
               onClick={() => setDropdownOpen(!dropdownOpen)}
               onKeyUp={(e) => e.key === "Enter" && setDropdownOpen(!dropdownOpen)}
-              onKeyDown={(e) => e.key === " " && setDropdownOpen(!dropdownOpen)}
+              onKeyDown={(e) =>
+                e.key === " " && setDropdownOpen(!dropdownOpen)
+              }
               className="text-xs rounded-md px-2 py-1 flex items-center justify-between text-white focus:outline-none focus:ring-0"
               style={{
-                background: "radial-gradient(circle, #241F2A 80%, #39234E 110%)",
+                background:
+                  "radial-gradient(circle, #241F2A 80%, #39234E 110%)",
                 border: "1px solid white",
               }}
             >
-              {languages.find((lang) => lang.value === language)?.label || "Language"}
-              {dropdownOpen ? <FiChevronUp className="ml-2" /> : <FiChevronDown className="ml-2" />}
+              {languages.find((lang) => lang.value === language)?.label ||
+                "Language"}
+              {dropdownOpen ? (
+                <FiChevronUp className="ml-2" />
+              ) : (
+                <FiChevronDown className="ml-2" />
+              )}
             </button>
             {dropdownOpen && (
               <ul
                 className="absolute top-full mt-1 w-32 bg-gray-900 rounded-md shadow-lg z-10"
-                style={{ background: "radial-gradient(circle, #241F2A 80%, #39234E 110%)" }}
+                style={{
+                  background:
+                    "radial-gradient(circle, #241F2A 80%, #39234E 110%)",
+                }}
               >
                 {languages.map((lang) => (
                   <button
@@ -269,38 +295,7 @@ export default function CodeEditor({
             {statusRibbon.passed}/{statusRibbon.total} testcases passed
           </div>
         ))}
-      <Editor
-        onMount={handleEditorDidMount}
-        height="calc(100% - 5vh)"
-        theme="vs-dark"
-        defaultValue={userCode}
-        onChange={
-          showSolution
-            ? undefined
-            : (value) => {
-                if (!value) return;
-                setUserCode(value);
-                if (typeof window !== "undefined") {
-                  const snippets: CodeSnippets = JSON.parse(
-                    localStorage.getItem(CODE_STORAGE_KEY) || "{}"
-                  );
-                  const defaultCode = SUPPORTED_LANGUAGES[language].defaultCode;
-                  if (value !== defaultCode) {
-                    snippets[problem.id] = {
-                      ...snippets[problem.id],
-                      [language]: value,
-                    };
-                  } else if (snippets[problem.id]) {
-                    delete snippets[problem.id][language];
-                  }
-                  localStorage.setItem(CODE_STORAGE_KEY, JSON.stringify(snippets));
-                }
-              }
-        }
-        language={language}
-        className="rounded-b-lg"
-        options={{ readOnly: showSolution }}
-      />
+      {showSolution ? renderSolutionEditor() : renderEditor()}
     </div>
   );
 }

@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/toaster";
 import moment from "moment-timezone";
 import type { Metadata } from "next";
 import { auth } from "./(auth)/auth";
+import { cookies } from "next/headers";
 
 const outfit = Outfit({ subsets: ["latin"] });
 
@@ -42,14 +43,21 @@ export default async function RootLayout({ children, admin, landing }: LayoutPro
     );
   }
 
-  if ((session.user as any).teamId === process.env.ADMIN_TEAM_ID) {
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+    include: { Admin: true },
+  });
+  const isAdmin = !!user?.Admin;
+
+  const cookieStore = await cookies();
+  const mode = cookieStore.get("mode")?.value !== "user";
+
+  if (isAdmin && mode) {
     return (
       <html lang="en">
         <body
           className={`min-h-screen flex flex-col ${outfit.className}`}
-          style={{
-            backgroundColor: "#fff",
-          }}
+          style={{ backgroundColor: "#fff" }}
         >
           {admin}
           <Toaster />

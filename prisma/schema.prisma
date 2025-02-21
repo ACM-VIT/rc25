@@ -102,6 +102,15 @@ model Problem {
   submissions  Submission[]
   Testcase     Testcase[]
   isHidden     Boolean      @default(false)
+  solution     Solution?    
+}
+
+model Solution {
+  id          String   @id @default(cuid())
+  problemId   String   @unique
+  code        String
+  explanation String
+  problem     Problem  @relation(fields: [problemId], references: [id], onDelete: Cascade)
 }
 
 model Testcase {

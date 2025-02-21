@@ -10,6 +10,7 @@ import DashboardBox from "../../../components/DashboardBox";
 import { FaCircleExclamation } from "react-icons/fa6";
 import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 interface Problem {
     difficulty: string;
@@ -18,14 +19,19 @@ interface Problem {
     mac_dl: string;
     lin_dl: string;
     win_dl: string;
+    solutionExplanation?: string;
 }
 
 export default function QuestionDisplay({
     problem,
     desc,
+    showSolution,
+    setShowSolution,
 }: {
     problem: Problem;
     desc: React.ReactElement;
+      showSolution: boolean;
+  setShowSolution: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -40,6 +46,13 @@ export default function QuestionDisplay({
                     <span className="text-green-500 font-bold text-lg">
                         {problem.difficulty} - {problem.maxScore} points
                     </span>
+                    <button onClick={() => setShowSolution(!showSolution)} title="Toggle Solution">
+              {showSolution ? (
+                <FiEyeOff className="text-white" size={20} />
+              ) : (
+                <FiEye className="text-white" size={20} />
+              )}
+            </button>
                 </div>
                 <div className="ml-4 w-[60%] border border-purple-700 rounded-lg">
                     {/* Accordion Header */}

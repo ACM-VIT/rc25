@@ -7,7 +7,7 @@ import { EvalEnum } from "@prisma/client";
 
 interface WebhookBody {
   token: string;
-  stdout: string;
+  stdout: string | null;
   status: string | null;
   stderr: string | null;
   compile_output: string | null;
@@ -17,10 +17,8 @@ export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
 
-    // Destructure the payload; note that we no longer use 'status'
     const { token, stdout, stderr, compile_output }: WebhookBody = body;
 
-    // Find the submission using the provided token
     const submission = await prisma.submission.findUnique({
       where: { token },
       include: {
@@ -46,7 +44,6 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Handle compile errors: if compile_output exists, update submission and mark as processed.
     if (compile_output) {
       await prisma.submission.update({
         where: { id: submission.id },
@@ -62,7 +59,6 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Handle runtime errors: if stderr exists, update submission and mark as processed.
     if (stderr) {
       await prisma.submission.update({
         where: { id: submission.id },
@@ -78,12 +74,11 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Decode stdout from base64 and split it using the delimiter
-    const decodedStdout = Buffer.from(stdout, "base64").toString("utf-8");
+    // Decode stdout from base64 (defaulting to an empty string if stdout is null)
+    const decodedStdout = Buffer.from(stdout ?? "", "base64").toString("utf-8");
     const delimiter = process.env.DELIMITER || "|||";
     const outputs = decodedStdout.split(delimiter);
 
-    // Retrieve the problem's maxScore for weight calculation
     const problem = await prisma.problem.findUnique({
       where: { id: submission.problemId },
       select: { maxScore: true },

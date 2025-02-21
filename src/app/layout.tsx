@@ -30,11 +30,28 @@ interface LayoutProps {
 
 export default async function RootLayout({ children, admin, landing }: LayoutProps) {
   const session = await auth();
+
   if (!session?.user?.email) {
     return (
       <html lang="en">
         <body className={outfit.className}>
           {landing}
+          <Toaster />
+        </body>
+      </html>
+    );
+  }
+
+  if ((session.user as any).teamId === process.env.ADMIN_TEAM_ID) {
+    return (
+      <html lang="en">
+        <body
+          className={`min-h-screen flex flex-col ${outfit.className}`}
+          style={{
+            backgroundColor: "#fff",
+          }}
+        >
+          {admin}
           <Toaster />
         </body>
       </html>
@@ -51,7 +68,6 @@ export default async function RootLayout({ children, admin, landing }: LayoutPro
           backgroundAttachment: "fixed",
         }}
       >
-        {/* <Navbar name={session.user.name || "User"} /> */}
         {children}
         <Toaster />
       </body>

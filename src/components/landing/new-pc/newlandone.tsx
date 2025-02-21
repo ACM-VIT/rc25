@@ -50,7 +50,7 @@ export default function NewLandOne() {
                     >
                         Code, Invert, Conquer
                     </div>
-                    <div
+                    {/* <div
                         className="text-center z-100 text-white font-custom font-bold text-[1rem] animate-fadeIn"
                         style={{
                             color: "transparent",
@@ -60,7 +60,7 @@ export default function NewLandOne() {
                     >
                         <p>07th February 2025 - 08:00 AM</p>
                         <p>Anna Auditorium</p>
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* Left-Aligned Text: "TO REVERSE CODING" Ending at the Top */}

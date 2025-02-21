@@ -8,6 +8,7 @@ import moment from "moment-timezone";
 import type { Metadata } from "next";
 import { auth } from "./(auth)/auth";
 import { cookies } from "next/headers";
+import { switchAdminAction } from "@/app/actions/switch-admin-action";
 
 const outfit = Outfit({ subsets: ["latin"] });
 
@@ -50,9 +51,10 @@ export default async function RootLayout({ children, admin, landing }: LayoutPro
   const isAdmin = !!user?.Admin;
 
   const cookieStore = await cookies();
-  const mode = cookieStore.get("mode")?.value !== "user";
+  const currentMode = cookieStore.get("mode")?.value;
+  const modeIsAdmin = currentMode !== "user";
 
-  if (isAdmin && mode) {
+  if (isAdmin && modeIsAdmin) {
     return (
       <html lang="en">
         <body
@@ -78,6 +80,20 @@ export default async function RootLayout({ children, admin, landing }: LayoutPro
       >
         {children}
         <Toaster />
+
+        {isAdmin && currentMode === "user" && (
+          <div className="fixed bottom-4 left-4 opacity-0 hover:opacity-100 transition-opacity">
+            <form action={switchAdminAction}>
+              <input type="hidden" name="mode" value="admin" />
+              <button
+                type="submit"
+                className="px-3 py-1 rounded-md bg-blue-500 text-white"
+              >
+                Switch to Admin Mode
+              </button>
+            </form>
+          </div>
+        )}
       </body>
     </html>
   );

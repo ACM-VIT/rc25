@@ -1,34 +1,13 @@
-import React, { type ReactNode } from "react";
+import React from "react";
 import Image from "next/image";
 import dark from "../../../public/teamdash.png";
-import stormtrooper from "../../../public/stormtrooper.png";
-import { prisma } from "@/utils/prisma";
 import { notFound } from "next/navigation";
 import { auth } from "../(auth)/auth";
 import FloatingDock from "@/components/FloatingDock";
 import SignOut from "@/app/(auth)/authactions/signout";
+import { prisma } from "@/utils/prisma";
 
-async function getTeam(userId: string) {
-  try {
-    const team = await prisma.team.findFirst({
-      where: {
-        members: {
-          some: {
-            id: userId,
-          },
-        },
-      },
-      include: {
-        members: true,
-      },
-    });
-    return team;
-  } finally {
-    await prisma.$disconnect();
-  }
-}
-
-async function getQuestionsSolved(memberIds: string[]) {
+async function getQuestionsSolved(userIds: string[]) {
   const now = new Date();
   const currentRound = await prisma.round.findFirst({
     where: {
@@ -41,7 +20,7 @@ async function getQuestionsSolved(memberIds: string[]) {
 
   const submissions = await prisma.submission.findMany({
     where: {
-      userId: { in: memberIds },
+      userId: { in: userIds },
       problem: { roundId: currentRound.id },
     },
     select: {
@@ -54,7 +33,9 @@ async function getQuestionsSolved(memberIds: string[]) {
     sub.testcasespassed.some((passed) => passed === true)
   );
 
-  const uniqueProblemIds = new Set(solvedSubmissions.map((sub) => sub.problemId));
+  const uniqueProblemIds = new Set(
+    solvedSubmissions.map((sub) => sub.problemId)
+  );
   return uniqueProblemIds.size;
 }
 
@@ -63,14 +44,11 @@ export default async function Page() {
   if (!session || !session.user || !session.user.id) {
     notFound();
   }
-  const team = await getTeam(session.user.id);
-  if (!team) notFound();
 
   const fullName = session.user.name || "User";
   const firstName = fullName.split(" ")[0];
 
-  const memberIds = team.members.map((member) => member.id);
-  const questionsSolved = await getQuestionsSolved(memberIds);
+  const questionsSolved = await getQuestionsSolved([session.user.id]);
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center text-white p-2 sm:p-4 md:p-5 lg:p-6 xl:p-8">

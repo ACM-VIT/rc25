@@ -5,28 +5,14 @@ import type { DashboardProps } from "@/types/dashboard";
 import { auth } from "./(auth)/auth";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const roundInfo = await prisma.round.findFirst({
-    where: { start: { lte: new Date() }, end: { gte: new Date() } },
-    select: { number: true },
-  });
-
-  if (!roundInfo?.number) {
-    return {
-      title: "Reverse Coding | ACM-VIT",
-      description: "Join Reverse Coding competition",
-      openGraph: {
-        title: "Reverse Coding | ACM-VIT",
-        description: "Join ACM-VIT's premier coding competition",
-        type: "website",
-      },
-      icons: { icon: "/favicon.ico" },
-    };
-  }
-
   return {
-    title: `Round ${roundInfo.number} Dashboard`,
-    description: "Dashboard",
-    openGraph: { title: `Round ${roundInfo.number}`, description: "Dashboard" },
+    title: "Reverse Coding | ACM-VIT",
+    description: "Join Reverse Coding competition",
+    openGraph: {
+      title: "Reverse Coding | ACM-VIT",
+      description: "Join ACM-VIT's premier coding competition",
+      type: "website",
+    },
     icons: { icon: "/favicon.ico" },
   };
 }
@@ -36,17 +22,7 @@ export default async function Page() {
   if (!session?.user?.email) {
     return <div>Please sign in to continue</div>;
   }
-
-  const roundInfo = await prisma.round.findFirst({
-    where: { start: { lte: new Date() }, end: { gte: new Date() } },
-    select: { number: true, end: true, id: true },
-  });
-  if (!roundInfo) {
-    return <div>No active round found</div>;
-  }
-
   const problems = await prisma.problem.findMany({
-    where: { roundId: roundInfo.id },
     orderBy: { id: "asc" },
     include: {
       submissions: { select: { testcasespassed: true, createdAt: true } },
@@ -57,6 +33,7 @@ export default async function Page() {
     testcasespassed: boolean[];
     createdAt: Date;
   }
+  
   const questions = problems.map((problem, index) => {
     const bestSubmission = problem.submissions.reduce(
       (best, current) => {
@@ -101,7 +78,6 @@ export default async function Page() {
       leaderboard={leaderboard}
       leaderboardShow={leaderboardShow}
       questions={questions}
-      roundInfo={roundInfo}
       news={news}
     />
   );

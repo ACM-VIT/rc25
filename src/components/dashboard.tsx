@@ -57,12 +57,13 @@ const Dashboard: React.FC<DashboardProps> = ({ questions }) => {
 
             <div className="w-full max-w-screen-xl mx-auto px-8 py-8">
                 <div className="flex flex-col items-center justify-center w-full h-[85vh] text-white">
-                    <div className="flex flex-row items-center justify-between w-[100vw] py-2">
+                    {/* Increased horizontal padding for SVG logos */}
+                    <div className="flex flex-row items-center justify-between w-full px-10 py-4">
                         <Link href={"https://acmvit.in"} target="_blank">
                             <Image
                                 src={Acm}
                                 alt="acm-logo"
-                                className="w-[60%] pl-10"
+                                className="w-[60%]"
                             />
                         </Link>
                         <Link href={"/"}>
@@ -112,8 +113,7 @@ const Dashboard: React.FC<DashboardProps> = ({ questions }) => {
                                             >
                                                 {question.difficulty === "EASY"
                                                     ? "Easy"
-                                                    : question.difficulty ===
-                                                      "MEDIUM"
+                                                    : question.difficulty === "MEDIUM"
                                                     ? "Medium"
                                                     : "Hard"}
                                             </p>

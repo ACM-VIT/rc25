@@ -51,7 +51,6 @@ export type DashboardProps = {
     teamDetails: TeamDetails
     leaderboard: LeaderboardTeam[]
     questions: Questions[]
-    roundInfo: RoundInfo
     leaderboardShow: boolean
     news: NewsItem[];
 }

@@ -3,6 +3,7 @@ import Dashboard from "@/components/dashboard";
 import type { Metadata } from "next";
 import type { DashboardProps } from "@/types/dashboard";
 import { auth } from "./(auth)/auth";
+import type { Problem } from "@prisma/client";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -17,26 +18,35 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+interface SubmissionType {
+  testcasespassed: boolean[];
+  createdAt: Date;
+}
+
+interface ProblemWithSubmissions extends Problem {
+  submissions: SubmissionType[];
+}
+
 export default async function Page() {
   const session = await auth();
   if (!session?.user?.email) {
     return <div>Please sign in to continue</div>;
   }
-  const problems = await prisma.problem.findMany({
+  const problems = (await prisma.problem.findMany({
     orderBy: { id: "asc" },
     include: {
-      submissions: { select: { testcasespassed: true, createdAt: true } },
+      submissions: {
+        where: {
+          user: { email: session.user.email },
+        },
+        select: { testcasespassed: true, createdAt: true },
+      },
     },
-  });
+  })) as ProblemWithSubmissions[];
 
-  interface SubmissionType {
-    testcasespassed: boolean[];
-    createdAt: Date;
-  }
-  
   const questions = problems.map((problem, index) => {
     const bestSubmission = problem.submissions.reduce(
-      (best, current) => {
+      (best: SubmissionType | null, current: SubmissionType) => {
         const currentPassed = current.testcasespassed.filter(Boolean).length;
         const bestPassed = best ? best.testcasespassed.filter(Boolean).length : -1;
         return currentPassed > bestPassed ? current : best;

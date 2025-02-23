@@ -29,43 +29,43 @@ const STATUS = {
   COMPILATION_ERROR: 6,
 };
 
-// Helper function to remove duplicate import statements from code
-function removeDuplicateImports(code: string, language: SupportedLanguage): string {
-  const importPatterns: Partial<Record<SupportedLanguage, RegExp[]>> = {
-    cpp: [/#include\s*<[^>]+>/g],
-    java: [/import\s+[^;]+;/g],
-    python: [/^from\s+[\w.]+\s+import\s+.*$/gm, /^import\s+.*$/gm],
-    go: [/^import\s*\([^)]*\)/gm, /^import\s+".*?"$/gm],
-    rust: [
-      /^use\s+[^;]+;/gm,
-      /^use\s+[^{]+\{[^}]+\};/gm,
-      /^use\s+[^:]+::[^;]+;/gm,
-    ],
-  };
+// // Helper function to remove duplicate import statements from code
+// function removeDuplicateImports(code: string, language: SupportedLanguage): string {
+//   const importPatterns: Partial<Record<SupportedLanguage, RegExp[]>> = {
+//     cpp: [/#include\s*<[^>]+>/g],
+//     java: [/import\s+[^;]+;/g],
+//     python: [/^from\s+[\w.]+\s+import\s+.*$/gm, /^import\s+.*$/gm],
+//     go: [/^import\s*\([^)]*\)/gm, /^import\s+".*?"$/gm],
+//     rust: [
+//       /^use\s+[^;]+;/gm,
+//       /^use\s+[^{]+\{[^}]+\};/gm,
+//       /^use\s+[^:]+::[^;]+;/gm,
+//     ],
+//   };
 
-  if (!importPatterns[language]) return code;
+//   if (!importPatterns[language]) return code;
 
-  const patterns = importPatterns[language] || [];
-  const allImports = new Set<string>();
-  let cleanCode = code;
+//   const patterns = importPatterns[language] || [];
+//   const allImports = new Set<string>();
+//   let cleanCode = code;
 
-  for (const pattern of patterns) {
-    const matches = cleanCode.match(pattern) || [];
-    for (const match of matches) {
-      allImports.add(match.trim());
-    }
-    cleanCode = cleanCode.replace(pattern, "");
-  }
+//   for (const pattern of patterns) {
+//     const matches = cleanCode.match(pattern) || [];
+//     for (const match of matches) {
+//       allImports.add(match.trim());
+//     }
+//     cleanCode = cleanCode.replace(pattern, "");
+//   }
 
-  let importSection = "";
-  if (language === "go" && allImports.size > 0) {
-    importSection = `import (\n  ${Array.from(allImports).join("\n  ")}\n)\n`;
-  } else if (allImports.size > 0) {
-    importSection = `${Array.from(allImports).join("\n")}\n`;
-  }
+//   let importSection = "";
+//   if (language === "go" && allImports.size > 0) {
+//     importSection = `import (\n  ${Array.from(allImports).join("\n  ")}\n)\n`;
+//   } else if (allImports.size > 0) {
+//     importSection = `${Array.from(allImports).join("\n")}\n`;
+//   }
 
-  return importSection + cleanCode.trim();
-}
+//   return importSection + cleanCode.trim();
+// }
 
 export async function judgeSolution(
   code: string,

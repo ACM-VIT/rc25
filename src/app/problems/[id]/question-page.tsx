@@ -36,8 +36,6 @@ interface QuestionPageProps {
 export default function QuestionPage({
   problem,
   session,
-  questions,
-  currentSlno,
   desc,
 }: QuestionPageProps) {
   const router = useRouter();

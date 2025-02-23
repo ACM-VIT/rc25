@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useTransition, useRef } from "react";
+import React, { useState, useEffect, useTransition } from "react";
 import Editor from "@monaco-editor/react";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import createSubmission from "@/app/actions/create-submission";

@@ -18,7 +18,7 @@ const TeamSubmissions: React.FC<TeamSubmissionProps> = ({ submissions, teamName 
       >
         <div className="p-2 flex justify-center items-center">
           <p className="font-bold text-2xl font-custom underline underline-offset-4 decoration-white">
-            {teamName}'s Submissions
+            {teamName} Submissions
           </p>
         </div>
         <div className="flex justify-center w-full h-[85%]">

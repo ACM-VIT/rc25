@@ -22,15 +22,6 @@ export interface Problem extends Omit<ProblemPayload, "solution"> {
   slno?: number;
 }
 
-interface TestCase {
-  id: string;
-  weight: number;
-  input: string;
-  output: string;
-  problemId: string;
-  isEdge: boolean;
-}
-
 async function getProblem(id: string): Promise<Problem> {
   const problemData = await prisma.problem.findUnique({
     where: { id },
@@ -38,12 +29,12 @@ async function getProblem(id: string): Promise<Problem> {
       Testcase: true,
       round: true,
       solution: true,
-    } as any,
+    },
   });
   if (!problemData) notFound();
 
-  const round = (problemData as any).round as Round;
-  const solution = (problemData as any).solution as { code: string; explanation: string } | null;
+  const round = problemData.round as Round;
+  const solution = problemData.solution as { code: string; explanation: string } | null;
 
   return {
     ...problemData,
@@ -63,20 +54,19 @@ async function getQuestions(roundId: string) {
   }));
 }
 
-async function getUser(id: string) {
-  const user = await prisma.user.findUnique({
-    where: { id },
-    include: { Team: true },
-  });
-  return user;
-}
-
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: { id: string };
+}): Promise<Metadata> {
   try {
-    const problem = await getProblem((await params).id);
+    const problem = await getProblem(params.id);
     return {
       title: `${problem.title} - Round ${problem.round.number} | Reverse Coding`,
-      description: `${problem.difficulty} difficulty problem: ${problem.description.substring(0, 150)}...`,
+      description: `${problem.difficulty} difficulty problem: ${problem.description.substring(
+        0,
+        150
+      )}...`,
       openGraph: {
         title: problem.title,
         description: `Solve this ${problem.difficulty.toLowerCase()} difficulty problem in Round ${problem.round.number}`,
@@ -93,16 +83,18 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   }
 }
 
-export default async function Page({ params }: { params: Promise<{ id: string }> }) {
-  const resolvedParams = await params;
-  const problem = await getProblem(resolvedParams.id);
+export default async function Page({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const problem = await getProblem(params.id);
   const questions = await getQuestions(problem.round.id);
   const session = await auth();
 
   if (!session || !session.user || !session.user.id) notFound();
 
-  const user = await getUser(session.user.id);
-  const currentQuestion = questions.find((q) => q.id === resolvedParams.id);
+  const currentQuestion = questions.find((q) => q.id === params.id);
   const currentSlno = currentQuestion?.slno ?? 1;
 
   return (

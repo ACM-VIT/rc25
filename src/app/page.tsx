@@ -32,12 +32,15 @@ export default async function Page() {
   if (!session?.user?.email) {
     return <div>Please sign in to continue</div>;
   }
+  
   const problems = (await prisma.problem.findMany({
     orderBy: { id: "asc" },
     include: {
       submissions: {
         where: {
-          user: { email: session.user.email },
+          user: {
+            email: session.user.email,
+          },
         },
         select: { testcasespassed: true, createdAt: true },
       },

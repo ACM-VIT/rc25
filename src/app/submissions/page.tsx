@@ -6,10 +6,10 @@ import FloatingDock from "@/components/FloatingDock";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Team Submissions",
+  title: "Submissions",
   description: "View your submission history and progress",
   openGraph: {
-    title: "Team Submissions",
+    title: "Submissions",
     description: "Track your submission history and performance",
     type: "website",
   },
@@ -29,7 +29,6 @@ export default async function SubmissionsPage() {
     redirect("/auth/signin");
   }
 
-  // Get the user by id (no team checks)
   const user = await prisma.user.findUnique({
     relationLoadStrategy: "join",
     where: { id: session.user.id },
@@ -39,7 +38,6 @@ export default async function SubmissionsPage() {
     return <div>User not found</div>;
   }
 
-  // Query submissions for this user only
   const submissions = await prisma.submission.findMany({
     relationLoadStrategy: "join",
     where: {
@@ -52,7 +50,6 @@ export default async function SubmissionsPage() {
     orderBy: { createdAt: "desc" },
   });
 
-  // Ensure a valid name is always available
   const formattedSubmissions = submissions.map((submission) => ({
     ...submission,
     user: {
@@ -65,7 +62,6 @@ export default async function SubmissionsPage() {
     <>
       <TeamSubmissions
         submissions={formattedSubmissions}
-        // Pass the user's name as the header instead of a team name
         teamName={user.name}
       />
       <FloatingDock />

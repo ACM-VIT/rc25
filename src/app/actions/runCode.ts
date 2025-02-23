@@ -1,7 +1,7 @@
 "use server";
 
 import {executeCode} from "@/utils/server-executor";
-import { prisma } from "@/utils/prisma";
+import {prisma} from "@/utils/prisma";
 
 export async function runCode(problemId: string,input: string) {
   try {
@@ -12,8 +12,7 @@ export async function runCode(problemId: string,input: string) {
     if (!problem?.web_code) {
       throw new Error("Problem code is undefined");
     }
-    const result = executeCode(problem.web_code, input);
-    return result;
+    return executeCode(problem.web_code, input);
   } catch (error) {
     return {
       success: false,

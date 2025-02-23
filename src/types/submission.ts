@@ -16,5 +16,5 @@ export interface TeamSubmission {
 
 export interface TeamSubmissionProps {
   submissions: TeamSubmission[]
-  teamName: string
+  teamName: string | null
 }

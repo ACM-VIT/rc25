@@ -32,7 +32,7 @@ export function TeamMembers({
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center text-white">
+    <div className="min-h-screen w-full flex flex-col justify-center items-center text-white">
       {/* Toast Notification */}
       <div
         className={`fixed top-4 flex justify-center bg-black/80 backdrop-blur-sm border border-weirdPurple text-white px-4 py-2 rounded 
@@ -99,8 +99,8 @@ export function TeamMembers({
 
           {/* Content box */}
           <div
-            className="w-full bg-black/50 border-4 border-weirdPurple 
-            p-4 md:p-8 lg:p-16"
+            className="w-full h-[65vh] md:h-auto bg-black/50 border-4 border-weirdPurple 
+            p-4 md:p-8 lg:p-16 overflow-y-auto"
           >
             {/* Header section */}
             <div className="mb-8 space-y-4">

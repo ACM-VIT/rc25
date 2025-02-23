@@ -68,7 +68,6 @@ model Team {
   checkedIn  Boolean     @default(false)
   score      Int         @default(0)
   disqualify Boolean     @default(false)
-  venue      Venue?   
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
   TeamRound  TeamRound[]
@@ -102,6 +101,16 @@ model Problem {
   round        Round        @relation(fields: [roundId], references: [id], onDelete: Cascade)
   submissions  Submission[]
   Testcase     Testcase[]
+  isHidden     Boolean      @default(false)
+  solution     Solution?    
+}
+
+model Solution {
+  id          String   @id @default(cuid())
+  problemId   String   @unique
+  code        String
+  explanation String
+  problem     Problem  @relation(fields: [problemId], references: [id], onDelete: Cascade)
 }
 
 model Testcase {
@@ -120,7 +129,7 @@ model Submission {
   code            String
   problemId       String
   userId          String
-  token           String               @default("")
+  token           String?              @unique
   score           Int?                 @default(0)
   testcasespassed Boolean[]            @default([])
   createdAt       DateTime             @default(now())
@@ -128,6 +137,7 @@ model Submission {
   problem         Problem              @relation(fields: [problemId], references: [id], onDelete: Cascade)
   user            User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   evaluated       Boolean              @default(false)
+  evaluationStatus EvalEnum?
   testcases       TestcaseSubmission[]
 }
 
@@ -136,6 +146,7 @@ model TestcaseSubmission {
   submissionId String
   submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
   testcase     Testcase   @relation(fields: [testcaseId], references: [id], onDelete: Cascade)
+  sequence     Int        @default(0)
 
   @@id([testcaseId, submissionId])
   @@unique([testcaseId, submissionId])
@@ -160,7 +171,7 @@ model Admin {
 }
 
 model Flags {
-  name String  @unique
+  name  String  @unique
   value Boolean
 }
 
@@ -175,9 +186,10 @@ enum Difficulty {
   HARD
 }
 
-enum Venue {
-  CS
-  CHANNA
+enum EvalEnum {
+  ACCEPTED
+  RUNTIME_ERROR
+  COMPILE_ERROR
 }
 
 model News {

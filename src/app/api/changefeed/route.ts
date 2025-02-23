@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
         if (change.id == process.env.ADMIN_TEAM_ID) {
           continue;
         }
-        await firestoreService.updateTeam({id: change.id, name: change.name, score: change.score});
+        await firestoreService.leaderboard.updateTeam({id: change.id, name: change.name, score: change.score});
       }
     }
 

@@ -57,10 +57,11 @@ async function getQuestions(roundId: string) {
 export async function generateMetadata({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }): Promise<Metadata> {
+  const resolvedParams = await params;
   try {
-    const problem = await getProblem(params.id);
+    const problem = await getProblem(resolvedParams.id);
     return {
       title: `${problem.title} - Round ${problem.round.number} | Reverse Coding`,
       description: `${problem.difficulty} difficulty problem: ${problem.description.substring(
@@ -86,15 +87,16 @@ export async function generateMetadata({
 export default async function Page({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const problem = await getProblem(params.id);
+  const resolvedParams = await params;
+  const problem = await getProblem(resolvedParams.id);
   const questions = await getQuestions(problem.round.id);
   const session = await auth();
 
   if (!session || !session.user || !session.user.id) notFound();
 
-  const currentQuestion = questions.find((q) => q.id === params.id);
+  const currentQuestion = questions.find((q) => q.id === resolvedParams.id);
   const currentSlno = currentQuestion?.slno ?? 1;
 
   return (

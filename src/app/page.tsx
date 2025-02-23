@@ -3,7 +3,6 @@ import Dashboard from "@/components/dashboard";
 import type { Metadata } from "next";
 import type { DashboardProps } from "@/types/dashboard";
 import { auth } from "./(auth)/auth";
-import type { Problem } from "@prisma/client";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -21,10 +20,14 @@ export async function generateMetadata(): Promise<Metadata> {
 interface SubmissionType {
   testcasespassed: boolean[];
   createdAt: Date;
+  problemId: string;
 }
 
-interface ProblemWithSubmissions extends Problem {
-  submissions: SubmissionType[];
+interface ProblemType {
+  id: string;
+  title: string;
+  difficulty: string;
+  isHidden: boolean;
 }
 
 export default async function Page() {
@@ -32,20 +35,39 @@ export default async function Page() {
   if (!session?.user?.email) {
     return <div>Please sign in to continue</div>;
   }
-  const problems = (await prisma.problem.findMany({
+
+  const problemsPromise = prisma.problem.findMany({
     orderBy: { id: "asc" },
-    include: {
-      submissions: {
-        where: {
-          user: { email: session.user.email },
-        },
-        select: { testcasespassed: true, createdAt: true },
-      },
+    select: {
+      id: true,
+      title: true,
+      difficulty: true,
+      isHidden: true,
     },
-  })) as ProblemWithSubmissions[];
+  }) as Promise<ProblemType[]>;
+
+  const problems = await problemsPromise;
+  const problemIds = problems.map((p) => p.id);
+  
+  const submissionsPromise = prisma.submission.findMany({
+    where: {
+      user: { email: session.user.email },
+      problemId: { in: problemIds },
+    },
+    select: {
+      problemId: true,
+      testcasespassed: true,
+      createdAt: true,
+    },
+  }) as Promise<SubmissionType[]>;
+  
+  const submissions = await submissionsPromise;
 
   const questions = problems.map((problem, index) => {
-    const bestSubmission = problem.submissions.reduce(
+    const problemSubs = submissions.filter(
+      (sub) => sub.problemId === problem.id
+    );
+    const bestSubmission = problemSubs.reduce(
       (best: SubmissionType | null, current: SubmissionType) => {
         const currentPassed = current.testcasespassed.filter(Boolean).length;
         const bestPassed = best ? best.testcasespassed.filter(Boolean).length : -1;
@@ -57,6 +79,7 @@ export default async function Page() {
     const passCount = passedArray.filter(Boolean).length;
     const total = passedArray.length;
     const status = total > 0 ? `${passCount}/${total}` : "Not Attempted";
+
     return {
       slno: index + 1,
       id: problem.id,
@@ -67,6 +90,7 @@ export default async function Page() {
     };
   });
 
+  // Get news (if needed by the dashboard).
   const news = await prisma.news.findMany({
     orderBy: { time: "desc" },
     select: { id: true, title: true, content: true, time: true },

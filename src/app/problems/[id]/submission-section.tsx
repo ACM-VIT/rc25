@@ -9,6 +9,7 @@ interface SubmissionSectionProps {
   isPending: boolean;
   submissions: SubmissionWithUser[];
   setSubmissions: React.Dispatch<React.SetStateAction<SubmissionWithUser[]>>;
+  currentUserName: string;
 }
 
 export type SubmissionWithUser = Prisma.SubmissionGetPayload<{
@@ -33,19 +34,24 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
   isPending,
   submissions,
   setSubmissions,
+  currentUserName,
 }) => {
   const [randomMessage, setRandomMessage] = useState<string>("");
 
+  const mySubmissions = submissions.filter(
+    (submission) => submission.user?.name === currentUserName
+  );
+
   useEffect(() => {
-    const sortedSubmissions = [...submissions].sort((a, b) =>
+    const sortedSubmissions = [...mySubmissions].sort((a, b) =>
       new Date(a.updatedAt) > new Date(b.updatedAt) ? -1 : 1
     );
 
-    if (JSON.stringify(sortedSubmissions) !== JSON.stringify(submissions)) {
+    if (JSON.stringify(sortedSubmissions) !== JSON.stringify(mySubmissions)) {
       setSubmissions(sortedSubmissions);
     }
     setRandomMessage(getRandomMessage());
-  }, [submissions, setSubmissions]);
+  }, [mySubmissions, setSubmissions]);
 
   const renderSubmission = (
     submission: SubmissionWithUser | null,
@@ -120,15 +126,14 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
             WebkitBackdropFilter: "blur(2.5px)",
           }}
         >
-          {submissions.length === 0 ? (
+          {mySubmissions.length === 0 ? (
             <div className="w-full flex items-center justify-center border-[#EB5757] border-1 py-2 rounded-md">
               {randomMessage}
             </div>
-          ) : submissions.length === 1 && !submissions[0].evaluated ? (
+          ) : mySubmissions.length === 1 && !mySubmissions[0].evaluated ? (
             <div className="w-full h-full border-2 border-[#EB5757] px-4 py-2 rounded-md">
               <p className="text-[#F8CC22] font-outfit text-center">
-                The first record is now under scrutiny. The Force will reveal its
-                merit.
+                The first record is now under scrutiny. The Force will reveal its merit.
               </p>
               <div className="h-full flex items-center justify-center">
                 <Lottie
@@ -141,16 +146,16 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
             </div>
           ) : (
             <div className="space-y-4 overflow-y-auto">
-              {submissions.map((submission, index) => (
+              {mySubmissions.map((submission, index) => (
                 <div key={submission.id}>
                   {renderSubmission(
                     submission,
                     index ===
-                      submissions.findIndex(
+                      mySubmissions.findIndex(
                         (s) =>
                           s.testcasespassed.filter(Boolean).length ===
                           Math.max(
-                            ...submissions.map((sub) =>
+                            ...mySubmissions.map((sub) =>
                               sub.testcasespassed.filter(Boolean).length
                             )
                           )

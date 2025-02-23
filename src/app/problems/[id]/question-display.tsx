@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import DashboardBox from "../../../components/DashboardBox";
 import { FaCircleExclamation } from "react-icons/fa6";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { FiEye, FiEyeOff } from "react-icons/fi";
 
 interface Problem {
     difficulty: string;
@@ -41,11 +40,20 @@ export default function QuestionDisplay({
                         <span className="font-bold text-2xl text-white break-words">
                             Problem Details
                         </span>
-                        <button onClick={() => setShowSolution(!showSolution)} title="Toggle Solution">
+                        <button
+                            onClick={() => setShowSolution(!showSolution)}
+                            title="Toggle Solution"
+                        >
                             {showSolution ? (
-                                <FiEyeOff className="text-white" size={20} />
+                                // <FiEyeOff className="text-white" size={20} />
+                                <Button className="px-2 py-1 rounded-md text-xs font-semibold text-white hover:bg-secondary disabled:opacity-50 border-primary border-2 bg-transparent">
+                                    Hide Solution
+                                </Button>
                             ) : (
-                                <FiEye className="text-white" size={20} />
+                                // <FiEye className="text-white" size={20} />
+                                <Button className="px-2 py-1 rounded-md text-xs font-semibold text-white hover:bg-secondary disabled:opacity-50 border-primary border-2 bg-transparent">
+                                    Show Solution
+                                </Button>
                             )}
                         </button>
                     </div>

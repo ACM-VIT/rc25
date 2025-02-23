@@ -32,13 +32,20 @@ const getRandomMessage = () => {
 const SubmissionSection: React.FC<SubmissionSectionProps> = ({
   isPending,
   submissions,
+  setSubmissions,
 }) => {
   const [randomMessage, setRandomMessage] = useState<string>("");
 
   useEffect(() => {
-    submissions.sort((a, b) => (a.updatedAt > b.updatedAt ? -1 : 1));
+    const sortedSubmissions = [...submissions].sort((a, b) =>
+      new Date(a.updatedAt) > new Date(b.updatedAt) ? -1 : 1
+    );
+
+    if (JSON.stringify(sortedSubmissions) !== JSON.stringify(submissions)) {
+      setSubmissions(sortedSubmissions);
+    }
     setRandomMessage(getRandomMessage());
-  }, [submissions]);
+  }, [submissions, setSubmissions]);
 
   const renderSubmission = (
     submission: SubmissionWithUser | null,
@@ -70,7 +77,7 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
       >
         <div className="flex flex-col items-start space-x-2">
           <span className="font-bold">
-            {submission.user?.name || "Unknown User"}
+            {submission.user?.name || "You"}
           </span>
         </div>
         <div className="flex flex-col items-center justify-between gap-1 space-x-2">

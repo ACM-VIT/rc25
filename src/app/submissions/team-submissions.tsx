@@ -5,7 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import DashboardBox from "@/components/DashboardBox";
 import type { TeamSubmissionProps } from "@/types/submission";
 
-const TeamSubmissions: React.FC<TeamSubmissionProps> = ({ submissions, teamName }) => {
+const TeamSubmissions: React.FC<TeamSubmissionProps> = ({ submissions }) => {
   return (
     <div>
       <div className="flex md:hidden">

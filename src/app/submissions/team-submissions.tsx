@@ -28,7 +28,7 @@ const TeamSubmissions: React.FC<TeamSubmissionProps> = ({ submissions }) => {
                 My Submissions
               </p>
               <div className="flex flex-row border-b-2 py-4 w-full">
-                <h1 className="w-1/5 text-xs md:text-sm font-bold text-center">Sl. No</h1>
+                <h1 className="w-1/5 text-xs md:text-sm font-bold text-center">S. No</h1>
                 <h1 className="w-1/5 text-xs md:text-sm font-bold text-center">Time</h1>
                 {/* <h1 className="w-1/6 text-xs md:text-sm font-bold text-center">Name</h1> */}
                 <h1 className="w-1/5 text-xs md:text-sm font-bold text-center">Problem</h1>

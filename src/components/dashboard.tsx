@@ -89,47 +89,48 @@ const Dashboard: React.FC<DashboardProps> = ({ questions }) => {
                         </div>
                         <ScrollArea className="h-[80%] rounded-md">
                             <div className="space-y-4">
-                                {questions.map((question) => (
-                                    <Link
-                                        href={`/problems/${question.id}`}
-                                        key={question.id}
-                                        className="block"
-                                    >
-                                        <div className="flex flex-row items-center mt-4 rounded-lg hover:bg-weirdPurple/20 transition-colors">
-                                            <p className="w-1/6 text-center p-2">
-                                                {question.slno}
-                                            </p>
-                                            <p className="w-2/6 text-center p-2">
-                                                {question.questionName}
-                                            </p>
-                                            <p
-                                                className="w-1/6 text-center p-2"
-                                                style={{
-                                                    color: getDifficultyColor(
-                                                        question.difficulty
-                                                    ),
-                                                }}
-                                            >
-                                                {question.difficulty === "EASY"
-                                                    ? "Easy"
-                                                    : question.difficulty ===
-                                                      "MEDIUM"
-                                                    ? "Medium"
-                                                    : "Hard"}
-                                            </p>
-                                            <p
-                                                className="w-2/6 text-center p-2"
-                                                style={{
-                                                    color: getStatusColor(
-                                                        question.status
-                                                    ),
-                                                }}
-                                            >
-                                                {question.status}
-                                            </p>
-                                        </div>
-                                    </Link>
-                                ))}
+                                {questions
+                                    .filter((question) => !question.isHidden)
+                                    .map((question) => (
+                                        <Link
+                                            href={`/problems/${question.id}`}
+                                            key={question.id}
+                                            className="block"
+                                        >
+                                            <div className="flex flex-row items-center mt-4 rounded-lg hover:bg-weirdPurple/20 transition-colors">
+                                                <p className="w-1/6 text-center p-2">
+                                                    {question.slno}
+                                                </p>
+                                                <p className="w-2/6 text-center p-2">
+                                                    {question.questionName}
+                                                </p>
+                                                <p
+                                                    className="w-1/6 text-center p-2"
+                                                    style={{
+                                                        color: getDifficultyColor(
+                                                            question.difficulty
+                                                        ),
+                                                    }}
+                                                >
+                                                    {question.difficulty === "EASY"
+                                                        ? "Easy"
+                                                        : question.difficulty === "MEDIUM"
+                                                        ? "Medium"
+                                                        : "Hard"}
+                                                </p>
+                                                <p
+                                                    className="w-2/6 text-center p-2"
+                                                    style={{
+                                                        color: getStatusColor(
+                                                            question.status
+                                                        ),
+                                                    }}
+                                                >
+                                                    {question.status}
+                                                </p>
+                                            </div>
+                                        </Link>
+                                    ))}
                             </div>
                         </ScrollArea>
                     </DashboardBox>

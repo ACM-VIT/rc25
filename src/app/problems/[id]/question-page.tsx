@@ -27,7 +27,7 @@ type ProblemWithSolution = Omit<ProblemPayload, "solution"> & {
 
 interface QuestionPageProps {
   problem: ProblemWithSolution & { solutionExplanation?: string };
-  session: { user: { id: string } };
+  session: { user: { id: string; name?: string } };
   questions: Array<{ id: string; slno: number }>;
   currentSlno: number;
   desc: React.ReactElement;

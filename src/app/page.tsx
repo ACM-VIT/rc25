@@ -5,22 +5,21 @@ import type { DashboardProps } from "@/types/dashboard";
 import { auth } from "./(auth)/auth";
 
 export async function generateMetadata(): Promise<Metadata> {
-    return {
+  return {
+    title: "Reverse Coding | ACM-VIT",
+    description: "Join Reverse Coding competition",
+    openGraph: {
       title: "Reverse Coding | ACM-VIT",
-      description: "Join Reverse Coding competition",
-      openGraph: {
-        title: "Reverse Coding | ACM-VIT",
-        description: "Join ACM-VIT's premier coding competition",
-        type: "website",
-      },
-      icons: { icon: "/favicon.ico" },
-    };
-  }
-
+      description: "Join ACM-VIT's premier coding competition",
+      type: "website",
+    },
+    icons: { icon: "/favicon.ico" },
+  };
+}
 
 export default async function Page() {
   const session = await auth();
-  if (!session?.user?.email) {
+  if (!session?.user) {
     return <div>Please sign in to continue</div>;
   }
 
@@ -36,7 +35,10 @@ export default async function Page() {
     where: { roundId: roundInfo.id },
     orderBy: { id: "asc" },
     include: {
-      submissions: { select: { testcasespassed: true, createdAt: true } },
+      submissions: {
+        where: { userId: session.user.id },
+        select: { testcasespassed: true, createdAt: true },
+      },
     },
   });
 

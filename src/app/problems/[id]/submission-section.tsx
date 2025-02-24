@@ -32,7 +32,6 @@ const getRandomMessage = () => {
 const SubmissionSection: React.FC<SubmissionSectionProps> = ({
   isPending,
   submissions,
-  setSubmissions,
   currentUserId,
 }) => {
   const [randomMessage, setRandomMessage] = useState<string>("");

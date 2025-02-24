@@ -80,11 +80,9 @@ export default function QuestionPage({
       });
     };
 
-    const unsub = submissions
-      .filter((submission) => !submission.evaluated)
-      .map((submission) => subscribeToSubmission(submission.id));
+    const unsubscribers = submissions.map((submission) => subscribeToSubmission(submission.id));
     return () => {
-      unsub.forEach((u) => u());
+      unsubscribers.forEach((unsub) => unsub());
     };
   }, [problem.id, session.user.id, submissions]);
 
@@ -97,7 +95,7 @@ export default function QuestionPage({
       }}
     >
       <div className="rounded-[10px] flex flex-col items-center gap-2 w-full">
-        <div className="relative w-full p-4 ">
+        <div className="relative w-full p-4">
           <button className="absolute top-3 left-3" onClick={() => router.back()}>
             <SquareChevronLeft size={48} color="white" />
           </button>
@@ -156,9 +154,7 @@ export default function QuestionPage({
                           }}
                         >
                           <h2 className="text-xl font-bold mb-2">Solution Explanation</h2>
-                          <p>
-                            {problem.solutionExplanation || "No explanation provided."}
-                          </p>
+                          <p>{problem.solutionExplanation || "No explanation provided."}</p>
                         </div>
                       </div>
                     ) : (

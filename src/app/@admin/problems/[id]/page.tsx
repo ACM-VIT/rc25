@@ -5,13 +5,23 @@ import type { Problem as PrismaBaseProblem } from '@prisma/client';
 import SwitchAdminProblemModeButton from '@/components/switch-admin-problem-mode';
 import SolutionEditorModal from "./SolutionEditorModal";
 
+interface TestCase {
+  id: string;
+  weight: number;
+  input: string;
+  output: string;
+  isEdge: boolean;
+}
+
 interface Problem extends PrismaBaseProblem {
   Testcase: TestCase[];
   round: {
     number: number;
   };
-  solution?: {
+  solution: {
+    id: string;
     code: string;
+    problemId: string;
     explanation: string;
   } | null;
   solutionExplanation?: string;
@@ -23,16 +33,8 @@ interface PageParams {
   }>;
 }
 
-interface TestCase {
-  id: string;
-  weight: number;
-  input: string;
-  output: string;
-  isEdge: boolean;
-}
-
 async function getProblem(id: string): Promise<Problem> {
-  const problem = await prisma.problem.findUnique({
+  const problemData = await prisma.problem.findUnique({
     relationLoadStrategy: 'join',
     where: { id },
     include: {
@@ -42,8 +44,19 @@ async function getProblem(id: string): Promise<Problem> {
     }
   });
 
-  if (!problem) notFound();
-  return problem;
+  if (!problemData) notFound();
+
+  const round = problemData.round as { number: number };
+  const solution = problemData.solution as
+    | { id: string; code: string; problemId: string; explanation: string }
+    | null;
+
+  return {
+    ...problemData,
+    round: { number: round.number },
+    solution,
+    solutionExplanation: solution ? solution.explanation : "",
+  } as Problem;
 }
 
 export default async function Page({ params }: PageParams) {

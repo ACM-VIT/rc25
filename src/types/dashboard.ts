@@ -1,50 +1,50 @@
 export type TeamMember = {
-    id: string
-    name: string | null
-    score: number
-}
+    id: string;
+    name: string | null;
+    score: number;
+};
 
 export type TeamDetails = {
-    id: string
-    name: string
-    shortCode: string
-    score: number
-    members: TeamMember[]
-}
+    id: string;
+    name: string;
+    shortCode: string;
+    score: number;
+    members: TeamMember[];
+};
 
 export type LeaderboardTeam = {
-    id: string
-    name: string
-    score: number
-}
+    id: string;
+    name: string;
+    score: number;
+};
 
 export type RoundInfo = {
-    number: number
-    end: Date
-}
+    number: number;
+    end: Date;
+};
 
 export interface Question {
-  id: string;
-  slno: number;
-  questionName: string;
-  difficulty: string;
-  status: string;
+    id: string;
+    slno: number;
+    questionName: string;
+    difficulty: string;
+    status: string;
 }
 
 export type Questions = {
-    slno: number
-    id: string
-    questionName: string
-    difficulty: string
-    status: string
-    isHidden: boolean
-}
+    slno: number;
+    id: string;
+    questionName: string;
+    difficulty: string;
+    status: string;
+    isHidden: boolean;
+};
 
 export interface NewsItem {
-  id: string;
-  title: string;
-  content: string;
-  time: Date;
+    id: string;
+    title: string;
+    content: string;
+    time: Date;
 }
 
 export type DashboardProps = {
@@ -53,4 +53,4 @@ export type DashboardProps = {
     questions: Questions[]
     leaderboardShow: boolean
     news: NewsItem[];
-}
+};

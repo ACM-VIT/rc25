@@ -61,20 +61,20 @@ export default async function Page() {
     };
   });
 
-  const news = await prisma.news.findMany({
-    orderBy: { time: "desc" },
-    select: { id: true, title: true, content: true, time: true },
-  });
+    const news = await prisma.news.findMany({
+        orderBy: { time: "desc" },
+        select: { id: true, title: true, content: true, time: true },
+    });
 
-  const teamDetails: DashboardProps["teamDetails"] = {
-    id: "",
-    name: "",
-    shortCode: "",
-    score: 0,
-    members: [],
-  };
-  const leaderboard: DashboardProps["leaderboard"] = [];
-  const leaderboardShow = false;
+    const teamDetails: DashboardProps["teamDetails"] = {
+        id: "",
+        name: "",
+        shortCode: "",
+        score: 0,
+        members: [],
+    };
+    const leaderboard: DashboardProps["leaderboard"] = [];
+    const leaderboardShow = false;
 
   return (
     <Dashboard

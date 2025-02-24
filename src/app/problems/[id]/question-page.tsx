@@ -27,7 +27,7 @@ type ProblemWithSolution = Omit<ProblemPayload, "solution"> & {
 
 interface QuestionPageProps {
   problem: ProblemWithSolution & { solutionExplanation?: string };
-  session: { user: { id: string } };
+  session: { user: { id: string; name?: string } };
   questions: Array<{ id: string; slno: number }>;
   currentSlno: number;
   desc: React.ReactElement;
@@ -51,7 +51,6 @@ export default function QuestionPage({
     });
   }, [problem.id, session.user.id]);
 
-  // Subscribe to real-time submission updates.
   useEffect(() => {
     const subscribeToSubmission = (submissionId: string) => {
       return onSnapshot(doc(db, "submissions", submissionId), async (docSnapshot) => {
@@ -71,7 +70,11 @@ export default function QuestionPage({
         setSubmissions((prev) =>
           prev.map((submission) =>
             submission.id === submissionId
-              ? ({ ...results, user: submission.user } as SubmissionWithUser)
+              ? ({
+                  ...results,
+                  // Spread the existing submission.user to ensure the 'id' is preserved.
+                  user: { ...submission.user },
+                } as SubmissionWithUser)
               : submission
           )
         );
@@ -105,6 +108,7 @@ export default function QuestionPage({
         </div>
         <div className="w-[90%] h-[87vh] gap-1">
           <ResizablePanelGroup direction="horizontal" className="gap-1">
+            {/* Left Panels */}
             <ResizablePanel defaultSize={30} minSize={20} maxSize={70}>
               <div className="flex flex-col justify-evenly h-full">
                 <ResizablePanelGroup direction="vertical" className="gap-1">
@@ -124,7 +128,7 @@ export default function QuestionPage({
               </div>
             </ResizablePanel>
             <ResizableHandle />
-            {/* Right Resizable Section */}
+            {/* Right Panels */}
             <ResizablePanel defaultSize={50} minSize={30} maxSize={70}>
               <div className="flex flex-col justify-evenly h-full">
                 <ResizablePanelGroup direction="vertical" className="gap-1">
@@ -143,7 +147,14 @@ export default function QuestionPage({
                   <ResizablePanel defaultSize={30} minSize={30} maxSize={70}>
                     {showSolution ? (
                       <div className="rounded-lg flex flex-col h-full bg-black/50 border-2 border-weirdPurple hover:border-primary">
-                        <div className="w-full rounded-lg p-4 text-white h-full overflow-y-auto" style={{ borderRadius: "8px", backdropFilter: "blur(2.5px)", WebkitBackdropFilter: "blur(2.5px)" }}>
+                        <div
+                          className="w-full rounded-lg p-4 text-white h-full overflow-y-auto"
+                          style={{
+                            borderRadius: "8px",
+                            backdropFilter: "blur(2.5px)",
+                            WebkitBackdropFilter: "blur(2.5px)",
+                          }}
+                        >
                           <h2 className="text-xl font-bold mb-2">Solution Explanation</h2>
                           <p>{problem.solutionExplanation || "No explanation provided."}</p>
                         </div>
@@ -153,6 +164,7 @@ export default function QuestionPage({
                         isPending={isPending}
                         setSubmissions={setSubmissions}
                         submissions={submissions}
+                        currentUserId={session.user.id}
                       />
                     )}
                   </ResizablePanel>

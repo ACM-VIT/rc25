@@ -9,11 +9,13 @@ interface SubmissionSectionProps {
   isPending: boolean;
   submissions: SubmissionWithUser[];
   setSubmissions: React.Dispatch<React.SetStateAction<SubmissionWithUser[]>>;
+  currentUserId: string; // new prop to identify the current user
 }
 
 export type SubmissionWithUser = Prisma.SubmissionGetPayload<{
-  include: { user: { select: { name: true } } };
+  include: { user: { select: { id: true; name: true } } };
 }>;
+
 
 const noSubmissionMessages = [
   "Ain't nobody dropped a thing yet. Either folks are slacking or they got cold feet.",
@@ -32,13 +34,21 @@ const getRandomMessage = () => {
 const SubmissionSection: React.FC<SubmissionSectionProps> = ({
   isPending,
   submissions,
+  currentUserId,
 }) => {
   const [randomMessage, setRandomMessage] = useState<string>("");
+  const [filteredSubmissions, setFilteredSubmissions] = useState<SubmissionWithUser[]>([]);
 
   useEffect(() => {
-    submissions.sort((a, b) => (a.updatedAt > b.updatedAt ? -1 : 1));
+    // Filter submissions so that only those created by the current user are considered.
+    const userSubmissions = submissions.filter(
+      (s) => s.user?.id === currentUserId
+    );
+    // Sort submissions by updatedAt in descending order.
+    userSubmissions.sort((a, b) => (a.updatedAt > b.updatedAt ? -1 : 1));
+    setFilteredSubmissions(userSubmissions);
     setRandomMessage(getRandomMessage());
-  }, [submissions]);
+  }, [submissions, currentUserId]);
 
   const renderSubmission = (
     submission: SubmissionWithUser | null,
@@ -70,7 +80,7 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
       >
         <div className="flex flex-col items-start space-x-2">
           <span className="font-bold">
-            {submission.user?.name || "Unknown User"}
+            {submission.user?.name || "You"}
           </span>
         </div>
         <div className="flex flex-col items-center justify-between gap-1 space-x-2">
@@ -113,15 +123,14 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
             WebkitBackdropFilter: "blur(2.5px)",
           }}
         >
-          {submissions.length === 0 ? (
+          {filteredSubmissions.length === 0 ? (
             <div className="w-full flex items-center justify-center border-[#EB5757] border-1 py-2 rounded-md">
               {randomMessage}
             </div>
-          ) : submissions.length === 1 && !submissions[0].evaluated ? (
+          ) : filteredSubmissions.length === 1 && !filteredSubmissions[0].evaluated ? (
             <div className="w-full h-full border-2 border-[#EB5757] px-4 py-2 rounded-md">
               <p className="text-[#F8CC22] font-outfit text-center">
-                The first record is now under scrutiny. The Force will reveal its
-                merit.
+                The first record is now under scrutiny. The Force will reveal its merit.
               </p>
               <div className="h-full flex items-center justify-center">
                 <Lottie
@@ -134,16 +143,16 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
             </div>
           ) : (
             <div className="space-y-4 overflow-y-auto">
-              {submissions.map((submission, index) => (
+              {filteredSubmissions.map((submission, index) => (
                 <div key={submission.id}>
                   {renderSubmission(
                     submission,
                     index ===
-                      submissions.findIndex(
+                      filteredSubmissions.findIndex(
                         (s) =>
                           s.testcasespassed.filter(Boolean).length ===
                           Math.max(
-                            ...submissions.map((sub) =>
+                            ...filteredSubmissions.map((sub) =>
                               sub.testcasespassed.filter(Boolean).length
                             )
                           )

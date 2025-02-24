@@ -48,10 +48,9 @@ export interface NewsItem {
 }
 
 export type DashboardProps = {
-    teamDetails: TeamDetails;
-    leaderboard: LeaderboardTeam[];
-    questions: Questions[];
-    // roundInfo: RoundInfo
-    leaderboardShow: boolean;
+    teamDetails: TeamDetails
+    leaderboard: LeaderboardTeam[]
+    questions: Questions[]
+    leaderboardShow: boolean
     news: NewsItem[];
 };

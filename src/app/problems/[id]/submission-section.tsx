@@ -1,5 +1,6 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import type React from "react";
+import { useState, useEffect } from "react";
 import type { Prisma } from "@prisma/client";
 import Lottie from "lottie-react";
 import animationData from "../../../../public/loading.json";
@@ -9,13 +10,12 @@ interface SubmissionSectionProps {
   isPending: boolean;
   submissions: SubmissionWithUser[];
   setSubmissions: React.Dispatch<React.SetStateAction<SubmissionWithUser[]>>;
-  currentUserId: string; // new prop to identify the current user
+  currentUserId: string;
 }
 
 export type SubmissionWithUser = Prisma.SubmissionGetPayload<{
   include: { user: { select: { id: true; name: true } } };
 }>;
-
 
 const noSubmissionMessages = [
   "Ain't nobody dropped a thing yet. Either folks are slacking or they got cold feet.",
@@ -26,27 +26,25 @@ const noSubmissionMessages = [
 ];
 
 const getRandomMessage = () => {
-  return noSubmissionMessages[
-    Math.floor(Math.random() * noSubmissionMessages.length)
-  ];
+  return noSubmissionMessages[Math.floor(Math.random() * noSubmissionMessages.length)];
 };
 
 const SubmissionSection: React.FC<SubmissionSectionProps> = ({
   isPending,
   submissions,
+  setSubmissions,
   currentUserId,
 }) => {
   const [randomMessage, setRandomMessage] = useState<string>("");
-  const [filteredSubmissions, setFilteredSubmissions] = useState<SubmissionWithUser[]>([]);
+
+  const userSubmissions = submissions.filter(
+    (submission) => submission.user.id === currentUserId
+  );
 
   useEffect(() => {
-    const userSubmissions = submissions.filter(
-      (s) => s.user?.id === currentUserId
-    );
     userSubmissions.sort((a, b) => (a.updatedAt > b.updatedAt ? -1 : 1));
-    setFilteredSubmissions(userSubmissions);
     setRandomMessage(getRandomMessage());
-  }, [submissions, currentUserId]);
+  }, [userSubmissions]);
 
   const renderSubmission = (
     submission: SubmissionWithUser | null,
@@ -77,9 +75,7 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
         }}
       >
         <div className="flex flex-col items-start space-x-2">
-          <span className="font-bold">
-            {submission.user?.name || "You"}
-          </span>
+          <span className="font-bold">{submission.user.name}</span>
         </div>
         <div className="flex flex-col items-center justify-between gap-1 space-x-2">
           {submission.evaluationStatus === "ACCEPTED" && isBest && (
@@ -121,11 +117,11 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
             WebkitBackdropFilter: "blur(2.5px)",
           }}
         >
-          {filteredSubmissions.length === 0 ? (
+          {userSubmissions.length === 0 ? (
             <div className="w-full flex items-center justify-center border-[#EB5757] border-1 py-2 rounded-md">
               {randomMessage}
             </div>
-          ) : filteredSubmissions.length === 1 && !filteredSubmissions[0].evaluated ? (
+          ) : userSubmissions.length === 1 && !userSubmissions[0].evaluated ? (
             <div className="w-full h-full border-2 border-[#EB5757] px-4 py-2 rounded-md">
               <p className="text-[#F8CC22] font-outfit text-center">
                 The first record is now under scrutiny. The Force will reveal its merit.
@@ -141,16 +137,16 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
             </div>
           ) : (
             <div className="space-y-4 overflow-y-auto">
-              {filteredSubmissions.map((submission, index) => (
+              {userSubmissions.map((submission, index) => (
                 <div key={submission.id}>
                   {renderSubmission(
                     submission,
                     index ===
-                      filteredSubmissions.findIndex(
+                      userSubmissions.findIndex(
                         (s) =>
                           s.testcasespassed.filter(Boolean).length ===
                           Math.max(
-                            ...filteredSubmissions.map((sub) =>
+                            ...userSubmissions.map((sub) =>
                               sub.testcasespassed.filter(Boolean).length
                             )
                           )

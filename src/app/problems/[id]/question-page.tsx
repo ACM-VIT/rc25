@@ -1,33 +1,37 @@
 "use client";
+import { Prisma } from "@prisma/client";
 import { SquareChevronLeft } from "lucide-react";
+// import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import CodeEditor, { StatusRibbonProps } from "./code-editor";
 import QuestionDisplay from "./question-display";
 import WebRunner from "./web-runner";
 import { useRouter } from "next/navigation";
-import SubmissionSection, { SubmissionWithUser } from "@/app/problems/[id]/submission-section";
+import SubmissionSection, {
+  SubmissionWithUser,
+} from "@/app/problems/[id]/submission-section";
 import React, { useEffect, useState, useTransition } from "react";
 import { getTeamSubmissions } from "@/app/problems/[id]/actions";
 import getSubmissionResults from "@/app/actions/get-submission-results";
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
+
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 import { doc, onSnapshot } from "@firebase/firestore";
 import { db } from "@/lib/firebase-service";
-import { Prisma } from "@prisma/client";
 
-type ProblemPayload = Prisma.ProblemGetPayload<{
-  include: {
-    Testcase: true;
-    round: true;
-    solution: true;
-  };
+type ProblemWithRelations = Prisma.ProblemGetPayload<{
+  include: { Testcase: true; round: true };
 }>;
 
-type ProblemWithSolution = Omit<ProblemPayload, "solution"> & {
-  solution?: { code: string; explanation: string };
-};
-
 interface QuestionPageProps {
-  problem: ProblemWithSolution & { solutionExplanation?: string };
-  session: { user: { id: string; name?: string } };
+  problem: ProblemWithRelations;
+  session: {
+    user: {
+      id: string;
+    };
+  };
   questions: Array<{ id: string; slno: number }>;
   currentSlno: number;
   desc: React.ReactElement;
@@ -36,9 +40,12 @@ interface QuestionPageProps {
 export default function QuestionPage({
   problem,
   session,
+  // questions,
+  // currentSlno,
   desc,
 }: QuestionPageProps) {
   const router = useRouter();
+  // const currentIndex = questions.findIndex((q) => q.slno === currentSlno);
   const [isPending, startTransition] = useTransition();
   const [submissions, setSubmissions] = useState<SubmissionWithUser[]>([]);
   const [statusRibbon, setStatusRibbon] = useState<StatusRibbonProps>(null);
@@ -51,11 +58,12 @@ export default function QuestionPage({
     });
   }, [problem.id, session.user.id]);
 
+  // Realtime subscription for unevaluated submissions
   useEffect(() => {
     const subscribeToSubmission = (submissionId: string) => {
       return onSnapshot(doc(db, "submissions", submissionId), async (docSnapshot) => {
         if (!docSnapshot.data()?.status) return;
-        const results = (await getSubmissionResults(submissionId)) as Omit<SubmissionWithUser, "user">;
+        const results = await getSubmissionResults(submissionId);
         const passed = results.testcasespassed.filter((r) => r === true).length;
         if (results.evaluationStatus === "ACCEPTED")
           setStatusRibbon({
@@ -64,25 +72,32 @@ export default function QuestionPage({
             total: results.testcasespassed.length,
           });
         else if (results.evaluationStatus === "COMPILE_ERROR")
-          setStatusRibbon({ type: "error", message: "Compile Error" });
+          setStatusRibbon({
+            type: "error",
+            message: "Compile Error",
+          });
         else if (results.evaluationStatus === "RUNTIME_ERROR")
-          setStatusRibbon({ type: "error", message: "Runtime Error" });
+          setStatusRibbon({
+            type: "error",
+            message: "Runtime Error",
+          });
+
+        // Merge the existing user data into the updated submission data
         setSubmissions((prev) =>
           prev.map((submission) =>
             submission.id === submissionId
-              ? ({
-                  ...results,
-                  user: { ...submission.user },
-                } as SubmissionWithUser)
+              ? { ...results, user: submission.user }
               : submission
           )
         );
       });
     };
 
-    const unsubscribers = submissions.map((submission) => subscribeToSubmission(submission.id));
+    const unsub = submissions
+      .filter((submission) => !submission.evaluated)
+      .map((submission) => subscribeToSubmission(submission.id));
     return () => {
-      unsubscribers.forEach((unsub) => unsub());
+      unsub.forEach((u) => u());
     };
   }, [problem.id, session.user.id, submissions]);
 
@@ -95,17 +110,18 @@ export default function QuestionPage({
       }}
     >
       <div className="rounded-[10px] flex flex-col items-center gap-2 w-full">
-        <div className="relative w-full p-4">
+        <div className="relative w-full p-4 ">
           <button className="absolute top-3 left-3" onClick={() => router.back()}>
             <SquareChevronLeft size={48} color="white" />
           </button>
           <h1 className="text-white text-4xl font-bold underline uppercase text-center w-full">
             {problem.title}
           </h1>
+          {/* Navigation buttons commented out */}
         </div>
         <div className="w-[90%] h-[87vh] gap-1">
           <ResizablePanelGroup direction="horizontal" className="gap-1">
-            {/* Left Panels */}
+            {/* Left Resizable Section */}
             <ResizablePanel defaultSize={30} minSize={20} maxSize={70}>
               <div className="flex flex-col justify-evenly h-full">
                 <ResizablePanelGroup direction="vertical" className="gap-1">
@@ -124,8 +140,11 @@ export default function QuestionPage({
                 </ResizablePanelGroup>
               </div>
             </ResizablePanel>
+
+            {/* Resizable Handle */}
             <ResizableHandle />
-            {/* Right Panels */}
+
+            {/* Right Resizable Section */}
             <ResizablePanel defaultSize={50} minSize={30} maxSize={70}>
               <div className="flex flex-col justify-evenly h-full">
                 <ResizablePanelGroup direction="vertical" className="gap-1">
@@ -136,35 +155,16 @@ export default function QuestionPage({
                       setStatusRibbon={setStatusRibbon}
                       setSubmissions={setSubmissions}
                       session={session}
-                      solutionCode={problem.solution?.code || ""}
-                      showSolution={showSolution}
                     />
                   </ResizablePanel>
                   <ResizableHandle />
                   <ResizablePanel defaultSize={30} minSize={30} maxSize={70}>
-                    {showSolution ? (
-                      <div className="rounded-lg flex flex-col h-full bg-black/50 border-2 border-weirdPurple hover:border-primary">
-                        <div
-                          className="w-full rounded-lg p-4 text-white h-full overflow-y-auto"
-                          style={{
-                            borderRadius: "8px",
-                            backdropFilter: "blur(2.5px)",
-                            WebkitBackdropFilter: "blur(2.5px)",
-                            whiteSpace: "pre-wrap",
-                          }}
-                        >
-                          <h2 className="text-xl font-bold mb-2">Solution Explanation</h2>
-                          <p>{problem.solutionExplanation || "No explanation provided."}</p>
-                        </div>
-                      </div>
-                    ) : (
-                      <SubmissionSection
-                        isPending={isPending}
-                        setSubmissions={setSubmissions}
-                        submissions={submissions}
-                        currentUserId={session.user.id}
-                      />
-                    )}
+                    <SubmissionSection
+                      isPending={isPending}
+                      setSubmissions={setSubmissions}
+                      submissions={submissions}
+                      currentUserId={session.user.id}
+                    />
                   </ResizablePanel>
                 </ResizablePanelGroup>
               </div>

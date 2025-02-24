@@ -40,11 +40,9 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
   const [filteredSubmissions, setFilteredSubmissions] = useState<SubmissionWithUser[]>([]);
 
   useEffect(() => {
-    // Filter submissions so that only those created by the current user are considered.
     const userSubmissions = submissions.filter(
       (s) => s.user?.id === currentUserId
     );
-    // Sort submissions by updatedAt in descending order.
     userSubmissions.sort((a, b) => (a.updatedAt > b.updatedAt ? -1 : 1));
     setFilteredSubmissions(userSubmissions);
     setRandomMessage(getRandomMessage());

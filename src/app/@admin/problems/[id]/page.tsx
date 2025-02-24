@@ -3,7 +3,7 @@ import { prisma } from "@/utils/prisma";
 import { notFound } from "next/navigation";
 import type { Problem as PrismaBaseProblem } from '@prisma/client';
 import SwitchAdminProblemModeButton from '@/components/switch-admin-problem-mode';
-import SolutionEditor from "./SolutionEditor";
+import SolutionEditorModal from "./SolutionEditorModal";
 
 interface Problem extends PrismaBaseProblem {
   Testcase: TestCase[];
@@ -53,7 +53,7 @@ export default async function Page({ params }: PageParams) {
     <>
       <ViewProblem problem={problem} />
       <SwitchAdminProblemModeButton problemId={problem.id} />
-      <SolutionEditor
+      <SolutionEditorModal
         problemId={problem.id}
         initialCode={problem.solution?.code || ""}
         initialExplanation={problem.solution?.explanation || ""}

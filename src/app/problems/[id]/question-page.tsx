@@ -72,7 +72,6 @@ export default function QuestionPage({
             submission.id === submissionId
               ? ({
                   ...results,
-                  // Spread the existing submission.user to ensure the 'id' is preserved.
                   user: { ...submission.user },
                 } as SubmissionWithUser)
               : submission
@@ -153,10 +152,13 @@ export default function QuestionPage({
                             borderRadius: "8px",
                             backdropFilter: "blur(2.5px)",
                             WebkitBackdropFilter: "blur(2.5px)",
+                            whiteSpace: "pre-wrap",
                           }}
                         >
                           <h2 className="text-xl font-bold mb-2">Solution Explanation</h2>
-                          <p>{problem.solutionExplanation || "No explanation provided."}</p>
+                          <p>
+                            {problem.solutionExplanation || "No explanation provided."}
+                          </p>
                         </div>
                       </div>
                     ) : (

@@ -13,8 +13,9 @@ const LANGUAGE_STORAGE_KEY = "preferred-language" as const;
 const CODE_STORAGE_KEY = "code-snippets" as const;
 
 type SubmissionWithUser = Prisma.SubmissionGetPayload<{
-  include: { user: { select: { name: true } } };
+  include: { user: { select: { id: true; name: true } } };
 }>;
+
 
 interface Problem {
   id: string;
@@ -150,8 +151,8 @@ export default function CodeEditor({
         setStatusRibbon({ type: "submitted" });
         const submissionWithUser: SubmissionWithUser = {
           ...result.submission,
-          user: { name: session.user.name ?? null },
-        };
+          user: { id: session.user.id, name: session.user.name ?? null },
+        };        
         setSubmissions((prev) => [...prev, submissionWithUser]);
       } else {
         setError(result.error || "Submission failed");

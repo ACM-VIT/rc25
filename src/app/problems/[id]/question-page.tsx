@@ -153,6 +153,7 @@ export default function QuestionPage({
                         isPending={isPending}
                         setSubmissions={setSubmissions}
                         submissions={submissions}
+                        currentUserName={session.user.name || "You"}
                       />
                     )}
                   </ResizablePanel>

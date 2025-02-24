@@ -9,7 +9,6 @@ interface SubmissionSectionProps {
   isPending: boolean;
   submissions: SubmissionWithUser[];
   setSubmissions: React.Dispatch<React.SetStateAction<SubmissionWithUser[]>>;
-  currentUserName: string;
 }
 
 export type SubmissionWithUser = Prisma.SubmissionGetPayload<{
@@ -33,25 +32,13 @@ const getRandomMessage = () => {
 const SubmissionSection: React.FC<SubmissionSectionProps> = ({
   isPending,
   submissions,
-  setSubmissions,
-  currentUserName,
 }) => {
   const [randomMessage, setRandomMessage] = useState<string>("");
 
-  const mySubmissions = submissions.filter(
-    (submission) => submission.user?.name === currentUserName
-  );
-
   useEffect(() => {
-    const sortedSubmissions = [...mySubmissions].sort((a, b) =>
-      new Date(a.updatedAt) > new Date(b.updatedAt) ? -1 : 1
-    );
-
-    if (JSON.stringify(sortedSubmissions) !== JSON.stringify(mySubmissions)) {
-      setSubmissions(sortedSubmissions);
-    }
+    submissions.sort((a, b) => (a.updatedAt > b.updatedAt ? -1 : 1));
     setRandomMessage(getRandomMessage());
-  }, [mySubmissions, setSubmissions]);
+  }, [submissions]);
 
   const renderSubmission = (
     submission: SubmissionWithUser | null,
@@ -83,7 +70,7 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
       >
         <div className="flex flex-col items-start space-x-2">
           <span className="font-bold">
-            {submission.user?.name || "You"}
+            {submission.user?.name || "Unknown User"}
           </span>
         </div>
         <div className="flex flex-col items-center justify-between gap-1 space-x-2">
@@ -126,14 +113,15 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
             WebkitBackdropFilter: "blur(2.5px)",
           }}
         >
-          {mySubmissions.length === 0 ? (
+          {submissions.length === 0 ? (
             <div className="w-full flex items-center justify-center border-[#EB5757] border-1 py-2 rounded-md">
               {randomMessage}
             </div>
-          ) : mySubmissions.length === 1 && !mySubmissions[0].evaluated ? (
+          ) : submissions.length === 1 && !submissions[0].evaluated ? (
             <div className="w-full h-full border-2 border-[#EB5757] px-4 py-2 rounded-md">
               <p className="text-[#F8CC22] font-outfit text-center">
-                The first record is now under scrutiny. The Force will reveal its merit.
+                The first record is now under scrutiny. The Force will reveal its
+                merit.
               </p>
               <div className="h-full flex items-center justify-center">
                 <Lottie
@@ -146,16 +134,16 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
             </div>
           ) : (
             <div className="space-y-4 overflow-y-auto">
-              {mySubmissions.map((submission, index) => (
+              {submissions.map((submission, index) => (
                 <div key={submission.id}>
                   {renderSubmission(
                     submission,
                     index ===
-                      mySubmissions.findIndex(
+                      submissions.findIndex(
                         (s) =>
                           s.testcasespassed.filter(Boolean).length ===
                           Math.max(
-                            ...mySubmissions.map((sub) =>
+                            ...submissions.map((sub) =>
                               sub.testcasespassed.filter(Boolean).length
                             )
                           )

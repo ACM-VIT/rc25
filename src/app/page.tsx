@@ -5,30 +5,18 @@ import type { DashboardProps } from "@/types/dashboard";
 import { auth } from "./(auth)/auth";
 
 export async function generateMetadata(): Promise<Metadata> {
-  return {
-    title: "Reverse Coding | ACM-VIT",
-    description: "Join Reverse Coding competition",
-    openGraph: {
+    return {
       title: "Reverse Coding | ACM-VIT",
-      description: "Join ACM-VIT's premier coding competition",
-      type: "website",
-    },
-    icons: { icon: "/favicon.ico" },
-  };
-}
+      description: "Join Reverse Coding competition",
+      openGraph: {
+        title: "Reverse Coding | ACM-VIT",
+        description: "Join ACM-VIT's premier coding competition",
+        type: "website",
+      },
+      icons: { icon: "/favicon.ico" },
+    };
+  }
 
-interface SubmissionType {
-  testcasespassed: boolean[];
-  createdAt: Date;
-  problemId: string;
-}
-
-interface ProblemType {
-  id: string;
-  title: string;
-  difficulty: string;
-  isHidden: boolean;
-}
 
 export default async function Page() {
   const session = await auth();
@@ -36,39 +24,29 @@ export default async function Page() {
     return <div>Please sign in to continue</div>;
   }
 
-  const problemsPromise = prisma.problem.findMany({
+  const roundInfo = await prisma.round.findFirst({
+    where: { start: { lte: new Date() }, end: { gte: new Date() } },
+    select: { number: true, end: true, id: true },
+  });
+  if (!roundInfo) {
+    return <div>No active round found</div>;
+  }
+
+  const problems = await prisma.problem.findMany({
+    where: { roundId: roundInfo.id },
     orderBy: { id: "asc" },
-    select: {
-      id: true,
-      title: true,
-      difficulty: true,
-      isHidden: true,
+    include: {
+      submissions: { select: { testcasespassed: true, createdAt: true } },
     },
-  }) as Promise<ProblemType[]>;
+  });
 
-  const problems = await problemsPromise;
-  const problemIds = problems.map((p) => p.id);
-  
-  const submissionsPromise = prisma.submission.findMany({
-    where: {
-      user: { email: session.user.email },
-      problemId: { in: problemIds },
-    },
-    select: {
-      problemId: true,
-      testcasespassed: true,
-      createdAt: true,
-    },
-  }) as Promise<SubmissionType[]>;
-  
-  const submissions = await submissionsPromise;
-
+  interface SubmissionType {
+    testcasespassed: boolean[];
+    createdAt: Date;
+  }
   const questions = problems.map((problem, index) => {
-    const problemSubs = submissions.filter(
-      (sub) => sub.problemId === problem.id
-    );
-    const bestSubmission = problemSubs.reduce(
-      (best: SubmissionType | null, current: SubmissionType) => {
+    const bestSubmission = problem.submissions.reduce(
+      (best, current) => {
         const currentPassed = current.testcasespassed.filter(Boolean).length;
         const bestPassed = best ? best.testcasespassed.filter(Boolean).length : -1;
         return currentPassed > bestPassed ? current : best;
@@ -79,7 +57,6 @@ export default async function Page() {
     const passCount = passedArray.filter(Boolean).length;
     const total = passedArray.length;
     const status = total > 0 ? `${passCount}/${total}` : "Not Attempted";
-
     return {
       slno: index + 1,
       id: problem.id,
@@ -90,7 +67,6 @@ export default async function Page() {
     };
   });
 
-  // Get news (if needed by the dashboard).
   const news = await prisma.news.findMany({
     orderBy: { time: "desc" },
     select: { id: true, title: true, content: true, time: true },

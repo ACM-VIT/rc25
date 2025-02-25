@@ -67,7 +67,7 @@ export default function QuestionDisplay({
             <div className="p-2 border-t border-purple-700 bg-[#121212] rounded-lg">
               <p className="text-[#A2A2A2] text-xs md:text-[60%] xl:text-xs">
                 Use the I/O Runner below to experiment with inputs and uncover
-                the logic behind the expected output. Once you've reverse-engineered the solution, write your code in the embedded editor, submit it, and view the results in the submissions pane.
+                the logic behind the expected output. Once you have reverse-engineered the solution, write your code in the embedded editor, submit it, and view the results in the submissions pane.
               </p>
             </div>
           )}

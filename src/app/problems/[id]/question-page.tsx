@@ -1,7 +1,6 @@
 "use client";
 import { Prisma } from "@prisma/client";
 import { SquareChevronLeft } from "lucide-react";
-// import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import CodeEditor, { StatusRibbonProps } from "./code-editor";
 import QuestionDisplay from "./question-display";
 import WebRunner from "./web-runner";
@@ -10,9 +9,8 @@ import SubmissionSection, {
   SubmissionWithUser,
 } from "@/app/problems/[id]/submission-section";
 import React, { useEffect, useState, useTransition } from "react";
-import { getTeamSubmissions } from "@/app/problems/[id]/actions";
+import { getUserSubmissions } from "@/app/problems/[id]/actions";
 import getSubmissionResults from "@/app/actions/get-submission-results";
-
 import {
   ResizableHandle,
   ResizablePanel,
@@ -21,7 +19,7 @@ import {
 import { doc, onSnapshot } from "@firebase/firestore";
 import { db } from "@/lib/firebase-service";
 
-// Update type to include 'solution'
+// Updated type to include 'solution'
 type ProblemWithRelations = Prisma.ProblemGetPayload<{
   include: { Testcase: true; round: true; solution: true };
 }>;
@@ -42,24 +40,25 @@ interface QuestionPageProps {
 export default function QuestionPage({
   problem,
   session,
-  // questions,
-  // currentSlno,
+  questions,
+  currentSlno,
   desc,
 }: QuestionPageProps) {
   const router = useRouter();
-  // const currentIndex = questions.findIndex((q) => q.slno === currentSlno);
   const [isPending, startTransition] = useTransition();
   const [submissions, setSubmissions] = useState<SubmissionWithUser[]>([]);
   const [statusRibbon, setStatusRibbon] = useState<StatusRibbonProps>(null);
   const [showSolution, setShowSolution] = useState(false);
 
+  // Fetch the current user's submissions for this problem.
   useEffect(() => {
     startTransition(async () => {
-      const data = await getTeamSubmissions(session.user.id, problem.id);
+      const data = await getUserSubmissions(session.user.id, problem.id);
       setSubmissions(data);
     });
   }, [problem.id, session.user.id]);
 
+  // Subscribe to real-time updates for pending submissions.
   useEffect(() => {
     const subscribeToSubmission = (submissionId: string) => {
       return onSnapshot(
@@ -142,10 +141,7 @@ export default function QuestionPage({
                 </ResizablePanelGroup>
               </div>
             </ResizablePanel>
-
-            {/* Resizable Handle */}
             <ResizableHandle />
-
             {/* Right Resizable Section */}
             <ResizablePanel defaultSize={50} minSize={30} maxSize={70}>
               <div className="flex flex-col justify-evenly h-full">
@@ -170,7 +166,7 @@ export default function QuestionPage({
                           borderRadius: "8px",
                           backdropFilter: "blur(2.5px)",
                           WebkitBackdropFilter: "blur(2.5px)",
-                          whiteSpace: "pre-wrap", // Preserve newlines and formatting
+                          whiteSpace: "pre-wrap",
                         }}
                       >
                         <div
@@ -190,7 +186,6 @@ export default function QuestionPage({
                         isPending={isPending}
                         setSubmissions={setSubmissions}
                         submissions={submissions}
-                        currentUserId={session.user.id}
                       />
                     )}
                   </ResizablePanel>

@@ -80,7 +80,6 @@ async function getProblem(id: string) {
       solution: true,
     },
   });
-
   if (!problem) notFound();
   return problem;
 }
@@ -127,20 +126,12 @@ export default async function Page({ params }: PageParams) {
   const currentQuestion = questions.find((q) => q.id === resolvedParams.id);
   const currentSlno = currentQuestion?.slno ?? 1;
 
-  if (
-    !problem ||
-    ((problem.round.start > new Date() || problem.round.end < new Date()) &&
-      user?.Team?.id !== process.env.ADMIN_TEAM_ID) ||
-    (problem.isHidden && user?.Team?.id !== process.env.ADMIN_TEAM_ID)
-  )
-    notFound();
-
   return (
     <div>
       <QuestionPage
         desc={<MDXRemote source={problem.description} />}
         problem={problem}
-        session={{ user: { id: session.user.id, name: user.name } }}
+        session={{ user: { id: session.user.id, name: user.name! } }}
         questions={questions}
         currentSlno={currentSlno}
       />

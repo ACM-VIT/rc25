@@ -16,9 +16,10 @@ type ProblemPayload = Prisma.ProblemGetPayload<{
 }>;
 
 export interface Problem extends Omit<ProblemPayload, "solution"> {
-  solution?: { code: string; explanation: string };
+  // Make solution required and match the expected shape or null.
+  solution: { id: string; code: string; problemId: string; explanation: string } | null;
   roundNumber: number;
-  solutionExplanation?: string;
+  solutionExplanation: string;
   slno?: number;
 }
 
@@ -34,11 +35,14 @@ async function getProblem(id: string): Promise<Problem> {
   if (!problemData) notFound();
 
   const round = problemData.round as Round;
-  const solution = problemData.solution as { code: string; explanation: string } | null;
+  const solution = problemData.solution as
+    | { id: string; code: string; problemId: string; explanation: string }
+    | null;
 
   return {
     ...problemData,
     roundNumber: round.number,
+    solution, // solution now has the full shape or is null
     solutionExplanation: solution ? solution.explanation : "",
   } as Problem;
 }

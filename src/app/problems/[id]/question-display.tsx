@@ -63,14 +63,11 @@ export default function QuestionDisplay({
             </div>
             {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </button>
-
           {isOpen && (
             <div className="p-2 border-t border-purple-700 bg-[#121212] rounded-lg">
               <p className="text-[#A2A2A2] text-xs md:text-[60%] xl:text-xs">
                 Use the I/O Runner below to experiment with inputs and uncover
-                the logic behind the expected output. Once you&apos;ve
-                reverse-engineered the solution, write your code in the embedded
-                editor, submit it, and view the results in the submissions pane.
+                the logic behind the expected output. Once you have reverse-engineered the solution, write your code in the embedded editor, submit it, and view the results in the submissions pane.
               </p>
             </div>
           )}
@@ -79,10 +76,7 @@ export default function QuestionDisplay({
         <div className="text-white m-4 font-medium max-h-fit">{desc}</div>
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
-
-      {/* Footer Sections Container */}
       <div className="flex flex-col w-full">
-        {/* Run On Your Device */}
         <div className="p-1 flex flex-col md:flex-row items-center justify-between border-t border-gray-700 w-full">
           <div className="text-white text-xs font-bold">Run On Your Device:</div>
           <div className="flex gap-2">

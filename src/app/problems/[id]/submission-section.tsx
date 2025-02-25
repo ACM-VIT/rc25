@@ -1,6 +1,5 @@
 "use client";
-import type React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import type { Prisma } from "@prisma/client";
 import Lottie from "lottie-react";
 import animationData from "../../../../public/loading.json";
@@ -10,7 +9,6 @@ interface SubmissionSectionProps {
   isPending: boolean;
   submissions: SubmissionWithUser[];
   setSubmissions: React.Dispatch<React.SetStateAction<SubmissionWithUser[]>>;
-  currentUserId: string;
 }
 
 export type SubmissionWithUser = Prisma.SubmissionGetPayload<{
@@ -25,25 +23,20 @@ const noSubmissionMessages = [
   "Noona submissions, peedunkee. Maybe da credits ain't flowin' yet.",
 ];
 
-const getRandomMessage = () => {
-  return noSubmissionMessages[Math.floor(Math.random() * noSubmissionMessages.length)];
-};
+const getRandomMessage = () =>
+  noSubmissionMessages[Math.floor(Math.random() * noSubmissionMessages.length)];
 
 const SubmissionSection: React.FC<SubmissionSectionProps> = ({
   isPending,
   submissions,
-  currentUserId,
 }) => {
   const [randomMessage, setRandomMessage] = useState<string>("");
 
-  const userSubmissions = submissions.filter(
-    (submission) => submission.user.id === currentUserId
-  );
-
   useEffect(() => {
-    userSubmissions.sort((a, b) => (a.updatedAt > b.updatedAt ? -1 : 1));
+    // Sort submissions by updatedAt descending and update the random message
+    submissions.sort((a, b) => (a.updatedAt > b.updatedAt ? -1 : 1));
     setRandomMessage(getRandomMessage());
-  }, [userSubmissions]);
+  }, [submissions]);
 
   const renderSubmission = (
     submission: SubmissionWithUser | null,
@@ -116,11 +109,11 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
             WebkitBackdropFilter: "blur(2.5px)",
           }}
         >
-          {userSubmissions.length === 0 ? (
+          {submissions.length === 0 ? (
             <div className="w-full flex items-center justify-center border-[#EB5757] border-1 py-2 rounded-md">
               {randomMessage}
             </div>
-          ) : userSubmissions.length === 1 && !userSubmissions[0].evaluated ? (
+          ) : submissions.length === 1 && !submissions[0].evaluated ? (
             <div className="w-full h-full border-2 border-[#EB5757] px-4 py-2 rounded-md">
               <p className="text-[#F8CC22] font-outfit text-center">
                 The first record is now under scrutiny. The Force will reveal its merit.
@@ -136,16 +129,16 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
             </div>
           ) : (
             <div className="space-y-4 overflow-y-auto">
-              {userSubmissions.map((submission, index) => (
+              {submissions.map((submission, index) => (
                 <div key={submission.id}>
                   {renderSubmission(
                     submission,
                     index ===
-                      userSubmissions.findIndex(
+                      submissions.findIndex(
                         (s) =>
                           s.testcasespassed.filter(Boolean).length ===
                           Math.max(
-                            ...userSubmissions.map((sub) =>
+                            ...submissions.map((sub) =>
                               sub.testcasespassed.filter(Boolean).length
                             )
                           )

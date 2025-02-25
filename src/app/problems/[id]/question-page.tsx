@@ -1,26 +1,39 @@
 "use client";
 import { Prisma } from "@prisma/client";
 import { SquareChevronLeft } from "lucide-react";
+// import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import CodeEditor, { StatusRibbonProps } from "./code-editor";
 import QuestionDisplay from "./question-display";
 import WebRunner from "./web-runner";
 import { useRouter } from "next/navigation";
-import SubmissionSection from "@/app/problems/[id]/submission-section";
+import SubmissionSection, {
+  SubmissionWithUser,
+} from "@/app/problems/[id]/submission-section";
 import React, { useEffect, useState, useTransition } from "react";
-import { getUserSubmissions } from "@/app/problems/[id]/actions";
+import { getTeamSubmissions } from "@/app/problems/[id]/actions";
+import getSubmissionResults from "@/app/actions/get-submission-results";
+
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { doc, onSnapshot } from "@firebase/firestore";
 import { db } from "@/lib/firebase-service";
 
+// Update type to include 'solution'
+type ProblemWithRelations = Prisma.ProblemGetPayload<{
+  include: { Testcase: true; round: true; solution: true };
+}>;
+
 interface QuestionPageProps {
-  problem: Prisma.ProblemGetPayload<{
-    include: { Testcase: true; round: true; solution: true };
-  }>;
-  session: { user: { id: string } };
+  problem: ProblemWithRelations;
+  session: {
+    user: {
+      id: string;
+      name: string;
+    };
+  };
   questions: Array<{ id: string; slno: number }>;
   currentSlno: number;
   desc: React.ReactElement;
@@ -29,40 +42,67 @@ interface QuestionPageProps {
 export default function QuestionPage({
   problem,
   session,
-  questions,
-  currentSlno,
+  // questions,
+  // currentSlno,
   desc,
 }: QuestionPageProps) {
   const router = useRouter();
+  // const currentIndex = questions.findIndex((q) => q.slno === currentSlno);
   const [isPending, startTransition] = useTransition();
-  const [submissions, setSubmissions] = useState<any[]>([]);
+  const [submissions, setSubmissions] = useState<SubmissionWithUser[]>([]);
   const [statusRibbon, setStatusRibbon] = useState<StatusRibbonProps>(null);
   const [showSolution, setShowSolution] = useState(false);
 
-  // Initial fetch: only get the current user's submissions
   useEffect(() => {
     startTransition(async () => {
-      const data = await getUserSubmissions(session.user.id, problem.id);
+      const data = await getTeamSubmissions(session.user.id, problem.id);
       setSubmissions(data);
     });
   }, [problem.id, session.user.id]);
 
-  // Real-time Firestore listener for the current user's submissions
   useEffect(() => {
-    const q = query(
-      collection(db, "submissions"),
-      where("problemId", "==", problem.id),
-      where("userId", "==", session.user.id)
-    );
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const updatedSubmissions = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setSubmissions(updatedSubmissions);
-    });
-    return () => unsubscribe();
-  }, [problem.id, session.user.id]);
+    const subscribeToSubmission = (submissionId: string) => {
+      return onSnapshot(
+        doc(db, "submissions", submissionId),
+        async (docSnapshot) => {
+          if (!docSnapshot.data()?.status) return;
+          const results = await getSubmissionResults(submissionId);
+          const passed = results.testcasespassed.filter((r) => r === true).length;
+          if (results.evaluationStatus === "ACCEPTED")
+            setStatusRibbon({
+              type: "evaluation",
+              passed,
+              total: results.testcasespassed.length,
+            });
+          else if (results.evaluationStatus === "COMPILE_ERROR")
+            setStatusRibbon({
+              type: "error",
+              message: "Compile Error",
+            });
+          else if (results.evaluationStatus === "RUNTIME_ERROR")
+            setStatusRibbon({
+              type: "error",
+              message: "Runtime Error",
+            });
+
+          setSubmissions((prev) =>
+            prev.map((submission) =>
+              submission.id === submissionId
+                ? { ...results, user: submission.user }
+                : submission
+            )
+          );
+        }
+      );
+    };
+
+    const unsub = submissions
+      .filter((submission) => !submission.evaluated)
+      .map((submission) => subscribeToSubmission(submission.id));
+    return () => {
+      unsub.forEach((u) => u());
+    };
+  }, [problem.id, session.user.id, submissions]);
 
   return (
     <div
@@ -102,7 +142,10 @@ export default function QuestionPage({
                 </ResizablePanelGroup>
               </div>
             </ResizablePanel>
+
+            {/* Resizable Handle */}
             <ResizableHandle />
+
             {/* Right Resizable Section */}
             <ResizablePanel defaultSize={50} minSize={30} maxSize={70}>
               <div className="flex flex-col justify-evenly h-full">
@@ -127,10 +170,12 @@ export default function QuestionPage({
                           borderRadius: "8px",
                           backdropFilter: "blur(2.5px)",
                           WebkitBackdropFilter: "blur(2.5px)",
-                          whiteSpace: "pre-wrap",
+                          whiteSpace: "pre-wrap", // Preserve newlines and formatting
                         }}
                       >
-                        <div className="w-full rounded-lg p-4 text-white h-full overflow-y-auto">
+                        <div
+                          className="w-full rounded-lg p-4 text-white h-full overflow-y-auto hide-scrollbar"
+                        >
                           <h2 className="text-xl font-bold mb-2">
                             Solution Explanation
                           </h2>
@@ -143,8 +188,9 @@ export default function QuestionPage({
                     ) : (
                       <SubmissionSection
                         isPending={isPending}
-                        submissions={submissions}
                         setSubmissions={setSubmissions}
+                        submissions={submissions}
+                        currentUserId={session.user.id}
                       />
                     )}
                   </ResizablePanel>

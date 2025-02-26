@@ -16,7 +16,6 @@ type SubmissionWithUser = Prisma.SubmissionGetPayload<{
   include: { user: { select: { id: true; name: true } } };
 }>;
 
-
 interface Problem {
   id: string;
   title: string;
@@ -151,8 +150,8 @@ export default function CodeEditor({
         setStatusRibbon({ type: "submitted" });
         const submissionWithUser: SubmissionWithUser = {
           ...result.submission,
-          user: { id: session.user.id, name: session.user.name ?? null },
-        };        
+          user: { id: session.user.id, name: session.user.name! },
+        };
         setSubmissions((prev) => [...prev, submissionWithUser]);
       } else {
         setError(result.error || "Submission failed");

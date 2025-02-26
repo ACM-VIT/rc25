@@ -9,13 +9,11 @@ interface SubmissionSectionProps {
   isPending: boolean;
   submissions: SubmissionWithUser[];
   setSubmissions: React.Dispatch<React.SetStateAction<SubmissionWithUser[]>>;
-  currentUserId: string; // new prop to identify the current user
 }
 
 export type SubmissionWithUser = Prisma.SubmissionGetPayload<{
   include: { user: { select: { id: true; name: true } } };
 }>;
-
 
 const noSubmissionMessages = [
   "Ain't nobody dropped a thing yet. Either folks are slacking or they got cold feet.",
@@ -25,30 +23,20 @@ const noSubmissionMessages = [
   "Noona submissions, peedunkee. Maybe da credits ain't flowin' yet.",
 ];
 
-const getRandomMessage = () => {
-  return noSubmissionMessages[
-    Math.floor(Math.random() * noSubmissionMessages.length)
-  ];
-};
+const getRandomMessage = () =>
+  noSubmissionMessages[Math.floor(Math.random() * noSubmissionMessages.length)];
 
 const SubmissionSection: React.FC<SubmissionSectionProps> = ({
   isPending,
   submissions,
-  currentUserId,
 }) => {
   const [randomMessage, setRandomMessage] = useState<string>("");
-  const [filteredSubmissions, setFilteredSubmissions] = useState<SubmissionWithUser[]>([]);
 
   useEffect(() => {
-    // Filter submissions so that only those created by the current user are considered.
-    const userSubmissions = submissions.filter(
-      (s) => s.user?.id === currentUserId
-    );
-    // Sort submissions by updatedAt in descending order.
-    userSubmissions.sort((a, b) => (a.updatedAt > b.updatedAt ? -1 : 1));
-    setFilteredSubmissions(userSubmissions);
+    // Sort submissions by updatedAt descending and update the random message
+    submissions.sort((a, b) => (a.updatedAt > b.updatedAt ? -1 : 1));
     setRandomMessage(getRandomMessage());
-  }, [submissions, currentUserId]);
+  }, [submissions]);
 
   const renderSubmission = (
     submission: SubmissionWithUser | null,
@@ -79,9 +67,7 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
         }}
       >
         <div className="flex flex-col items-start space-x-2">
-          <span className="font-bold">
-            {submission.user?.name || "You"}
-          </span>
+          <span className="font-bold">{submission.user.name}</span>
         </div>
         <div className="flex flex-col items-center justify-between gap-1 space-x-2">
           {submission.evaluationStatus === "ACCEPTED" && isBest && (
@@ -123,11 +109,11 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
             WebkitBackdropFilter: "blur(2.5px)",
           }}
         >
-          {filteredSubmissions.length === 0 ? (
+          {submissions.length === 0 ? (
             <div className="w-full flex items-center justify-center border-[#EB5757] border-1 py-2 rounded-md">
               {randomMessage}
             </div>
-          ) : filteredSubmissions.length === 1 && !filteredSubmissions[0].evaluated ? (
+          ) : submissions.length === 1 && !submissions[0].evaluated ? (
             <div className="w-full h-full border-2 border-[#EB5757] px-4 py-2 rounded-md">
               <p className="text-[#F8CC22] font-outfit text-center">
                 The first record is now under scrutiny. The Force will reveal its merit.
@@ -143,16 +129,16 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
             </div>
           ) : (
             <div className="space-y-4 overflow-y-auto">
-              {filteredSubmissions.map((submission, index) => (
+              {submissions.map((submission, index) => (
                 <div key={submission.id}>
                   {renderSubmission(
                     submission,
                     index ===
-                      filteredSubmissions.findIndex(
+                      submissions.findIndex(
                         (s) =>
                           s.testcasespassed.filter(Boolean).length ===
                           Math.max(
-                            ...filteredSubmissions.map((sub) =>
+                            ...submissions.map((sub) =>
                               sub.testcasespassed.filter(Boolean).length
                             )
                           )

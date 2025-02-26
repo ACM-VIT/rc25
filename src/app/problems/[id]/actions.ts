@@ -46,3 +46,15 @@ export async function getTeamSubmissions(userId: string, problemId: string) {
     include: {user: true}
   });
 }
+
+export async function getUserSubmissions(userId: string, problemId: string) {
+  const prisma = new PrismaClient();
+  return prisma.submission.findMany({
+    where: {
+      userId: userId,
+      problemId: problemId,
+    },
+    orderBy: { createdAt: 'desc' },
+    include: { user: true },
+  });
+}

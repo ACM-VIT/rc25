@@ -101,6 +101,7 @@ export async function judgeSolution(
       source_code: encodedCode,
       stdin: encodedStdin,
       callback_url,
+      cpu_time_limit: "30"
     }),
   };
 

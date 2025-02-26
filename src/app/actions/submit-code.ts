@@ -102,13 +102,14 @@ export async function judgeSolution(
             stdin: encodedStdin,
             callback_url,
             cpu_time_limit: "15",
+            cpu_extra_time: "5",
+            wall_time_limit: "20",
         }),
     };
 
     try {
         const postResponse = await fetch(postUrl, postOptions);
         const postResult: SubmissionResult = await postResponse.json();
-
         if (!postResult.token) {
             return { success: false, error: "No submission token received" };
         }

@@ -67,16 +67,75 @@ const STATUS = {
 //   return importSection + cleanCode.trim();
 // }
 
+const DEFAULT_JUDGE0_BASE_URLS = [
+  "https://ce.judge0.com",
+  "https://extra-ce.judge0.com",
+];
+
+const JUDGE0_BASE_URLS = Array.from(
+  new Set(
+    [process.env.JUDGE0_BASE_URL?.replace(/\/$/, ""), ...DEFAULT_JUDGE0_BASE_URLS]
+      .filter(Boolean)
+      .map(String)
+  )
+);
+
+function createJudge0Headers(includeContentType = false): Record<string, string> {
+  const clientId = process.env.JUDGE0_CLIENT_ID;
+  const clientSecret = process.env.JUDGE0_CLIENT_SECRET;
+
+  if (!clientId) {
+    throw new Error("JUDGE0_CLIENT_ID is not defined in environment variables.");
+  }
+
+  if (!clientSecret) {
+    throw new Error("JUDGE0_CLIENT_SECRET is not defined in environment variables.");
+  }
+
+  const headers: Record<string, string> = {
+    Accept: "application/json",
+    "X-Judge0-Client-ID": clientId,
+    "X-Judge0-Client-Secret": clientSecret,
+  };
+
+  if (includeContentType) {
+    headers["Content-Type"] = "application/json";
+  }
+
+  return headers;
+}
+
+async function requestWithFallback(
+  path: string,
+  init: RequestInit
+): Promise<Response> {
+  let lastError: unknown;
+
+  for (const baseUrl of JUDGE0_BASE_URLS) {
+    try {
+      const response = await fetch(`${baseUrl}${path}`, init);
+
+      if (response.ok || response.status < 500) {
+        return response;
+      }
+
+      lastError = new Error(
+        `Judge0 request failed with status ${response.status} (${response.statusText})`
+      );
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  throw lastError ?? new Error("Unable to reach Judge0 endpoints");
+}
+
 export async function judgeSolution(
   code: string,
   language: SupportedLanguage,
   stdin: string,
   submissionId: string
 ) {
-  // Ensure that the required environment variables are set.
-  if (!process.env.SULU_KEY) {
-    throw new Error("SULU_KEY is not defined in environment variables.");
-  }
   if (!process.env.HOST) {
     throw new Error("HOST is not defined in environment variables.");
   }
@@ -85,17 +144,13 @@ export async function judgeSolution(
   const encodedCode = Buffer.from(code ?? "", "utf-8").toString("base64");
   const encodedStdin = Buffer.from(stdin ?? "", "utf-8").toString("base64");
 
-  const postUrl =
-    "https://judge0-ce.p.sulu.sh/submissions?base64_encoded=true&wait=false&fields=*";
+  const submissionsPath =
+    "/submissions?base64_encoded=true&wait=false&fields=*";
   const callback_url = `https://${process.env.HOST}/judge0/submissions/callback`;
 
   const postOptions = {
     method: "POST",
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${process.env.SULU_KEY}`,
-      "Content-Type": "application/json",
-    },
+    headers: createJudge0Headers(true),
     body: JSON.stringify({
       language_id: SUPPORTED_LANGUAGES[language].id,
       source_code: encodedCode,
@@ -105,7 +160,15 @@ export async function judgeSolution(
   };
 
   try {
-    const postResponse = await fetch(postUrl, postOptions);
+    const postResponse = await requestWithFallback(submissionsPath, postOptions);
+
+    if (!postResponse.ok) {
+      const errorPayload = await postResponse.text();
+      throw new Error(
+        `Judge0 submission failed with status ${postResponse.status}: ${errorPayload}`
+      );
+    }
+
     const postResult: SubmissionResult = await postResponse.json();
 
     if (!postResult.token) {
@@ -150,16 +213,13 @@ export async function checkSubmissionStatus(token: string) {
 export async function getSubmission(
   submissionId: string
 ): Promise<SubmissionResult> {
-  const url = `https://judge0-ce.p.sulu.sh/submissions/${submissionId}?base64_encoded=true&fields=*`;
+  const path = `/submissions/${submissionId}?base64_encoded=true&fields=*`;
   const options = {
     method: "GET",
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${process.env.SULU_KEY}`,
-    },
+    headers: createJudge0Headers(),
   };
   try {
-    const response = await fetch(url, options);
+    const response = await requestWithFallback(path, options);
     return await response.json();
   } catch (error) {
     return { status: { id: 0, description: "API Error" }, error };

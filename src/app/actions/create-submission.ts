@@ -1,6 +1,15 @@
 "use server";
 
-import {prisma} from "@/utils/prisma";
+import { db } from "@/db";
+import {
+    problems,
+    rounds,
+    submissions,
+    testcaseSubmissions,
+    testcases,
+    teams,
+    users
+} from "@/db/schema";
 import type {SupportedLanguage} from '@/utils/judge0-langs';
 import {judgeSolution} from "./submit-code";
 import {
@@ -12,6 +21,7 @@ import {
     goFunction,
     rustFunction
 } from "@/utils/funcconvert";
+import { eq } from "drizzle-orm";
 
 // Map language to template function
 const languageTemplates = {
@@ -69,43 +79,29 @@ export default async function createSubmission(data: {
     language: SupportedLanguage;
 }) {
     try {
-        // Get problem details first
-        const problem = await prisma.problem.findUnique({
-            relationLoadStrategy: 'join',
-            where: {
-                id: data.problemId,
-            },
-            // Removed scalar fields from include as they are selected by default
-            include: {
-                round: {
-                    select: {
-                        start: true,
-                        end: true,
-                        number: true,
-                    }
-                },
-                Testcase: {
-                    where: {
-                        isEdge: false
-                    }
-                },
-            },
-        });
+        const problemRows = await db
+            .select({ problem: problems, round: rounds })
+            .from(problems)
+            .leftJoin(rounds, eq(problems.roundId, rounds.id))
+            .where(eq(problems.id, data.problemId))
+            .limit(1);
 
-        if (!problem) {
+        const problem = problemRows[0]?.problem ?? null;
+        const round = problemRows[0]?.round ?? null;
+
+        if (!problem || !round) {
             throw new Error("Problem not found");
         }
 
-        const user = await prisma.user.findUnique({
-            relationLoadStrategy: 'join',
-            where:{
-                id: data.userId
-            },
-            include: {
-                Team: true
-            }
-        })
-        const userTeam = user?.Team
+        const userRows = await db
+            .select({ user: users, team: teams })
+            .from(users)
+            .leftJoin(teams, eq(users.teamId, teams.id))
+            .where(eq(users.id, data.userId))
+            .limit(1);
+
+        const user = userRows[0]?.user ?? null;
+        const userTeam = userRows[0]?.team ?? null;
 
         if (!userTeam) {
             throw new Error("User is not part of any team");
@@ -117,21 +113,19 @@ export default async function createSubmission(data: {
 
         if (userTeam.id !== process.env.ADMIN_TEAM_ID) {
             const currentTime = new Date();
-            if (currentTime < problem.round.start) {
+            if (currentTime < round.start) {
                 throw new Error("Round has not started yet");
             }
-            if (currentTime > problem.round.end) {
+            if (currentTime > round.end) {
                 throw new Error("Round has ended");
             }
         }
 
         // Get all testcases
-        const allTestcases = await prisma.testcase.findMany({
-            relationLoadStrategy: 'join',
-            where: {
-                problemId: data.problemId,
-            },
-        });
+        const allTestcases = await db
+            .select()
+            .from(testcases)
+            .where(eq(testcases.problemId, data.problemId));
 
         // Split into normal and edge cases
         const normalCases = allTestcases.filter((tc) => !tc.isEdge);
@@ -161,22 +155,34 @@ export default async function createSubmission(data: {
         // console.log(selectedTestcases);
 
         // Create submission record
-        const submission = await prisma.submission.create({
-            data: {
-                code: data.code,
-                problemId: data.problemId,
-                userId: data.userId,
-                testcasespassed: testcasespassed,
-                evaluated: false,
-                testcases: {
-                    create: selectedTestcases.map((tc, index) => ({
-                        testcase: {
-                            connect: {id: tc.id}
-                        },
-                        sequence: index
-                    })),
-                },
-            },
+        const [submission] = await db.transaction(async (tx) => {
+            const inserted = await tx
+                .insert(submissions)
+                .values({
+                    code: data.code,
+                    problemId: data.problemId,
+                    userId: data.userId,
+                    testcasespassed,
+                    evaluated: false,
+                })
+                .returning();
+
+            const created = inserted[0];
+            if (!created) {
+                throw new Error("Failed to create submission");
+            }
+
+            if (selectedTestcases.length) {
+                await tx.insert(testcaseSubmissions).values(
+                    selectedTestcases.map((tc, index) => ({
+                        testcaseId: tc.id,
+                        submissionId: created.id,
+                        sequence: index,
+                    }))
+                );
+            }
+
+            return [created];
         });
 
         // Combine selected inputs with newlines
@@ -216,18 +222,14 @@ export default async function createSubmission(data: {
             };
         }
 
-        await prisma.submission.update({
-            where: {
-                id: submission.id,
-            },
-            data: {
-                token: judgeResult.token,
-            },
-        });
+        await db
+            .update(submissions)
+            .set({ token: judgeResult.token })
+            .where(eq(submissions.id, submission.id));
 
         return {
             success: true,
-            submission: {...submission, user: {name: user.name}},
+            submission: {...submission, user: {name: user?.name ?? null}},
             token: judgeResult.token,
         };
     } catch (error: unknown) {

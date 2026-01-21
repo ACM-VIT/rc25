@@ -1,7 +1,9 @@
 import React from "react";
-import { PrismaClient } from "@prisma/client";
 import { notFound } from "next/navigation";
 import CheckIn from "@/components/check-in";
+import { db } from "@/db";
+import { teamRounds, teams, uniRegs, users } from "@/db/schema";
+import { eq, inArray } from "drizzle-orm";
 
 interface PageParams {
 	params: Promise<{
@@ -10,34 +12,38 @@ interface PageParams {
   }
 
 export default async function Page({ params }: PageParams) {
-	const prisma = new PrismaClient();
 	const param = await params;
-	const team = await prisma.team.findUnique({
-		relationLoadStrategy: 'join',
-		where: {
-			id: param.id,
-		},
-		include: {
-			members: true,
-			TeamRound: true,
-		},
-	});
+	const teamRows = await db
+		.select()
+		.from(teams)
+		.where(eq(teams.id, param.id))
+		.limit(1);
+	const team = teamRows[0];
 
 	if (!team) {
 		return notFound();
 	}
 
-	const uniregs = await prisma.uniReg.findMany({
-		relationLoadStrategy: 'join',
-		where: {
-			regNo: {
-				in: team.members
-					.filter((member): member is typeof team.members[number] => member.name !== null && member.name !== undefined)
-					.map((member) => member.name?.split(" ").pop() || ''),
-			},
-		},
-	});
-	await prisma.$disconnect();
+	const members = await db
+		.select()
+		.from(users)
+		.where(eq(users.teamId, team.id));
+	const teamRoundRows = await db
+		.select()
+		.from(teamRounds)
+		.where(eq(teamRounds.teamId, team.id));
 
-	return <CheckIn uniReg={uniregs} team={team} />;
+	const regNos = members
+		.filter((member) => member.name)
+		.map((member) => member.name?.split(" ").pop() || "")
+		.filter(Boolean);
+
+	const uniregs = regNos.length
+		? await db
+				.select()
+				.from(uniRegs)
+				.where(inArray(uniRegs.regNo, regNos))
+		: [];
+
+	return <CheckIn uniReg={uniregs} team={{ ...team, members, TeamRound: teamRoundRows }} />;
 }

@@ -1,12 +1,15 @@
 import RotatingLobby from "./rotating-lobby";
-import { prisma } from "@/utils/prisma";
+import { db } from "@/db";
+import { flags } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 async function getLeaderBoardShowBoolean(): Promise<boolean> {
-  const flag = await prisma.flags.findFirst({
-    where: { name: "SCOREBOARD_VISIBLE" },
-    select: { value: true },
-  });
-  return flag?.value ?? false;
+  const flagRows = await db
+    .select({ value: flags.value })
+    .from(flags)
+    .where(eq(flags.name, "SCOREBOARD_VISIBLE"))
+    .limit(1);
+  return flagRows[0]?.value ?? false;
 }
 
 export default async function RotatingLobbyWrapper() {

@@ -16,8 +16,49 @@ if (!creds) {
   throw new Error('GCP_CREDENTIALS not found');
 }
 
+function parseServiceAccount(raw: string) {
+  const candidates: string[] = [];
+  const trimmed = raw.trim();
+  candidates.push(raw, trimmed);
+
+  if (!trimmed.startsWith('{')) {
+    try {
+      const decoded = Buffer.from(trimmed, 'base64').toString('utf8');
+      if (decoded.trim().startsWith('{')) {
+        candidates.push(decoded);
+      }
+    } catch {
+      // ignore base64 decode errors
+    }
+  }
+
+  const escapePrivateKeyNewlines = (json: string) =>
+    json.replace(/"private_key"\s*:\s*"([\s\S]*?)"/, (_match, key) => {
+      const escaped = String(key).replace(/\r?\n/g, '\\n');
+      return `"private_key":"${escaped}"`;
+    });
+
+  let lastError: unknown;
+  for (const candidate of candidates) {
+    try {
+      return JSON.parse(candidate);
+    } catch (error) {
+      lastError = error;
+      try {
+        return JSON.parse(escapePrivateKeyNewlines(candidate));
+      } catch (innerError) {
+        lastError = innerError;
+      }
+    }
+  }
+
+  throw new Error(
+    `Failed to parse GCP_CREDENTIALS. Ensure it is valid JSON or base64-encoded JSON. Original error: ${(lastError as Error).message}`
+  );
+}
+
 const app = getApps().length === 0
-  ? initializeApp({ credential: cert(JSON.parse(creds)), ...firebaseConfig })
+  ? initializeApp({ credential: cert(parseServiceAccount(creds)), ...firebaseConfig })
   : getApps()[0];
 
 const db = getFirestore(app);

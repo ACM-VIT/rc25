@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import type { Round } from '@prisma/client';
+import type { Round } from "@/db/schema";
 import moment from 'moment-timezone';
 import { upsertRound, deleteRound } from '../../actions/round-actions';
 

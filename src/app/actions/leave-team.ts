@@ -1,12 +1,12 @@
 "use server";
 
-import { PrismaClient } from "@prisma/client";
 import { auth } from "@/app/(auth)/auth";
 import { revalidatePath } from "next/cache";
+import { db } from "@/db";
+import { teams, users } from "@/db/schema";
+import { eq, sql } from "drizzle-orm";
 
 export async function leaveTeam() {
-  const prisma = new PrismaClient();
-
   try {
     const session = await auth();
     if (!session?.user?.email) {
@@ -14,37 +14,35 @@ export async function leaveTeam() {
     }
 
     // Fetch the user and their team details
-    const user = await prisma.user.findUnique({
-      relationLoadStrategy: 'join',
-      where: { email: session.user.email },
-      include: {
-        Team: {
-          include: {
-            members: true,
-          },
-        },
-      },
-    });
+    const userRows = await db
+      .select({ id: users.id, teamId: users.teamId })
+      .from(users)
+      .where(eq(users.email, session.user.email))
+      .limit(1);
+    const user = userRows[0];
 
     if (!user?.teamId) {
       throw new Error("You are not part of any team.");
     }
 
+    const memberCountRows = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(users)
+      .where(eq(users.teamId, user.teamId));
+    const memberCount = Number(memberCountRows[0]?.count ?? 0);
+
     // Remove the user from the team by setting teamId to null
-    await prisma.user.update({
-      where: { email: session.user.email },
-      data: { teamId: null },
-    });
-    const team = user.Team;
+    await db
+      .update(users)
+      .set({ teamId: null })
+      .where(eq(users.email, session.user.email));
 
     revalidatePath("/" , "layout");
 
     // Check if the user is the only member in the team
-    if (team?.members?.length === 1) {
+    if (memberCount === 1) {
       // Delete the team since the user is the only member
-      await prisma.team.delete({
-        where: { id: user.teamId },
-      });
+      await db.delete(teams).where(eq(teams.id, user.teamId));
       return { success: true, message: "You were the only member. The team has been deleted." };
     }
 
@@ -52,7 +50,5 @@ export async function leaveTeam() {
   } catch (error) {
     console.error("Error leaving team:", error);
     return { success: false, message: "Failed to leave team." };
-  } finally {
-    await prisma.$disconnect();
   }
 }

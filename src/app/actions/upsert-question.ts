@@ -1,7 +1,9 @@
 "use server";
 
 import { Storage } from "@google-cloud/storage";
-import { prisma } from "@/utils/prisma";
+import { db } from "@/db";
+import { problems } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 const uploadToGCS = async (
   file: File | null,
@@ -81,17 +83,12 @@ export async function handleQuestionSubmit(
     };
 
     if (questionId) {
-      await prisma.problem.update({
-        where: { id: questionId },
-        data
-      });
+      await db.update(problems).set(data).where(eq(problems.id, questionId));
     } else {
-      await prisma.problem.create({ data });
+      await db.insert(problems).values(data);
     }
   } catch (error) {
     console.error("Error handling question:", error);
     throw error;
-  } finally {
-    await prisma.$disconnect();
   }
 }

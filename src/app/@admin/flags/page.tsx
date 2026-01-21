@@ -1,12 +1,13 @@
-import { prisma } from "@/utils/prisma";
+import { db } from "@/db";
+import { flags } from "@/db/schema";
 import FlagClient from "./FlagClient";
 
 async function getFlags() {
     try {
-        const flags = await prisma.flags.findMany();
-        return flags;
-    } finally {
-        await prisma.$disconnect();
+        return await db.select().from(flags);
+    } catch (error) {
+        console.error("Error fetching flags:", error);
+        return [];
     }
 }
 

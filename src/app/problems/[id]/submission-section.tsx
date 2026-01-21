@@ -1,7 +1,6 @@
 "use client";
 import type React from "react";
 import {useState, useEffect} from "react";
-import type {Prisma} from "@prisma/client";
 import Lottie from "lottie-react";
 import animationData from "../../../../public/loading.json";
 import {ScrollArea} from "@/components/ui/scroll-area";
@@ -12,9 +11,16 @@ interface SubmissionSectionProps {
     setSubmissions: React.Dispatch<React.SetStateAction<SubmissionWithUser[]>>;
 }
 
-export type SubmissionWithUser = Prisma.SubmissionGetPayload<{
-    include: { user: { select: { name: true } } };
-}>;
+export type SubmissionWithUser = {
+    id: string;
+    updatedAt: Date;
+    evaluated: boolean;
+    evaluationStatus: "ACCEPTED" | "RUNTIME_ERROR" | "COMPILE_ERROR" | null;
+    testcasespassed: boolean[];
+    user: {
+        name: string | null;
+    };
+};
 
 const noSubmissionMessages = [
     "Ain't nobody dropped a thing yet. Either folks are slacking or they got cold feet.",

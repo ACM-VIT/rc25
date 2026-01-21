@@ -2,58 +2,76 @@ import React from "react";
 import Image from "next/image";
 import dark from "../../../public/teamdash.png";
 import stormtrooper from "../../../public/stormtrooper.png";
-import { prisma } from "@/utils/prisma";
+import { db } from "@/db";
+import { problems, rounds, submissions, teams, users, type Team, type User } from "@/db/schema";
 import { notFound } from "next/navigation";
 import { auth } from "../(auth)/auth";
 import FloatingDock from "@/components/FloatingDock";
 import SignOut from "@/app/(auth)/authactions/signout";
+import { and, eq, gte, inArray, lte } from "drizzle-orm";
 
-async function getTeam(userId: string) {
+type TeamWithMembers = Team & { members: User[] };
+
+async function getTeam(userId: string): Promise<TeamWithMembers | null> {
     try {
-        const team = await prisma.team.findFirst({
-            where: {
-                members: {
-                    some: {
-                        id: userId,
-                    },
-                },
-            },
-            include: {
-                members: true,
-            },
-        });
-        return team;
-    } finally {
-        await prisma.$disconnect();
+        const userRows = await db
+            .select({ teamId: users.teamId })
+            .from(users)
+            .where(eq(users.id, userId))
+            .limit(1);
+
+        const teamId = userRows[0]?.teamId;
+        if (!teamId) return null;
+
+        const teamRows = await db
+            .select()
+            .from(teams)
+            .where(eq(teams.id, teamId))
+            .limit(1);
+        const team = teamRows[0];
+        if (!team) return null;
+
+        const members = await db
+            .select()
+            .from(users)
+            .where(eq(users.teamId, teamId));
+
+        return { ...team, members };
+    } catch (error) {
+        console.error("Error fetching team:", error);
+        return null;
     }
 }
 
 async function getQuestionsSolved(memberIds: string[]) {
     const now = new Date();
     // fetch the current round based on the current time
-    const currentRound = await prisma.round.findFirst({
-        where: {
-            start: { lte: now },
-            end: { gte: now },
-        },
-    });
+    const currentRoundRows = await db
+        .select()
+        .from(rounds)
+        .where(and(lte(rounds.start, now), gte(rounds.end, now)))
+        .limit(1);
 
+    const currentRound = currentRoundRows[0];
     if (!currentRound) return 0;
 
     // Get submissions for members in the current round using the problem's roundId
-    const submissions = await prisma.submission.findMany({
-        where: {
-            userId: { in: memberIds },
-            problem: { roundId: currentRound.id },
-        },
-        select: {
-            problemId: true,
-            testcasespassed: true,
-        },
-    });
+    const submissionRows = await db
+        .select({
+            problemId: submissions.problemId,
+            testcasespassed: submissions.testcasespassed,
+        })
+        .from(submissions)
+        .innerJoin(problems, eq(submissions.problemId, problems.id))
+        .where(
+            and(
+                inArray(submissions.userId, memberIds),
+                eq(problems.roundId, currentRound.id)
+            )
+        );
 
     // Filter submissions that have at least one test case passed
-    const solvedSubmissions = submissions.filter((sub) =>
+    const solvedSubmissions = submissionRows.filter((sub) =>
         sub.testcasespassed.some((passed) => passed === true)
     );
 

@@ -6,14 +6,19 @@ import {
     SUPPORTED_LANGUAGES,
     type SupportedLanguage,
 } from "@/utils/judge0-langs";
-import {Prisma} from "@prisma/client";
 
 const LANGUAGE_STORAGE_KEY = "preferred-language" as const;
 const CODE_STORAGE_KEY = "code-snippets" as const;
 
-type SubmissionWithUser = Prisma.SubmissionGetPayload<{
-    include: {user: {select: {name: true}}}
-}>
+type SubmissionWithUser = {
+    id: string;
+    createdAt: Date;
+    updatedAt: Date;
+    evaluated: boolean;
+    evaluationStatus: "ACCEPTED" | "RUNTIME_ERROR" | "COMPILE_ERROR" | null;
+    testcasespassed: boolean[];
+    user: { name: string | null };
+};
 
 interface Problem {
     id: string;

@@ -1,65 +1,66 @@
-import { prisma } from "@/utils/prisma";
+import { db } from "@/db";
+import { rounds, teamRounds, teams } from "@/db/schema";
 import TeamsClient from "./TeamsClient";
+import { asc, desc, eq } from "drizzle-orm";
 
 async function getTeams() {
     try {
-        const teams = await prisma.team.findMany({
-            include: {
-                TeamRound: {
-                    orderBy: {
-                        roundId: "desc",
-                    },
-                    take: 1,
-                    include: {
-                        round: {
-                            select: {
-                                id: true,
-                                number: true,
-                                start: true,
-                            },
-                        },
-                    },
-                },
-            },
-            orderBy: {
-                name: "asc",
-            },
-        });
+        const teamRows = await db.select().from(teams).orderBy(asc(teams.name));
 
-        return teams.map((team) => ({
-            id: team.id,
-            name: team.name,
-            points: team.score,
-            teamRound: team.TeamRound[0]
-                ? {
-                      id: team.TeamRound[0].id,
-                      teamId: team.TeamRound[0].teamId,
-                      roundId: team.TeamRound[0].roundId,
-                      round: {
-                          id: team.TeamRound[0].round.id,
-                          number: team.TeamRound[0].round.number,
-                          start: team.TeamRound[0].round.start.toISOString(),
-                      },
-                  }
-                : undefined,
-        }));
-    } finally {
-        await prisma.$disconnect();
+        const teamRoundRows = await db
+            .select({
+                id: teamRounds.id,
+                teamId: teamRounds.teamId,
+                roundId: teamRounds.roundId,
+                round: {
+                    id: rounds.id,
+                    number: rounds.number,
+                    start: rounds.start,
+                },
+            })
+            .from(teamRounds)
+            .innerJoin(rounds, eq(teamRounds.roundId, rounds.id))
+            .orderBy(desc(rounds.start));
+
+        const latestRoundByTeam = new Map<string, typeof teamRoundRows[0]>();
+        for (const row of teamRoundRows) {
+            if (!latestRoundByTeam.has(row.teamId)) {
+                latestRoundByTeam.set(row.teamId, row);
+            }
+        }
+
+        return teamRows.map((team) => {
+            const latest = latestRoundByTeam.get(team.id);
+            return {
+                id: team.id,
+                name: team.name,
+                points: team.score,
+                teamRound: latest
+                    ? {
+                          id: latest.id,
+                          teamId: latest.teamId,
+                          roundId: latest.roundId,
+                          round: {
+                              id: latest.round.id,
+                              number: latest.round.number,
+                              start: latest.round.start.toISOString(),
+                          },
+                      }
+                    : undefined,
+            };
+        });
+    } catch (error) {
+        console.error("Error fetching teams for promotion:", error);
+        return [];
     }
 }
 
 async function getRounds() {
-    const rounds = await prisma.round.findMany({
-        orderBy: {
-            start: "asc",
-        },
-        select: {
-            id: true,
-            start: true,
-            number: true,
-        },
-    });
-    return rounds.map((round) => ({
+    const roundRows = await db
+        .select({ id: rounds.id, start: rounds.start, number: rounds.number })
+        .from(rounds)
+        .orderBy(asc(rounds.start));
+    return roundRows.map((round) => ({
         id: round.id,
         start: round.start.toISOString(),
         number: round.number,

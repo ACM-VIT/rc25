@@ -1,9 +1,11 @@
-import { prisma } from "@/utils/prisma";
+import { db } from "@/db";
+import { problems, submissions, teams, users } from "@/db/schema";
 import TeamSubmissions from "./team-submissions";
 import { redirect } from "next/navigation";
 import { auth } from "@/app/(auth)/auth"; // Import your auth
 import FloatingDock from "@/components/FloatingDock";
 import { Metadata } from "next";
+import { desc, eq } from "drizzle-orm";
 
 export const metadata: Metadata = {
   title: "Team Submissions",
@@ -29,42 +31,41 @@ export default async function SubmissionsPage() {
     redirect("/auth/signin");
   }
 
-  const user = await prisma.user.findUnique({
-    relationLoadStrategy: 'join',
-    where: { id: session.user.id },
-    include: { Team: true },
-  });
+  const userRows = await db
+    .select({ user: users, team: teams })
+    .from(users)
+    .leftJoin(teams, eq(users.teamId, teams.id))
+    .where(eq(users.id, session.user.id))
+    .limit(1);
 
-  if (!user?.Team) {
+  const user = userRows[0]?.user;
+  const team = userRows[0]?.team;
+
+  if (!team || !user) {
     return <div>No team found</div>;
   }
 
-  const submissions = await prisma.submission.findMany({
-    relationLoadStrategy: 'join',
-    where: {
-      user: {
-        teamId: user.Team.id,
-      },
-    },
-    include: {
-      user: {
-        select: { name: true },
-      },
-      problem: {
-        select: {
-          title: true,
-          difficulty: true,
-        },
-      },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+  const submissionRows = await db
+    .select({
+      submission: submissions,
+      user: users,
+      problem: problems,
+    })
+    .from(submissions)
+    .innerJoin(users, eq(submissions.userId, users.id))
+    .innerJoin(problems, eq(submissions.problemId, problems.id))
+    .where(eq(users.teamId, team.id))
+    .orderBy(desc(submissions.createdAt));
 
-  const formattedSubmissions = submissions.map((submission) => ({
-    ...submission,
+  const formattedSubmissions = submissionRows.map((row) => ({
+    ...row.submission,
     user: {
-      ...submission.user,
-      name: submission.user.name || "Unknown",
+      ...row.user,
+      name: row.user.name || "Unknown",
+    },
+    problem: {
+      title: row.problem.title,
+      difficulty: row.problem.difficulty,
     },
   }));
 
@@ -72,7 +73,7 @@ export default async function SubmissionsPage() {
     <>
       <TeamSubmissions
         submissions={formattedSubmissions}
-        teamName={user.Team.name}
+        teamName={team.name}
       />
       <FloatingDock />
     </>

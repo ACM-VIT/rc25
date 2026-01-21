@@ -1,6 +1,6 @@
 'use client'
 
-import { DatePicker } from "@nextui-org/react"
+import { DatePicker } from "@heroui/react"
 import { parseDateTime, CalendarDateTime, type DateValue } from "@internationalized/date"
 
 interface DateTimePicker24hProps {

@@ -187,7 +187,9 @@ export async function PUT(request: NextRequest) {
         };
 
         const resolveDecay = (testcaseDecay: number | null): number => {
-            if (Number.isFinite(testcaseDecay)) return testcaseDecay;
+            if (typeof testcaseDecay === "number" && Number.isFinite(testcaseDecay)) {
+                return testcaseDecay;
+            }
             return safeDecay;
         };
 

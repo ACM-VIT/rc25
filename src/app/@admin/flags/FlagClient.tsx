@@ -1,6 +1,6 @@
 "use client";
 
-import { Checkbox } from "@nextui-org/react";
+import { Checkbox } from "@heroui/react";
 import { useOptimistic, startTransition, useEffect, useState } from "react";
 import { updateFlag } from "./actions";
 

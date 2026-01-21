@@ -13,6 +13,7 @@ interface SubmissionSectionProps {
 
 export type SubmissionWithUser = {
     id: string;
+    createdAt: Date;
     updatedAt: Date;
     evaluated: boolean;
     evaluationStatus: "ACCEPTED" | "RUNTIME_ERROR" | "COMPILE_ERROR" | null;

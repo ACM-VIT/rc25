@@ -1,6 +1,6 @@
 "use client";
 
-import { NextUIProvider } from "@nextui-org/react";
+import { HeroUIProvider } from "@heroui/react";
 
 export default function RootLayout({
   children,
@@ -9,7 +9,7 @@ export default function RootLayout({
 }) {
   return (
     <div>
-      <NextUIProvider>{children}</NextUIProvider>
+      <HeroUIProvider>{children}</HeroUIProvider>
     </div>
   );
 }

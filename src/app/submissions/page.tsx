@@ -31,11 +31,16 @@ export default async function SubmissionsPage() {
     redirect("/auth/signin");
   }
 
+  const userId = session.user.id;
+  if (!userId) {
+    redirect("/auth/signin");
+  }
+
   const userRows = await db
     .select({ user: users, team: teams })
     .from(users)
     .leftJoin(teams, eq(users.teamId, teams.id))
-    .where(eq(users.id, session.user.id))
+    .where(eq(users.id, userId))
     .limit(1);
 
   const user = userRows[0]?.user;

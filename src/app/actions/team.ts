@@ -11,6 +11,10 @@ export async function teamAction(inputValue: string, createMode: boolean) {
     if (!session || !session.user) {
         return { error: { code: 10 } };
     }
+    const userEmail = session.user.email;
+    if (!userEmail) {
+        return { error: { code: 10 } };
+    }
 
     if (createMode) {
         const existingTeamRows = await db
@@ -36,7 +40,7 @@ export async function teamAction(inputValue: string, createMode: boolean) {
                     await tx
                         .update(users)
                         .set({ teamId: created.id })
-                        .where(eq(users.email, session.user.email ?? ""));
+                        .where(eq(users.email, userEmail));
                 });
                 revalidatePath("/");
                 return { randomCode: shortCode };
@@ -70,7 +74,7 @@ export async function teamAction(inputValue: string, createMode: boolean) {
         await db
             .update(users)
             .set({ teamId: team.id })
-            .where(eq(users.email, session.user.email ?? ""));
+            .where(eq(users.email, userEmail));
         revalidatePath("/");
     }
 }

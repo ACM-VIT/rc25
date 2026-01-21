@@ -37,7 +37,7 @@ async function getSubmissionsByTeam(): Promise<GroupedTeamSubmissions> {
         problem: { title: row.problemTitle },
         user: {
           Team: row.teamName
-            ? { name: row.teamName, shortCode: row.teamShortCode }
+            ? { name: row.teamName, shortCode: row.teamShortCode ?? "" }
             : null,
         },
       });

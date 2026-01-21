@@ -1,38 +1,40 @@
 import {auth} from "@/app/(auth)/auth";
-import {prisma} from "@/utils/prisma";
-import type {TeamRound} from "@prisma/client";
+import { db } from "@/db";
+import { rounds, teamRounds, users, type TeamRound } from "@/db/schema";
+import { and, asc, eq, gte, lte } from "drizzle-orm";
 
 export async function getTeamRound(): Promise<TeamRound | null> {
   const session = await auth();
   if (!session?.user?.email) return null;
 
   // Get user's team
-  const user = await prisma.user.findUnique({
-    relationLoadStrategy: 'join',
-    where: { email: session.user.email },
-    select: { teamId: true }
-  });
+  const userRows = await db
+    .select({ teamId: users.teamId })
+    .from(users)
+    .where(eq(users.email, session.user.email))
+    .limit(1);
 
-  if (!user?.teamId) return null;
+  const teamId = userRows[0]?.teamId;
+  if (!teamId) return null;
 
   // Get current active round
-  const curRound = await prisma.round.findFirst({
-    relationLoadStrategy: 'join',
-    where: {
-      start: { lte: new Date() },
-      end: { gte: new Date() }
-    },
-    orderBy: { start: "asc" }
-  });
+  const now = new Date();
+  const curRoundRows = await db
+    .select()
+    .from(rounds)
+    .where(and(lte(rounds.start, now), gte(rounds.end, now)))
+    .orderBy(asc(rounds.start))
+    .limit(1);
 
+  const curRound = curRoundRows[0];
   if (!curRound) return null;
 
   // Get team round
-  return prisma.teamRound.findFirst({
-    relationLoadStrategy: 'join',
-    where: {
-      teamId: user.teamId,
-      roundId: curRound.id
-    }
-  });
+  const teamRoundRows = await db
+    .select()
+    .from(teamRounds)
+    .where(and(eq(teamRounds.teamId, teamId), eq(teamRounds.roundId, curRound.id)))
+    .limit(1);
+
+  return teamRoundRows[0] ?? null;
 }

@@ -42,6 +42,69 @@ const STATUS = {
     COMPILATION_ERROR: 6,
 };
 
+const DEFAULT_JUDGE0_BASE_URLS = [
+    "https://ce.judge0.com",
+    "https://extra-ce.judge0.com",
+];
+
+const JUDGE0_BASE_URLS = Array.from(
+    new Set(
+        [process.env.JUDGE0_BASE_URL?.replace(/\/$/, ""), ...DEFAULT_JUDGE0_BASE_URLS]
+            .filter(Boolean)
+            .map(String)
+    )
+);
+
+function createJudge0Headers(includeContentType = false): Record<string, string> {
+    const clientId = process.env.JUDGE0_CLIENT_ID;
+    const clientSecret = process.env.JUDGE0_CLIENT_SECRET;
+
+    if (!clientId) {
+        throw new Error("JUDGE0_CLIENT_ID is not defined in environment variables.");
+    }
+
+    if (!clientSecret) {
+        throw new Error("JUDGE0_CLIENT_SECRET is not defined in environment variables.");
+    }
+
+    const headers: Record<string, string> = {
+        Accept: "application/json",
+        "X-Judge0-Client-ID": clientId,
+        "X-Judge0-Client-Secret": clientSecret,
+    };
+
+    if (includeContentType) {
+        headers["Content-Type"] = "application/json";
+    }
+
+    return headers;
+}
+
+async function requestWithFallback(
+    path: string,
+    init: RequestInit
+): Promise<Response> {
+    let lastError: unknown;
+
+    for (const baseUrl of JUDGE0_BASE_URLS) {
+        try {
+            const response = await fetch(`${baseUrl}${path}`, init);
+
+            if (response.ok || response.status < 500) {
+                return response;
+            }
+
+            lastError = new Error(
+                `Judge0 request failed with status ${response.status} (${response.statusText})`
+            );
+        } catch (error) {
+            lastError = error;
+        }
+    }
+
+    throw lastError ?? new Error("Unable to reach Judge0 endpoints");
+}
+
 // async function storeSubmissionToken(submissionId: string, token: string) {
 //   try {
 //     const isConnected = await redis.ping();
@@ -83,16 +146,15 @@ const STATUS = {
 export async function getSubmission(
     submissionId: string
 ): Promise<SubmissionResult> {
-    const url = `https://judge0-ce.p.sulu.sh/submissions/${submissionId}?base64_encoded=true&fields=*`;
+    const path = `/submissions/${submissionId}?base64_encoded=true&fields=*`;
     const options = {
         method: "GET",
         headers: {
-            Accept: 'application/json',
-            Authorization: `Bearer ${process.env.SULU_KEY}`,
+            ...createJudge0Headers(),
         },
     };
     try {
-        const response = await fetch(url, options);
+        const response = await requestWithFallback(path, options);
         return await response.json();
     } catch (error) {
         return {status: {id: 0, description: "API Error"}, error};
@@ -105,17 +167,19 @@ export async function judgeSolution(
     stdin: string,
     submissionId: string
 ) {
-    const encodedCode = Buffer.from(code).toString("base64");
-    const encodedStdin = Buffer.from(stdin).toString("base64");
-    const postUrl =
-        "https://judge0-ce.p.sulu.sh/submissions?base64_encoded=true&wait=false&fields=*";
+    if (!process.env.HOST) {
+        throw new Error("HOST is not defined in environment variables.");
+    }
+
+    const encodedCode = Buffer.from(code ?? "", "utf-8").toString("base64");
+    const encodedStdin = Buffer.from(stdin ?? "", "utf-8").toString("base64");
+    const submissionsPath =
+        "/submissions?base64_encoded=true&wait=false&fields=*";
 
     const postOptions = {
         method: "POST",
         headers: {
-            Accept: 'application/json',
-            Authorization: `Bearer ${process.env.SULU_KEY}`,
-            "Content-Type": "application/json",
+            ...createJudge0Headers(true),
         },
         body: JSON.stringify({
             language_id: SUPPORTED_LANGUAGES[language as SupportedLanguage].id,
@@ -128,7 +192,13 @@ export async function judgeSolution(
     // console.log(language)
 
     try {
-        const postResponse = await fetch(postUrl, postOptions);
+        const postResponse = await requestWithFallback(submissionsPath, postOptions);
+        if (!postResponse.ok) {
+            const errorPayload = await postResponse.text();
+            throw new Error(
+                `Judge0 submission failed with status ${postResponse.status}: ${errorPayload}`
+            );
+        }
         const postResult = await postResponse.json();
         // console.log("postResult: ", postResult)
         if (!postResult.token) {

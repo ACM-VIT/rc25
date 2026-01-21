@@ -1,52 +1,52 @@
 "use server";
 
-import { PrismaClient } from "@prisma/client";
+import { db } from "@/db";
+import { teams, users } from "@/db/schema";
+import { eq, inArray, isNull } from "drizzle-orm";
 
 export async function getAvailableUsers() {
-	const prisma = new PrismaClient();
 	try {
-		const users = await prisma.user.findMany({
-			relationLoadStrategy: 'join',
-			where: {
-				teamId: null,
-			},
-			select: {
-				id: true,
-				name: true,
-				email: true,
-			},
-		});
-		return users;
+		return await db
+			.select({ id: users.id, name: users.name, email: users.email })
+			.from(users)
+			.where(isNull(users.teamId));
 	} catch (error) {
 		console.error("Error fetching available users:", error);
 		return [];
-	} finally {
-		await prisma.$disconnect();
 	}
 }
 
 export async function createTeam(userIds: string[], name: string) {
-	const prisma = new PrismaClient();
-
 	try {
 		const shortCode = Math.random().toString(36).substring(7).toUpperCase();
-		const team = await prisma.team.create({
-			data: {
-				name: name,
-				shortCode,
-				members: {
-					connect: userIds.map((id) => ({ id })),
-				},
-			},
-			include: {
-				members: true,
-			},
+		const team = await db.transaction(async (tx) => {
+			const created = await tx
+				.insert(teams)
+				.values({ name, shortCode })
+				.returning();
+			const createdTeam = created[0];
+			if (!createdTeam) return null;
+
+			if (userIds.length > 0) {
+				await tx
+					.update(users)
+					.set({ teamId: createdTeam.id })
+					.where(inArray(users.id, userIds));
+			}
+
+			const members = userIds.length
+				? await tx
+						.select()
+						.from(users)
+						.where(inArray(users.id, userIds))
+				: [];
+
+			return { ...createdTeam, members };
 		});
+
 		return team;
 	} catch (error) {
 		console.error("Error creating team:", error);
 		return null;
-	} finally {
-		await prisma.$disconnect();
 	}
 }

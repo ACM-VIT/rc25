@@ -1,39 +1,27 @@
 "use server";
 
-import {PrismaClient} from "@prisma/client"
 import {revalidatePath} from "next/cache";
+import { db } from "@/db";
+import { teams, users } from "@/db/schema";
+import { eq, sql } from "drizzle-orm";
 
 export default async function RemoveFromTeam(userId: string, teamId: string){
-    const prisma = new PrismaClient();
+    await db
+        .update(users)
+        .set({ teamId: null })
+        .where(eq(users.id, userId));
 
-    await prisma.user.update({
-        where:{
-            id: userId
-        },
-        data:{
-            teamId: null
-        }
-    })
+    const memberCountRows = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(users)
+        .where(eq(users.teamId, teamId));
+    const memberCount = Number(memberCountRows[0]?.count ?? 0);
 
-    const team = await prisma.team.findUnique({
-        where:{
-            id: teamId
-        },
-        include:{
-            members: true
-        }
-    })
-
-    if (team?.members.length === 0){
-        await prisma.team.delete({
-            where:{
-                id: teamId
-            }
-        })
+    if (memberCount === 0) {
+        await db.delete(teams).where(eq(teams.id, teamId));
     }
 
     // revalidatePath("/");
-    await prisma.$disconnect();
     revalidatePath(`/check-in/${teamId}`);
     return true;
 }

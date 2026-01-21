@@ -1,5 +1,5 @@
 import React from "react";
-import type { UniReg, User } from "@prisma/client";
+import type { UniReg, User } from "@/db/schema";
 
 export default function TeamParticipant({
 	participant: { user, unireg },

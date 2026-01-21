@@ -1,10 +1,7 @@
 "use client";
 
 import React, { useState, useTransition } from "react";
-import { Prisma, type UniReg } from "@prisma/client";
-import TeamGetPayload = Prisma.TeamGetPayload;
-
-import UserGetPayload = Prisma.UserGetPayload;
+import type { Team, TeamRound, UniReg, User } from "@/db/schema";
 import { useRouter } from "next/navigation";
 import { useToast } from "./ui/use-toast";
 import GetParicipant from "@/app/actions/get-participant";
@@ -17,12 +14,15 @@ import TeamParticipant from "./team-participant";
 import ExtraParticipant from "./extra-participant";
 import RemoveFromTeam from "@/app/actions/remove-from-team";
 
+type TeamWithMembers = Team & { members: User[]; TeamRound: TeamRound[] };
+type UserWithTeam = User & { Team?: Team | null };
+
 function CheckIn({
 	uniReg,
 	team,
 }: {
 	uniReg: UniReg[];
-	team: TeamGetPayload<{ include: { members: true; TeamRound: true } }>;
+	team: TeamWithMembers;
 }) {
 	const { toast } = useToast();
 
@@ -35,9 +35,7 @@ function CheckIn({
 		team.TeamRound.length > 0 ? team.members.map((i) => i.name?.slice(-9) ?? '') : [],
 	);
 
-	const [extra, setExtra] = useState<
-		UserGetPayload<{ include: { Team: true } }>[]
-	>([]);
+	const [extra, setExtra] = useState<UserWithTeam[]>([]);
 	const [extraUniReg, setExtraUniReg] = useState<UniReg[]>([]);
 
 	function lookup() {
@@ -98,7 +96,7 @@ function CheckIn({
 			}
 			setExtra((prev) => [
 				...prev,
-				res.user as UserGetPayload<{ include: { Team: true } }>,
+				res.user as UserWithTeam,
 			]);
 			setTimeout(() => {
 				if (res.uniReg)

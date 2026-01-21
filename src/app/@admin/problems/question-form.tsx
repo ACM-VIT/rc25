@@ -4,7 +4,7 @@ import type React from "react";
 import { useTransition } from "react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import type { Problem, Difficulty } from "@prisma/client";
+import type { Difficulty, Problem } from "@/db/schema";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";

@@ -1,6 +1,7 @@
 import React from "react";
-import { Prisma, type UniReg } from "@prisma/client";
-import UserGetPayload = Prisma.UserGetPayload;
+import type { Team, UniReg, User } from "@/db/schema";
+
+type UserWithTeam = User & { Team?: Team | null };
 
 export default function ExtraParticipant({
 	participant: { user, unireg },
@@ -9,7 +10,7 @@ export default function ExtraParticipant({
 	checkedIn,
 }: {
 	participant: {
-		user: UserGetPayload<{ include: { Team: true } }>;
+		user: UserWithTeam;
 		unireg: UniReg | null;
 	};
 	override: (regNo: string) => void;

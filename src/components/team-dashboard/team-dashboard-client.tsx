@@ -1,6 +1,6 @@
 "use client";
 import { LeaveButton } from "@/components/buttons/leave";
-import type { User } from "@prisma/client";
+import type { User } from "@/db/schema";
 import Image from "next/image";
 import SignOut from "@/app/(auth)/authactions/signout";
 import { Copy } from "lucide-react";

@@ -1,4 +1,4 @@
-import type { Difficulty } from "@prisma/client"
+import type { Difficulty } from "@/db/schema"
 
 export interface TeamSubmission {
   id: string

@@ -1,17 +1,14 @@
-import { prisma } from "@/utils/prisma";
+import { db } from "@/db";
+import { rounds } from "@/db/schema";
 import RoundClient from "./RoundClient";
+import { asc } from "drizzle-orm";
 
 async function getRounds() {
   try {
-    const rounds = await prisma.round.findMany({
-      relationLoadStrategy: 'join',
-      orderBy: {
-        number: "asc",
-      },
-    });
-    return rounds;
-  } finally {
-    await prisma.$disconnect();
+    return await db.select().from(rounds).orderBy(asc(rounds.number));
+  } catch (error) {
+    console.error("Error fetching rounds:", error);
+    return [];
   }
 }
 

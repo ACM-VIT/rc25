@@ -1,44 +1,30 @@
 'use server'
 
-import { prisma } from "@/utils/prisma";
+import { db } from "@/db";
+import { news } from "@/db/schema";
 import { revalidatePath } from "next/cache";
+import { eq } from "drizzle-orm";
 
 export async function createNews(data: { title: string; content: string }) {
-  try {
-    await prisma.news.create({
-      data: {
-        ...data,
-        time: new Date(),
-      },
-    });
-    revalidatePath('/admin/news');
-  } finally {
-    await prisma.$disconnect();
-  }
+  await db.insert(news).values({
+    ...data,
+    time: new Date(),
+  });
+  revalidatePath('/admin/news');
 }
 
 export async function updateNews(id: string, data: { title: string; content: string }) {
-  try {
-    await prisma.news.update({
-      where: { id },
-      data: {
-        ...data,
-        time: new Date(),
-      },
-    });
-    revalidatePath('/admin/news');
-  } finally {
-    await prisma.$disconnect();
-  }
+  await db
+    .update(news)
+    .set({
+      ...data,
+      time: new Date(),
+    })
+    .where(eq(news.id, id));
+  revalidatePath('/admin/news');
 }
 
 export async function deleteNews(id: string) {
-  try {
-    await prisma.news.delete({
-      where: { id },
-    });
-    revalidatePath('/admin/news');
-  } finally {
-    await prisma.$disconnect();
-  }
+  await db.delete(news).where(eq(news.id, id));
+  revalidatePath('/admin/news');
 }

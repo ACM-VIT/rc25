@@ -1,6 +1,8 @@
 "use server";
 
-import { prisma } from "@/utils/prisma";
+import { db } from "@/db";
+import { testcases } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 export default async function addTestCase(
   problemId: string,
@@ -10,31 +12,25 @@ export default async function addTestCase(
   isEdge: boolean,
   testcaseId?: string
 ): Promise<void> {
-  await prisma.testcase.upsert({
-    where: {
-      id: testcaseId || '', // Use an empty string if testcaseId is not provided
-    },
-    create: {
-      weight,
-      input,
-      output,
-      isEdge,
-      problem: {
-        connect: {
-          id: problemId,
-        },
-      },
-    },
-    update: {
-      weight,
-      input,
-      output,
-      isEdge,
-      problem: {
-        connect: {
-          id: problemId,
-        },
-      },
-    },
+  if (testcaseId) {
+    await db
+      .update(testcases)
+      .set({
+        weight,
+        input,
+        output,
+        isEdge,
+        problemId,
+      })
+      .where(eq(testcases.id, testcaseId));
+    return;
+  }
+
+  await db.insert(testcases).values({
+    weight,
+    input,
+    output,
+    isEdge,
+    problemId,
   });
 }

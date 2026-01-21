@@ -1,30 +1,33 @@
 'use server'
-import {PrismaClient} from "@prisma/client";
+import { db } from "@/db";
+import { submissions, users } from "@/db/schema";
+import { and, desc, eq, inArray } from "drizzle-orm";
 
 export async function getTeamId(userId: string) {
-    const prisma = new PrismaClient();
-    const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { teamId: true }
-  })
-  return user?.teamId
+    const userRows = await db
+      .select({ teamId: users.teamId })
+      .from(users)
+      .where(eq(users.id, userId))
+      .limit(1);
+    return userRows[0]?.teamId
 }
 
 export async function getTeamSubmissions(userId: string, problemId: string) {
   // Get user's team
-    const prisma = new PrismaClient();
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { teamId: true }
-  });
+  const userRows = await db
+    .select({ teamId: users.teamId })
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
+  const user = userRows[0];
 
   if (!user?.teamId) return [];
 
   // Get all team members
-  const teamMembers = await prisma.user.findMany({
-    where: { teamId: user.teamId },
-    select: { id: true }
-  });
+  const teamMembers = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.teamId, user.teamId));
 
   const userIds = teamMembers.map(member => member.id);
 
@@ -37,12 +40,17 @@ export async function getTeamSubmissions(userId: string, problemId: string) {
   //   return currentPassed > bestPassed ? current : best;
   // }, submissions[0] || null);
 
-  return prisma.submission.findMany({
-    where: {
-      userId: {in: userIds},
-      problemId: problemId
-    },
-    orderBy: {createdAt: 'desc'},
-    include: {user: true}
-  });
+  const submissionRows = await db
+    .select({ submission: submissions, user: users })
+    .from(submissions)
+    .innerJoin(users, eq(submissions.userId, users.id))
+    .where(
+      and(inArray(submissions.userId, userIds), eq(submissions.problemId, problemId))
+    )
+    .orderBy(desc(submissions.createdAt));
+
+  return submissionRows.map((row) => ({
+    ...row.submission,
+    user: row.user,
+  }));
 }

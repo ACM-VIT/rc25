@@ -1,5 +1,5 @@
 "use client";
-import {Prisma} from "@prisma/client";
+import type { Problem as ProblemType, Round, Testcase } from "@/db/schema";
 import {SquareChevronLeft} from 'lucide-react';
 // import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import CodeEditor, {StatusRibbonProps} from "./code-editor";
@@ -21,9 +21,7 @@ import {
 import {doc, onSnapshot} from "@firebase/firestore";
 import {db} from "@/lib/firebase-service";
 
-type ProblemWithRelations = Prisma.ProblemGetPayload<{
-    include: { Testcase: true; round: true };
-}>;
+type ProblemWithRelations = ProblemType & { Testcase: Testcase[]; round: Round };
 
 interface QuestionPageProps {
     problem: ProblemWithRelations;

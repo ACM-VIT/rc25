@@ -1,38 +1,50 @@
 "use server";
 
-import { PrismaClient } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { db } from "@/db";
+import { teams, users } from "@/db/schema";
+import { eq, ilike, inArray } from "drizzle-orm";
 
 export async function searchTeams(query: string) {
-  const prisma = new PrismaClient();
   try {
-    const teams = await prisma.team.findMany({
-      relationLoadStrategy: 'join',
-      where: {
-        OR: [{ name: { contains: query, mode: "insensitive" } }],
-      },
-      include: {
-        members: true,
-      },
-    });
-    return { success: true, data: teams };
+    const teamRows = await db
+      .select()
+      .from(teams)
+      .where(ilike(teams.name, `%${query}%`));
+
+    const teamIds = teamRows.map((team) => team.id);
+    const memberRows = teamIds.length
+      ? await db
+          .select()
+          .from(users)
+          .where(inArray(users.teamId, teamIds))
+      : [];
+
+    const membersByTeam = new Map<string, typeof memberRows>();
+    for (const member of memberRows) {
+      if (!member.teamId) continue;
+      const list = membersByTeam.get(member.teamId) ?? [];
+      list.push(member);
+      membersByTeam.set(member.teamId, list);
+    }
+
+    const data = teamRows.map((team) => ({
+      ...team,
+      members: membersByTeam.get(team.id) ?? [],
+    }));
+
+    return { success: true, data };
   } catch (error) {
     return {
       success: false,
       error: `Failed to search teams: ${(error as Error).name}`,
     };
-	} finally {
-		await prisma.$disconnect();
   }
 }
 
 export async function blacklistTeam(teamId: string) {
-  const prisma = new PrismaClient();
   try {
-    await prisma.team.update({
-      where: { id: teamId },
-      data: { disqualify: true },
-    });
+    await db.update(teams).set({ disqualify: true }).where(eq(teams.id, teamId));
     revalidatePath("/");
     return { success: true };
   } catch (error) {
@@ -44,12 +56,8 @@ export async function blacklistTeam(teamId: string) {
 }
 
 export async function ReverseblacklistTeam(teamId: string) {
-  const prisma = new PrismaClient();
   try {
-    await prisma.team.update({
-      where: { id: teamId },
-      data: { disqualify: false },
-    });
+    await db.update(teams).set({ disqualify: false }).where(eq(teams.id, teamId));
     revalidatePath("/");
     return { success: true };
   } catch (error) {
@@ -57,7 +65,5 @@ export async function ReverseblacklistTeam(teamId: string) {
       success: false,
       error: `Failed to disqualify team: ${(error as Error).name}`,
     };
-	} finally {
-		await prisma.$disconnect();
   }
 }

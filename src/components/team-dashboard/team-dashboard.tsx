@@ -1,91 +1,91 @@
-import { PrismaClient } from "@prisma/client";
 import { auth } from "@/app/(auth)/auth";
 import { TeamMembers } from "./team-dashboard-client";
+import { db } from "@/db";
+import { teams, users } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 async function getTeamMembers() {
   const session = await auth();
   if (!session?.user?.email) return [];
 
-  const prisma = new PrismaClient();
   try {
-    const user = await prisma.user.findUnique({
-      relationLoadStrategy: 'join',
-      where: { email: session.user.email },
-      include: {
-        Team: {
-          include: {
-            members: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-                phone: true,
-                gender: true,
-                emailVerified: true,
-                image: true,
-                teamId: true,
-              },
-            },
-          },
-        },
-      },
-    });
-    return user?.Team?.members ?? [];
+    const userRows = await db
+      .select({ teamId: users.teamId })
+      .from(users)
+      .where(eq(users.email, session.user.email))
+      .limit(1);
+
+    const teamId = userRows[0]?.teamId;
+    if (!teamId) return [];
+
+    const members = await db
+      .select({
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        phone: users.phone,
+        gender: users.gender,
+        emailVerified: users.emailVerified,
+        image: users.image,
+        teamId: users.teamId,
+      })
+      .from(users)
+      .where(eq(users.teamId, teamId));
+
+    return members;
   } catch (error) {
     console.error("Error fetching team members:", error);
     return [];
-  } finally {
-    await prisma.$disconnect();
   }
 }
 async function getTeamName() {
   const session = await auth();
   if (!session?.user?.email) throw "No session found";
 
-  const prisma = new PrismaClient();
   try {
-    const user = await prisma.user.findUnique({
-      relationLoadStrategy: 'join',
-      where: { email: session.user.email },
-      include: {
-        Team: {
-          select: {
-            name: true,
-          },
-        },
-      },
-    });
-    return user?.Team?.name ?? "";
+    const userRows = await db
+      .select({ teamId: users.teamId })
+      .from(users)
+      .where(eq(users.email, session.user.email))
+      .limit(1);
+    const teamId = userRows[0]?.teamId;
+    if (!teamId) return "";
+
+    const teamRows = await db
+      .select({ name: teams.name })
+      .from(teams)
+      .where(eq(teams.id, teamId))
+      .limit(1);
+
+    return teamRows[0]?.name ?? "";
   } catch (error) {
     console.error("Error fetching team name:", error);
     return "";
-  } finally {
-    await prisma.$disconnect();
   }
 }
 async function getTeamCode() {
   const session = await auth();
   if (!session?.user?.email) return "";
 
-  const prisma = new PrismaClient();
   try {
-    const user = await prisma.user.findUnique({
-      relationLoadStrategy: 'join',
-      where: { email: session.user.email },
-      include: {
-        Team: {
-          select: {
-            shortCode: true,
-          },
-        },
-      },
-    });
-    return user?.Team?.shortCode ?? "";
+    const userRows = await db
+      .select({ teamId: users.teamId })
+      .from(users)
+      .where(eq(users.email, session.user.email))
+      .limit(1);
+    const teamId = userRows[0]?.teamId;
+    if (!teamId) return "";
+
+    const teamRows = await db
+      .select({ shortCode: teams.shortCode })
+      .from(teams)
+      .where(eq(teams.id, teamId))
+      .limit(1);
+
+    return teamRows[0]?.shortCode ?? "";
   } catch (error) {
     console.error("Error fetching team members:", error);
     return "";
-  } finally {
-    await prisma.$disconnect();
   }
 }
 export default async function TeamMembersAndLeaveButton() {

@@ -1,13 +1,18 @@
 "use server";
 
 import {executeCode} from "@/utils/server-executor";
-import {prisma} from "@/utils/prisma";
+import { db } from "@/db";
+import { problems } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 export async function runCode(problemId: string,input: string) {
   try {
-    const problem = await prisma.problem.findUnique({
-      where: { id: problemId },
-    });
+    const problemRows = await db
+      .select({ web_code: problems.web_code })
+      .from(problems)
+      .where(eq(problems.id, problemId))
+      .limit(1);
+    const problem = problemRows[0];
     
     if (!problem?.web_code) {
       throw new Error("Problem code is undefined");

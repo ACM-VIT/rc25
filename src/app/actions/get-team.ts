@@ -1,28 +1,20 @@
 "use server";
 
-import {PrismaClient} from '@prisma/client';
 import {redirect} from "next/navigation";
+import { db } from "@/db";
+import { users } from "@/db/schema";
+import { like } from "drizzle-orm";
 
 export default async function GetTeam(regNo: string) {
-    const prisma = new PrismaClient();
-
-    const team = await prisma.team.findFirst({
-        relationLoadStrategy: 'join',
-        where: {
-            members: {
-                some: {
-                    name: {
-                        endsWith: regNo
-                    }
-                }
-            }
-        }
-    });
-
-    await prisma.$disconnect();
-    if (!team) {
+    const userRows = await db
+        .select({ teamId: users.teamId })
+        .from(users)
+        .where(like(users.name, `%${regNo}`))
+        .limit(1);
+    const teamId = userRows[0]?.teamId;
+    if (!teamId) {
         return false;
     }
 
-    return redirect(`/check-in/${team.id}`);
+    return redirect(`/check-in/${teamId}`);
 }

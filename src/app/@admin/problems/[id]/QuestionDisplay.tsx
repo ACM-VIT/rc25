@@ -12,7 +12,7 @@ import UploadFolder from "./UploadFolder";
 import { useRouter } from "next/navigation";
 import DeleteQuestionDialog from "../DeleteQuestionDialog";
 import { deleteQuestion } from "@/app/actions/delete-question";
-import type { Problem as PrismaBaseProblem } from "@prisma/client";
+import type { Problem as PrismaBaseProblem } from "@/db/schema";
 import hideQuestion from "./hideQuestion";
 
 interface Problem extends PrismaBaseProblem {

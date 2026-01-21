@@ -1,12 +1,15 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
-import {PrismaAdapter} from "@auth/prisma-adapter";
-import {PrismaClient} from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { DrizzleAdapter } from "@/lib/auth/drizzle-adapter";
+import { db } from "@/db";
+import { accounts, sessions, users } from "@/db/schema";
 
 export const {handlers, auth, signIn, signOut} = NextAuth({
-    adapter: PrismaAdapter(prisma),
+    adapter: DrizzleAdapter(db, {
+        usersTable: users,
+        accountsTable: accounts,
+        sessionsTable: sessions,
+    }),
     trustHost: true,
     providers: [
         Google({

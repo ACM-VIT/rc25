@@ -15,37 +15,20 @@ export default function PortalFaqs() {
         {
             id: "faq1",
             question: "WHAT IS THIS PORTAL ABOUT?",
-            answer: "This portal provides information and resources to help you manage your activities effectively.",
+            answer:
+                "This portal allows you to revisit past Reverse Coding competition questions and view detailed solutions. It’s designed as a resource for continuous learning and practice.",
         },
         {
             id: "faq2",
-            question: "HOW CAN I RESET MY PASSWORD?",
-            answer: "To reset your password, go to the login page and click on the 'Forgot Password' link. Follow the instructions to reset your password.",
+            question: "HOW DO I ACCESS RESOURCES?",
+            answer:
+                "Resources, including questions and detailed solutions, can be accessed from the main dashboard. Simply navigate through the portal to explore the available content.",
         },
         {
             id: "faq3",
-            question: "WHO CAN I CONTACT FOR SUPPORT?",
-            answer: "For support, you can contact our team via the 'Contact Us' section or email us at support@example.com.",
-        },
-        {
-            id: "faq4",
-            question: "HOW DO I ACCESS RESOURCES?",
-            answer: "Resources can be accessed from the main dashboard under the Resources tab.",
-        },
-        {
-            id: "faq5",
             question: "WHAT IS THE BEST WAY TO GET STARTED?",
-            answer: "The best way to get started is by exploring the user guide available in the Help section.",
-        },
-        {
-            id: "faq6",
-            question: "CAN I UPDATE MY PROFILE?",
-            answer: "Yes, you can update your profile by navigating to the Profile tab and clicking Edit.",
-        },
-        {
-            id: "faq7",
-            question: "WHAT ARE THE TERMS AND CONDITIONS?",
-            answer: "The terms and conditions are available on the bottom of the page in the Terms section.",
+            answer:
+                "The best way to get started is by exploring the questions available in the portal and trying out the interactive editor. Detailed solutions are provided for you to learn different approaches.",
         },
     ];
 

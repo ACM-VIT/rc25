@@ -45,7 +45,7 @@ function LandOneMobile() {
                     >
                         Code, Invert, Conquer
                     </div>
-                    <div
+                    {/* <div
                         className="text-center z-100 text-white font-custom font-bold text-[1rem] animate-fadeIn"
                         style={{
                             color: "transparent",
@@ -55,7 +55,7 @@ function LandOneMobile() {
                     >
                         <p>07th February 2025 - 08:00 AM</p>
                         <p>Anna Auditorium</p>
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* Join Button */}

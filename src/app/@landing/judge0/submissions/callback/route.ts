@@ -1,223 +1,140 @@
-import {type NextRequest, NextResponse} from "next/server";
-import {prisma} from "@/utils/prisma";
-import {firestoreService} from "@/lib/firebase-admin-service";
-import {EvalEnum} from "@prisma/client";
+"use server";
+
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/utils/prisma";
+import { firestoreService } from "@/lib/firebase-admin-service";
+import { EvalEnum } from "@prisma/client";
 
 interface WebhookBody {
-    token: string;
-    stdout: string;
-    status: string | null;
-    stderr: string | null;
-    compile_output: string | null;
+  token: string;
+  stdout: string | null;
+  status: string | null;
+  stderr: string | null;
+  compile_output: string | null;
 }
 
 export async function PUT(request: NextRequest) {
-    try {
-        const body = await request.json();
+  try {
+    const body = await request.json();
 
-        // console.log("Request body:", body);
-        const {token, stdout, stderr, compile_output }: WebhookBody = body;
+    const { token, stdout, stderr, compile_output }: WebhookBody = body;
 
-        // Base64 decode the stdout
-        const submission = await prisma.submission.findUnique({
-            relationLoadStrategy: 'join',
-            where: {token: token},
-            include: {
-                testcases: {
-                    include: {
-                        testcase: {
-                            select: {
-                                id: true,
-                                output: true,
-                                weight: true,
-                            },
-                        }
-                    },
-                    orderBy: {
-                        sequence: 'asc'
-                    }
-                },
+    const submission = await prisma.submission.findUnique({
+      where: { token },
+      include: {
+        testcases: {
+          include: {
+            testcase: {
+              select: {
+                id: true,
+                output: true,
+                weight: true,
+              },
             },
-        });
+          },
+          orderBy: { sequence: "asc" },
+        },
+      },
+    });
 
-        if (!submission) {
-            return NextResponse.json(
-                {message: "Submission not found"},
-                {status: 404}
-            );
-        }
-
-        if (compile_output) {
-            await prisma.submission.update({
-                where: {id: submission.id},
-                data: {
-                    evaluated: true,
-                    evaluationStatus: EvalEnum.COMPILE_ERROR
-                },
-            });
-            await firestoreService.submissions.processed(submission.id);
-            return NextResponse.json(
-                {message: "Submission failed with compile error"},
-                {status: 200}
-            );
-        }
-
-        if (stderr) {
-            await prisma.submission.update({
-                where: {id: submission.id},
-                data: {
-                    evaluated: true,
-                    evaluationStatus: EvalEnum.RUNTIME_ERROR
-                },
-            });
-            await firestoreService.submissions.processed(submission.id);
-            return NextResponse.json(
-                {message: "Submission failed with runtime error"},
-                {status: 200}
-            );
-        }
-
-        // console.log("Submission:", submission);
-        const decodedStdout = Buffer.from(stdout, 'base64').toString('utf-8');
-
-        // Split stdout using delimiter
-        const delimiter = process.env.DELIMITER || "|||";
-        const outputs = decodedStdout.split(delimiter);
-
-        // console.log("Raw stdout:", stdout);
-        // console.log("Split outputs:", outputs);
-
-        // Retrieve problem to get maxScore for weight calculations
-        const problem = await prisma.problem.findUnique({
-            relationLoadStrategy: 'join',
-            where: {id: submission.problemId},
-            select: {maxScore: true},
-        });
-        if (!problem) {
-            return NextResponse.json({message: "Problem not found"}, {status: 400});
-        }
-
-        // Compare outputs with testcases
-        const testcasespassed = submission.testcases.map((relation, index) => {
-            const expectedOutput = relation.testcase.output.trim();
-            const actualOutput = outputs[index]?.trim() || "";
-            return expectedOutput === actualOutput;
-        });
-
-        // Calculate total ratio from test cases
-        const totalRatio = submission.testcases.reduce(
-            (acc, rel) => acc + rel.testcase.weight,
-            0
-        );
-
-        // Function to compute effective weight for a testcase
-        const effectiveWeight = (index: number): number => {
-            return (problem.maxScore / totalRatio) * submission.testcases[index].testcase.weight;
-        };
-
-        // Compute individual submission score using effective weight
-        const invidualSubmissionScore = testcasespassed.reduce((acc, isPassed, index) => {
-            if (isPassed) {
-                return acc + effectiveWeight(index);
-            }
-            return acc;
-        }, 0);
-
-        // Get user's team
-        const user = await prisma.user.findUnique({
-            relationLoadStrategy: 'join',
-            where: {id: submission.userId},
-            include: {Team: true},
-        });
-
-        if (!user?.Team) {
-            return NextResponse.json(
-                {message: "User not in team"},
-                {status: 400}
-            );
-        }
-
-        await prisma.$transaction(async () => {
-
-            // Get all team submissions for this problem
-            const teamSubmissions = await prisma.submission.findMany({
-                relationLoadStrategy: 'join',
-                where: {
-                    problemId: submission.problemId,
-                    user: {
-                        teamId: user.Team!.id,
-                    },
-                },
-                include: {
-                    testcases: {
-                        include: {
-                            testcase: {
-                                select: {
-                                    id: true,
-                                    weight: true
-                                }
-                            }
-                        },
-                    },
-                    user: {
-                        select: {
-                            id: true,
-                            teamId: true
-                        }
-                    }
-                },
-            });
-
-            const teamTestResults = submission.testcases.map((_, index) => {
-                return teamSubmissions.some((sub) => sub.testcasespassed[index]);
-            });
-
-            const finalTestCasesPassed = testcasespassed;
-
-            let scoreChange = 0;
-            testcasespassed.forEach((isPassed, index) => {
-                const wasPassedByTeam = teamTestResults[index];
-                if (!wasPassedByTeam && isPassed) {
-                    scoreChange += effectiveWeight(index);
-                }
-            });
-
-            const [{}, {score}] = await Promise.all([prisma.submission.update({
-                where: {id: submission.id},
-                data: {
-                    testcasespassed: finalTestCasesPassed,
-                    score: invidualSubmissionScore,
-                    evaluated: true,
-                    evaluationStatus: EvalEnum.ACCEPTED
-                },
-            }), prisma.team.update({
-                where: {id: user.Team!.id},
-                data: {
-                    score: {
-                        increment: scoreChange,
-                    },
-                },
-            })])
-
-            await Promise.all([firestoreService.submissions.processed(submission.id), firestoreService.leaderboard.updateTeam({
-                id: user.Team!.id,
-                name: user.Team!.name,
-                score
-            })])
-        });
-
-        return NextResponse.json(
-            {message: "Submission updated successfully"},
-            {status: 200}
-        );
-    } catch (error: unknown) {
-        const errorMessage =
-            error instanceof Error ? error.message : "Unknown error";
-        console.error("Error processing POST request:", errorMessage);
-
-        return NextResponse.json(
-            {message: "Internal Server Error"},
-            {status: 500}
-        );
+    if (!submission) {
+      return NextResponse.json(
+        { message: "Submission not found" },
+        { status: 404 }
+      );
     }
+
+    if (compile_output) {
+      await prisma.submission.update({
+        where: { id: submission.id },
+        data: {
+          evaluated: true,
+          evaluationStatus: EvalEnum.COMPILE_ERROR,
+        },
+      });
+      await firestoreService.submissions.processed(submission.id);
+      return NextResponse.json(
+        { message: "Submission failed with compile error" },
+        { status: 200 }
+      );
+    }
+
+    if (stderr) {
+      await prisma.submission.update({
+        where: { id: submission.id },
+        data: {
+          evaluated: true,
+          evaluationStatus: EvalEnum.RUNTIME_ERROR,
+        },
+      });
+      await firestoreService.submissions.processed(submission.id);
+      return NextResponse.json(
+        { message: "Submission failed with runtime error" },
+        { status: 200 }
+      );
+    }
+
+    // Decode stdout from base64 (defaulting to an empty string if stdout is null)
+    const decodedStdout = Buffer.from(stdout ?? "", "base64").toString("utf-8");
+    const delimiter = process.env.DELIMITER || "|||";
+    const outputs = decodedStdout.split(delimiter);
+
+    const problem = await prisma.problem.findUnique({
+      where: { id: submission.problemId },
+      select: { maxScore: true },
+    });
+    if (!problem) {
+      return NextResponse.json(
+        { message: "Problem not found" },
+        { status: 400 }
+      );
+    }
+
+    // Compare each testcase's expected output with the corresponding actual output.
+    const testcasespassed = submission.testcases.map((relation, index) => {
+      const expectedOutput = relation.testcase.output.trim();
+      const actualOutput = outputs[index]?.trim() || "";
+      return expectedOutput === actualOutput;
+    });
+
+    // Calculate the effective weight for each testcase.
+    const totalRatio = submission.testcases.reduce(
+      (acc, rel) => acc + rel.testcase.weight,
+      0
+    );
+    const effectiveWeight = (index: number): number => {
+      return (problem.maxScore / totalRatio) * submission.testcases[index].testcase.weight;
+    };
+
+    // Compute the individual submission score based on passed testcases.
+    const individualSubmissionScore = testcasespassed.reduce((acc, isPassed, index) => {
+      return isPassed ? acc + effectiveWeight(index) : acc;
+    }, 0);
+
+    // Update the submission with the test results and computed score.
+    await prisma.submission.update({
+      where: { id: submission.id },
+      data: {
+        testcasespassed: testcasespassed,
+        score: individualSubmissionScore,
+        evaluated: true,
+        evaluationStatus: EvalEnum.ACCEPTED,
+      },
+    });
+
+    // Mark the submission as processed in Firestore.
+    await firestoreService.submissions.processed(submission.id);
+
+    return NextResponse.json(
+      { message: "Submission updated successfully" },
+      { status: 200 }
+    );
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    console.error("Error processing PUT request:", errorMessage);
+    return NextResponse.json(
+      { message: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
 }

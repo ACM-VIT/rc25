@@ -1,16 +1,16 @@
 import { prisma } from "@/utils/prisma";
 import TeamSubmissions from "./team-submissions";
 import { redirect } from "next/navigation";
-import { auth } from "@/app/(auth)/auth"; // Import your auth
+import { auth } from "@/app/(auth)/auth"; 
 import FloatingDock from "@/components/FloatingDock";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Team Submissions",
-  description: "View your team's submission history and progress",
+  title: "Submissions",
+  description: "View your submission history and progress",
   openGraph: {
-    title: "Team Submissions",
-    description: "Track your team's submission history and performance",
+    title: "Submissions",
+    description: "Track your submission history and performance",
     type: "website",
   },
   robots: {
@@ -30,32 +30,22 @@ export default async function SubmissionsPage() {
   }
 
   const user = await prisma.user.findUnique({
-    relationLoadStrategy: 'join',
+    relationLoadStrategy: "join",
     where: { id: session.user.id },
-    include: { Team: true },
   });
 
-  if (!user?.Team) {
-    return <div>No team found</div>;
+  if (!user) {
+    return <div>User not found</div>;
   }
 
   const submissions = await prisma.submission.findMany({
-    relationLoadStrategy: 'join',
+    relationLoadStrategy: "join",
     where: {
-      user: {
-        teamId: user.Team.id,
-      },
+      userId: user.id,
     },
     include: {
-      user: {
-        select: { name: true },
-      },
-      problem: {
-        select: {
-          title: true,
-          difficulty: true,
-        },
-      },
+      user: { select: { name: true } },
+      problem: { select: { title: true, difficulty: true } },
     },
     orderBy: { createdAt: "desc" },
   });
@@ -72,7 +62,7 @@ export default async function SubmissionsPage() {
     <>
       <TeamSubmissions
         submissions={formattedSubmissions}
-        teamName={user.Team.name}
+        teamName={user.name}
       />
       <FloatingDock />
     </>

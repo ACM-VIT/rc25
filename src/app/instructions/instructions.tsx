@@ -1,7 +1,14 @@
 "use client";
 
 import DashboardBox from "@/components/DashboardBox";
+import InstructionBox from "@/components/InstructionBox";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import localFont from "next/font/local";
+
+const formula1 = localFont({
+    src: "../../../public/fonts/Formula1-Bold_web_0.ttf",
+    display: "swap",
+});
 
 // TODO: Update instructions
 
@@ -38,33 +45,15 @@ export default function Instructions() {
                 backgroundPosition: "center",
             }}
         >
-            <h1 className="text-5xl font-bold text-white mb-6 underline">
+            <h1 className={`${formula1.className} text-5xl font-bold text-white mb-6 underline`}>
                 Instructions
-            </h1>
-            <DashboardBox className="shadow-lg w-[85vw] max-w-4xl h-[70vh] rounded-lg p-6 border text-white bg-opacity-80 backdrop-blur-md">
-                <ScrollArea className="flex-grow h-full w-full rounded-lg">
-                    <ol className="list-decimal pl-6 space-y-6 text-lg">
-                        {instructions.map((instruction) => (
-                            <li key={instruction.title}>
-                                <h3 className="text-xl font-bold">
-                                    {instruction.title}
-                                </h3>
-                                <ul className="list-inside mt-2 text-sm leading-relaxed">
-                                    {instruction.description
-                                        .split("\n")
-                                        .map((line, idx) => (
-                                            <li
-                                                key={`${instruction.title}-${idx}`}
-                                            >
-                                                {line}
-                                            </li>
-                                        ))}
-                                </ul>
-                            </li>
-                        ))}
-                    </ol>
-                </ScrollArea>
-            </DashboardBox>
+            </h1> 
+            
+            <div className="w-full max-w-[95%] mx-auto flex flex-col gap-4">
+                {instructions.map((instruction, index) => (
+                    <InstructionBox key={index} text={instruction.title} number={index + 1} />
+                ))}
+            </div>
         </div>
     );
 }

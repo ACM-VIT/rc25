@@ -1,7 +1,7 @@
  "use client";
 
 import React, { useEffect, useRef, useCallback } from "react";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import RCLogo from "@/app/assets/RCLogo.svg";
 import { User as AvatarIcon } from "lucide-react";
 import SignOut from "@/app/(auth)/authactions/signout";

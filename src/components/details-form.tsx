@@ -4,7 +4,7 @@ import onboard from "../app/actions/onboard";
 import { useFormStatus } from "react-dom";
 import parsePhoneNumber from "libphonenumber-js";
 import { useState } from "react";
-import Image from "next/image";
+import Image from "next/legacy/image";
 
 export default function OnboardingForm({ name }: { name: string }) {
   const [selectedGender, setSelectedGender] = useState("");
@@ -28,7 +28,6 @@ export default function OnboardingForm({ name }: { name: string }) {
           zIndex: -1,
         }}
       />
-
       <div
         className="w-[65vw] md:w-[55vw] lg:w-[90vw] sm:w-[75vw] phone:w-[85vw] phone:mt-[15%] 
                       p-4 phone:p-3 mt-5
@@ -211,7 +210,6 @@ export default function OnboardingForm({ name }: { name: string }) {
           </div>
         </form>
       </div>
-
       <div className="relative px-6 py-2 flex justify-center items-center w-[85vw] motion-preset-slide-down-sm">
         <Image
           src="/frameDecoration.svg"

@@ -1,5 +1,5 @@
 import React from "react";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import backgroundone from "@/app/assets/backgroundone.svg";
 import wrclogo from "@/app/assets/wrclogo.svg";
 import acm from "@/app/assets/acm.svg";

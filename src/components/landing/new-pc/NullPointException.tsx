@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import R2d2 from "../../../../public/r2d2.png";
 
 const NullPointException1: React.FC = () => {

@@ -1,5 +1,5 @@
 import React from "react";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import faqbg from "../../../../public/landing_new/faqbg.png";
 
 const Faq: React.FC = () => {

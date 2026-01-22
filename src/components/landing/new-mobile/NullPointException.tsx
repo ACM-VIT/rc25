@@ -1,5 +1,5 @@
 import type React from "react";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import bg from "../../../../public/HowitWorks-2.png";
 
 const HowItWorksMobile2: React.FC = () => {

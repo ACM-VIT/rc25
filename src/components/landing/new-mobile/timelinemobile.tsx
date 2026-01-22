@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import useEmblaCarousel from "embla-carousel-react";
 import timelinebg from "@/app/assets/timelinebg.svg";
 import upper from "@/app/assets/upperbracket.svg";

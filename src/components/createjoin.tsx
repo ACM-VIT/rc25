@@ -2,7 +2,7 @@
 import type React from "react";
 import { useState, useCallback, useTransition } from "react";
 import { teamAction } from "@/app/actions/team";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import SignOut from "@/app/(auth)/authactions/signout";
 
 export default function Team({ name }: { name: string }) {

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
 import React from "react";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import bg from "@/app/assets/backgroundone.svg";
 import earthone from "@/app/assets/rounded_earth.svg";
 import CountdownTimer from "@/components/countdown-timer";

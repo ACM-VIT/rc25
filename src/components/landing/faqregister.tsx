@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import { Outfit } from "next/font/google";
 import regrock from "@/app/assets/regrock.svg";
 import yellowround from "@/app/assets/yellowround.svg";

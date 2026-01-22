@@ -4,7 +4,7 @@ import onboard from "@/app/actions/onboard";
 import { useFormStatus } from "react-dom";
 import { useSession } from "next-auth/react";
 import parsePhoneNumber from "libphonenumber-js";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import bg from "@/app/assets/detailsbg.svg";
 import SignOut from "@/app/(auth)/authactions/signout";
 import RC from "@/app/assets/RCLogo.svg";
@@ -41,7 +41,6 @@ export default function OnboardingForm() {
                     priority
                 />
             </div>
-
             <div className="relative z-30 flex justify-center flex-col h-full w-full sm:mt-2">
                 <div className="flex flex-row w-full h-1/12 justify-end items-center lg:p-4 ">
                     <button

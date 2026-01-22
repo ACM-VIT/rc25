@@ -2,7 +2,14 @@
 
 import DashboardBox from "@/components/DashboardBox";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import tires from "../../../public/instructions-assets/tires.svg"; 
+import tire1 from "../../../public/instructions-assets/tire1.svg"; 
+import tire2 from "../../../public/instructions-assets/tire2.svg"; 
+import localFont from "next/font/local";
+
+const formula1 = localFont({
+    src: "../../../public/fonts/Formula1-Bold_web_0.ttf",
+    display: "swap",
+});
 
 // TODO: Update instructions 
 
@@ -37,15 +44,22 @@ export default function Instructions() {
                 backgroundColor: "rgba(12, 12, 12, 1)",
             }}
         >
-            {/* <img 
-                src={tires.src}
-                alt="background"
-                className="absolute inset-0 w-full h-full object-cover z-0 scale-110"
-                style={{ transformOrigin: "center" }}
-            /> */}
-            <h1 className="text-5xl font-bold text-white mb-6 underline relative z-10">
+            <img 
+                src={tire1.src}
+                alt="tire1"
+                className="absolute z-0"
+                style={{ top: "-25%", left: "-25%" }}
+            />
+            <img 
+                src={tire2.src}
+                alt="tire2"
+                className="absolute z-0"
+                style={{ bottom: "-25%", right: "-25%" }}
+            />
+
+            <h1 className={`${formula1.className} text-5xl font-bold text-white mb-6 underline`}>
                 Instructions
-            </h1>
+            </h1> 
             <DashboardBox className="shadow-lg w-[85vw] max-w-4xl h-[70vh] rounded-lg p-6 border text-white bg-opacity-80 backdrop-blur-md relative z-10">
                 <ScrollArea className="flex-grow h-full w-full rounded-lg">
                     <ol className="list-decimal pl-6 space-y-6 text-lg">

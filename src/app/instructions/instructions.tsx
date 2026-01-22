@@ -2,8 +2,9 @@
 
 import DashboardBox from "@/components/DashboardBox";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import tires from "../../../public/instructions-assets/tires.svg"; 
 
-// TODO: Update instructions
+// TODO: Update instructions 
 
 export default function Instructions() {
     const instructions = [
@@ -31,17 +32,21 @@ export default function Instructions() {
 
     return (
         <div
-            className="min-h-screen relative flex flex-col items-center justify-center p-6"
+            className="min-h-screen relative flex flex-col items-center justify-center p-6 overflow-hidden"
             style={{
-                backgroundImage: "url('./submissionsbg.png')",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
+                backgroundColor: "rgba(12, 12, 12, 1)",
             }}
         >
-            <h1 className="text-5xl font-bold text-white mb-6 underline">
+            {/* <img 
+                src={tires.src}
+                alt="background"
+                className="absolute inset-0 w-full h-full object-cover z-0 scale-110"
+                style={{ transformOrigin: "center" }}
+            /> */}
+            <h1 className="text-5xl font-bold text-white mb-6 underline relative z-10">
                 Instructions
             </h1>
-            <DashboardBox className="shadow-lg w-[85vw] max-w-4xl h-[70vh] rounded-lg p-6 border text-white bg-opacity-80 backdrop-blur-md">
+            <DashboardBox className="shadow-lg w-[85vw] max-w-4xl h-[70vh] rounded-lg p-6 border text-white bg-opacity-80 backdrop-blur-md relative z-10">
                 <ScrollArea className="flex-grow h-full w-full rounded-lg">
                     <ol className="list-decimal pl-6 space-y-6 text-lg">
                         {instructions.map((instruction) => (

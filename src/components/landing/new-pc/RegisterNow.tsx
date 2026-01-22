@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import Image from "next/legacy/image";
+import Image from "next/image";
 import RC from "../../../../public/ReverseCoding.svg";
 import logo from "../../../../public/acmlogo.svg";
 import v1 from "../../../../public/Vector.svg";

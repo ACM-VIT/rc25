@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import Image from "next/legacy/image";
+import Image from "next/image";
 import windows from "../assets/windows.png";
 import mac from "../assets/mac.png";
 import linux from "../assets/linux.png";

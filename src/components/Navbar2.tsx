@@ -1,4 +1,4 @@
-import Image from "next/legacy/image";
+import Image from 'next/image';
 import smalllogo from "@/app/assets/smalllogo.png";
 
 export default function Navbar2() {

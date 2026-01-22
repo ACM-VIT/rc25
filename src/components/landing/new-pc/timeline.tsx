@@ -1,5 +1,5 @@
 import type React from "react";
-import Image from "next/legacy/image";
+import Image from "next/image";
 import timelinebg from "@/app/assets/timelinebg.svg";
 import upper from "@/app/assets/upperbracket.svg";
 import lower from "@/app/assets/lowerbracket.svg";

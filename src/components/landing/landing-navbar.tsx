@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import Image from "next/legacy/image";
+import Image from "next/image";
 import RCLogo from "@/app/assets/RCLogo.svg";
 import SignIn from "@/app/(auth)/authactions/signin";
 import Link from "next/link";

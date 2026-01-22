@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import Image from "next/legacy/image";
+import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
 import faqbg from "../../../../public/landing_new/faqbg.png";
 import SmoothInfiniteScroll from "./infinitescroll";

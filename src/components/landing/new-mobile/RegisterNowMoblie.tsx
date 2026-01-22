@@ -1,5 +1,5 @@
 import type React from "react";
-import Image from "next/legacy/image";
+import Image from "next/image";
 import bg from "../../../../public/RegisterNowMobile.png";
 import v1 from "../../../../public/Vector.svg";
 import v2 from "../../../../public/Vector(1).svg";

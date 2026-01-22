@@ -1,5 +1,5 @@
 import React from "react";
-import Image from "next/legacy/image";
+import Image from "next/image";
 import backgroundone from "@/app/assets/backgroundone.svg";
 import earthone from "@/app/assets/rounded_earth.svg";
 import wrclogo from "@/app/assets/wrclogo.svg";

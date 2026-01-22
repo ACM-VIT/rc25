@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Image from "next/legacy/image";
+import Image from "next/image";
 import { FaCrown } from "react-icons/fa";
 import {
   ScrollArea,

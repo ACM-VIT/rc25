@@ -1,7 +1,7 @@
 "use client";
 import { LeaveButton } from "@/components/buttons/leave";
 import type { User } from "@/db/schema";
-import Image from "next/legacy/image";
+import Image from "next/image";
 import SignOut from "@/app/(auth)/authactions/signout";
 import { Copy } from "lucide-react";
 import { useState } from "react";

@@ -1,5 +1,5 @@
 import React from "react";
-import Image from "next/legacy/image";
+import Image from "next/image";
 import dark from "../../../public/teamdash.png";
 import stormtrooper from "../../../public/stormtrooper.png";
 import { db } from "@/db";

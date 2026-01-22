@@ -1,7 +1,7 @@
 "use client"; // Ensures this is a client-side component
 
 import React, { useEffect, useState, useRef } from "react";
-import Image from "next/legacy/image";
+import Image from "next/image";
 import rock2 from "@/app/assets/rock2.svg";
 import { Outfit } from "next/font/google";
 

@@ -83,16 +83,25 @@ export default function InstructionBox({ text, number }: InstructionBoxProps) {
             
             {/* Number in the smaller red parallelogram */}
             <span 
-                className={`${formula1.className} absolute text-white text-sm`}
-                style={{ top: "56%", left: "6.5%" }}
+                className={`${formula1.className} absolute text-white`}
+                style={{ 
+                    top: "50%", 
+                    left: "6%",
+                    fontSize: "clamp(0.875rem, 1vw + 0.5rem, 1.5rem)"
+                }}
             >
                 {number.toString().padStart(2, "0")}
             </span>
             
             {/* Title text in the grey area */}
             <span 
-                className={`${formula1.className} absolute text-white text-xl`}
-                style={{ top: "50%", left: "20%", transform: "translateY(-50%)" }}
+                className={`${formula1.className} absolute text-white`}
+                style={{ 
+                    top: "48%", 
+                    left: "20%", 
+                    transform: "translateY(-50%)",
+                    fontSize: "clamp(1rem, 1.5vw + 0.5rem, 1.875rem)"
+                }}
             >
                 {text}
             </span>

@@ -5,10 +5,15 @@ import InstructionBox from "@/components/InstructionBox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import localFont from "next/font/local";
 
-const formula1 = localFont({
+const formula1Bold = localFont({
     src: "../../../public/fonts/Formula1-Bold_web_0.ttf",
     display: "swap",
 });
+
+const formula1Wide = localFont({
+    src: "../../../public/fonts/Formula1-Wide_web_0.ttf",
+    display: "swap",
+})
 
 // TODO: Update instructions
 
@@ -38,18 +43,18 @@ export default function Instructions() {
 
     return (
         <div
-            className="min-h-screen relative flex flex-col items-center justify-center p-6"
+            className="min-h-screen relative flex flex-col items-center justify-center p-4 sm:p-6"
             style={{
-                backgroundImage: "url('./submissionsbg.png')",
+                backgroundImage: "url('/Dashboard.png')",
                 backgroundSize: "cover",
                 backgroundPosition: "center",
             }}
         >
-            <h1 className={`${formula1.className} text-5xl font-bold text-white mb-6 underline`}>
+            <h1 className={`${formula1Wide.className} text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-bold text-white mb-14 sm:mb-18 md:mb-20 mt-[-100] underline`}>
                 Instructions
             </h1> 
             
-            <div className="w-full max-w-[95%] mx-auto flex flex-col gap-4">
+            <div className="w-full max-w-[90%] mx-auto flex flex-col gap-4">
                 {instructions.map((instruction, index) => (
                     <InstructionBox key={index} text={instruction.title} number={index + 1} />
                 ))}

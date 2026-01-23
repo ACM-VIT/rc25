@@ -330,7 +330,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                         </div>
 
                         {/* News Box - Expands to Fill Remaining Space */}
-                        <DashboardBox className="flex flex-col flex-1 overflow-auto bg-black/90 !border-rcred/80 !rounded-none">
+                        <DashboardBox className="flex flex-col flex-1 overflow-auto bg-black !border-rcred/80 !rounded-none">
                             <p className="text-xl font-['Formula1-Bold'] uppercase tracking-widest border-b border-white/30 pb-4 mb-4">
                                 NEWS
                             </p>
@@ -362,7 +362,7 @@ const Dashboard: React.FC<DashboardProps> = ({
 
                     {/* Middle Column - Questions */}
                     <div className="w-1/2">
-                        <DashboardBox className="h-full bg-black/90 !border-rcred/80 !rounded-none">
+                        <DashboardBox className="h-full bg-gradient-to-b from-[#000000] from-50% to-[#2A2A2A] to-33% !border-rcred/80 !rounded-none">
                             <p className="text-2xl font-['Formula1-Bold'] uppercase border-b border-white/30 pb-4 mb-4">
                                 Questions
                             </p>
@@ -390,7 +390,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                                           key={question.id}
                                           className="block"
                                         >
-                                          <div className="flex flex-row items-center py-2 border-b border-white/10 hover:bg-rcred/10 transition-colors font-['Formula1-Bold']">
+                                          <div className="flex flex-row items-center py-2 hover:bg-rcred/10 transition-colors font-['Formula1-Bold']">
                                             <p className="w-1/6 text-center p-2 text-sm orbitron">
                                               {question.slno}.
                                             </p>
@@ -433,7 +433,7 @@ const Dashboard: React.FC<DashboardProps> = ({
 
                     {/* Right Column - Leaderboard */}
                     <div className="w-1/4">
-                        <DashboardBox className="h-full bg-black/90 !border-rcred/80 !rounded-none">
+                        <DashboardBox className="h-full bg-gradient-to-b from-[#000000] from-50% to-[#2A2A2A] to-33% !border-rcred/80 !rounded-none">
                             <div className="border-b border-white/30 pb-2 mb-4">
                                 <p className="text-2xl overflow-x-hidden font-['Formula1-Bold'] uppercase">
                                     Leaderboard

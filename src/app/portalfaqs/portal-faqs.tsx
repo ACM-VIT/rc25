@@ -58,7 +58,7 @@ export default function PortalFaqs() {
 
             <div className="w-full max-w-[95%] sm:max-w-[90%] md:max-w-[85%] lg:max-w-[80%] mx-auto flex flex-col gap-2 sm:gap-3 md:gap-4 lg:gap-5">
                 {faqs.map((faq, index) => (
-                    <NumberedCard key={faq.id} title={faq.question} index={index + 1} />
+                    <NumberedCard key={faq.id} title={faq.question} description={faq.answer} index={index + 1} />
                 ))}
             </div>
         </div>

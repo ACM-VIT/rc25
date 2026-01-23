@@ -46,7 +46,7 @@ export default function Instructions() {
 
             <div className="w-full max-w-[95%] sm:max-w-[90%] md:max-w-[85%] lg:max-w-[80%] mx-auto flex flex-col gap-2 sm:gap-3 md:gap-4 lg:gap-5">
                 {instructions.map((instruction, index) => (
-                    <NumberedCard key={index} title={instruction.title} index={index + 1} />
+                    <NumberedCard key={index} title={instruction.title} description={instruction.description} index={index + 1} />
                 ))}
             </div>
         </div>

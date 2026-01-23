@@ -296,29 +296,38 @@ const Dashboard: React.FC<DashboardProps> = ({
                     {/* Left Column - Team, News, and Timer */}
                     <div className="flex flex-col w-1/5 gap-4 h-full">
                         {/* Team Details Box */}
-                        <DashboardBox className="flex flex-col h-fit max-h-60 flex-none overflow-auto">
-                            <p className="text-xl font-custom border-b border-rcgrey/20 pb-4 truncate">
-                                {teamDetails.name}
-                            </p>
+                        <div className="flex flex-col h-fit max-h-60 flex-none overflow-auto">
                             <ScrollArea className="h-full">
                                 <ul className="space-y-3 pt-4 px-1">
                                     {teamDetails.members.map((member) => (
                                         <li
                                             key={member.id}
-                                            className="flex justify-between"
+                                            className="relative"
                                         >
-                                            <p className="flex">
-                                                {member.name?.slice(
-                                                    0,
-                                                    member.name.lastIndexOf(" ")
-                                                ) || "Anonymous"}
-                                            </p>
-                                            <p>{member.score}&nbsp;pts</p>
+                                            <div className="flex justify-between items-center bg-[#080A0D] py-4 px-4 border-b-[3px] border-[#A7282D]">
+                                                <div className="flex items-center gap-3">
+                                                    <img src="/pokeball.svg" alt="" className="w-7 h-7 flex-shrink-0 -mt-3" />
+                                                    <div className="flex flex-col">
+                                                        <p className="font-['Formula1-Bold']">
+                                                            {member.name?.slice(
+                                                                0,
+                                                                member.name.lastIndexOf(" ")
+                                                            ) || "Anonymous"}
+                                                        </p>
+                                                        <p className="text-sm text-gray-400 font-['Formula1-Regular']">
+                                                            {teamDetails.name}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <p className="font-['Orbitron'] text-2xl">{member.score.toString().padStart(2, '0')}</p>
+                                            </div>
+                                            <div className="h-[7px] bg-black"></div>
+                                            <div className="h-[9px] bg-[#222221]"></div>
                                         </li>
                                     ))}
                                 </ul>
                             </ScrollArea>
-                        </DashboardBox>
+                        </div>
 
                         {/* News Box - Expands to Fill Remaining Space */}
                         <DashboardBox className="flex flex-col flex-1 overflow-auto bg-black/90 !border-rcred/80 !rounded-none">

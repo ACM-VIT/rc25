@@ -9,25 +9,32 @@ interface NewsProps {
 const News = ({ title, time, content }: NewsProps) => {
   const highlightText = (text: string) => {
     return text
-      .split(/(\bRound\s*\d+|\bReverse\s+Coding\b|\bQuestion\s*\d+\b)/gi)
+      .split(/(\bRound\s*\d+|\bReverse\s+Coding\b|\bQuestion\s*\d+\b|\bACM-VIT\b)/gi)
       .map((part, index) => {
         if (/^Round\s*\d+$/i.test(part)) {
           return (
-            <span key={index} className="text-red-500 font-semibold inline">
+            <span key={index} className="text-[#E10600] font-semibold inline">
               {part}
             </span>
           );
         }
         if (/^Reverse\s+Coding$/i.test(part)) {
           return (
-            <span key={index} className="text-purple-500 font-semibold inline">
+            <span key={index} className="text-[#FF8C00] font-semibold inline">
               {part}
             </span>
           );
         }
         if (/^Question\s*\d+$/i.test(part)) {
           return (
-            <span key={index} className="text-yellow-500 font-semibold inline">
+            <span key={index} className="text-[#FFA500] font-semibold inline">
+              {part}
+            </span>
+          );
+        }
+        if (/^ACM-VIT$/i.test(part)) {
+          return (
+            <span key={index} className="text-[#FF8C00] font-semibold inline">
               {part}
             </span>
           );
@@ -41,17 +48,20 @@ const News = ({ title, time, content }: NewsProps) => {
   };
 
   return (
-    <div className="p-4 flex flex-col bg-white bg-opacity-5 backdrop-filter backdrop-blur-lg border border-[#EEEEEE0D] rounded-lg shadow-md overflow-hidden">
+    <div className="p-4 flex flex-col bg-[#1a1a1a] overflow-hidden">
       {/* Title & Time Section */}
-      <div className="flex flex-wrap justify-between items-center gap-2">
-        <h2 className="text-lg font-bold flex-1 break-normal">
+      <div className="flex items-baseline gap-4 mb-3">
+        <h2 className="text-xl font-['Formula1-Bold'] text-white">
           {highlightText(title)}
         </h2>
-        <span className="text-sm text-gray-400 shrink-0">{time}</span>
+        <span className="text-sm text-gray-400 font-['Formula1-Regular']">{time}</span>
       </div>
 
+      {/* Horizontal Rule */}
+      <hr className="border-gray-600 mb-3" />
+
       {/* Content Section */}
-      <p className="mt-2 text-sm break-normal">{highlightText(content)}</p>
+      <p className="text-sm font-['Formula1-Regular'] text-white/90 leading-relaxed">{highlightText(content)}</p>
     </div>
   );
 };

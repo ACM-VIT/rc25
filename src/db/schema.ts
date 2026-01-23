@@ -1,10 +1,8 @@
-import { sql } from "drizzle-orm";
 import {
   boolean,
   integer,
   pgEnum,
   pgTable,
-  primaryKey,
   text,
   timestamp,
   uniqueIndex,
@@ -14,15 +12,25 @@ import {
 export const genderEnum = pgEnum("Gender", ["male", "female"]);
 export const difficultyEnum = pgEnum("Difficulty", ["EASY", "MEDIUM", "HARD"]);
 export const evalEnum = pgEnum("EvalEnum", [
+  "IN_QUEUE",
+  "PROCESSING",
   "ACCEPTED",
-  "RUNTIME_ERROR",
-  "COMPILE_ERROR",
+  "WRONG_ANSWER",
+  "TIME_LIMIT_EXCEEDED",
+  "COMPILATION_ERROR",
+  "RUNTIME_ERROR_SIGSEGV",
+  "RUNTIME_ERROR_SIGXFSZ",
+  "RUNTIME_ERROR_SIGFPE",
+  "RUNTIME_ERROR_SIGABRT",
+  "RUNTIME_ERROR_NZEC",
+  "RUNTIME_ERROR_OTHER",
+  "INTERNAL_ERROR",
+  "EXEC_FORMAT_ERROR",
 ]);
+
 export const crdbInternalRegionEnum = pgEnum("crdb_internal_region", [
   "aws-ap-south-1",
 ]);
-
-const boolArrayDefault = sql`ARRAY[]::BOOL[]`;
 
 export const users = pgTable(
   "User",
@@ -167,41 +175,59 @@ export const rounds = pgTable(
   (table) => [uniqueIndex("Round_number_key").on(table.number)],
 );
 
-export const problems = pgTable("Problem", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  title: text("title").notNull(),
-  nickname: text("nickname").notNull(),
-  description: text("description").notNull(),
-  difficulty: difficultyEnum("difficulty").notNull(),
-  initial: integer("initial").notNull(),
-  minimum: integer("minimum").notNull(),
-  decay: integer("decay").notNull(),
-  lin_dl: text("lin_dl").notNull(),
-  win_dl: text("win_dl").notNull(),
-  mac_dl: text("mac_dl").notNull(),
-  web_code: text("web_code").notNull(),
-  normal_cases: integer("normal_cases").notNull(),
-  edge_cases: integer("edge_cases").notNull(),
-  roundId: text("roundId")
-    .notNull()
-    .references(() => rounds.id),
-  isHidden: boolean("isHidden").notNull().default(false),
-});
+export const problems = pgTable(
+  "Problem",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    title: text("title").notNull(),
+    nickname: text("nickname").notNull(),
+    description: text("description").notNull(),
+    difficulty: difficultyEnum("difficulty").notNull(),
+    initial: integer("initial").notNull(), // Starting points
+    minimum: integer("minimum").notNull(), // Minimum points floor
+    decay: integer("decay").notNull(), // Number of solves to reach minimum
+    // Download links
+    web_code: text("web_code").notNull(),
+    // Test case counts (always 10 total, but keeping for flexibility)
+    normal_cases: integer("normal_cases").notNull(),
+    edge_cases: integer("edge_cases").notNull(),
+    // Time and memory limits
+    timeLimitMs: integer("timeLimitMs").notNull().default(1000),
+    memoryLimitKb: integer("memoryLimitKb").notNull().default(262144), // 256MB
+    roundId: text("roundId")
+      .notNull()
+      .references(() => rounds.id),
+    isHidden: boolean("isHidden").notNull().default(false),
+  },
+  (table) => [index("Problem_roundId_idx").on(table.roundId)],
+);
 
-export const testcases = pgTable("Testcase", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  weight: integer("weight").notNull().default(1),
-  input: text("input").notNull(),
-  output: text("output").notNull(),
-  problemId: text("problemId")
-    .notNull()
-    .references(() => problems.id),
-  isEdge: boolean("isEdge").notNull().default(false),
-});
+export const testcases = pgTable(
+  "Testcase",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    weight: integer("weight").notNull().default(1),
+    input: text("input").notNull(),
+    output: text("output").notNull(),
+    problemId: text("problemId")
+      .notNull()
+      .references(() => problems.id, { onDelete: "cascade" }),
+    isEdge: boolean("isEdge").notNull().default(false),
+    isHidden: boolean("isHidden").notNull().default(false), // Hidden from users in results
+    orderIndex: integer("orderIndex").notNull().default(0),
+  },
+  (table) => [
+    index("Testcase_problemId_idx").on(table.problemId),
+    index("Testcase_problemId_orderIndex_idx").on(
+      table.problemId,
+      table.orderIndex,
+    ),
+  ],
+);
 
 export const submissions = pgTable(
   "Submission",
@@ -210,14 +236,15 @@ export const submissions = pgTable(
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
     code: text("code").notNull(),
+    language: text("language").notNull(), // Programming language used
     problemId: text("problemId")
       .notNull()
       .references(() => problems.id),
     userId: text("userId")
       .notNull()
       .references(() => users.id),
+    teamId: text("teamId").references(() => teams.id), // For team-based scoring
     token: text("token"),
-    // nullable in Prisma with default 0
     createdAt: timestamp("createdAt", { withTimezone: true, mode: "date" })
       .notNull()
       .defaultNow(),
@@ -226,10 +253,20 @@ export const submissions = pgTable(
       .defaultNow(),
     evaluated: boolean("evaluated").notNull().default(false),
     evaluationStatus: evalEnum("evaluationStatus"),
+    // Quick access to results without joining
+    testcasesPassed: integer("testcasesPassed").notNull().default(0), // 0-10
   },
-  (table) => [uniqueIndex("Submission_token_key").on(table.token)],
+  (table) => [
+    uniqueIndex("Submission_token_key").on(table.token),
+    index("Submission_userId_idx").on(table.userId),
+    index("Submission_problemId_idx").on(table.problemId),
+    index("Submission_teamId_idx").on(table.teamId),
+    index("Submission_createdAt_idx").on(table.createdAt),
+    index("Submission_problemId_userId_idx").on(table.problemId, table.userId),
+  ],
 );
 
+// Tracks best solve per user/team per problem for partial scoring
 export const solve = pgTable(
   "Solve",
   {
@@ -242,13 +279,51 @@ export const solve = pgTable(
     userId: text("userId")
       .notNull()
       .references(() => users.id),
-    testcasespassed: boolean("testcasespassed")
-      .array()
-      .notNull()
-      .default(boolArrayDefault),
+    teamId: text("teamId").references(() => teams.id),
+    // Reference to the best submission
+    bestSubmissionId: text("bestSubmissionId").references(() => submissions.id),
+    // Best testcases passed (0-10)
+    testcasesPassed: integer("testcasesPassed").notNull().default(0),
   },
   (table) => [
     uniqueIndex("Solve_userId_problemId_key").on(table.userId, table.problemId),
+    uniqueIndex("Solve_teamId_problemId_key").on(table.teamId, table.problemId),
+    index("Solve_problemId_idx").on(table.problemId),
+    index("Solve_teamId_idx").on(table.teamId),
+    index("Solve_problemId_testcasesPassed_idx").on(
+      table.problemId,
+      table.testcasesPassed,
+    ),
+  ],
+);
+
+// Junction table for detailed per-testcase results per submission
+export const submissionTestcases = pgTable(
+  "SubmissionTestcase",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    submissionId: text("submissionId")
+      .notNull()
+      .references(() => submissions.id, { onDelete: "cascade" }),
+    testcaseId: text("testcaseId")
+      .notNull()
+      .references(() => testcases.id, { onDelete: "cascade" }),
+    passed: boolean("passed").notNull(),
+    executionTimeMs: integer("executionTimeMs"),
+    memoryUsedKb: integer("memoryUsedKb"),
+    // For debugging (only store if needed)
+    actualOutput: text("actualOutput"),
+    errorMessage: text("errorMessage"),
+  },
+  (table) => [
+    uniqueIndex("SubmissionTestcase_submission_testcase_key").on(
+      table.submissionId,
+      table.testcaseId,
+    ),
+    index("SubmissionTestcase_submissionId_idx").on(table.submissionId),
+    index("SubmissionTestcase_testcaseId_idx").on(table.testcaseId),
   ],
 );
 
@@ -298,6 +373,7 @@ export type Problem = typeof problems.$inferSelect;
 export type Testcase = typeof testcases.$inferSelect;
 export type Submission = typeof submissions.$inferSelect;
 export type Solve = typeof solve.$inferSelect;
+export type SubmissionTestcase = typeof submissionTestcases.$inferSelect;
 export type TeamRound = typeof teamRounds.$inferSelect;
 export type Admin = typeof admins.$inferSelect;
 export type Flags = typeof flags.$inferSelect;

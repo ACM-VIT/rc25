@@ -281,7 +281,7 @@ const Dashboard: React.FC<DashboardProps> = ({
             <div
                 className="fixed inset-0 w-full h-full bg-black"
                 style={{
-                    backgroundImage: `url('./dashbg.png')`,
+                    backgroundImage: `url('./dashboard.png')`,
                     backgroundPosition: "center",
                     backgroundSize: "cover",
                     backgroundRepeat: "no-repeat",
@@ -296,33 +296,42 @@ const Dashboard: React.FC<DashboardProps> = ({
                     {/* Left Column - Team, News, and Timer */}
                     <div className="flex flex-col w-1/5 gap-4 h-full">
                         {/* Team Details Box */}
-                        <DashboardBox className="flex flex-col h-fit max-h-60 flex-none overflow-auto">
-                            <p className="text-xl font-custom border-b border-rcgrey/20 pb-4 truncate">
-                                {teamDetails.name}
-                            </p>
+                        <div className="flex flex-col h-fit max-h-60 flex-none overflow-auto">
                             <ScrollArea className="h-full">
                                 <ul className="space-y-3 pt-4 px-1">
                                     {teamDetails.members.map((member) => (
                                         <li
                                             key={member.id}
-                                            className="flex justify-between"
+                                            className="relative"
                                         >
-                                            <p className="flex">
-                                                {member.name?.slice(
-                                                    0,
-                                                    member.name.lastIndexOf(" ")
-                                                ) || "Anonymous"}
-                                            </p>
-                                            <p>{member.score}&nbsp;pts</p>
+                                            <div className="flex justify-between items-center bg-[#080A0D] py-4 px-4 border-b-[3px] border-[#A7282D]">
+                                                <div className="flex items-center gap-3">
+                                                    <img src="/pokeball.svg" alt="" className="w-7 h-7 flex-shrink-0 -mt-3" />
+                                                    <div className="flex flex-col">
+                                                        <p className="font-['Formula1-Bold']">
+                                                            {member.name?.slice(
+                                                                0,
+                                                                member.name.lastIndexOf(" ")
+                                                            ) || "Anonymous"}
+                                                        </p>
+                                                        <p className="text-sm text-gray-400 font-['Formula1-Regular']">
+                                                            {teamDetails.name}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <p className="font-['Orbitron'] text-2xl">{member.score.toString().padStart(2, '0')}</p>
+                                            </div>
+                                            <div className="h-[7px] bg-black"></div>
+                                            <div className="h-[9px] bg-[#222221]"></div>
                                         </li>
                                     ))}
                                 </ul>
                             </ScrollArea>
-                        </DashboardBox>
+                        </div>
 
                         {/* News Box - Expands to Fill Remaining Space */}
-                        <DashboardBox className="flex flex-col flex-1 overflow-auto">
-                            <p className="text-xl font-semibold border-b-2 font-custom tracking-widest border-rcgrey/20 pb-4 mb-4">
+                        <DashboardBox className="flex flex-col flex-1 overflow-auto bg-black !border-rcred/80 !rounded-none">
+                            <p className="text-xl font-['Formula1-Bold'] uppercase tracking-widest border-b border-white/30 pb-4 mb-4">
                                 NEWS
                             </p>
                             {/* Scrollable News Section */}
@@ -346,33 +355,33 @@ const Dashboard: React.FC<DashboardProps> = ({
                         </DashboardBox>
 
                         {/* Countdown Timer - Stays Fixed at Bottom */}
-                        <DashboardBox className="p-6 text-center h-fit mt-auto">
+                        <DashboardBox className="p-6 text-center h-fit mt-auto bg-black/90 !border-rcred/80 !rounded-none">
                             <CountdownTimer />
                         </DashboardBox>
                     </div>
 
                     {/* Middle Column - Questions */}
                     <div className="w-1/2">
-                        <DashboardBox className="h-full">
-                            <p className="text-2xl font-custom border-b border-rcgrey/20 pb-4 mb-4">
+                        <DashboardBox className="h-full bg-gradient-to-b from-[#000000] from-50% to-[#2A2A2A] to-33% !border-rcred/80 !rounded-none">
+                            <p className="text-2xl font-['Formula1-Bold'] uppercase border-b border-white/30 pb-4 mb-4">
                                 Questions
                             </p>
-                            <div className="flex flex-row pb-4 w-full">
-                                <h1 className="w-1/6 text-xl font-bold text-center">
-                                    Q No.
+                            <div className="flex flex-row pb-4 w-full font-['Formula1-Bold']">
+                                <h1 className="w-1/6 text-lg text-center">
+                                    SI No.
                                 </h1>
-                                <h1 className="w-2/6 text-xl font-bold text-center">
+                                <h1 className="w-2/6 text-lg text-center">
                                     Question
                                 </h1>
-                                <h1 className="w-1/6 text-xl font-bold text-center">
+                                <h1 className="w-1/6 text-lg text-center">
                                     Difficulty
                                 </h1>
-                                <h1 className="w-2/6 text-xl font-bold text-center">
+                                <h1 className="w-2/6 text-lg text-center">
                                     Status
                                 </h1>
                             </div>
-                            <ScrollArea className="h-[80%] rounded-md">
-                                <div className="space-y-4">
+                            <ScrollArea className="h-[80%]">
+                                <div className="space-y-1">
                                     {questions
                                       .filter((question) => !question.isHidden)
                                       .map((question) => (
@@ -381,15 +390,15 @@ const Dashboard: React.FC<DashboardProps> = ({
                                           key={question.id}
                                           className="block"
                                         >
-                                          <div className="flex flex-row items-center mt-4 rounded-lg hover:bg-weirdPurple/20 transition-colors">
-                                            <p className="w-1/6 text-center p-2">
-                                              {question.slno}
+                                          <div className="flex flex-row items-center py-2 hover:bg-rcred/10 transition-colors font-['Formula1-Bold']">
+                                            <p className="w-1/6 text-center p-2 text-sm orbitron">
+                                              {question.slno}.
                                             </p>
-                                            <p className="w-2/6 text-center p-2">
+                                            <p className="w-2/6 text-center p-2 text-sm uppercase tracking-wide font-['Formula1-Regular']">
                                               {question.questionName}
                                             </p>
                                             <p
-                                              className="w-1/6 text-center p-2"
+                                              className="w-1/6 text-center p-2 text-sm"
                                               style={{
                                                 color: getDifficultyColor(
                                                   question.difficulty
@@ -405,7 +414,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                                                 : "Hard"}
                                             </p>
                                             <p
-                                              className="w-2/6 text-center p-2"
+                                              className="w-2/6 text-center p-2 text-sm orbitron"
                                               style={{
                                                 color: getStatusColor(
                                                   question.status
@@ -424,43 +433,43 @@ const Dashboard: React.FC<DashboardProps> = ({
 
                     {/* Right Column - Leaderboard */}
                     <div className="w-1/4">
-                        {leaderboardShow ? (
-                            <DashboardBox className="h-full">
-                                <p className="text-2xl overflow-x-hidden font-custom border-b-2 border-rcgrey/20 pb-4 mb-4">
+                        <DashboardBox className="h-full bg-gradient-to-b from-[#000000] from-50% to-[#2A2A2A] to-33% !border-rcred/80 !rounded-none">
+                            <div className="border-b border-white/30 pb-2 mb-4">
+                                <p className="text-2xl overflow-x-hidden font-['Formula1-Bold'] uppercase">
                                     Leaderboard
                                 </p>
+                                {leaderboardShow && (
+                                    <p className="text-xs text-white/70 font-['Formula1-Bold']">
+                                        LIVE
+                                    </p>
+                                )}
+                            </div>
+                            {leaderboardShow ? (
                                 <ScrollArea className="h-[90%] overflow-y-auto">
-                                    <ul className="space-y-3 px-1">
+                                    <ul className="space-y-1">
                                         {sortedLeaderboard.map(
                                             (team, index) => (
                                                 <li
                                                     key={team.id}
-                                                    className="flex justify-between items-center"
+                                                    className="flex justify-between items-center py-2 border-b border-white/10 font-['Formula1-Bold']"
                                                 >
-                                                    <div className="flex w-2/3 items-center">
-                                                        <div className="w-8 flex justify-start items-center">
-                                                            {index === 0 && (
-                                                                <FaCrown className="text-yellow-500 mr-2" />
-                                                            )}
-                                                            {index === 1 && (
-                                                                <FaCrown className="text-gray-400" />
-                                                            )}
-                                                            {index === 2 && (
-                                                                <FaCrown className="text-[#CD7F32]" />
-                                                            )}
-                                                            {index > 2 && (
-                                                                <span className="text-white">
-                                                                    {index + 1}
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                        <span className="font-medium truncate">
+                                                    <div className="flex items-center gap-3 flex-1">
+                                                        <span className="text-white/50 w-6 text-center text-sm">
+                                                            {index + 1}
+                                                        </span>
+                                                        <span className="text-green-500 text-xs w-3">
+                                                            {index < 3 ? "▲" : ""}
+                                                        </span>
+                                                        <span className="font-medium truncate uppercase tracking-wide text-sm">
                                                             {team.name}
                                                         </span>
                                                     </div>
-                                                    <div className="flex items-center justify-end w-1/3">
-                                                        <span className="font-semibold">
-                                                            {team.score} pts
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="text-white/70 text-xs">
+                                                            +{index + 1}
+                                                        </span>
+                                                        <span className="font-semibold text-sm">
+                                                            {team.score}
                                                         </span>
                                                     </div>
                                                 </li>
@@ -468,19 +477,14 @@ const Dashboard: React.FC<DashboardProps> = ({
                                         )}
                                     </ul>
                                 </ScrollArea>
-                            </DashboardBox>
-                        ) : (
-                            <DashboardBox className="h-full">
-                                <p className="text-2xl overflow-x-hidden font-custom border-b-2 border-rcgrey/20 pb-4 mb-4">
-                                    Leaderboard
-                                </p>
-                                <div className="flex justify-center items-center ">
-                                    <p className="text-xl font-semibold text-center mt-10">
-                                        The dark side of suspense is strong. Wait, you must, for the leaderboard to reveal itself.
+                            ) : (
+                                <div className="flex justify-center items-center h-[80%]">
+                                    <p className="text-sm font-['Formula1-Bold'] text-center text-white/70">
+                                        Leaderboard hidden
                                     </p>
                                 </div>
-                            </DashboardBox>
-                        )}
+                            )}
+                        </DashboardBox>
                     </div>
                 </div>
             </div>

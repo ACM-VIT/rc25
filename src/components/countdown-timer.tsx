@@ -74,8 +74,8 @@ const CountdownTimer: React.FC = () => {
 
     return (
         <div className="flex flex-col items-center w-full">
-            <div className="flex flex-col items-center space-y-1 gap-2 mb-1">
-                <h1 className="text-white text-sm md:text-lg lg:text-lg how-it-works-heading tracking-wider">
+            <div className="flex flex-col items-center space-y-1 gap-2 mb-4">
+                <h1 className="text-white text-sm md:text-base lg:text-lg font-['Formula1-Bold'] tracking-wider uppercase">
                     {roundNumber !== null ? (
                         <>
                             <span className="text-[#F04D4E]">ROUND {roundNumber} </span> {status}
@@ -86,16 +86,16 @@ const CountdownTimer: React.FC = () => {
                 </h1>
             </div>
 
-            <div className={`flex items-center justify-center md:gap-1 lg:gap-1 ${orbitron.className}`}>
-                <span className="md:text-sm lg:text-xl xl:text-2xl text-white md:px-1 xl:px-2 py-1 md:min-w-[30px] xl:min-w-[48px] text-center">
+            <div className={`flex items-center justify-center gap-2 ${orbitron.className}`}>
+                <span className="text-3xl text-white text-center">
                     {timer[0]}{timer[1]}
                 </span>
-                <span className="lg:text-xl xl:text-2xl text-white">:</span>
-                <span className="lg:text-xl xl:text-2xl text-white md:px-1 xl:px-3 py-1 md:min-w-[30px] xl:min-w-[48px] text-center">
+                <span className="text-3xl text-white">:</span>
+                <span className="text-3xl text-white text-center">
                     {timer[3]}{timer[4]}
                 </span>
-                <span className="lg:text-xl xl:text-2xl text-white">:</span>
-                <span className="lg:text-xl xl:text-2xl text-white md:px-1 xl:px-3 py-1 md:min-w-[30px] xl:min-w-[48px] text-center">
+                <span className="text-3xl text-white">:</span>
+                <span className="text-3xl text-white text-center">
                     {timer[6]}{timer[7]}
                 </span>
             </div>

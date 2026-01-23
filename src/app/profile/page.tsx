@@ -137,7 +137,7 @@ export default async function Page() {
                                 </h4>
                             </div>
 
-                            <h1 className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-purple-300 text-center text-lg sm:text-2xl md:text-2xl lg:text-3xl xl:text-4xl how-it-works-heading">
+                            <h1 className="text-transparent bg-clip-text bg-linear-to-r from-purple-500 to-purple-300 text-center text-lg sm:text-2xl md:text-2xl lg:text-3xl xl:text-4xl how-it-works-heading">
                                 HELLO {team?.name}!
                             </h1>
 

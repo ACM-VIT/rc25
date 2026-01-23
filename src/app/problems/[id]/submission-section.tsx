@@ -58,7 +58,7 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
         if (!submission) return <p>No submission found</p>;
         if (!submission.evaluated)
             return (
-                <div className="w-full border-1 py-4 px-4 rounded-md border-[#EB5757] text-center">
+                <div className="w-full border py-4 px-4 rounded-md border-[#EB5757] text-center">
                     Submission is being evaluated...
                 </div>
             );
@@ -70,7 +70,7 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
 
         return (
             <div
-                className="w-full flex items-center justify-between border-1 py-4 px-4 rounded-md "
+                className="w-full flex items-center justify-between border py-4 px-4 rounded-md "
                 style={{
                     borderColor:
                         passedCount === totalTests
@@ -115,7 +115,7 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
 
     return (
         <div className="rounded-lg flex flex-col h-full bg-black/50 border-2 border-weirdPurple hover:border-primary">
-            <ScrollArea className="flex-grow h-full w-full rounded-lg border-0">
+            <ScrollArea className="grow h-full w-full rounded-lg border-0">
                 <div
                     className="w-full rounded-lg p-4 text-white h-full overflow-y-auto"
                     style={{
@@ -126,7 +126,7 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
                 >
                     {submissions.length === 0 ? (
                         <div
-                            className="w-full flex items-center justify-center border-[#EB5757] border-1 py-2 rounded-md">
+                            className="w-full flex items-center justify-center border-[#EB5757] border py-2 rounded-md">
                             {randomMessage}
                         </div>
                     ) : submissions.length === 1 &&

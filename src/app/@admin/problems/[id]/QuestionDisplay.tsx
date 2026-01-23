@@ -174,10 +174,10 @@ export default function ViewProblem({ problem }: ViewProblemProps) {
             <td className="px-6 py-4 whitespace-nowrap text-black">
                 {testCase.weight}
             </td>
-            <td className="px-6 py-4 text-black break-words">
+            <td className="px-6 py-4 text-black wrap-break-word">
                 {testCase.input}
             </td>
-            <td className="px-6 py-4 text-black break-words">
+            <td className="px-6 py-4 text-black wrap-break-word">
                 {testCase.output}
             </td>
             <td className="px-6 py-4 whitespace-nowrap">

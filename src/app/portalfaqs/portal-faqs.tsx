@@ -66,12 +66,12 @@ export default function PortalFaqs() {
                     {faqs.map((faq, index) => (
                         <div
                             key={faq.id}
-                            className="mb-6 items-baseline w-[100%] md:w-[80%] mx-auto"
+                            className="mb-6 items-baseline w-full md:w-[80%] mx-auto"
                         >
                             <Accordion type="single" collapsible>
                                 <AccordionItem
                                     value={`question${index + 1}`}
-                                    className="rounded-lg border border-[rgba(155,81,224,0.5)] bg-[rgba(66,66,66,0.75)] shadow-[0_0_9.7px_1px_#FFF,0_0_18.8px_10px_#7638F5] backdrop-blur-[16px]"
+                                    className="rounded-lg border border-[rgba(155,81,224,0.5)] bg-[rgba(66,66,66,0.75)] shadow-[0_0_9.7px_1px_#FFF,0_0_18.8px_10px_#7638F5] backdrop-blur-lg"
                                 >
                                     <AccordionTrigger className="md:text-lg font-medium p-4">
                                         {faq.question}

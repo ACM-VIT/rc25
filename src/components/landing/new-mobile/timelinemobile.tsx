@@ -116,7 +116,7 @@ const TimeLineMobile: React.FC = () => {
                                 {timelineData.map((item, index) => (
                                     <div
                                         key={index}
-                                        className="embla__slide flex-shrink-0 min-w-[100vw] sm:min-w-[65vw] md:min-w-[55vw] flex justify-center py-8"
+                                        className="embla__slide shrink-0 min-w-screen sm:min-w-[65vw] md:min-w-[55vw] flex justify-center py-8"
                                     >
                                         <div className="relative group w-[50vw] aspect-video bg-white/40 border border-[#CEB7FF] transition-all duration-300 ease-in-out hover:bg-white/20">
                                             {/* Top Left Bracket */}

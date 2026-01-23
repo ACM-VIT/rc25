@@ -42,7 +42,7 @@ export default function Instructions() {
                 Instructions
             </h1>
             <DashboardBox className="shadow-lg w-[85vw] max-w-4xl h-[70vh] rounded-lg p-6 border text-white bg-opacity-80 backdrop-blur-md">
-                <ScrollArea className="flex-grow h-full w-full rounded-lg">
+                <ScrollArea className="grow h-full w-full rounded-lg">
                     <ol className="list-decimal pl-6 space-y-6 text-lg">
                         {instructions.map((instruction) => (
                             <li key={instruction.title}>

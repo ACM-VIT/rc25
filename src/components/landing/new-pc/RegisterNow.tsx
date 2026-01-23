@@ -64,7 +64,7 @@ const RegisterNow1: React.FC = () => {
           <h1 className="text-white text-9xl text-center sm:text-[75px] md:text-[100px] lg:text-[150px] xl:text-[250spx] tracking-widest how-it-works-heading">
             REGISTER
           </h1>
-          <h1 className="text-9xl font-bold text-center bg-gradient-to-b from-white to-transparent text-transparent bg-clip-text sm:text-[75px] md:text-[100px] lg:text-[150px] xl:text-[250spx] tracking-widest how-it-works-heading">
+          <h1 className="text-9xl font-bold text-center bg-linear-to-b from-white to-transparent text-transparent bg-clip-text sm:text-[75px] md:text-[100px] lg:text-[150px] xl:text-[250spx] tracking-widest how-it-works-heading">
             NOW
           </h1>
         </button>

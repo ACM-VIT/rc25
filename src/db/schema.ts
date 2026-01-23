@@ -1,17 +1,20 @@
 import {
   boolean,
-  integer,
-  pgEnum,
-  pgTable,
+  int4,
+  cockroachEnum,
+  cockroachTable,
   text,
   timestamp,
   uniqueIndex,
   index,
-} from "drizzle-orm/pg-core";
-
-export const genderEnum = pgEnum("Gender", ["male", "female"]);
-export const difficultyEnum = pgEnum("Difficulty", ["EASY", "MEDIUM", "HARD"]);
-export const evalEnum = pgEnum("EvalEnum", [
+} from "drizzle-orm/cockroach-core";
+export const genderEnum = cockroachEnum("Gender", ["male", "female"]);
+export const difficultyEnum = cockroachEnum("Difficulty", [
+  "EASY",
+  "MEDIUM",
+  "HARD",
+]);
+export const evalEnum = cockroachEnum("EvalEnum", [
   "IN_QUEUE",
   "PROCESSING",
   "ACCEPTED",
@@ -28,11 +31,7 @@ export const evalEnum = pgEnum("EvalEnum", [
   "EXEC_FORMAT_ERROR",
 ]);
 
-export const crdbInternalRegionEnum = pgEnum("crdb_internal_region", [
-  "aws-ap-south-1",
-]);
-
-export const users = pgTable(
+export const users = cockroachTable(
   "User",
   {
     id: text("id")
@@ -52,7 +51,7 @@ export const users = pgTable(
   (table) => [uniqueIndex("User_email_key").on(table.email)],
 );
 
-export const accounts = pgTable(
+export const accounts = cockroachTable(
   "Account",
   {
     id: text("id")
@@ -66,7 +65,7 @@ export const accounts = pgTable(
     providerAccountId: text("providerAccountId").notNull(),
     refresh_token: text("refresh_token"),
     access_token: text("access_token"),
-    expires_at: integer("expires_at"),
+    expires_at: int4("expires_at"),
     token_type: text("token_type"),
     scope: text("scope"),
     id_token: text("id_token"),
@@ -80,7 +79,7 @@ export const accounts = pgTable(
   ],
 );
 
-export const sessions = pgTable(
+export const sessions = cockroachTable(
   "Session",
   {
     id: text("id")
@@ -98,7 +97,7 @@ export const sessions = pgTable(
   (table) => [uniqueIndex("Session_sessionToken_key").on(table.sessionToken)],
 );
 
-export const uniRegs = pgTable(
+export const uniRegs = cockroachTable(
   "UniReg",
   {
     id: text("id")
@@ -119,7 +118,7 @@ export const uniRegs = pgTable(
   (table) => [uniqueIndex("UniReg_email_key").on(table.email)],
 );
 
-export const teams = pgTable(
+export const teams = cockroachTable(
   "Team",
   {
     id: text("id")
@@ -143,7 +142,7 @@ export const teams = pgTable(
   ],
 );
 
-export const teamRounds = pgTable(
+export const teamRounds = cockroachTable(
   "TeamRound",
   {
     id: text("id")
@@ -161,13 +160,13 @@ export const teamRounds = pgTable(
   ],
 );
 
-export const rounds = pgTable(
+export const rounds = cockroachTable(
   "Round",
   {
     id: text("id")
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
-    number: integer("number").notNull(),
+    number: int4("number").notNull(),
     start: timestamp("start", { withTimezone: true, mode: "date" }).notNull(),
     end: timestamp("end", { withTimezone: true, mode: "date" }).notNull(),
     result: timestamp("result", { withTimezone: true, mode: "date" }).notNull(),
@@ -175,7 +174,7 @@ export const rounds = pgTable(
   (table) => [uniqueIndex("Round_number_key").on(table.number)],
 );
 
-export const problems = pgTable(
+export const problems = cockroachTable(
   "Problem",
   {
     id: text("id")
@@ -185,17 +184,17 @@ export const problems = pgTable(
     nickname: text("nickname").notNull(),
     description: text("description").notNull(),
     difficulty: difficultyEnum("difficulty").notNull(),
-    initial: integer("initial").notNull(), // Starting points
-    minimum: integer("minimum").notNull(), // Minimum points floor
-    decay: integer("decay").notNull(), // Number of solves to reach minimum
+    initial: int4("initial").notNull(), // Starting points
+    minimum: int4("minimum").notNull(), // Minimum points floor
+    decay: int4("decay").notNull(), // Number of solves to reach minimum
     // Download links
     web_code: text("web_code").notNull(),
     // Test case counts (always 10 total, but keeping for flexibility)
-    normal_cases: integer("normal_cases").notNull(),
-    edge_cases: integer("edge_cases").notNull(),
+    normal_cases: int4("normal_cases").notNull(),
+    edge_cases: int4("edge_cases").notNull(),
     // Time and memory limits
-    timeLimitMs: integer("timeLimitMs").notNull().default(1000),
-    memoryLimitKb: integer("memoryLimitKb").notNull().default(262144), // 256MB
+    timeLimitMs: int4("timeLimitMs").notNull().default(1000),
+    memoryLimitKb: int4("memoryLimitKb").notNull().default(262144), // 256MB
     roundId: text("roundId")
       .notNull()
       .references(() => rounds.id),
@@ -204,13 +203,13 @@ export const problems = pgTable(
   (table) => [index("Problem_roundId_idx").on(table.roundId)],
 );
 
-export const testcases = pgTable(
+export const testcases = cockroachTable(
   "Testcase",
   {
     id: text("id")
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
-    weight: integer("weight").notNull().default(1),
+    weight: int4("weight").notNull().default(1),
     input: text("input").notNull(),
     output: text("output").notNull(),
     problemId: text("problemId")
@@ -218,7 +217,7 @@ export const testcases = pgTable(
       .references(() => problems.id, { onDelete: "cascade" }),
     isEdge: boolean("isEdge").notNull().default(false),
     isHidden: boolean("isHidden").notNull().default(false), // Hidden from users in results
-    orderIndex: integer("orderIndex").notNull().default(0),
+    orderIndex: int4("orderIndex").notNull().default(0),
   },
   (table) => [
     index("Testcase_problemId_idx").on(table.problemId),
@@ -229,7 +228,7 @@ export const testcases = pgTable(
   ],
 );
 
-export const submissions = pgTable(
+export const submissions = cockroachTable(
   "Submission",
   {
     id: text("id")
@@ -254,7 +253,7 @@ export const submissions = pgTable(
     evaluated: boolean("evaluated").notNull().default(false),
     evaluationStatus: evalEnum("evaluationStatus"),
     // Quick access to results without joining
-    testcasesPassed: integer("testcasesPassed").notNull().default(0), // 0-10
+    testcasesPassed: int4("testcasesPassed").notNull().default(0), // 0-10
   },
   (table) => [
     uniqueIndex("Submission_token_key").on(table.token),
@@ -267,7 +266,7 @@ export const submissions = pgTable(
 );
 
 // Tracks best solve per user/team per problem for partial scoring
-export const solve = pgTable(
+export const solve = cockroachTable(
   "Solve",
   {
     id: text("id")
@@ -283,7 +282,7 @@ export const solve = pgTable(
     // Reference to the best submission
     bestSubmissionId: text("bestSubmissionId").references(() => submissions.id),
     // Best testcases passed (0-10)
-    testcasesPassed: integer("testcasesPassed").notNull().default(0),
+    testcasesPassed: int4("testcasesPassed").notNull().default(0),
   },
   (table) => [
     uniqueIndex("Solve_userId_problemId_key").on(table.userId, table.problemId),
@@ -298,7 +297,7 @@ export const solve = pgTable(
 );
 
 // Junction table for detailed per-testcase results per submission
-export const submissionTestcases = pgTable(
+export const submissionTestcases = cockroachTable(
   "SubmissionTestcase",
   {
     id: text("id")
@@ -311,8 +310,8 @@ export const submissionTestcases = pgTable(
       .notNull()
       .references(() => testcases.id, { onDelete: "cascade" }),
     passed: boolean("passed").notNull(),
-    executionTimeMs: integer("executionTimeMs"),
-    memoryUsedKb: integer("memoryUsedKb"),
+    executionTimeMs: int4("executionTimeMs"),
+    memoryUsedKb: int4("memoryUsedKb"),
     // For debugging (only store if needed)
     actualOutput: text("actualOutput"),
     errorMessage: text("errorMessage"),
@@ -327,7 +326,7 @@ export const submissionTestcases = pgTable(
   ],
 );
 
-export const admins = pgTable(
+export const admins = cockroachTable(
   "Admin",
   {
     id: text("id")
@@ -346,7 +345,7 @@ export const admins = pgTable(
   (table) => [uniqueIndex("Admin_userId_key").on(table.userId)],
 );
 
-export const flags = pgTable(
+export const flags = cockroachTable(
   "Flags",
   {
     name: text("name").primaryKey(),
@@ -355,7 +354,7 @@ export const flags = pgTable(
   (table) => [uniqueIndex("Flags_name_key").on(table.name)],
 );
 
-export const news = pgTable("News", {
+export const news = cockroachTable("News", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),

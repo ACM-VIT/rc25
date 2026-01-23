@@ -34,7 +34,7 @@ export default function QuestionDisplay({
             {/* Main Content Area (Expands) */}
             <ScrollArea className="rounded-[10px] w-full min-h-0 flex-1">
                 <div className="flex items-center justify-between m-4 flex-wrap">
-                    <span className="font-bold text-2xl text-white break-words max-w-[70%]">
+                    <span className="font-bold text-2xl text-white wrap-break-word max-w-[70%]">
                         Problem Details
                     </span>
                     <span className="text-green-500 font-bold text-lg">

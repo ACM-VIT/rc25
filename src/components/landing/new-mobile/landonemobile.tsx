@@ -33,7 +33,7 @@ function LandOneMobile() {
                     <Image
                         src={wrclogo}
                         alt="Reverse Coding"
-                        className="md:w-[25rem] sm:w-[23rem] xs:w-[20rem] phone:w-[18rem]"
+                        className="md:w-100 sm:w-92 xs:w-[20rem] phone:w-[18rem]"
                     />
                     <div
                         className="2xl:text-[7rem] xl:text-[3.2rem] lg:text-[3rem] md:text-[2.8rem] sm:text-[2.4rem] xs:text-[2.1rem] phone:text-[1.7rem] mt-[2%] whitespace-nowrap justify-center items-center flex flex-col font-custom animate-fadeIn"
@@ -61,7 +61,7 @@ function LandOneMobile() {
                 {/* Join Button */}
                 <button
                     className="sm:block absolute z-20 left-1/2 transform -translate-x-1/2
-            md:w-[16rem] sm:w-[16rem] phone:w-[13rem] w-[13rem]
+            md:w-[16rem] sm:w-[16rem] phone:w-[13rem] w-52
             md:bottom-[5%] sm:bottom-[5%] phone:bottom-[10%] xs:bottom-[10%] bottom-[0%]"
                     onClick={SignIn}
                 >
@@ -87,7 +87,7 @@ function LandOneMobile() {
                 {/* Scroll Indicator - Larger & Positioned */}
                 <div
                     className="absolute bottom-5 right-0 z-20 
-            w-[3.5rem] phone:w-[3rem] xs:w-[2.5rem] sm:w-[3rem]"
+            w-14 phone:w-[3rem] xs:w-[2.5rem] sm:w-12"
                 >
                     <Image src={scroll} alt="Scroll" />
                 </div>

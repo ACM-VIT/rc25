@@ -8,7 +8,7 @@ function SwitchAdminModeButton() {
     //     useSwitchAdminMode();
     // }
     return (
-        <Button onClick={()=>SwitchAdminMode("admin")} className="fixed bottom-14 z-[100] right-6">
+        <Button onClick={()=>SwitchAdminMode("admin")} className="fixed bottom-14 z-100 right-6">
             Switch to Admin Mode
         </Button>
     );

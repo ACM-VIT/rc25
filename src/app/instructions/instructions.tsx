@@ -1,19 +1,9 @@
 "use client";
 
 import DashboardBox from "@/components/DashboardBox";
-import InstructionBox from "@/components/InstructionBox";
+import NumberedCard from "@/components/NumberedCard";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import localFont from "next/font/local";
-
-const formula1Bold = localFont({
-    src: "../../../public/fonts/Formula1-Bold_web_0.ttf",
-    display: "swap",
-});
-
-const formula1Wide = localFont({
-    src: "../../../public/fonts/Formula1-Wide_web_0.ttf",
-    display: "swap",
-})
+import { formula1Bold, formula1Wide } from "@/lib/fonts";
 
 // TODO: Update instructions
 
@@ -56,7 +46,7 @@ export default function Instructions() {
             
             <div className="w-full max-w-[90%] mx-auto flex flex-col gap-4">
                 {instructions.map((instruction, index) => (
-                    <InstructionBox key={index} text={instruction.title} number={index + 1} />
+                    <NumberedCard key={index} title={instruction.title} index={index + 1} />
                 ))}
             </div>
         </div>

@@ -1,13 +1,8 @@
 "use client";
 
 import React from "react";
-import InstructionBox from "@/components/InstructionBox";
-import localFont from "next/font/local";
-
-const formula1Wide = localFont({
-    src: "../../../public/fonts/Formula1-Wide_web_0.ttf",
-    display: "swap",
-});
+import NumberedCard from "@/components/NumberedCard";
+import { formula1Wide } from "@/lib/fonts";
 
 export default function PortalFaqs() {
     const faqs = [
@@ -63,7 +58,7 @@ export default function PortalFaqs() {
             
             <div className="w-full max-w-[90%] mx-auto flex flex-col gap-4">
                 {faqs.map((faq, index) => (
-                    <InstructionBox key={faq.id} text={faq.question} number={index + 1} />
+                    <NumberedCard key={faq.id} title={faq.question} index={index + 1} />
                 ))}
             </div>
         </div>

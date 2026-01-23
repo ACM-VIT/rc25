@@ -1,27 +1,23 @@
 "use client"
 
-import localFont from "next/font/local";
+import { formula1Bold } from "@/lib/fonts";
 
-const formula1 = localFont({
-    src: "../../public/fonts/Formula1-Bold_web_0.ttf",
-    display: "swap",
-});
-
-interface InstructionBoxProps {
-    text: string;
-    number: number;
+interface NumberedCardProps {
+    title: string;
+    index: number;
 }
 
-export default function InstructionBox({ text, number }: InstructionBoxProps) {
+export default function NumberedCard({ title, index }: NumberedCardProps) {
     return (
-        <div className="relative w-full h-[104px]">
+        <div className="relative w-full min-h-[104px]">
             <svg 
                 width="100%" 
-                height="104" 
+                height="100%" 
                 viewBox="0 0 1344 104" 
                 fill="none" 
                 xmlns="http://www.w3.org/2000/svg"
                 preserveAspectRatio="none"
+                className="absolute inset-0 w-full h-full"
             >
                 {/* Grey background rectangle */}
                 <rect 
@@ -81,32 +77,34 @@ export default function InstructionBox({ text, number }: InstructionBoxProps) {
                 </defs>
             </svg>
             
-            {/* Number in the smaller red parallelogram */}
-            <span 
-                className={`${formula1.className} absolute text-white`}
-                style={{ 
-                    top: "50%", 
-                    left: "6%",
-                    fontSize: "clamp(0.875rem, 1vw + 0.5rem, 1.5rem)"
-                }}
-            >
-                {number.toString().padStart(2, "0")}
-            </span>
-            
-            {/* Title text in the grey area */}
-            <span 
-                className={`${formula1.className} absolute text-white`}
-                style={{ 
-                    top: "48%", 
-                    left: "20%", 
-                    transform: "translateY(-50%)",
-                    fontSize: "clamp(1rem, 1.5vw + 0.5rem, 1.875rem)"
-                }}
-            >
-                {text}
-            </span>
+            {/* Content layer on top of SVG */}
+            <div className="relative z-10 flex items-center min-h-[104px] py-4">
+                {/* Number in the smaller red parallelogram */}
+                <span 
+                    className={`${formula1Bold.className} absolute text-white`}
+                    style={{ 
+                        bottom: "22%", 
+                        left: "6%",
+                        fontSize: "clamp(0.875rem, 1vw + 0.5rem, 1.3rem)"
+                    }}
+                >
+                    {index.toString().padStart(2, "0")}
+                </span>
+                
+                {/* Title text in the grey area */}
+                <span 
+                    className={`${formula1Bold.className} text-white`}
+                    style={{ 
+                        marginBottom: "1%",
+                        marginLeft: "20%",
+                        marginRight: "2%",
+                        fontSize: "clamp(1rem, 1.5vw + 0.5rem, 1.875rem)",
+                        lineHeight: "1.4",
+                    }}
+                >
+                    {title}
+                </span>
+            </div>
         </div>
     );
 }
-
-

@@ -33,7 +33,7 @@ export default function NumberedCard({ title, index, description }: NumberedCard
                     </div>
                 </AccordionPrimitive.Trigger>
                 <AccordionPrimitive.Content className="w-full overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
-                    <div className="w-full min-h-[120px] sm:min-h-[150px] md:min-h-[180px] lg:min-h-[214px] relative">
+                    <div className="w-full h-[120px] sm:h-[150px] md:h-[180px] lg:h-[214px] relative">
                         {/* Dropdown SVG background */}
                         <Image
                             src="/instructions-assets/dropdown.svg"

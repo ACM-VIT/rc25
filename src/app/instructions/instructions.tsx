@@ -1,15 +1,9 @@
 "use client";
 
 import DashboardBox from "@/components/DashboardBox";
+import NumberedCard from "@/components/NumberedCard";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import tire1 from "../../../public/instructions-assets/tire1.svg"; 
-import tire2 from "../../../public/instructions-assets/tire2.svg"; 
-import localFont from "next/font/local";
-
-const formula1 = localFont({
-    src: "../../../public/fonts/Formula1-Bold_web_0.ttf",
-    display: "swap",
-});
+import { formula1Bold, formula1Wide } from "@/lib/fonts";
 
 // TODO: Update instructions 
 
@@ -39,51 +33,22 @@ export default function Instructions() {
 
     return (
         <div
-            className="min-h-screen relative flex flex-col items-center justify-center p-6 overflow-hidden"
+            className="min-h-screen relative flex flex-col items-center justify-center p-4 sm:p-6"
             style={{
-                backgroundColor: "rgba(12, 12, 12, 1)",
+                backgroundImage: "url('/Dashboard.png')",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
             }}
         >
-            <img 
-                src={tire1.src}
-                alt="tire1"
-                className="absolute z-0"
-                style={{ top: "-25%", left: "-25%" }}
-            />
-            <img 
-                src={tire2.src}
-                alt="tire2"
-                className="absolute z-0"
-                style={{ bottom: "-25%", right: "-25%" }}
-            />
-
-            <h1 className={`${formula1.className} text-5xl font-bold text-white mb-6 underline`}>
+            <h1 className={`${formula1Wide.className} text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-bold text-white mb-14 sm:mb-18 md:mb-20 mt-[-100] underline`}>
                 Instructions
             </h1> 
-            <DashboardBox className="shadow-lg w-[85vw] max-w-4xl h-[70vh] rounded-lg p-6 border text-white bg-opacity-80 backdrop-blur-md relative z-10">
-                <ScrollArea className="flex-grow h-full w-full rounded-lg">
-                    <ol className="list-decimal pl-6 space-y-6 text-lg">
-                        {instructions.map((instruction) => (
-                            <li key={instruction.title}>
-                                <h3 className="text-xl font-bold">
-                                    {instruction.title}
-                                </h3>
-                                <ul className="list-inside mt-2 text-sm leading-relaxed">
-                                    {instruction.description
-                                        .split("\n")
-                                        .map((line, idx) => (
-                                            <li
-                                                key={`${instruction.title}-${idx}`}
-                                            >
-                                                {line}
-                                            </li>
-                                        ))}
-                                </ul>
-                            </li>
-                        ))}
-                    </ol>
-                </ScrollArea>
-            </DashboardBox>
+            
+            <div className="w-full max-w-[90%] mx-auto flex flex-col gap-4">
+                {instructions.map((instruction, index) => (
+                    <NumberedCard key={index} title={instruction.title} index={index + 1} />
+                ))}
+            </div>
         </div>
     );
 }

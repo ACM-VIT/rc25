@@ -247,7 +247,7 @@ export default async function RootLayout({
         <body
             className={`min-h-screen flex flex-col ${outfit.className}`}
             style={{
-                backgroundImage: "url('./Dashboard.png')",
+                backgroundImage: "url('./dashboard.png')",
                 backgroundSize: "cover",
                 backgroundAttachment: "fixed",
             }}

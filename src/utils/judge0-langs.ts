@@ -54,3 +54,7 @@ export const SUPPORTED_LANGUAGES = {
 } as const;
 
 export type SupportedLanguage = keyof typeof SUPPORTED_LANGUAGES;
+export type SupportedLanguageConfig =
+  (typeof SUPPORTED_LANGUAGES)[SupportedLanguage];
+export type SupportedLanguageId = SupportedLanguageConfig["id"];
+export type SupportedLanguageName = SupportedLanguageConfig["name"];

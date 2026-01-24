@@ -7,6 +7,7 @@ import {
   timestamp,
   uniqueIndex,
   index,
+  float,
 } from "drizzle-orm/cockroach-core";
 export const genderEnum = cockroachEnum("Gender", ["male", "female"]);
 export const difficultyEnum = cockroachEnum("Difficulty", [
@@ -244,20 +245,16 @@ export const submissions = cockroachTable(
       .notNull()
       .references(() => users.id),
     teamId: text("teamId").references(() => teams.id), // For team-based scoring
-    token: text("token"),
+    evaluated: boolean("evaluated").notNull().default(false),
     createdAt: timestamp("createdAt", { withTimezone: true, mode: "date" })
       .notNull()
       .defaultNow(),
     updatedAt: timestamp("updatedAt", { withTimezone: true, mode: "date" })
       .notNull()
       .defaultNow(),
-    evaluated: boolean("evaluated").notNull().default(false),
-    evaluationStatus: evalEnum("evaluationStatus"),
-    // Quick access to results without joining
     testcasesPassed: int4("testcasesPassed").notNull().default(0), // 0-10
   },
   (table) => [
-    uniqueIndex("Submission_token_key").on(table.token),
     index("Submission_userId_idx").on(table.userId),
     index("Submission_problemId_idx").on(table.problemId),
     index("Submission_teamId_idx").on(table.teamId),
@@ -311,13 +308,19 @@ export const submissionTestcases = cockroachTable(
       .notNull()
       .references(() => testcases.id, { onDelete: "cascade" }),
     passed: boolean("passed").notNull(),
-    executionTimeMs: int4("executionTimeMs"),
-    memoryUsedKb: int4("memoryUsedKb"),
+    token: text("token"),
+    evaluated: boolean("evaluated").notNull().default(false),
+    evaluationStatus: evalEnum("evaluationStatus"),
+    // Quick access to results without joining
+
+    executionTimeMs: float("executionTimeMs"),
+    memoryUsedKb: float("memoryUsedKb"),
     // For debugging (only store if needed)
     actualOutput: text("actualOutput"),
     errorMessage: text("errorMessage"),
   },
   (table) => [
+    uniqueIndex("SubmissionTestcase_token_key").on(table.token),
     uniqueIndex("SubmissionTestcase_submission_testcase_key").on(
       table.submissionId,
       table.testcaseId,

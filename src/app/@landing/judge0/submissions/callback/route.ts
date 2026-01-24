@@ -1,302 +1,186 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import {
-  problems,
   submissions,
   submissionTestcases,
   testcases,
-  teams,
-  users,
   solve,
 } from "@/db/schema";
 import { firestoreService } from "@/lib/firebase-admin-service";
+import { asc, eq } from "drizzle-orm";
 import {
-  calculateCurrentPoints,
-  calculateSolveContribution,
-} from "@/db/scoring";
-import { and, asc, eq, inArray } from "drizzle-orm";
+  Judge0StatusEnumValue,
+  judge0StatusToEval,
+} from "@/utils/judge0-status";
+import type {
+  SupportedLanguageId,
+  SupportedLanguageName,
+} from "@/utils/judge0-langs";
 
-const EvalStatus = {
-  ACCEPTED: "ACCEPTED",
-  COMPILATION_ERROR: "COMPILATION_ERROR",
-  RUNTIME_ERROR: "RUNTIME_ERROR_OTHER",
-  WRONG_ANSWER: "WRONG_ANSWER",
-} as const;
-
-interface WebhookBody {
-  token: string;
-  stdout: string;
-  status: string | null;
+export interface Judge0Response {
+  stdout: string | null;
+  time: number | null;
+  memory: number | null;
   stderr: string | null;
+  token: string | null;
   compile_output: string | null;
+  message: string | null;
+  status: Judge0Status;
+  language_id?: SupportedLanguageId;
+  language?: Judge0Language;
 }
 
-type ProblemScoreRow = {
-  id: string;
-  initial: number;
-  minimum: number;
-  decay: number;
-};
+interface Judge0Status {
+  id: number;
+  description: Judge0StatusEnumValue;
+}
 
-type SolveRow = {
-  problemId: string;
-  teamId: string | null;
-  testcasesPassed: number;
-};
+interface Judge0Language {
+  id: SupportedLanguageId;
+  name: SupportedLanguageName;
+}
+export interface Judge0Error {
+  error: string;
+}
 
-const buildEffectiveSolvesMap = (rows: SolveRow[]) => {
-  const effectiveSolvesByProblem = new Map<string, number>();
-  for (const row of rows) {
-    const contribution = calculateSolveContribution(row.testcasesPassed);
-    effectiveSolvesByProblem.set(
-      row.problemId,
-      (effectiveSolvesByProblem.get(row.problemId) ?? 0) + contribution
-    );
-  }
-  return effectiveSolvesByProblem;
-};
-
-const calculateTeamRoundScore = (
-  problemsInRound: ProblemScoreRow[],
-  solves: SolveRow[],
-  teamId: string
-): number => {
-  const effectiveSolvesByProblem = buildEffectiveSolvesMap(solves);
-  const teamSolvesByProblem = new Map<string, number>();
-
-  for (const row of solves) {
-    if (row.teamId === teamId) {
-      teamSolvesByProblem.set(row.problemId, row.testcasesPassed);
-    }
-  }
-
-  let total = 0;
-  for (const problem of problemsInRound) {
-    const effectiveSolves = effectiveSolvesByProblem.get(problem.id) ?? 0;
-    const currentPoints = calculateCurrentPoints({
-      ...problem,
-      effectiveSolves,
-    });
-    const teamPassed = teamSolvesByProblem.get(problem.id) ?? 0;
-    if (teamPassed > 0) {
-      total += Math.round(currentPoints * (teamPassed / 10));
-    }
-  }
-  return total;
-};
+const normalizeOutput = (value: string | null | undefined) =>
+  (value ?? "").replace(/\r\n/g, "\n").trimEnd();
 
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
 
-    const { token, stdout, stderr, compile_output }: WebhookBody = body;
+    const {
+      token,
+      stdout,
+      stderr,
+      compile_output,
+      status,
+      time,
+      memory,
+    }: Judge0Response = body;
 
-    const submissionRows = await db
-      .select({
-        submission: submissions,
-        submissionTestcase: submissionTestcases,
-        testcase: testcases,
-      })
-      .from(submissions)
-      .leftJoin(
-        submissionTestcases,
-        eq(submissions.id, submissionTestcases.submissionId)
-      )
-      .leftJoin(testcases, eq(submissionTestcases.testcaseId, testcases.id))
-      .where(eq(submissions.token, token))
-      .orderBy(asc(testcases.orderIndex));
-
-    const submission = submissionRows[0]?.submission;
-
-    if (!submission) {
-      return NextResponse.json({ message: "Submission not found" }, { status: 404 });
+    if (!token) {
+      return NextResponse.json(
+        { message: "Missing submission token" },
+        { status: 400 },
+      );
     }
 
-    const testcaseRelations = submissionRows
-      .filter((row) => row.testcase && row.submissionTestcase)
-      .map((row) => ({
-        testcaseId: row.testcase!.id,
-        output: row.testcase!.output,
-      }));
+    const submissionTestcaseRows = await db
+      .select({
+        submissionTestcase: submissionTestcases,
+        testcase: testcases,
+        submission: submissions,
+      })
+      .from(submissionTestcases)
+      .leftJoin(testcases, eq(submissionTestcases.testcaseId, testcases.id))
+      .leftJoin(
+        submissions,
+        eq(submissionTestcases.submissionId, submissions.id),
+      )
+      .where(eq(submissionTestcases.token, token))
+      .orderBy(asc(testcases.orderIndex))
+      .limit(1);
 
-    const totalTestcases = testcaseRelations.length;
+    const submissionTestcaseRow = submissionTestcaseRows[0];
+    const submissionTestcase = submissionTestcaseRow?.submissionTestcase;
+    const testcase = submissionTestcaseRow?.testcase ?? null;
+    const submission = submissionTestcaseRow?.submission ?? null;
+
+    if (!submissionTestcase || !submission) {
+      return NextResponse.json(
+        { message: "Submission not found" },
+        { status: 404 },
+      );
+    }
+
+    const evaluationStatus = judge0StatusToEval(status.description);
 
     if (compile_output) {
       await db
-        .update(submissions)
+        .update(submissionTestcases)
         .set({
           evaluated: true,
-          evaluationStatus: EvalStatus.COMPILATION_ERROR,
-          testcasesPassed: 0,
+          evaluationStatus,
+          passed: false,
+          errorMessage: compile_output,
+          actualOutput: null,
+          executionTimeMs: time,
+          memoryUsedKb: memory,
         })
-        .where(eq(submissions.id, submission.id));
+        .where(eq(submissionTestcases.id, submissionTestcase.id));
       await firestoreService.submissions.processed(submission.id);
       return NextResponse.json(
         { message: "Submission failed with compile error" },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
     if (stderr) {
       await db
-        .update(submissions)
+        .update(submissionTestcases)
         .set({
           evaluated: true,
-          evaluationStatus: EvalStatus.RUNTIME_ERROR,
-          testcasesPassed: 0,
+          evaluationStatus,
+          passed: false,
+          errorMessage: stderr,
+          actualOutput: null,
+          executionTimeMs: time,
+          memoryUsedKb: memory,
         })
-        .where(eq(submissions.id, submission.id));
+        .where(eq(submissionTestcases.id, submissionTestcase.id));
       await firestoreService.submissions.processed(submission.id);
       return NextResponse.json(
         { message: "Submission failed with runtime error" },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
-    const decodedStdout = Buffer.from(stdout, "base64").toString("utf-8");
+    const decodedStdout = stdout
+      ? Buffer.from(stdout, "base64").toString("utf-8")
+      : "";
 
-    const delimiter = process.env.DELIMITER || "|||";
-    const outputs = decodedStdout.split(delimiter);
+    const expectedOutput = normalizeOutput(testcase?.output);
+    const actualOutput = normalizeOutput(decodedStdout);
+    const passed = actualOutput === expectedOutput;
 
-    const testcasesPassed = testcaseRelations.map((relation, index) => {
-      const expectedOutput = relation.output.trim();
-      const actualOutput = outputs[index]?.trim() || "";
-      return expectedOutput === actualOutput;
-    });
+    await db
+      .update(submissionTestcases)
+      .set({
+        evaluated: true,
+        evaluationStatus,
+        executionTimeMs: time,
+        memoryUsedKb: memory,
+        actualOutput,
+        passed,
+        errorMessage: null,
+      })
+      .where(eq(submissionTestcases.id, submissionTestcase.id));
 
-    const passedCount = testcasesPassed.filter(Boolean).length;
-    const evalStatus =
-      totalTestcases > 0 && passedCount === totalTestcases
-        ? EvalStatus.ACCEPTED
-        : EvalStatus.WRONG_ANSWER;
+    const solveRows = await db
+      .select({
+        id: solve.id,
+        teamId: solve.teamId,
+        testcasesPassed: solve.testcasesPassed,
+      })
+      .from(solve)
+      .where(eq(solve.problemId, submission.problemId));
 
-    const userRows = await db
-      .select({ user: users, team: teams })
-      .from(users)
-      .leftJoin(teams, eq(users.teamId, teams.id))
-      .where(eq(users.id, submission.userId))
-      .limit(1);
-    const user = userRows[0]?.user ?? null;
-    const team = userRows[0]?.team ?? null;
-
-    if (!user || !team) {
-      return NextResponse.json({ message: "User not in team" }, { status: 400 });
-    }
-
-    await db.transaction(async (tx) => {
-      await tx
-        .update(submissions)
-        .set({
-          testcasesPassed: passedCount,
-          evaluated: true,
-          evaluationStatus: evalStatus,
-        })
-        .where(eq(submissions.id, submission.id));
-
-      for (let i = 0; i < testcaseRelations.length; i += 1) {
-        const relation = testcaseRelations[i];
-        const passed = testcasesPassed[i] ?? false;
-        await tx
-          .update(submissionTestcases)
-          .set({ passed })
-          .where(
-            and(
-              eq(submissionTestcases.submissionId, submission.id),
-              eq(submissionTestcases.testcaseId, relation.testcaseId)
-            )
-          );
-      }
-
-      const teamSolveRows = await tx
-        .select({
-          id: solve.id,
-          testcasesPassed: solve.testcasesPassed,
-        })
-        .from(solve)
-        .where(
-          and(eq(solve.problemId, submission.problemId), eq(solve.teamId, team.id))
-        )
-        .limit(1);
-
-      const teamSolve = teamSolveRows[0] ?? null;
-
-      if (!teamSolve) {
-        await tx.insert(solve).values({
-          problemId: submission.problemId,
-          userId: submission.userId,
-          teamId: team.id,
-          bestSubmissionId: submission.id,
-          testcasesPassed: passedCount,
-        });
-      } else if (passedCount > teamSolve.testcasesPassed) {
-        await tx
-          .update(solve)
-          .set({
-            userId: submission.userId,
-            bestSubmissionId: submission.id,
-            testcasesPassed: passedCount,
-          })
-          .where(eq(solve.id, teamSolve.id));
-      }
-    });
-
-    const problemRows = await db
-      .select({ roundId: problems.roundId })
-      .from(problems)
-      .where(eq(problems.id, submission.problemId))
-      .limit(1);
-    const roundId = problemRows[0]?.roundId ?? null;
-
-    let teamScore = 0;
-    if (roundId) {
-      const problemsInRound = await db
-        .select({
-          id: problems.id,
-          initial: problems.initial,
-          minimum: problems.minimum,
-          decay: problems.decay,
-        })
-        .from(problems)
-        .where(eq(problems.roundId, roundId));
-
-      const problemIds = problemsInRound.map((problem) => problem.id);
-      const solveRows = problemIds.length
-        ? await db
-            .select({
-              problemId: solve.problemId,
-              teamId: solve.teamId,
-              testcasesPassed: solve.testcasesPassed,
-            })
-            .from(solve)
-            .where(inArray(solve.problemId, problemIds))
-        : [];
-
-      teamScore = calculateTeamRoundScore(problemsInRound, solveRows, team.id);
-    }
-
-    const adminTeamId = process.env.ADMIN_TEAM_ID || "";
-    const shouldUpdateLeaderboard =
-      !team.hidden && !team.disqualify && team.id !== adminTeamId;
-
-    await Promise.all([
-      firestoreService.submissions.processed(submission.id),
-      shouldUpdateLeaderboard
-        ? firestoreService.leaderboard.updateTeam({
-            id: team.id,
-            name: team.name,
-            score: teamScore,
-          })
-        : Promise.resolve(),
-    ]);
+    await firestoreService.submissions.processed(submission.id);
 
     return NextResponse.json(
       { message: "Submission updated successfully" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
     console.error("Error processing POST request:", errorMessage);
 
-    return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }

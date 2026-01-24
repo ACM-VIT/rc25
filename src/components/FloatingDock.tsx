@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import Link from "next/link"; 
 
 function FloatingDockItems({ href, src, className, tooltip, size = 40 }: { href: string, src: string, className?: string, tooltip: string, size?: number }) {
     return (

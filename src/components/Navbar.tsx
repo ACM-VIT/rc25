@@ -8,7 +8,7 @@ import SignOut from "@/app/(auth)/authactions/signout";
 import Link from "next/link";
 
 interface NavbarProps {
-    name: string;
+    name: string; 
 }
 
 const Navbar: React.FC<NavbarProps> = ({ name }) => {

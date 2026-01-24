@@ -1,0 +1,2483 @@
+{
+  "version": "1",
+  "dialect": "cockroach",
+  "id": "5e7aed68-68f5-4edf-b611-219ce34a745a",
+  "prevIds": [
+    "1aa4d478-4404-4c68-a071-ccf8f84b6a6f"
+  ],
+  "ddl": [
+    {
+      "values": [
+        "EASY",
+        "MEDIUM",
+        "HARD"
+      ],
+      "name": "Difficulty",
+      "entityType": "enums",
+      "schema": "public"
+    },
+    {
+      "values": [
+        "IN_QUEUE",
+        "PROCESSING",
+        "ACCEPTED",
+        "WRONG_ANSWER",
+        "TIME_LIMIT_EXCEEDED",
+        "COMPILATION_ERROR",
+        "RUNTIME_ERROR_SIGSEGV",
+        "RUNTIME_ERROR_SIGXFSZ",
+        "RUNTIME_ERROR_SIGFPE",
+        "RUNTIME_ERROR_SIGABRT",
+        "RUNTIME_ERROR_NZEC",
+        "RUNTIME_ERROR_OTHER",
+        "INTERNAL_ERROR",
+        "EXEC_FORMAT_ERROR"
+      ],
+      "name": "EvalEnum",
+      "entityType": "enums",
+      "schema": "public"
+    },
+    {
+      "values": [
+        "male",
+        "female"
+      ],
+      "name": "Gender",
+      "entityType": "enums",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "Account",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "Admin",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "Flags",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "News",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "Problem",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "Round",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "Session",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "Solve",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "SubmissionTestcase",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "Submission",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "TeamRound",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "Team",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "Testcase",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "UniReg",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "User",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Account"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "userId",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Account"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "type",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Account"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "provider",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Account"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "providerAccountId",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Account"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "refresh_token",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Account"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "access_token",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Account"
+    },
+    {
+      "type": "int4",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "expires_at",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Account"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "token_type",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Account"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "scope",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Account"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id_token",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Account"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "session_state",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Account"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Admin"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "userId",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Admin"
+    },
+    {
+      "type": "timestamptz",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "name": "createdAt",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Admin"
+    },
+    {
+      "type": "timestamptz",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "name": "updatedAt",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Admin"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "name",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Flags"
+    },
+    {
+      "type": "bool",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "value",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Flags"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "News"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "content",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "News"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "title",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "News"
+    },
+    {
+      "type": "timestamptz",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "time",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "News"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Problem"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "title",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Problem"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "nickname",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Problem"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "description",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Problem"
+    },
+    {
+      "type": "Difficulty",
+      "typeSchema": "public",
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "difficulty",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Problem"
+    },
+    {
+      "type": "int4",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "initial",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Problem"
+    },
+    {
+      "type": "int4",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "minimum",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Problem"
+    },
+    {
+      "type": "int4",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "decay",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Problem"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "web_code",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Problem"
+    },
+    {
+      "type": "int4",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "normal_cases",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Problem"
+    },
+    {
+      "type": "int4",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "edge_cases",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Problem"
+    },
+    {
+      "type": "int4",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "1000",
+      "generated": null,
+      "identity": null,
+      "name": "timeLimitMs",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Problem"
+    },
+    {
+      "type": "int4",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "262144",
+      "generated": null,
+      "identity": null,
+      "name": "memoryLimitKb",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Problem"
+    },
+    {
+      "type": "int4",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "0",
+      "generated": null,
+      "identity": null,
+      "name": "effective_solves",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Problem"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "roundId",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Problem"
+    },
+    {
+      "type": "bool",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "false",
+      "generated": null,
+      "identity": null,
+      "name": "isHidden",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Problem"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Round"
+    },
+    {
+      "type": "int4",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "number",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Round"
+    },
+    {
+      "type": "timestamptz",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "start",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Round"
+    },
+    {
+      "type": "timestamptz",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "end",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Round"
+    },
+    {
+      "type": "timestamptz",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "result",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Round"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Session"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "sessionToken",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Session"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "userId",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Session"
+    },
+    {
+      "type": "timestamptz",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "expires",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Session"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Solve"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "problemId",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Solve"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "userId",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Solve"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "teamId",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Solve"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "bestSubmissionId",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Solve"
+    },
+    {
+      "type": "int4",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "0",
+      "generated": null,
+      "identity": null,
+      "name": "testcasesPassed",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Solve"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "SubmissionTestcase"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "submissionId",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "SubmissionTestcase"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "testcaseId",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "SubmissionTestcase"
+    },
+    {
+      "type": "bool",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "passed",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "SubmissionTestcase"
+    },
+    {
+      "type": "int4",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "executionTimeMs",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "SubmissionTestcase"
+    },
+    {
+      "type": "int4",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "memoryUsedKb",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "SubmissionTestcase"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "actualOutput",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "SubmissionTestcase"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "errorMessage",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "SubmissionTestcase"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Submission"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "code",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Submission"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "language",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Submission"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "problemId",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Submission"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "userId",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Submission"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "teamId",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Submission"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "token",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Submission"
+    },
+    {
+      "type": "timestamptz",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "name": "createdAt",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Submission"
+    },
+    {
+      "type": "timestamptz",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "name": "updatedAt",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Submission"
+    },
+    {
+      "type": "bool",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "false",
+      "generated": null,
+      "identity": null,
+      "name": "evaluated",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Submission"
+    },
+    {
+      "type": "EvalEnum",
+      "typeSchema": "public",
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "evaluationStatus",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Submission"
+    },
+    {
+      "type": "int4",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "0",
+      "generated": null,
+      "identity": null,
+      "name": "testcasesPassed",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Submission"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "TeamRound"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "teamId",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "TeamRound"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "roundId",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "TeamRound"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Team"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "name",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Team"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "shortCode",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Team"
+    },
+    {
+      "type": "bool",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "false",
+      "generated": null,
+      "identity": null,
+      "name": "checkedIn",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Team"
+    },
+    {
+      "type": "bool",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "false",
+      "generated": null,
+      "identity": null,
+      "name": "disqualify",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Team"
+    },
+    {
+      "type": "bool",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "false",
+      "generated": null,
+      "identity": null,
+      "name": "hidden",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Team"
+    },
+    {
+      "type": "timestamptz",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "name": "createdAt",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Team"
+    },
+    {
+      "type": "timestamptz",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "name": "updatedAt",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Team"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Testcase"
+    },
+    {
+      "type": "int4",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "1",
+      "generated": null,
+      "identity": null,
+      "name": "weight",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Testcase"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "input",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Testcase"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "output",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Testcase"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "problemId",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Testcase"
+    },
+    {
+      "type": "bool",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "false",
+      "generated": null,
+      "identity": null,
+      "name": "isEdge",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Testcase"
+    },
+    {
+      "type": "bool",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "false",
+      "generated": null,
+      "identity": null,
+      "name": "isHidden",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Testcase"
+    },
+    {
+      "type": "int4",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "0",
+      "generated": null,
+      "identity": null,
+      "name": "orderIndex",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Testcase"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "UniReg"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "email",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "UniReg"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "name",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "UniReg"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "regNo",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "UniReg"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "phone",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "UniReg"
+    },
+    {
+      "type": "bool",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "false",
+      "generated": null,
+      "identity": null,
+      "name": "injected",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "UniReg"
+    },
+    {
+      "type": "timestamptz",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "name": "createdAt",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "UniReg"
+    },
+    {
+      "type": "timestamptz",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "name": "updatedAt",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "UniReg"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "User"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "name",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "User"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "email",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "User"
+    },
+    {
+      "type": "timestamptz",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "emailVerified",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "User"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "image",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "User"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "teamId",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "User"
+    },
+    {
+      "type": "string",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "phone",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "User"
+    },
+    {
+      "type": "Gender",
+      "typeSchema": "public",
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "gender",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "User"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "provider",
+          "isExpression": false,
+          "asc": true
+        },
+        {
+          "value": "providerAccountId",
+          "isExpression": false,
+          "asc": true
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "method": "btree",
+      "name": "Account_provider_providerAccountId_key",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "Account"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "userId",
+          "isExpression": false,
+          "asc": true
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "method": "btree",
+      "name": "Admin_userId_key",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "Admin"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "name",
+          "isExpression": false,
+          "asc": true
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "method": "btree",
+      "name": "Flags_name_key",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "Flags"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "roundId",
+          "isExpression": false,
+          "asc": true
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "method": "btree",
+      "name": "Problem_roundId_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "Problem"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "number",
+          "isExpression": false,
+          "asc": true
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "method": "btree",
+      "name": "Round_number_key",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "Round"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "sessionToken",
+          "isExpression": false,
+          "asc": true
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "method": "btree",
+      "name": "Session_sessionToken_key",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "Session"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "userId",
+          "isExpression": false,
+          "asc": true
+        },
+        {
+          "value": "problemId",
+          "isExpression": false,
+          "asc": true
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "method": "btree",
+      "name": "Solve_userId_problemId_key",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "Solve"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "teamId",
+          "isExpression": false,
+          "asc": true
+        },
+        {
+          "value": "problemId",
+          "isExpression": false,
+          "asc": true
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "method": "btree",
+      "name": "Solve_teamId_problemId_key",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "Solve"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "problemId",
+          "isExpression": false,
+          "asc": true
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "method": "btree",
+      "name": "Solve_problemId_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "Solve"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "teamId",
+          "isExpression": false,
+          "asc": true
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "method": "btree",
+      "name": "Solve_teamId_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "Solve"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "problemId",
+          "isExpression": false,
+          "asc": true
+        },
+        {
+          "value": "testcasesPassed",
+          "isExpression": false,
+          "asc": true
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "method": "btree",
+      "name": "Solve_problemId_testcasesPassed_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "Solve"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "submissionId",
+          "isExpression": false,
+          "asc": true
+        },
+        {
+          "value": "testcaseId",
+          "isExpression": false,
+          "asc": true
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "method": "btree",
+      "name": "SubmissionTestcase_submission_testcase_key",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "SubmissionTestcase"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "submissionId",
+          "isExpression": false,
+          "asc": true
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "method": "btree",
+      "name": "SubmissionTestcase_submissionId_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "SubmissionTestcase"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "testcaseId",
+          "isExpression": false,
+          "asc": true
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "method": "btree",
+      "name": "SubmissionTestcase_testcaseId_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "SubmissionTestcase"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "token",
+          "isExpression": false,
+          "asc": true
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "method": "btree",
+      "name": "Submission_token_key",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "Submission"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "userId",
+          "isExpression": false,
+          "asc": true
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "method": "btree",
+      "name": "Submission_userId_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "Submission"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "problemId",
+          "isExpression": false,
+          "asc": true
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "method": "btree",
+      "name": "Submission_problemId_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "Submission"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "teamId",
+          "isExpression": false,
+          "asc": true
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "method": "btree",
+      "name": "Submission_teamId_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "Submission"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "createdAt",
+          "isExpression": false,
+          "asc": true
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "method": "btree",
+      "name": "Submission_createdAt_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "Submission"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "problemId",
+          "isExpression": false,
+          "asc": true
+        },
+        {
+          "value": "userId",
+          "isExpression": false,
+          "asc": true
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "method": "btree",
+      "name": "Submission_problemId_userId_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "Submission"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "teamId",
+          "isExpression": false,
+          "asc": true
+        },
+        {
+          "value": "roundId",
+          "isExpression": false,
+          "asc": true
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "method": "btree",
+      "name": "TeamRound_teamId_roundId_key",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "TeamRound"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "name",
+          "isExpression": false,
+          "asc": true
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "method": "btree",
+      "name": "Team_name_key",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "Team"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "shortCode",
+          "isExpression": false,
+          "asc": true
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "method": "btree",
+      "name": "Team_shortCode_key",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "Team"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "problemId",
+          "isExpression": false,
+          "asc": true
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "method": "btree",
+      "name": "Testcase_problemId_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "Testcase"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "problemId",
+          "isExpression": false,
+          "asc": true
+        },
+        {
+          "value": "orderIndex",
+          "isExpression": false,
+          "asc": true
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "method": "btree",
+      "name": "Testcase_problemId_orderIndex_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "Testcase"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "email",
+          "isExpression": false,
+          "asc": true
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "method": "btree",
+      "name": "UniReg_email_key",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "UniReg"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "email",
+          "isExpression": false,
+          "asc": true
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "method": "btree",
+      "name": "User_email_key",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "User"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "userId"
+      ],
+      "schemaTo": "public",
+      "tableTo": "User",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "Account_userId_User_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "Account"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "userId"
+      ],
+      "schemaTo": "public",
+      "tableTo": "User",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "Admin_userId_User_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "Admin"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "roundId"
+      ],
+      "schemaTo": "public",
+      "tableTo": "Round",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "Problem_roundId_Round_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "Problem"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "userId"
+      ],
+      "schemaTo": "public",
+      "tableTo": "User",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "Session_userId_User_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "Session"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "problemId"
+      ],
+      "schemaTo": "public",
+      "tableTo": "Problem",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "Solve_problemId_Problem_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "Solve"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "userId"
+      ],
+      "schemaTo": "public",
+      "tableTo": "User",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "Solve_userId_User_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "Solve"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "teamId"
+      ],
+      "schemaTo": "public",
+      "tableTo": "Team",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "Solve_teamId_Team_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "Solve"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "bestSubmissionId"
+      ],
+      "schemaTo": "public",
+      "tableTo": "Submission",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "Solve_bestSubmissionId_Submission_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "Solve"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "submissionId"
+      ],
+      "schemaTo": "public",
+      "tableTo": "Submission",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "name": "SubmissionTestcase_submissionId_Submission_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "SubmissionTestcase"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "testcaseId"
+      ],
+      "schemaTo": "public",
+      "tableTo": "Testcase",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "name": "SubmissionTestcase_testcaseId_Testcase_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "SubmissionTestcase"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "problemId"
+      ],
+      "schemaTo": "public",
+      "tableTo": "Problem",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "Submission_problemId_Problem_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "Submission"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "userId"
+      ],
+      "schemaTo": "public",
+      "tableTo": "User",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "Submission_userId_User_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "Submission"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "teamId"
+      ],
+      "schemaTo": "public",
+      "tableTo": "Team",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "Submission_teamId_Team_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "Submission"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "teamId"
+      ],
+      "schemaTo": "public",
+      "tableTo": "Team",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "TeamRound_teamId_Team_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "TeamRound"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "roundId"
+      ],
+      "schemaTo": "public",
+      "tableTo": "Round",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "TeamRound_roundId_Round_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "TeamRound"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "problemId"
+      ],
+      "schemaTo": "public",
+      "tableTo": "Problem",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "name": "Testcase_problemId_Problem_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "Testcase"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "teamId"
+      ],
+      "schemaTo": "public",
+      "tableTo": "Team",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "User_teamId_Team_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "User"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "Account_pkey",
+      "schema": "public",
+      "table": "Account",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "Admin_pkey",
+      "schema": "public",
+      "table": "Admin",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "name"
+      ],
+      "nameExplicit": false,
+      "name": "Flags_pkey",
+      "schema": "public",
+      "table": "Flags",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "News_pkey",
+      "schema": "public",
+      "table": "News",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "Problem_pkey",
+      "schema": "public",
+      "table": "Problem",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "Round_pkey",
+      "schema": "public",
+      "table": "Round",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "Session_pkey",
+      "schema": "public",
+      "table": "Session",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "Solve_pkey",
+      "schema": "public",
+      "table": "Solve",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "SubmissionTestcase_pkey",
+      "schema": "public",
+      "table": "SubmissionTestcase",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "Submission_pkey",
+      "schema": "public",
+      "table": "Submission",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "TeamRound_pkey",
+      "schema": "public",
+      "table": "TeamRound",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "Team_pkey",
+      "schema": "public",
+      "table": "Team",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "Testcase_pkey",
+      "schema": "public",
+      "table": "Testcase",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "UniReg_pkey",
+      "schema": "public",
+      "table": "UniReg",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "User_pkey",
+      "schema": "public",
+      "table": "User",
+      "entityType": "pks"
+    }
+  ],
+  "renames": []
+}

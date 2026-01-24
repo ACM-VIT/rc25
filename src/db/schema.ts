@@ -195,6 +195,7 @@ export const problems = cockroachTable(
     // Time and memory limits
     timeLimitMs: int4("timeLimitMs").notNull().default(1000),
     memoryLimitKb: int4("memoryLimitKb").notNull().default(262144), // 256MB
+    effectiveSolves: int4("effective_solves").notNull().default(0),
     roundId: text("roundId")
       .notNull()
       .references(() => rounds.id),

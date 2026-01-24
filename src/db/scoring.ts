@@ -1,20 +1,13 @@
 import type { Problem, Solve } from "./schema";
 
 // ============================================================================
-// Dynamic Pricing with Partial Solves
+// Dynamic Pricing with Partial Solves (Squared Decay Formula)
 // ============================================================================
-// Formula (CTFd linear decay style adapted for partial solves):
+// Formula:
 //
 //   effectiveSolves = SUM(testcasesPassed / 10) for all solves on a problem
-//   currentPoints = MAX(minimum, initial - (initial - minimum) * (effectiveSolves / decay))
+//   currentPoints = MAX(minimum, initial - (initial - minimum) * (effectiveSolves² / decay²))
 //
-// Example:
-//   initial = 500, minimum = 100, decay = 20
-//   If 5 users solved 10/10 and 10 users solved 5/10:
-//   effectiveSolves = 5 * (10/10) + 10 * (5/10) = 5 + 5 = 10
-//   currentPoints = MAX(100, 500 - (500 - 100) * (10 / 20))
-//                 = MAX(100, 500 - 400 * 0.5)
-//                 = MAX(100, 300) = 300
 // ============================================================================
 
 const TOTAL_TESTCASES = 10;
@@ -44,23 +37,18 @@ export function calculateEffectiveSolves(
 
 /**
  * Calculate current points for a problem based on effective solves
- * Uses CTFd linear decay formula
- * @param problem Problem with initial, minimum, decay, and effectiveSolves
+ * Uses squared decay formula
+ * @param problem Problem with initial, minimum, decay
+ * @param effectiveSolves The computed effective solves for this problem
  * @returns Current point value (integer)
  */
 export function calculateCurrentPoints(
-  problem: Pick<Problem, "initial" | "minimum" | "decay">,
-  noOfSolves: number,
+  problem: Pick<Problem, "initial" | "minimum" | "decay" | "effectiveSolves">,
 ): number {
-  const { initial, minimum, decay } = problem;
+  const { initial, minimum, decay, effectiveSolves } = problem;
 
-  // Avoid division by zero
-  if (decay <= 0) {
-    return minimum;
-  }
-
-  // CTFd linear decay formula
-  const decayRatio = noOfSolves / decay;
+  // Squared decay formula: (effectiveSolves² / decay²)
+  const decayRatio = effectiveSolves ** 2 / decay ** 2;
   const pointReduction = (initial - minimum) * decayRatio;
   const points = initial - pointReduction;
 
@@ -69,55 +57,36 @@ export function calculateCurrentPoints(
 }
 
 /**
- * Calculate points earned by a user based on their testcases passed
- * Points are proportional to testcases passed
- * @param currentPoints Current point value of the problem
- * @param testcasesPassed Number of testcases passed by the user (0-10)
- * @returns Points earned (integer)
+ * Calculate points earned by a submission based on their testcases passed
+ * Points are proportional to testcases passed using squared decay
+ * @param problem Problem with initial, minimum, decay
+ * @param testcasesPassed Number of testcases passed by the submission (0-10)
+ * @returns Object containing submissionScore, currentPoints, and newEffectiveSolves
  */
-export function calculateUserScore(
-  currentPoints: number,
+export function calculateSubmissionScore(
+  problem: Pick<Problem, "initial" | "minimum" | "decay" | "effectiveSolves">,
   testcasesPassed: number,
-): number {
-  const proportion = testcasesPassed / TOTAL_TESTCASES;
-  return Math.round(currentPoints * proportion);
-}
+): {
+  submissionScore: number;
+  currentPoints: number;
+  newEffectiveSolves: number;
+} {
+  const { initial, minimum, decay, effectiveSolves } = problem;
 
-/**
- * Calculate the new effective solves after a solve is updated
- * @param currentEffectiveSolves Current effective solves on the problem
- * @param oldTestcasesPassed Previous testcases passed (0 if new solve)
- * @param newTestcasesPassed New testcases passed
- * @returns Updated effective solves
- */
-export function updateEffectiveSolves(
-  currentEffectiveSolves: number,
-  oldTestcasesPassed: number,
-  newTestcasesPassed: number,
-): number {
-  const oldContribution = calculateSolveContribution(oldTestcasesPassed);
-  const newContribution = calculateSolveContribution(newTestcasesPassed);
-  return currentEffectiveSolves - oldContribution + newContribution;
-}
+  // Include this submission's contribution in effective solves
+  const newEffectiveSolves =
+    effectiveSolves + testcasesPassed / TOTAL_TESTCASES;
 
-/**
- * Recalculate cached scores for all solves on a problem
- * Call this after effectiveSolves changes on a problem
- * @param problem The problem with updated effectiveSolves
- * @param solves All solves for this problem
- * @returns Array of solve IDs with their new cached scores
- */
-export function recalculateSolveScores(
-  problem: Pick<Problem, "initial" | "minimum" | "decay">,
-  solves: Pick<Solve, "id" | "testcasesPassed">[],
-  noOfSolves: number,
-): { id: string; cachedScore: number }[] {
-  const currentPoints = calculateCurrentPoints(problem, noOfSolves);
+  // Squared decay formula
+  const decayRatio = newEffectiveSolves ** 2 / decay ** 2;
+  const pointReduction = (initial - minimum) * decayRatio;
+  const currentPoints = Math.max(minimum, initial - pointReduction);
 
-  return solves.map((solve) => ({
-    id: solve.id,
-    cachedScore: calculateUserScore(currentPoints, solve.testcasesPassed),
-  }));
+  // Score is proportional to testcases passed
+  const submissionScore = Math.round(
+    currentPoints * (testcasesPassed / TOTAL_TESTCASES),
+  );
+  return { submissionScore, currentPoints, newEffectiveSolves };
 }
 
 // ============================================================================
@@ -125,49 +94,33 @@ export function recalculateSolveScores(
 // ============================================================================
 
 /**
- * SQL expression for calculating current points directly in the database
- * Use this in raw SQL queries for leaderboards
- *
- * @example
- * ```sql
- * SELECT
- *   p.id,
- *   p.title,
- *   GREATEST(p.minimum, p.initial - (p.initial - p.minimum) * (p."effectiveSolves" / p.decay)) as current_points
- * FROM "Problem" p
- * WHERE p."roundId" = $1
- * ```
+ * CTE to calculate effective solves per problem
+ * effectiveSolves = SUM(testcasesPassed / 10.0) for all solves on a problem
  */
-export const CURRENT_POINTS_SQL = `
-  GREATEST(
-    "minimum",
-    "initial" - ("initial" - "minimum") * ("effectiveSolves" / NULLIF("decay", 0))
+export const EFFECTIVE_SOLVES_CTE = `
+  "ProblemEffectiveSolves" AS (
+    SELECT
+      "problemId",
+      COALESCE(SUM("testcasesPassed" / 10.0), 0) AS "effectiveSolves"
+    FROM "Solve"
+    GROUP BY "problemId"
   )
 `;
 
 /**
- * SQL expression for calculating a user's score from their solve
+ * SQL expression for calculating current points using squared decay
+ * Requires effective_solves to be available (from CTE or subquery)
  *
- * @example
- * ```sql
- * SELECT
- *   s.id,
- *   s."userId",
- *   s."testcasesPassed",
- *   ROUND(
- *     GREATEST(p.minimum, p.initial - (p.initial - p.minimum) * (p."effectiveSolves" / p.decay))
- *     * (s."testcasesPassed" / 10.0)
- *   ) as score
- * FROM "Solve" s
- * JOIN "Problem" p ON s."problemId" = p.id
- * ```
+ * Formula: GREATEST(minimum, initial - (initial - minimum) * (effectiveSolves² / decay²))
  */
-export const USER_SCORE_SQL = `
-  ROUND(
-    GREATEST(
-      p."minimum",
-      p."initial" - (p."initial" - p."minimum") * (p."effectiveSolves" / NULLIF(p."decay", 0))
-    ) * (s."testcasesPassed" / 10.0)
+export const CURRENT_POINTS_EXPR = (
+  effectiveSolvesExpr: string,
+  prefix = "p",
+) => `
+  GREATEST(
+    ${prefix}."minimum",
+    ${prefix}."initial" - (${prefix}."initial" - ${prefix}."minimum") *
+      (POWER(COALESCE(${effectiveSolvesExpr}, 0), 2) / POWER(${prefix}."decay", 2))
   )
 `;
 
@@ -176,58 +129,143 @@ export const USER_SCORE_SQL = `
 // ============================================================================
 
 /**
- * Get leaderboard SQL for a round
+ * Get team leaderboard SQL for a round
+ * Uses CTE for effective solves calculation, then computes scores
  * Groups by team, sums scores, orders by total score then earliest solve time
+ *
+ * Parameters: $1 = roundId
  */
 export const TEAM_LEADERBOARD_SQL = `
+  WITH ${EFFECTIVE_SOLVES_CTE},
+  "ProblemCurrentPoints" AS (
+    SELECT
+      p.id AS "problemId",
+      p."roundId",
+      ${CURRENT_POINTS_EXPR('pes."effectiveSolves"', "p")} AS "currentPoints"
+    FROM "Problem" p
+    LEFT JOIN "ProblemEffectiveSolves" pes ON pes."problemId" = p.id
+    WHERE p."roundId" = $1
+  )
   SELECT
-    t.id as "teamId",
-    t.name as "teamName",
+    t.id AS "teamId",
+    t.name AS "teamName",
     COALESCE(SUM(
-      ROUND(
-        GREATEST(
-          p."minimum",
-          p."initial" - (p."initial" - p."minimum") * (p."effectiveSolves" / NULLIF(p."decay", 0))
-        ) * (s."testcasesPassed" / 10.0)
-      )
-    ), 0) as "totalScore",
-    COUNT(DISTINCT CASE WHEN s."testcasesPassed" = 10 THEN s."problemId" END) as "fullSolves",
-    COUNT(DISTINCT CASE WHEN s."testcasesPassed" > 0 THEN s."problemId" END) as "partialSolves",
-    MIN(s."firstSolveAt") as "earliestSolve"
+      ROUND(pcp."currentPoints" * (s."testcasesPassed" / 10.0))
+    ), 0)::int AS "totalScore",
+    COUNT(DISTINCT CASE WHEN s."testcasesPassed" = 10 THEN s."problemId" END)::int AS "fullSolves",
+    COUNT(DISTINCT CASE WHEN s."testcasesPassed" > 0 THEN s."problemId" END)::int AS "partialSolves"
   FROM "Team" t
   LEFT JOIN "Solve" s ON s."teamId" = t.id
-  LEFT JOIN "Problem" p ON s."problemId" = p.id
-  LEFT JOIN "Round" r ON p."roundId" = r.id
-  WHERE r.id = $1
-    AND t.hidden = false
+  LEFT JOIN "ProblemCurrentPoints" pcp ON pcp."problemId" = s."problemId"
+  WHERE t.hidden = false
     AND t.disqualify = false
   GROUP BY t.id, t.name
-  ORDER BY "totalScore" DESC, "earliestSolve" ASC NULLS LAST
+  HAVING COALESCE(SUM(
+    CASE WHEN pcp."problemId" IS NOT NULL
+    THEN ROUND(pcp."currentPoints" * (s."testcasesPassed" / 10.0))
+    ELSE 0 END
+  ), 0) > 0
+  ORDER BY "totalScore" DESC, t.name ASC
 `;
 
 /**
  * Get detailed problem scores for a specific team in a round
+ * Shows each problem with current points and team's score
+ *
+ * Parameters: $1 = roundId, $2 = teamId
  */
 export const TEAM_PROBLEM_SCORES_SQL = `
+  WITH ${EFFECTIVE_SOLVES_CTE}
   SELECT
-    p.id as "problemId",
+    p.id AS "problemId",
     p.title,
     p.difficulty,
-    GREATEST(
-      p."minimum",
-      p."initial" - (p."initial" - p."minimum") * (p."effectiveSolves" / NULLIF(p."decay", 0))
-    ) as "currentPoints",
-    COALESCE(s."testcasesPassed", 0) as "testcasesPassed",
+    ROUND(${CURRENT_POINTS_EXPR('pes."effectiveSolves"', "p")})::int AS "currentPoints",
+    COALESCE(s."testcasesPassed", 0)::int AS "testcasesPassed",
+    ROUND(
+      ${CURRENT_POINTS_EXPR('pes."effectiveSolves"', "p")} * (COALESCE(s."testcasesPassed", 0) / 10.0)
+    )::int AS score
+  FROM "Problem" p
+  LEFT JOIN "ProblemEffectiveSolves" pes ON pes."problemId" = p.id
+  LEFT JOIN "Solve" s ON s."problemId" = p.id AND s."teamId" = $2
+  WHERE p."roundId" = $1 AND p."isHidden" = false
+  ORDER BY
+    CASE p.difficulty
+      WHEN 'EASY' THEN 1
+      WHEN 'MEDIUM' THEN 2
+      WHEN 'HARD' THEN 3
+    END,
+    p.title
+`;
+
+/**
+ * Get current points for all problems in a round
+ *
+ * Parameters: $1 = roundId
+ */
+export const PROBLEM_CURRENT_POINTS_SQL = `
+  WITH ${EFFECTIVE_SOLVES_CTE}
+  SELECT
+    p.id AS "problemId",
+    p.title,
+    p.difficulty,
+    p.initial,
+    p.minimum,
+    p.decay,
+    COALESCE(pes."effectiveSolves", 0) AS "effectiveSolves",
+    ROUND(${CURRENT_POINTS_EXPR('pes."effectiveSolves"', "p")})::int AS "currentPoints"
+  FROM "Problem" p
+  LEFT JOIN "ProblemEffectiveSolves" pes ON pes."problemId" = p.id
+  WHERE p."roundId" = $1 AND p."isHidden" = false
+  ORDER BY
+    CASE p.difficulty
+      WHEN 'EASY' THEN 1
+      WHEN 'MEDIUM' THEN 2
+      WHEN 'HARD' THEN 3
+    END,
+    p.title
+`;
+
+/**
+ * Get current points for a single problem
+ *
+ * Parameters: $1 = problemId
+ */
+export const SINGLE_PROBLEM_POINTS_SQL = `
+  SELECT
+    p.id AS "problemId",
+    p.initial,
+    p.minimum,
+    p.decay,
+    COALESCE(SUM(s."testcasesPassed" / 10.0), 0) AS "effectiveSolves",
     ROUND(
       GREATEST(
         p."minimum",
-        p."initial" - (p."initial" - p."minimum") * (p."effectiveSolves" / NULLIF(p."decay", 0))
-      ) * (COALESCE(s."testcasesPassed", 0) / 10.0)
-    ) as score,
-    s."firstSolveAt",
-    s."lastImprovedAt"
+        p."initial" - (p."initial" - p."minimum") *
+          (POWER(COALESCE(SUM(s."testcasesPassed" / 10.0), 0), 2) / POWER(p."decay", 2))
+      )
+    )::int AS "currentPoints"
   FROM "Problem" p
-  LEFT JOIN "Solve" s ON s."problemId" = p.id AND s."teamId" = $2
-  WHERE p."roundId" = $1 AND p."isHidden" = false
-  ORDER BY p.difficulty, p.title
+  LEFT JOIN "Solve" s ON s."problemId" = p.id
+  WHERE p.id = $1
+  GROUP BY p.id, p.initial, p.minimum, p.decay
+`;
+
+/**
+ * Get team's total score for a round
+ *
+ * Parameters: $1 = roundId, $2 = teamId
+ */
+export const TEAM_TOTAL_SCORE_SQL = `
+  WITH ${EFFECTIVE_SOLVES_CTE}
+  SELECT
+    COALESCE(SUM(
+      ROUND(
+        ${CURRENT_POINTS_EXPR('pes."effectiveSolves"', "p")} * (s."testcasesPassed" / 10.0)
+      )
+    ), 0)::int AS "totalScore"
+  FROM "Solve" s
+  JOIN "Problem" p ON p.id = s."problemId"
+  LEFT JOIN "ProblemEffectiveSolves" pes ON pes."problemId" = p.id
+  WHERE p."roundId" = $1 AND s."teamId" = $2
 `;

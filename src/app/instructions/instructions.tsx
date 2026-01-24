@@ -1,9 +1,7 @@
 "use client";
 
-import DashboardBox from "@/components/DashboardBox";
 import NumberedCard from "@/components/NumberedCard";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { formula1Bold, formula1Wide } from "@/lib/fonts";
+import { formula1Wide } from "@/lib/fonts";
 
 // TODO: Update instructions  
 
@@ -33,11 +31,12 @@ export default function Instructions() {
 
     return (
         <div
-            className="min-h-screen relative flex flex-col items-center justify-center p-2 sm:p-3 md:p-4 lg:p-6"
+            className="min-h-screen relative flex flex-col items-center justify-start p-2 sm:p-3 md:p-4 lg:p-6 pt-12 sm:pt-16 md:pt-20 lg:pt-24"
             style={{
                 backgroundImage: "url('/Dashboard.png')",
                 backgroundSize: "cover",
                 backgroundPosition: "center",
+                backgroundAttachment: "fixed",
             }}
         >
             <h1 className={`${formula1Wide.className} text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-6 sm:mb-8 md:mb-10 lg:mb-12 mt-2 sm:mt-4 md:mt-6 lg:mt-8 underline`}>

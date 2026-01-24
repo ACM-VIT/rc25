@@ -1,6 +1,5 @@
 "use client"
 
-import Image from "next/image";
 import { ChevronDown } from "lucide-react";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { formula1Bold } from "@/lib/fonts";
@@ -32,17 +31,16 @@ export default function NumberedCard({ title, index, description }: NumberedCard
                         <CardHeader uniqueId={uniqueId} index={index} title={title} hasDescription />
                     </div>
                 </AccordionPrimitive.Trigger>
-                <AccordionPrimitive.Content className="w-full overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
-                    <div className="w-full h-[120px] sm:h-[150px] md:h-[180px] lg:h-[214px] relative">
-                        {/* Dropdown SVG background */}
-                        <Image
-                            src="/instructions-assets/dropdown.svg"
-                            alt=""
-                            fill
-                            className="object-fill"
-                            priority
-                        />
-
+                <AccordionPrimitive.Content className="w-full overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down flex justify-end">
+                    <div 
+                        className="w-[98.5%] min-h-[120px] sm:min-h-[150px] md:min-h-[180px] lg:min-h-[214px] relative"
+                        style={{
+                            background: "linear-gradient(180deg, #A7282D 0%, #411012 100%)",
+                            borderLeft: "1px solid #611015",
+                            borderRight: "1px solid #611015",
+                            borderBottom: "1px solid #611015",
+                        }}
+                    >
                         {/* Description content */}
                         <div className="relative z-10 p-4 sm:p-5 md:p-6 lg:p-8">
                             <p

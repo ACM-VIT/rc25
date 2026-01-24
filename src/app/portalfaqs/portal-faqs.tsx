@@ -1,14 +1,8 @@
 "use client";
 
 import React from "react";
-import {
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-    Accordion,
-} from "../../components/ui/accordion";
-// import Image from "next/image";
-// import yellowwhitering from "@/app/assets/yellowwhitering.png";
+import NumberedCard from "@/components/NumberedCard";
+import { formula1Wide } from "@/lib/fonts";
 
 export default function PortalFaqs() {
     const faqs = [
@@ -51,39 +45,21 @@ export default function PortalFaqs() {
 
     return (
         <div
-            className="flex min-h-dvh w-full justify-center"
+            className="min-h-screen relative flex flex-col items-center justify-center p-4 sm:p-6"
             style={{
-                backgroundImage: "url('./submissionsbg.png')",
-                backgroundSize: "contain",
-                backgroundAttachment: "fixed",
+                backgroundImage: "url('/Dashboard.png')",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
             }}
         >
-            <div className="p-6 text-white w-[80%]">
-                <p className="text-5xl font-semibold text-center border-white pt-0 pb-10">
-                    FAQs
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-7 justify-center">
-                    {faqs.map((faq, index) => (
-                        <div
-                            key={faq.id}
-                            className="mb-6 items-baseline w-full md:w-[80%] mx-auto"
-                        >
-                            <Accordion type="single" collapsible>
-                                <AccordionItem
-                                    value={`question${index + 1}`}
-                                    className="rounded-lg border border-[rgba(155,81,224,0.5)] bg-[rgba(66,66,66,0.75)] shadow-[0_0_9.7px_1px_#FFF,0_0_18.8px_10px_#7638F5] backdrop-blur-lg"
-                                >
-                                    <AccordionTrigger className="md:text-lg font-medium p-4">
-                                        {faq.question}
-                                    </AccordionTrigger>
-                                    <AccordionContent className="p-4 pt-0 text-sm">
-                                        {faq.answer}
-                                    </AccordionContent>
-                                </AccordionItem>
-                            </Accordion>
-                        </div>
-                    ))}
-                </div>
+            <h1 className={`${formula1Wide.className} text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-bold text-white mb-14 sm:mb-18 md:mb-20 mt-10 underline`}>
+                FAQs
+            </h1>
+            
+            <div className="w-full max-w-[90%] mx-auto flex flex-col gap-4">
+                {faqs.map((faq, index) => (
+                    <NumberedCard key={faq.id} title={faq.question} index={index + 1} />
+                ))}
             </div>
         </div>
     );

@@ -159,38 +159,7 @@ export default async function createSubmission(data: {
 
     // console.log(selectedTestcases);
 
-    // Create submission record
-    const [submission] = await db.transaction(async (tx) => {
-      const inserted = await tx
-        .insert(submissions)
-        .values({
-          code: data.code,
-          language: data.language,
-          problemId: data.problemId,
-          userId: data.userId,
-          teamId: userTeam.id,
-          testcasesPassed: 0,
-          evaluated: false,
-        })
-        .returning();
-
-      const created = inserted[0];
-      if (!created) {
-        throw new Error("Failed to create submission");
-      }
-
-      if (orderedTestcases.length) {
-        await tx.insert(submissionTestcases).values(
-          orderedTestcases.map((tc) => ({
-            testcaseId: tc.id,
-            submissionId: created.id,
-            passed: false,
-          })),
-        );
-      }
-
-      return [created];
-    });
+    const submissionId = crypto.randomUUID();
 
     const combinedInput = orderedTestcases.map((tc) => tc.input);
 
@@ -213,7 +182,7 @@ export default async function createSubmission(data: {
       transformedCode,
       data.language,
       combinedInput,
-      submission.id,
+      submissionId,
     );
 
     // console.log("judge submit", judgeResult);
@@ -225,18 +194,56 @@ export default async function createSubmission(data: {
       };
     }
 
-    const [primaryToken] = judgeResult.tokens || [];
-    if (!primaryToken) {
+    const tokens = judgeResult.tokens || [];
+    if (tokens.length === 0) {
       return {
         success: false,
         error: "No submission tokens received",
       };
     }
 
-    await db
-      .update(submissions)
-      .set({ token: primaryToken })
-      .where(eq(submissions.id, submission.id));
+    if (tokens.length !== orderedTestcases.length) {
+      return {
+        success: false,
+        error: "Token count does not match number of testcases",
+      };
+    }
+
+    const [submission] = await db.transaction(async (tx) => {
+      const inserted = await tx
+        .insert(submissions)
+        .values({
+          id: submissionId,
+          code: data.code,
+          language: data.language,
+          problemId: data.problemId,
+          userId: data.userId,
+          teamId: userTeam.id,
+          testcasesPassed: 0,
+          evaluated: false,
+        })
+        .returning();
+
+      const created = inserted[0];
+      if (!created) {
+        throw new Error("Failed to create submission");
+      }
+
+      if (orderedTestcases.length) {
+        await tx.insert(submissionTestcases).values(
+          orderedTestcases.map((tc, index) => ({
+            testcaseId: tc.id,
+            submissionId: created.id,
+            passed: false,
+            token: tokens[index],
+          })),
+        );
+      }
+
+      return [created];
+    });
+
+    const [primaryToken] = tokens;
 
     return {
       success: true,
@@ -246,7 +253,7 @@ export default async function createSubmission(data: {
         user: { name: user?.name ?? null },
       },
       token: primaryToken,
-      tokens: judgeResult.tokens,
+      tokens,
     };
   } catch (error: unknown) {
     console.error(

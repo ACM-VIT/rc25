@@ -273,9 +273,6 @@ export const solve = cockroachTable(
     problemId: text("problemId")
       .notNull()
       .references(() => problems.id),
-    userId: text("userId")
-      .notNull()
-      .references(() => users.id),
     teamId: text("teamId").references(() => teams.id),
     // Reference to the best submission
     bestSubmissionId: text("bestSubmissionId").references(() => submissions.id),
@@ -283,7 +280,6 @@ export const solve = cockroachTable(
     testcasesPassed: int4("testcasesPassed").notNull().default(0),
   },
   (table) => [
-    uniqueIndex("Solve_userId_problemId_key").on(table.userId, table.problemId),
     uniqueIndex("Solve_teamId_problemId_key").on(table.teamId, table.problemId),
     index("Solve_problemId_idx").on(table.problemId),
     index("Solve_teamId_idx").on(table.teamId),

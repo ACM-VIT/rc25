@@ -61,6 +61,7 @@ export async function getTeamSubmissions(userId: string, problemId: string) {
   return submissionRows.map((row) => ({
     ...row.submission,
     totalTestcases,
+    evaluationStatus: null,
     user: row.user,
   }));
 }

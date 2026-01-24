@@ -5,11 +5,6 @@ import {
   type SupportedLanguage,
 } from "@/utils/judge0-langs";
 import { firestoreService } from "@/lib/firebase-admin-service";
-import { Judge0StatusEnum } from "@/utils/judge0-status";
-import {
-  Judge0Error,
-  Judge0Response,
-} from "../@landing/judge0/submissions/callback/route";
 
 const DEFAULT_JUDGE0_BASE_URLS = [
   "https://ce.judge0.com",
@@ -83,30 +78,10 @@ async function requestWithFallback(
   throw lastError ?? new Error("Unable to reach Judge0 endpoints");
 }
 
-export async function getSubmission(
-  submissionId: string,
-): Promise<Judge0Response | Judge0Error> {
-  const path = `/submissions/${submissionId}?base64_encoded=true&fields=*`;
-  const options = {
-    method: "GET",
-    headers: {
-      ...createJudge0Headers(),
-    },
-  };
-  try {
-    const response = await requestWithFallback(path, options);
-    return await response.json();
-  } catch (error) {
-    return {
-      Judg,
-    };
-  }
-}
-
 export async function judgeSolution(
   code: string,
   language: SupportedLanguage,
-  stdin: string,
+  stdin: string[],
   submissionId: string,
 ) {
   if (!process.env.HOST) {
@@ -114,9 +89,17 @@ export async function judgeSolution(
   }
 
   const encodedCode = Buffer.from(code ?? "", "utf-8").toString("base64");
-  const encodedStdin = Buffer.from(stdin ?? "", "utf-8").toString("base64");
-  const submissionsPath =
-    "/submissions/batch?base64_encoded=true&wait=false&fields=*";
+  const submissionsPath = "/submissions/batch?base64_encoded=true";
+  const submissions = (stdin ?? []).map((input) => ({
+    language_id: SUPPORTED_LANGUAGES[language as SupportedLanguage].id,
+    source_code: encodedCode,
+    stdin: Buffer.from(input ?? "", "utf-8").toString("base64"),
+    callback_url: `https://${process.env.HOST}/judge0/submissions/callback`,
+  }));
+
+  if (submissions.length === 0) {
+    return { success: false, error: "No stdin entries provided" };
+  }
 
   const postOptions = {
     method: "POST",
@@ -124,14 +107,9 @@ export async function judgeSolution(
       ...createJudge0Headers(true),
     },
     body: JSON.stringify({
-      language_id: SUPPORTED_LANGUAGES[language as SupportedLanguage].id,
-      source_code: encodedCode,
-      stdin: encodedStdin,
-      callback_url: `https://${process.env.HOST}/judge0/submissions/callback`,
+      submissions,
     }),
   };
-
-  // console.log(language)
 
   try {
     const postResponse = await requestWithFallback(
@@ -145,40 +123,28 @@ export async function judgeSolution(
       );
     }
     const postResult = await postResponse.json();
-    // console.log("postResult: ", postResult)
-    if (!postResult.token) {
-      return { success: false, error: "No submission token received" };
+    if (!Array.isArray(postResult) || postResult.length === 0) {
+      return { success: false, error: "No submission tokens received" };
     }
 
-    // console.log("postResultWithToken: ", postResult)
+    const tokens = postResult
+      .map((item) => item?.token)
+      .filter((token): token is string => Boolean(token));
+
+    if (tokens.length === 0) {
+      return { success: false, error: "No submission tokens received" };
+    }
 
     await firestoreService.submissions.created(submissionId);
     return {
       success: true,
-      token: postResult.token,
+      tokens,
     };
   } catch (error) {
     console.error("Submission error:", error);
     return {
       success: false,
       error: `Submission failed: ${(error as Error).message}`,
-    };
-  }
-}
-
-export async function checkSubmissionStatus(token: string) {
-  try {
-    const result = await getSubmission(token);
-    return {
-      success: result.status?.id === Judge0StatusEnum.Accepted,
-      status: result.status,
-      output: result.stdout,
-      error: result.stderr || result.compile_output || result.message,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: `Status check failed: ${(error as Error).name}`,
     };
   }
 }

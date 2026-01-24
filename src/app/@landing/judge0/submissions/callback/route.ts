@@ -7,7 +7,7 @@ import {
   solve,
 } from "@/db/schema";
 import { firestoreService } from "@/lib/firebase-admin-service";
-import { asc, eq } from "drizzle-orm";
+import { and, asc, eq, isNull } from "drizzle-orm";
 import {
   Judge0StatusEnumValue,
   judge0StatusToEval,
@@ -97,6 +97,72 @@ export async function PUT(request: NextRequest) {
 
     const evaluationStatus = judge0StatusToEval(status.description);
 
+    const updateSolveIfComplete = async () => {
+      const problemSubmissionTestcaseRows = await db
+        .select({
+          submissionTestcase: submissionTestcases,
+          submission: submissions,
+        })
+        .from(submissionTestcases)
+        .leftJoin(
+          submissions,
+          eq(submissionTestcases.submissionId, submissions.id),
+        )
+        .where(eq(submissionTestcases.submissionId, submission.id))
+        .orderBy(asc(testcases.orderIndex));
+
+      const allEvaluated = problemSubmissionTestcaseRows.every(
+        (row) => row.submissionTestcase.evaluated,
+      );
+
+      if (!allEvaluated) {
+        return;
+      }
+
+      const passedCount = problemSubmissionTestcaseRows.filter(
+        (row) => row.submissionTestcase.passed,
+      ).length;
+
+      const solveRows = await db
+        .select({
+          id: solve.id,
+          bestSubmissionId: solve.bestSubmissionId,
+          testcasesPassed: solve.testcasesPassed,
+        })
+        .from(solve)
+        .where(
+          and(
+            eq(solve.problemId, submission.problemId),
+            submission.teamId
+              ? eq(solve.teamId, submission.teamId)
+              : isNull(solve.teamId),
+          ),
+        );
+
+      const teamSolve = solveRows[0];
+
+      await db
+        .update(submissions)
+        .set({
+          testcasesPassed: passedCount,
+          evaluated: true,
+          updatedAt: new Date(),
+        })
+        .where(eq(submissions.id, submission.id));
+
+      if (!teamSolve || passedCount <= teamSolve.testcasesPassed) {
+        return;
+      }
+
+      await db
+        .update(solve)
+        .set({
+          testcasesPassed: passedCount,
+          bestSubmissionId: submission.id,
+        })
+        .where(eq(solve.id, teamSolve.id));
+    };
+
     if (compile_output) {
       await db
         .update(submissionTestcases)
@@ -110,6 +176,7 @@ export async function PUT(request: NextRequest) {
           memoryUsedKb: memory,
         })
         .where(eq(submissionTestcases.id, submissionTestcase.id));
+      await updateSolveIfComplete();
       await firestoreService.submissions.processed(submission.id);
       return NextResponse.json(
         { message: "Submission failed with compile error" },
@@ -130,6 +197,7 @@ export async function PUT(request: NextRequest) {
           memoryUsedKb: memory,
         })
         .where(eq(submissionTestcases.id, submissionTestcase.id));
+      await updateSolveIfComplete();
       await firestoreService.submissions.processed(submission.id);
       return NextResponse.json(
         { message: "Submission failed with runtime error" },
@@ -158,14 +226,7 @@ export async function PUT(request: NextRequest) {
       })
       .where(eq(submissionTestcases.id, submissionTestcase.id));
 
-    const solveRows = await db
-      .select({
-        id: solve.id,
-        teamId: solve.teamId,
-        testcasesPassed: solve.testcasesPassed,
-      })
-      .from(solve)
-      .where(eq(solve.problemId, submission.problemId));
+    await updateSolveIfComplete();
 
     await firestoreService.submissions.processed(submission.id);
 

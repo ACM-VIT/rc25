@@ -5,7 +5,7 @@ import NumberedCard from "@/components/NumberedCard";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { formula1Bold, formula1Wide } from "@/lib/fonts";
 
-// TODO: Update instructions
+// TODO: Update instructions  
 
 export default function Instructions() {
     const instructions = [
@@ -33,20 +33,20 @@ export default function Instructions() {
 
     return (
         <div
-            className="min-h-screen relative flex flex-col items-center justify-center p-4 sm:p-6"
+            className="min-h-screen relative flex flex-col items-center justify-center p-2 sm:p-3 md:p-4 lg:p-6"
             style={{
                 backgroundImage: "url('/Dashboard.png')",
                 backgroundSize: "cover",
                 backgroundPosition: "center",
             }}
         >
-            <h1 className={`${formula1Wide.className} text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-bold text-white mb-14 sm:mb-18 md:mb-20 mt-[-100] underline`}>
+            <h1 className={`${formula1Wide.className} text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-6 sm:mb-8 md:mb-10 lg:mb-12 mt-2 sm:mt-4 md:mt-6 lg:mt-8 underline`}>
                 Instructions
-            </h1> 
-            
-            <div className="w-full max-w-[90%] mx-auto flex flex-col gap-4">
+            </h1>
+
+            <div className="w-full max-w-[95%] sm:max-w-[90%] md:max-w-[85%] lg:max-w-[80%] mx-auto flex flex-col gap-2 sm:gap-3 md:gap-4 lg:gap-5">
                 {instructions.map((instruction, index) => (
-                    <NumberedCard key={index} title={instruction.title} index={index + 1} />
+                    <NumberedCard key={index} title={instruction.title} description={instruction.description} index={index + 1} />
                 ))}
             </div>
         </div>

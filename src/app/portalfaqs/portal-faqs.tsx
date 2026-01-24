@@ -11,7 +11,7 @@ export default function PortalFaqs() {
             question: "WHAT IS THIS PORTAL ABOUT?",
             answer: "This portal provides information and resources to help you manage your activities effectively.",
         },
-        {
+        { 
             id: "faq2",
             question: "HOW CAN I RESET MY PASSWORD?",
             answer: "To reset your password, go to the login page and click on the 'Forgot Password' link. Follow the instructions to reset your password.",
@@ -45,20 +45,20 @@ export default function PortalFaqs() {
 
     return (
         <div
-            className="min-h-screen relative flex flex-col items-center justify-center p-4 sm:p-6"
+            className="min-h-screen relative flex flex-col items-center justify-center p-2 sm:p-3 md:p-4 lg:p-6"
             style={{
                 backgroundImage: "url('/Dashboard.png')",
                 backgroundSize: "cover",
                 backgroundPosition: "center",
             }}
         >
-            <h1 className={`${formula1Wide.className} text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-bold text-white mb-14 sm:mb-18 md:mb-20 mt-10 underline`}>
+            <h1 className={`${formula1Wide.className} text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-6 sm:mb-8 md:mb-10 lg:mb-12 mt-2 sm:mt-4 md:mt-6 lg:mt-8 underline`}>
                 FAQs
             </h1>
-            
-            <div className="w-full max-w-[90%] mx-auto flex flex-col gap-4">
+
+            <div className="w-full max-w-[95%] sm:max-w-[90%] md:max-w-[85%] lg:max-w-[80%] mx-auto flex flex-col gap-2 sm:gap-3 md:gap-4 lg:gap-5">
                 {faqs.map((faq, index) => (
-                    <NumberedCard key={faq.id} title={faq.question} index={index + 1} />
+                    <NumberedCard key={faq.id} title={faq.question} description={faq.answer} index={index + 1} />
                 ))}
             </div>
         </div>

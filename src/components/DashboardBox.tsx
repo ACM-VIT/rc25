@@ -6,6 +6,6 @@ const DashboardBox: React.FC<{ className?: string; children: React.ReactNode }> 
             {children}
         </div>
     );
-};
+}; 
 
 export default DashboardBox;

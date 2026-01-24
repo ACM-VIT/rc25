@@ -16,7 +16,7 @@ const LandingNavbar: React.FC = () => {
     >
       <div className="flex justify-between items-center w-full px-4 sm:px-6 md:px-8 lg:px-14 xl:px-20">
         {/* Logo */}
-        <div className="flex-shrink-0">
+        <div className="shrink-0">
           <Image
             src={RCLogo}
             alt="ze rc logo"

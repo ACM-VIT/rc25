@@ -2,6 +2,7 @@ import React, {useState, useEffect, useTransition} from "react";
 import Editor from "@monaco-editor/react";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import createSubmission from "@/app/actions/create-submission";
+import type { EvalEnum } from "@/db/schema";
 import {
     SUPPORTED_LANGUAGES,
     type SupportedLanguage,
@@ -15,8 +16,9 @@ type SubmissionWithUser = {
     createdAt: Date;
     updatedAt: Date;
     evaluated: boolean;
-    evaluationStatus: "ACCEPTED" | "RUNTIME_ERROR" | "COMPILE_ERROR" | null;
-    testcasespassed: boolean[];
+    evaluationStatus: EvalEnum | null;
+    testcasesPassed: number;
+    totalTestcases: number;
     user: { name: string | null };
 };
 

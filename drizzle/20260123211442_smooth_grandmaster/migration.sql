@@ -1,0 +1,1 @@
+ALTER TABLE "Problem" ADD COLUMN "effective_solves" int4 DEFAULT 0 NOT NULL;

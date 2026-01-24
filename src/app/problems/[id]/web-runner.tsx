@@ -55,7 +55,7 @@ export default function WebRunner({ problem }: WebRunnerProps) {
                                 {isRunning ? "Running..." : "Run"}
                             </Button>
                             <textarea
-                                className="w-full h-[100%] mt-5 bg-transparent text-white pt-8 p-4 rounded-[10px] resize-none focus:outline-none placeholder:text-sm"
+                                className="w-full h-full mt-5 bg-transparent text-white pt-8 p-4 rounded-[10px] resize-none focus:outline-none placeholder:text-sm"
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 placeholder="Enter Your Input"
@@ -71,7 +71,7 @@ export default function WebRunner({ problem }: WebRunnerProps) {
                                 Output
                             </h3>
                             <textarea
-                                className="w-full h-[100%] text-nowrap overflow-x-auto mt-5 bg-transparent text-white pt-8 p-4 rounded-[10px] resize-none focus:outline-none placeholder:text-sm"
+                                className="w-full h-full text-nowrap overflow-x-auto mt-5 bg-transparent text-white pt-8 p-4 rounded-[10px] resize-none focus:outline-none placeholder:text-sm"
                                 value={output}
                                 readOnly
                                 placeholder="Output here"

@@ -174,10 +174,10 @@ export default function ViewProblem({ problem }: ViewProblemProps) {
             <td className="px-6 py-4 whitespace-nowrap text-black">
                 {testCase.weight}
             </td>
-            <td className="px-6 py-4 text-black break-words">
+            <td className="px-6 py-4 text-black wrap-break-word">
                 {testCase.input}
             </td>
-            <td className="px-6 py-4 text-black break-words">
+            <td className="px-6 py-4 text-black wrap-break-word">
                 {testCase.output}
             </td>
             <td className="px-6 py-4 whitespace-nowrap">
@@ -360,9 +360,9 @@ export default function ViewProblem({ problem }: ViewProblemProps) {
 
                     <div className="bg-gray-50 p-4 rounded">
                         <h3 className="font-semibold mb-2 text-black">
-                            Max Score
+                            Initial Points
                         </h3>
-                        <p className="text-black">{problem.maxScore}</p>
+                        <p className="text-black">{problem.initial}</p>
                     </div>
 
                     <div className="bg-gray-50 p-4 rounded">
@@ -393,46 +393,6 @@ export default function ViewProblem({ problem }: ViewProblemProps) {
                         <p className="text-black">Edge: {problem.edge_cases}</p>
                     </div>
 
-                    <div>
-                        <h3 className="font-semibold mb-2 text-black">
-                            Downloads
-                        </h3>
-                        <div className="space-y-2">
-                            <p className="text-black">
-                                Linux:
-                                <a
-                                    href={problem.lin_dl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-blue-600 underline visited:text-purple-600"
-                                >
-                                    Click to Download
-                                </a>
-                            </p>
-                            <p className="text-black">
-                                Windows:
-                                <a
-                                    href={problem.win_dl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-blue-600 underline visited:text-purple-600"
-                                >
-                                    Click to Download
-                                </a>
-                            </p>
-                            <p className="text-black">
-                                Mac:
-                                <a
-                                    href={problem.mac_dl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-blue-600 underline visited:text-purple-600"
-                                >
-                                    Click to Download
-                                </a>
-                            </p>
-                        </div>
-                    </div>
                 </div>
             </div>
 

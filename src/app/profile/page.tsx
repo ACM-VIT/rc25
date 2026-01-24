@@ -3,7 +3,8 @@ import Image from "next/image";
 import dark from "../../../public/teamdash.png";
 import stormtrooper from "../../../public/stormtrooper.png";
 import { db } from "@/db";
-import { problems, rounds, submissions, teams, users, type Team, type User } from "@/db/schema";
+import { problems, rounds, solve, teams, users, type Team, type User } from "@/db/schema";
+import { calculateCurrentPoints, calculateSolveContribution } from "@/db/scoring";
 import { notFound } from "next/navigation";
 import { auth } from "../(auth)/auth";
 import FloatingDock from "@/components/FloatingDock";
@@ -11,6 +12,60 @@ import SignOut from "@/app/(auth)/authactions/signout";
 import { and, eq, gte, inArray, lte } from "drizzle-orm";
 
 type TeamWithMembers = Team & { members: User[] };
+
+type ProblemScoreRow = {
+    id: string;
+    initial: number;
+    minimum: number;
+    decay: number;
+};
+
+type SolveRow = {
+    problemId: string;
+    teamId: string | null;
+    testcasesPassed: number;
+};
+
+const buildEffectiveSolvesMap = (rows: SolveRow[]) => {
+    const effectiveSolvesByProblem = new Map<string, number>();
+    for (const row of rows) {
+        const contribution = calculateSolveContribution(row.testcasesPassed);
+        effectiveSolvesByProblem.set(
+            row.problemId,
+            (effectiveSolvesByProblem.get(row.problemId) ?? 0) + contribution
+        );
+    }
+    return effectiveSolvesByProblem;
+};
+
+const calculateTeamRoundScore = (
+    problemsInRound: ProblemScoreRow[],
+    solves: SolveRow[],
+    teamId: string
+): number => {
+    const effectiveSolvesByProblem = buildEffectiveSolvesMap(solves);
+    const teamSolvesByProblem = new Map<string, number>();
+
+    for (const row of solves) {
+        if (row.teamId === teamId) {
+            teamSolvesByProblem.set(row.problemId, row.testcasesPassed);
+        }
+    }
+
+    let total = 0;
+    for (const problem of problemsInRound) {
+        const effectiveSolves = effectiveSolvesByProblem.get(problem.id) ?? 0;
+        const currentPoints = calculateCurrentPoints({
+            ...problem,
+            effectiveSolves,
+        });
+        const teamPassed = teamSolvesByProblem.get(problem.id) ?? 0;
+        if (teamPassed > 0) {
+            total += Math.round(currentPoints * (teamPassed / 10));
+        }
+    }
+    return total;
+};
 
 async function getTeam(userId: string): Promise<TeamWithMembers | null> {
     try {
@@ -43,7 +98,7 @@ async function getTeam(userId: string): Promise<TeamWithMembers | null> {
     }
 }
 
-async function getQuestionsSolved(memberIds: string[]) {
+async function getQuestionsSolved(teamId: string) {
     const now = new Date();
     // fetch the current round based on the current time
     const currentRoundRows = await db
@@ -55,30 +110,56 @@ async function getQuestionsSolved(memberIds: string[]) {
     const currentRound = currentRoundRows[0];
     if (!currentRound) return 0;
 
-    // Get submissions for members in the current round using the problem's roundId
-    const submissionRows = await db
-        .select({
-            problemId: submissions.problemId,
-            testcasespassed: submissions.testcasespassed,
-        })
-        .from(submissions)
-        .innerJoin(problems, eq(submissions.problemId, problems.id))
+    const solveRows = await db
+        .select({ problemId: solve.problemId })
+        .from(solve)
+        .innerJoin(problems, eq(solve.problemId, problems.id))
         .where(
             and(
-                inArray(submissions.userId, memberIds),
-                eq(problems.roundId, currentRound.id)
+                eq(solve.teamId, teamId),
+                eq(problems.roundId, currentRound.id),
+                gte(solve.testcasesPassed, 1)
             )
         );
 
-    // Filter submissions that have at least one test case passed
-    const solvedSubmissions = submissionRows.filter((sub) =>
-        sub.testcasespassed.some((passed) => passed === true)
-    );
-
-    const uniqueProblemIds = new Set(
-        solvedSubmissions.map((sub) => sub.problemId)
-    );
+    const uniqueProblemIds = new Set(solveRows.map((row) => row.problemId));
     return uniqueProblemIds.size;
+}
+
+async function getTeamScore(teamId: string) {
+    const now = new Date();
+    const currentRoundRows = await db
+        .select()
+        .from(rounds)
+        .where(and(lte(rounds.start, now), gte(rounds.end, now)))
+        .limit(1);
+
+    const currentRound = currentRoundRows[0];
+    if (!currentRound) return 0;
+
+    const problemsInRound = await db
+        .select({
+            id: problems.id,
+            initial: problems.initial,
+            minimum: problems.minimum,
+            decay: problems.decay,
+        })
+        .from(problems)
+        .where(eq(problems.roundId, currentRound.id));
+
+    const problemIds = problemsInRound.map((problem) => problem.id);
+    const solveRows = problemIds.length
+        ? await db
+            .select({
+                problemId: solve.problemId,
+                teamId: solve.teamId,
+                testcasesPassed: solve.testcasesPassed,
+            })
+            .from(solve)
+            .where(inArray(solve.problemId, problemIds))
+        : [];
+
+    return calculateTeamRoundScore(problemsInRound, solveRows, teamId);
 }
 
 export default async function Page() {
@@ -89,9 +170,8 @@ export default async function Page() {
     const team = await getTeam(session.user.id);
     if (!team) notFound();
 
-    // get team member ids
-    const memberIds = team.members.map((member) => member.id);
-    const questionsSolved = await getQuestionsSolved(memberIds);
+    const questionsSolved = await getQuestionsSolved(team.id);
+    const teamScore = await getTeamScore(team.id);
 
     return (
         <div className="min-h-screen w-full flex flex-col items-center justify-center text-white p-2 sm:p-4 md:p-5 lg:p-6 xl:p-8">
@@ -137,7 +217,7 @@ export default async function Page() {
                                 </h4>
                             </div>
 
-                            <h1 className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-purple-300 text-center text-lg sm:text-2xl md:text-2xl lg:text-3xl xl:text-4xl how-it-works-heading">
+                            <h1 className="text-transparent bg-clip-text bg-linear-to-r from-purple-500 to-purple-300 text-center text-lg sm:text-2xl md:text-2xl lg:text-3xl xl:text-4xl how-it-works-heading">
                                 HELLO {team?.name}!
                             </h1>
 
@@ -187,7 +267,7 @@ export default async function Page() {
                                 </div>
                                 <div className="bg-black/30 border border-purple-500 p-2 sm:p-3 md:p-3 lg:p-4 xl:p-5 text-center">
                                     <div className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl font-bold">
-                                        {team?.score}
+                                        {teamScore}
                                     </div>
                                     <div className="text-xs sm:text-sm md:text-sm lg:text-base xl:text-lg text-purple-300">
                                         POINTS ACQUIRED

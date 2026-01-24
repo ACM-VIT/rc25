@@ -72,6 +72,7 @@ export default async function SubmissionsPage() {
       title: row.problem.title,
       difficulty: row.problem.difficulty,
     },
+    totalTestcases: (row.problem.normal_cases ?? 0) + (row.problem.edge_cases ?? 0),
   }));
 
   return (

@@ -12,7 +12,8 @@ export interface SubmissionType {
       shortCode: string;
     } | null;
   };
-  testcasespassed: boolean[];
+  testcasesPassed: number;
+  totalTestcases: number;
 }
 
 export interface GroupedTeamSubmissions {

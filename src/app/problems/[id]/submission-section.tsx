@@ -4,6 +4,7 @@ import {useState, useEffect} from "react";
 import Lottie from "lottie-react";
 import animationData from "../../../../public/loading.json";
 import {ScrollArea} from "@/components/ui/scroll-area";
+import type { EvalEnum } from "@/db/schema";
 
 interface SubmissionSectionProps {
     isPending: boolean;
@@ -16,8 +17,9 @@ export type SubmissionWithUser = {
     createdAt: Date;
     updatedAt: Date;
     evaluated: boolean;
-    evaluationStatus: "ACCEPTED" | "RUNTIME_ERROR" | "COMPILE_ERROR" | null;
-    testcasespassed: boolean[];
+    evaluationStatus: EvalEnum | null;
+    testcasesPassed: number;
+    totalTestcases: number;
     user: {
         name: string | null;
     };
@@ -58,24 +60,26 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
         if (!submission) return <p>No submission found</p>;
         if (!submission.evaluated)
             return (
-                <div className="w-full border-1 py-4 px-4 rounded-md border-[#EB5757] text-center">
+                <div className="w-full border py-4 px-4 rounded-md border-[#EB5757] text-center">
                     Submission is being evaluated...
                 </div>
             );
 
 
 
-        const passedCount = submission.testcasespassed.filter(Boolean).length;
-        const totalTests = submission.testcasespassed.length;
+        const passedCount = submission.testcasesPassed;
+        const totalTests = submission.totalTestcases;
+
+        const safeTotal = totalTests > 0 ? totalTests : 1;
 
         return (
             <div
-                className="w-full flex items-center justify-between border-1 py-4 px-4 rounded-md "
+                className="w-full flex items-center justify-between border py-4 px-4 rounded-md "
                 style={{
                     borderColor:
                         passedCount === totalTests
                             ? "#27AE60"
-                            : passedCount / totalTests <= 0.4
+                            : passedCount / safeTotal <= 0.4
                                 ? "#EB5757"
                                 : "#F2994A",
                 }}
@@ -95,11 +99,16 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
                         {passedCount}/{totalTests} Test Cases Passed
                     </span>
                     )}
-                    {submission.evaluationStatus === "COMPILE_ERROR" && (
+                    {submission.evaluationStatus === "COMPILATION_ERROR" && (
                         <span>Compile Error</span>
                     )}
-                    {submission.evaluationStatus === "RUNTIME_ERROR" && (
+                    {submission.evaluationStatus?.startsWith("RUNTIME_ERROR") && (
                         <span>Runtime Error</span>
+                    )}
+                    {submission.evaluationStatus === "WRONG_ANSWER" && (
+                        <span>
+                            {passedCount}/{totalTests} Test Cases Passed
+                        </span>
                     )}
                 </div>
                 <div>
@@ -115,7 +124,7 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
 
     return (
         <div className="rounded-lg flex flex-col h-full bg-black/50 border-2 border-weirdPurple hover:border-primary">
-            <ScrollArea className="flex-grow h-full w-full rounded-lg border-0">
+            <ScrollArea className="grow h-full w-full rounded-lg border-0">
                 <div
                     className="w-full rounded-lg p-4 text-white h-full overflow-y-auto"
                     style={{
@@ -126,7 +135,7 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
                 >
                     {submissions.length === 0 ? (
                         <div
-                            className="w-full flex items-center justify-center border-[#EB5757] border-1 py-2 rounded-md">
+                            className="w-full flex items-center justify-center border-[#EB5757] border py-2 rounded-md">
                             {randomMessage}
                         </div>
                     ) : submissions.length === 1 &&
@@ -154,15 +163,11 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
                                         index ===
                                         submissions.findIndex(
                                             (s) =>
-                                                s.testcasespassed.filter(
-                                                    Boolean
-                                                ).length ===
+                                                s.testcasesPassed ===
                                                 Math.max(
                                                     ...submissions.map(
                                                         (sub) =>
-                                                            sub.testcasespassed.filter(
-                                                                Boolean
-                                                            ).length
+                                                            sub.testcasesPassed
                                                     )
                                                 )
                                         )

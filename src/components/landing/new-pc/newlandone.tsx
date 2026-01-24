@@ -38,7 +38,7 @@ export default function NewLandOne() {
                     <Image
                         src={wrclogo}
                         alt="Reverse Coding"
-                        className="2xl:w-[30rem] xl:w-[26rem] lg:w-[26rem] md:w-[25rem] sm:w-[23rem] xs:w-[20rem] phone:w-[20rem]"
+                        className="2xl:w-120 xl:w-104 lg:w-104 md:w-100 sm:w-92 xs:w-[20rem] phone:w-[20rem]"
                     />
                     <div
                         className="2xl:text-[70px] xl:text-[60px] lg:text-[70px] md:text-[50px] sm:text-[2.4rem] xs:text-[2.1rem] phone:text-[1.7rem] mt-[2%] whitespace-nowrap justify-center items-center flex flex-col font-custom animate-fadeIn"
@@ -79,7 +79,7 @@ export default function NewLandOne() {
                 {/* Join button */}
                 <button
                     className="absolute z-20 left-1/2 transform -translate-x-1/2
-                      2xl:w-[20rem] xl:w-[18rem] lg:w-[18rem] md:w-[16rem] sm:w-[14rem] xs:w-[12rem] w-[10rem]
+                      2xl:w-[20rem] xl:w-[18rem] lg:w-[18rem] md:w-[16rem] sm:w-56 xs:w-[12rem] w-40
                       2xl:bottom-[8%] xl:bottom-[5%] lg:bottom-[2%] md:bottom-[0%] sm:bottom-[5%] xs:bottom-[2%] bottom-[0%]"
                     onClick={SignIn}
                 >
@@ -91,7 +91,7 @@ export default function NewLandOne() {
                     <Image
                         src={earthone}
                         alt="earth"
-                        className="-z-10 w-[150%] sm:w-[170%] md:w-[140%] lg:w-[150%] xl:w-[100%] 
+                        className="-z-10 w-[150%] sm:w-[170%] md:w-[140%] lg:w-[150%] xl:w-full 
                        phone:mt-[10%] xs:mt-[20%] sm:mt-[-5%] md:mt-[-8%] lg:mt-[5%] xl:mt-[-2%] 2xl:mt-[-7%] animate-spin-slow"
                     />
                 </div>

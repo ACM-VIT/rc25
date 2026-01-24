@@ -127,20 +127,12 @@ export function QuestionForm({
 		description: "",
 		difficulty: "EASY" as Difficulty,
 		roundId: "",
-		maxScore: 0,
+		initial: 0,
+		minimum: 0,
+		decay: 1,
 		web_code: "",
 		normal_cases: 0,
 		edge_cases: 0,
-	});
-	const [files, setFiles] = useState({
-		win_dl: null as File | null,
-		mac_dl: null as File | null,
-		lin_dl: null as File | null,
-	});
-	const [currentFiles, setCurrentFiles] = useState({
-		win_dl: "",
-		mac_dl: "",
-		lin_dl: "",
 	});
 
 	useEffect(() => {
@@ -148,11 +140,6 @@ export function QuestionForm({
 			setFormData({
 				...initialData,
 				roundId: (initialData.roundId || "1").toString(),
-			});
-			setCurrentFiles({
-				win_dl: initialData.win_dl || "",
-				mac_dl: initialData.mac_dl || "",
-				lin_dl: initialData.lin_dl || "",
 			});
 		}
 	}, [initialData]);
@@ -191,15 +178,11 @@ export function QuestionForm({
 					if (
 						value !== null &&
 						value !== undefined &&
-						!["win_dl", "mac_dl", "lin_dl"].includes(key)
+						value !== ""
 					) {
 						formDataToSend.append(key, value.toString());
 					}
 				}
-
-				if (files.win_dl) formDataToSend.append("windows", files.win_dl);
-				if (files.mac_dl) formDataToSend.append("mac", files.mac_dl);
-				if (files.lin_dl) formDataToSend.append("linux", files.lin_dl);
 
 				await onSubmitAction(formDataToSend);
 
@@ -213,17 +196,6 @@ export function QuestionForm({
 		});
 	};
 
-	const handleFileChange = (
-		e: React.ChangeEvent<HTMLInputElement>,
-		field: keyof typeof files,
-	) => {
-		if (e.target.files?.[0]) {
-			setFiles((prev) => ({
-				...prev,
-				[field]: e.target.files?.[0],
-			}));
-		}
-	};
 
 	const FormContent = (
 		<form onSubmit={handleSubmit} className="space-y-8">
@@ -328,16 +300,46 @@ export function QuestionForm({
 						</Select>
 					</div>
 					<div className="space-y-2">
-						<Label htmlFor="maxScore">Max Score</Label>
+						<Label htmlFor="initial">Initial Points</Label>
 						<Input
-							id="maxScore"
+							id="initial"
 							type="number"
 							min="0"
-							value={formData.maxScore}
+							value={formData.initial ?? 0}
 							onChange={(e) =>
 								setFormData((prev) => ({
 									...prev,
-									maxScore: Number.parseInt(e.target.value) || 0,
+									initial: Number.parseInt(e.target.value) || 0,
+								}))
+							}
+						/>
+					</div>
+					<div className="space-y-2">
+						<Label htmlFor="minimum">Minimum Points</Label>
+						<Input
+							id="minimum"
+							type="number"
+							min="0"
+							value={formData.minimum ?? 0}
+							onChange={(e) =>
+								setFormData((prev) => ({
+									...prev,
+									minimum: Number.parseInt(e.target.value) || 0,
+								}))
+							}
+						/>
+					</div>
+					<div className="space-y-2">
+						<Label htmlFor="decay">Decay (Solves to Minimum)</Label>
+						<Input
+							id="decay"
+							type="number"
+							min="1"
+							value={formData.decay ?? 1}
+							onChange={(e) =>
+								setFormData((prev) => ({
+									...prev,
+									decay: Number.parseInt(e.target.value) || 1,
 								}))
 							}
 						/>
@@ -377,74 +379,6 @@ export function QuestionForm({
 					</div>
 				</div>
 
-				<div className="grid gap-4 sm:grid-cols-3">
-					<div className="space-y-2">
-						<Label htmlFor="win_dl">Windows Executable</Label>
-						{currentFiles.win_dl && (
-							<div className="text-sm text-green-500 mb-2">
-								Uploaded:
-								<a
-									href={currentFiles.win_dl}
-									target="_blank"
-									rel="noopener noreferrer"
-									className="underline text-blue-500 hover:text-blue-700"
-								>
-									{currentFiles.win_dl.split("/").pop()}
-								</a>
-							</div>
-						)}
-						<Input
-							id="win_dl"
-							type="file"
-							accept=".exe"
-							onChange={(e) => handleFileChange(e, "win_dl")}
-						/>
-					</div>
-					<div className="space-y-2">
-						<Label htmlFor="mac_dl">Mac Executable</Label>
-						{currentFiles.mac_dl && (
-							<div className="text-sm text-green-500 mb-2">
-								Uploaded:
-								<a
-									href={currentFiles.mac_dl}
-									target="_blank"
-									rel="noopener noreferrer"
-									className="underline text-blue-500 hover:text-blue-700"
-								>
-									{currentFiles.mac_dl.split("/").pop()}
-								</a>
-							</div>
-						)}
-						<Input
-							id="mac_dl"
-							type="file"
-							accept=".mac"
-							onChange={(e) => handleFileChange(e, "mac_dl")}
-						/>
-					</div>
-					<div className="space-y-2">
-						<Label htmlFor="lin_dl">Linux Executable</Label>
-						{currentFiles.lin_dl && (
-							<div className="text-sm text-green-500 mb-2">
-								Uploaded:
-								<a
-									href={currentFiles.lin_dl}
-									target="_blank"
-									rel="noopener noreferrer"
-									className="underline text-blue-500 hover:text-blue-700"
-								>
-									{currentFiles.lin_dl.split("/").pop()}
-								</a>
-							</div>
-						)}
-						<Input
-							id="lin_dl"
-							type="file"
-							accept=".lin"
-							onChange={(e) => handleFileChange(e, "lin_dl")}
-						/>
-					</div>
-				</div>
 			</div>
 
 			<div className="flex justify-end gap-4">

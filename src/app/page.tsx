@@ -6,7 +6,8 @@ import { getTeamRound } from "@/hooks/useTeamRound";
 import type { Metadata } from "next";
 import { FLAGS } from "@/types/flags"
 import { auth } from "./(auth)/auth";
-import { flags, news as newsTable, problems, rounds, submissions, teams, users } from "@/db/schema";
+import { flags, news as newsTable, problems, rounds, submissions, teams, users, solve } from "@/db/schema";
+import { calculateCurrentPoints, calculateSolveContribution } from "@/db/scoring";
 import { and, asc, desc, eq, inArray, ne } from "drizzle-orm";
 // import { use } from "react";
 
@@ -107,7 +108,8 @@ export default async function Page() {
   const roundInfo = roundInfoRows[0] ?? null;
 
   interface SubmissionType {
-    testcasespassed: boolean[];
+    testcasesPassed: number;
+    totalTestcases: number;
     createdAt: Date;
   }
 
@@ -130,7 +132,7 @@ export default async function Page() {
       id: team.id,
       name: team.name,
       shortCode: team.shortCode,
-      score: team.score,
+      score: 0,
       members: members.map((member) => ({
         id: member.id,
         name: member.name,
@@ -173,14 +175,72 @@ export default async function Page() {
     problemsList = await db.select().from(problems).orderBy(asc(problems.id));
   }
 
-  const memberIds = teamData?.members.map((member) => member.id) ?? [];
+  const totalTestcasesByProblem = new Map(
+    problemsList.map((problem) => [
+      problem.id,
+      (problem.normal_cases ?? 0) + (problem.edge_cases ?? 0),
+    ])
+  );
+
   const problemIds = problemsList.map((problem) => problem.id);
+  const problemScoreRows = problemsList.map((problem) => ({
+    id: problem.id,
+    initial: problem.initial,
+    minimum: problem.minimum,
+    decay: problem.decay,
+  }));
+
+  const solveRows = problemIds.length
+    ? await db
+        .select({
+          problemId: solve.problemId,
+          teamId: solve.teamId,
+          testcasesPassed: solve.testcasesPassed,
+        })
+        .from(solve)
+        .where(inArray(solve.problemId, problemIds))
+    : [];
+
+  const effectiveSolvesByProblem = new Map<string, number>();
+  const teamSolvesByTeam = new Map<string, Map<string, number>>();
+
+  for (const row of solveRows) {
+    const contribution = calculateSolveContribution(row.testcasesPassed);
+    effectiveSolvesByProblem.set(
+      row.problemId,
+      (effectiveSolvesByProblem.get(row.problemId) ?? 0) + contribution
+    );
+
+    if (!row.teamId) continue;
+    const teamMap = teamSolvesByTeam.get(row.teamId) ?? new Map<string, number>();
+    teamMap.set(row.problemId, row.testcasesPassed);
+    teamSolvesByTeam.set(row.teamId, teamMap);
+  }
+
+  const calculateTeamScore = (teamId: string) => {
+    const teamSolves = teamSolvesByTeam.get(teamId) ?? new Map<string, number>();
+    let totalScore = 0;
+    for (const problem of problemScoreRows) {
+      const effectiveSolves = effectiveSolvesByProblem.get(problem.id) ?? 0;
+      const currentPoints = calculateCurrentPoints({
+        ...problem,
+        effectiveSolves,
+      });
+      const passed = teamSolves.get(problem.id) ?? 0;
+      if (passed > 0) {
+        totalScore += Math.round(currentPoints * (passed / 10));
+      }
+    }
+    return totalScore;
+  };
+
+  const memberIds = teamData?.members.map((member) => member.id) ?? [];
   const submissionsRows =
     memberIds.length && problemIds.length
       ? await db
           .select({
             problemId: submissions.problemId,
-            testcasespassed: submissions.testcasespassed,
+            testcasesPassed: submissions.testcasesPassed,
             createdAt: submissions.createdAt,
           })
           .from(submissions)
@@ -196,8 +256,11 @@ export default async function Page() {
   const submissionsByProblem = new Map<string, SubmissionType[]>();
   for (const submission of submissionsRows) {
     const list = submissionsByProblem.get(submission.problemId) ?? [];
+    const totalTestcases =
+      totalTestcasesByProblem.get(submission.problemId) ?? 0;
     list.push({
-      testcasespassed: submission.testcasespassed,
+      testcasesPassed: submission.testcasesPassed,
+      totalTestcases,
       createdAt: submission.createdAt,
     });
     submissionsByProblem.set(submission.problemId, list);
@@ -215,14 +278,16 @@ export default async function Page() {
   const questions = problemCards.map((problem, index) => {
     // Find submission with maximum passed test cases
     const bestSubmission = problem.submissions.reduce((best, current) => {
-      const currentPassed = current.testcasespassed.filter(Boolean).length;
-      const bestPassed = best ? best.testcasespassed.filter(Boolean).length : -1;
+      const currentPassed = current.testcasesPassed;
+      const bestPassed = best ? best.testcasesPassed : -1;
       return currentPassed > bestPassed ? current : best;
     }, null as SubmissionType | null);
 
-    const passedArray = bestSubmission?.testcasespassed || [];
-    const passCount = passedArray.filter(Boolean).length;
-    const total = passedArray.length;
+    const passCount = bestSubmission?.testcasesPassed ?? 0;
+    const total =
+      bestSubmission?.totalTestcases ??
+      totalTestcasesByProblem.get(problem.id) ??
+      0;
     const status = total > 0 ? `${passCount}/${total}` : "Not Attempted";
     const isHidden = problem.isHidden;
 
@@ -236,16 +301,17 @@ export default async function Page() {
     };
   });
 
+  const teamScore = teamData ? calculateTeamScore(teamData.id) : 0;
   const teamDetails = teamData
     ? {
         id: teamData.id,
         name: teamData.name,
         shortCode: teamData.shortCode,
-        score: teamData.score,
+        score: teamScore,
         members: teamData.members.map((member: { id: string; name: string | null; }) => ({
           id: member.id,
           name: member.name ?? '',
-          score: 0, // Adjust if you store member scores
+          score: 0,
         })),
       }
     : {
@@ -257,17 +323,18 @@ export default async function Page() {
       };
 
   // Leaderboard
-  const leaderboardData = await db
-    .select({ id: teams.id, name: teams.name, score: teams.score })
-    .from(teams)
-    .where(ne(teams.id, process.env.ADMIN_TEAM_ID ?? ""))
-    .orderBy(desc(teams.score));
+  const leaderboardTeams = await db
+    .select({ id: teams.id, name: teams.name, hidden: teams.hidden, disqualify: teams.disqualify })
+    .from(teams);
 
-  const leaderboard = leaderboardData.map((team) => ({
-    id: team.id,
-    name: team.name,
-    score: team.score,
-  }));
+  const adminTeamId = process.env.ADMIN_TEAM_ID ?? "";
+  const leaderboard = leaderboardTeams
+    .filter((team) => !team.hidden && !team.disqualify && team.id !== adminTeamId)
+    .map((team) => ({
+      id: team.id,
+      name: team.name,
+      score: calculateTeamScore(team.id),
+    }));
 
   const showLeaderboard = await getLeaderBoardShowBoolean();
 

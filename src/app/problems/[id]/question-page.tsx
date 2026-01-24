@@ -75,19 +75,22 @@ export default function QuestionPage({
                 async (doc) => {
                     if (!doc.data()?.status) return;
                     const results = await getSubmissionResults(submissionId);
-                    const passed = results.testcasespassed.filter((r) => r === true).length;
-                    if (results.evaluationStatus === "ACCEPTED")
+                    const passed = results.testcasesPassed;
+                    if (
+                        results.evaluationStatus === "ACCEPTED" ||
+                        results.evaluationStatus === "WRONG_ANSWER"
+                    )
                         setStatusRibbon({
                             type: "evaluation",
                             passed,
-                            total: results.testcasespassed.length,
+                            total: results.totalTestcases,
                         })
-                    else if (results.evaluationStatus === "COMPILE_ERROR")
+                    else if (results.evaluationStatus === "COMPILATION_ERROR")
                         setStatusRibbon({
                             type: "error",
                             message: "Compile Error",
                         })
-                    else if (results.evaluationStatus === "RUNTIME_ERROR")
+                    else if (results.evaluationStatus?.startsWith("RUNTIME_ERROR"))
                         setStatusRibbon({
                             type: "error",
                             message: "Runtime Error",
@@ -178,7 +181,7 @@ export default function QuestionPage({
                 </div>
                 <div className="w-[90%] h-[87vh] gap-1">
                     <ResizablePanelGroup
-                        direction="horizontal"
+                        orientation="horizontal"
                         className="gap-1"
                     >
                         {/* Left Resizable Section */}
@@ -189,7 +192,7 @@ export default function QuestionPage({
                         >
                             <div className="flex flex-col justify-evenly h-full">
                                 <ResizablePanelGroup
-                                    direction="vertical"
+                                    orientation="vertical"
                                     className="gap-1"
                                 >
                                     <ResizablePanel
@@ -227,7 +230,7 @@ export default function QuestionPage({
                         >
                             <div className="flex flex-col justify-evenly h-full">
                                 <ResizablePanelGroup
-                                    direction="vertical"
+                                    orientation="vertical"
                                     className="gap-1"
                                 >
                                     <ResizablePanel

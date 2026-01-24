@@ -47,7 +47,7 @@ const TeamSubmissions: React.FC<TeamSubmissionProps> = ({ submissions, teamName 
                       <p className="w-1/6 text-center p-2 py-0">{sub.problem.title}</p>
                       <p className="w-1/6 text-center p-2 py-0">{sub.problem.difficulty}</p>
                       <p className="w-1/6 text-center p-2 py-0">
-                        {sub.testcasespassed.filter(Boolean).length}/{sub.testcasespassed.length}
+                        {sub.testcasesPassed}/{sub.totalTestcases}
                       </p>
                     </div>
                   ))}

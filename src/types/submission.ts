@@ -10,7 +10,8 @@ export interface TeamSubmission {
     title: string
     difficulty: Difficulty
   }
-  testcasespassed: boolean[]
+  testcasesPassed: number
+  totalTestcases: number
   code: string
 }
 

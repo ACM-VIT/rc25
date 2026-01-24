@@ -1,7 +1,7 @@
 'use server'
 
 import { db } from "@/db";
-import { submissions, users } from "@/db/schema";
+import { problems, submissions, users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 export default async function getSubmissionResults(submissionId: string) {
@@ -9,9 +9,12 @@ export default async function getSubmissionResults(submissionId: string) {
         .select({
             submission: submissions,
             userName: users.name,
+            normalCases: problems.normal_cases,
+            edgeCases: problems.edge_cases,
         })
         .from(submissions)
         .innerJoin(users, eq(submissions.userId, users.id))
+        .innerJoin(problems, eq(submissions.problemId, problems.id))
         .where(eq(submissions.id, submissionId))
         .limit(1);
 
@@ -22,6 +25,7 @@ export default async function getSubmissionResults(submissionId: string) {
 
     return {
         ...row.submission,
+        totalTestcases: (row.normalCases ?? 0) + (row.edgeCases ?? 0),
         user: {
             name: row.userName,
         },

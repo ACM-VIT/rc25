@@ -5,7 +5,7 @@ import {
     problems,
     rounds,
     submissions,
-    testcaseSubmissions,
+    submissionTestcases,
     testcases,
     teams,
     users
@@ -149,8 +149,10 @@ export default async function createSubmission(data: {
         // Combine all selected testcases
         const selectedTestcases = [...selectedNormalCases, ...selectedEdgeCases];
 
-        // Initialize testcases passed array
-        const testcasespassed = selectedTestcases.map(() => false);
+        // Stabilize ordering for evaluation by ordering selected cases
+        const orderedTestcases = [...selectedTestcases].sort(
+            (a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0)
+        );
 
         // console.log(selectedTestcases);
 
@@ -160,9 +162,11 @@ export default async function createSubmission(data: {
                 .insert(submissions)
                 .values({
                     code: data.code,
+                    language: data.language,
                     problemId: data.problemId,
                     userId: data.userId,
-                    testcasespassed,
+                    teamId: userTeam.id,
+                    testcasesPassed: 0,
                     evaluated: false,
                 })
                 .returning();
@@ -172,12 +176,12 @@ export default async function createSubmission(data: {
                 throw new Error("Failed to create submission");
             }
 
-            if (selectedTestcases.length) {
-                await tx.insert(testcaseSubmissions).values(
-                    selectedTestcases.map((tc, index) => ({
+            if (orderedTestcases.length) {
+                await tx.insert(submissionTestcases).values(
+                    orderedTestcases.map((tc) => ({
                         testcaseId: tc.id,
                         submissionId: created.id,
-                        sequence: index,
+                        passed: false,
                     }))
                 );
             }
@@ -186,12 +190,12 @@ export default async function createSubmission(data: {
         });
 
         // Combine selected inputs with newlines
-        const combinedInput = selectedTestcases.map((tc) => tc.input).join("\n");
+        const combinedInput = orderedTestcases.map((tc) => tc.input).join("\n");
 
         // console.log("combinedInput: ", combinedInput);
 
         // Get number of testcases
-        const numTestcases = selectedTestcases.length;
+        const numTestcases = orderedTestcases.length;
 
         // Get delimiter from env or use default
         const delimiter = process.env.DELIMITER || "|||";
@@ -229,7 +233,11 @@ export default async function createSubmission(data: {
 
         return {
             success: true,
-            submission: {...submission, user: {name: user?.name ?? null}},
+            submission: {
+                ...submission,
+                totalTestcases: numTestcases,
+                user: {name: user?.name ?? null},
+            },
             token: judgeResult.token,
         };
     } catch (error: unknown) {

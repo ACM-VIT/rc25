@@ -52,14 +52,11 @@ export interface Problem {
     title: string;
     nickname: string;
     difficulty: "EASY" | "MEDIUM" | "HARD";
-    maxScore: number;
+    initial: number;
     roundNumber: number;
     description: string;
     normal_cases: number;
     edge_cases: number;
-    lin_dl: string;
-    win_dl: string;
-    mac_dl: string;
     Testcase: TestCase[];
     round: Round;
     slno?: number; // Add slno property

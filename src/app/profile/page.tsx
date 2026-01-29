@@ -247,7 +247,7 @@ export default async function Page() {
                             </div>
 
                             {/* Frame Structure */}
-                            <div className="w-full max-w-[480px] relative">
+                            <div className="w-full max-w-[400px] relative">
                                 {/* Top red rounded bar */}
                                 <div className="absolute top-0 left-4 right-4 h-3 bg-[#A7282D] rounded-full"></div>
 
@@ -258,7 +258,7 @@ export default async function Page() {
                                 {/* Digit boxes container */}
                                 <div className="flex gap-4 justify-center pt-16 pb-6">
                                     {String(teamScore).padStart(3, '0').split('').map((digit, index) => (
-                                        <div key={index} className="relative w-32 h-48 border-2 border-[#A7282D] outline outline-2 outline-[#A7282D] flex items-center justify-center bg-[#0C0C0C] overflow-hidden">
+                                        <div key={index} className="relative w-32 h-40 border-2 border-[#A7282D] outline outline-2 outline-[#A7282D] flex items-center justify-center bg-[#0C0C0C] overflow-hidden">
                                             <span className="text-8xl text-white font-bold relative z-10" style={{ fontFamily: 'Orbitron, monospace' }}>
                                                 {digit}
                                             </span>
@@ -294,7 +294,7 @@ export default async function Page() {
                                 {/* Digit boxes container */}
                                 <div className="flex gap-4 justify-center pt-16 pb-6">
                                     {String(questionsSolved).padStart(2, '0').split('').map((digit, index) => (
-                                        <div key={index} className="relative w-32 h-48 border-2 border-[#A7282D] outline outline-2 outline-[#A7282D] flex items-center justify-center bg-[#0C0C0C] overflow-hidden">
+                                        <div key={index} className="relative w-32 h-40 border-2 border-[#A7282D] outline outline-2 outline-[#A7282D] flex items-center justify-center bg-[#0C0C0C] overflow-hidden">
                                             <span className="text-8xl text-white font-bold relative z-10" style={{ fontFamily: 'Orbitron, monospace' }}>
                                                 {digit}
                                             </span>

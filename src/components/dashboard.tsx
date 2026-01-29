@@ -330,8 +330,8 @@ const Dashboard: React.FC<DashboardProps> = ({
                         </div>
 
                         {/* News Box - Expands to Fill Remaining Space */}
-                        <DashboardBox className="flex flex-col flex-1 overflow-auto bg-black !border-rcred/80 !rounded-none">
-                            <p className="text-xl font-['Formula1-Bold'] uppercase tracking-widest border-b border-white/30 pb-4 mb-4">
+                        <DashboardBox className="flex flex-col flex-1 overflow-auto bg-gradient-to-b from-[#000000] to-[#2A2A2A] outline outline-2 outline-[#A7282D] !border-0 rounded-none items-justify-center">
+                            <p className="text-xl font-['Formula1-Bold'] uppercase tracking-widest border-b border-white/30 pb-4 mb-4 text-center">
                                 NEWS
                             </p>
                             {/* Scrollable News Section */}
@@ -355,14 +355,14 @@ const Dashboard: React.FC<DashboardProps> = ({
                         </DashboardBox>
 
                         {/* Countdown Timer - Stays Fixed at Bottom */}
-                        <DashboardBox className="p-6 text-center h-fit mt-auto bg-black/90 !border-rcred/80 !rounded-none">
+                        <DashboardBox className="p-6 text-center h-fit mt-auto bg-gradient-to-b from-[#000000] to-[#2A2A2A] outline outline-2 outline-[#A7282D] !border-0 rounded-none">
                             <CountdownTimer />
                         </DashboardBox>
                     </div>
 
                     {/* Middle Column - Questions */}
                     <div className="w-1/2">
-                        <DashboardBox className="h-full bg-gradient-to-b from-[#000000] from-50% to-[#2A2A2A] to-33% !border-rcred/80 !rounded-none">
+                        <DashboardBox className="h-full bg-gradient-to-b from-[#000000] to-[#2A2A2A] outline outline-2 outline-[#A7282D] !border-0 rounded-none">
                             <p className="text-2xl font-['Formula1-Bold'] uppercase border-b border-white/30 pb-4 mb-4">
                                 Questions
                             </p>
@@ -433,7 +433,7 @@ const Dashboard: React.FC<DashboardProps> = ({
 
                     {/* Right Column - Leaderboard */}
                     <div className="w-1/4">
-                        <DashboardBox className="h-full bg-gradient-to-b from-[#000000] from-50% to-[#2A2A2A] to-33% !border-rcred/80 !rounded-none">
+                        <DashboardBox className="h-full bg-gradient-to-b from-[#000000] to-[#2A2A2A] outline outline-2 outline-[#A7282D] !border-0 rounded-none">
                             <div className="border-b border-white/30 pb-2 mb-4">
                                 <p className="text-2xl overflow-x-hidden font-['Formula1-Bold'] uppercase">
                                     Leaderboard

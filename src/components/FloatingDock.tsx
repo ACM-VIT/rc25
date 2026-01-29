@@ -32,7 +32,7 @@ export default function FloatingDock() {
         <div className="bg-black/80 text-text flex shadow-lg justify-between backdrop-blur-3xl
             w-[420px] px-6 py-2 fixed bottom-2 left-1/2 transform -translate-x-1/2
             z-50 shadow-black/20 hover:shadow-xl hover:-translate-y-2 hover:w-[440px]
-            hover:scale-105 transition-all duration-200 ease-in-out gap-x-6 border-2 border-rcred/80">
+            hover:scale-105 transition-all duration-200 ease-in-out gap-x-6 border-2 border-red-600">
             <FloatingDockItems
                 href="/"
                 tooltip="Home"

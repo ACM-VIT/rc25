@@ -249,11 +249,11 @@ export default async function Page() {
                             {/* Frame Structure */}
                             <div className="w-full max-w-[400px] relative">
                                 {/* Top red rounded bar */}
-                                <div className="absolute top-0 left-4 right-4 h-3 bg-[#A7282D] rounded-full"></div>
+                                <div className="absolute top-0 left-4 right-4 h-3 bg-[#A7282D] rounded-full z-10"></div>
 
                                 {/* Corner brackets connecting to red bar */}
-                                <div className="absolute top-3 left-0 w-6 h-[58px] border-l-[5px] border-t-[5px] border-b-[5px] border-[#ADADAD]"></div>
-                                <div className="absolute top-3 right-0 w-6 h-[58px] border-r-[5px] border-t-[5px] border-b-[5px] border-[#ADADAD]"></div>
+                                <div className="absolute top-1 left-[-24px] w-12 h-[63px] border-l-[5px] border-t-[5px] border-b-[5px] border-[#ADADAD]"></div>
+                                <div className="absolute top-1 right-[-24px] w-12 h-[63px] border-r-[5px] border-t-[5px] border-b-[5px] border-[#ADADAD]"></div>
 
                                 {/* Digit boxes container */}
                                 <div className="flex gap-4 justify-center pt-16 pb-6">
@@ -285,11 +285,11 @@ export default async function Page() {
                             {/* Frame Structure */}
                             <div className="w-full max-w-[320px] relative">
                                 {/* Top red rounded bar */}
-                                <div className="absolute top-0 left-4 right-4 h-3 bg-[#A7282D] rounded-full"></div>
+                                <div className="absolute top-0 left-4 right-4 h-3 bg-[#A7282D] rounded-full z-10"></div>
 
                                 {/* Corner brackets connecting to red bar */}
-                                <div className="absolute top-3 left-0 w-6 h-[58px] border-l-[5px] border-t-[5px] border-b-[5px] border-[#ADADAD]"></div>
-                                <div className="absolute top-3 right-0 w-6 h-[58px] border-r-[5px] border-t-[5px] border-b-[5px] border-[#ADADAD]"></div>
+                                <div className="absolute top-1 left-0 w-6 h-[64px] border-l-[5px] border-t-[5px] border-b-[5px] border-[#ADADAD]"></div>
+                                <div className="absolute top-1 right-0 w-6 h-[64px] border-r-[5px] border-t-[5px] border-b-[5px] border-[#ADADAD]"></div>
 
                                 {/* Digit boxes container */}
                                 <div className="flex gap-4 justify-center pt-16 pb-6">
@@ -311,7 +311,7 @@ export default async function Page() {
             <button
                 onClick={SignOut}
                 type="button"
-                className="fixed bottom-8 right-8 px-8 py-3 bg-[#A7282D] text-white font-['Formula1-Bold'] text-lg hover:bg-[#8a1f24] transition-colors z-50"
+                className="fixed bottom-8 right-8 px-8 py-3 bg-[#A7282D] text-white font-['Formula1-Bold'] text-lg hover:bg-[#8a1f24] transition-colors z-50 rounded-full"
             >
                 Log Out
             </button>

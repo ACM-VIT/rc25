@@ -5,8 +5,40 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import type { TeamSubmissionProps } from "@/types/submission"; 
 import { formula1Wide } from "@/lib/fonts";
 import { formula1Bold } from "@/lib/fonts";
+import Team from "@/components/createjoin";
+
+const mocksubmissions = [
+  {
+    id: "1",
+    createdAt: new Date().toISOString(),
+    user: { name: "Alice" },
+    problem: { title: "Two Sum", difficulty: "Easy" },
+    testcasesPassed: 15,
+    totalTestcases: 15,
+  },
+  {
+    id: "2",
+    createdAt: new Date(Date.now() - 5 * 60000).toISOString(),
+    user: { name: "Bob" },
+    problem: { title: "Binary Search Tree", difficulty: "Medium" },
+    testcasesPassed: 10,
+    totalTestcases: 15,
+  },
+  {
+    id: "3",
+    createdAt: new Date(Date.now() - 15 * 60000).toISOString(),
+    user: { name: "Charlie" },
+    problem: { title: "Graph Paths", difficulty: "Hard" },
+    testcasesPassed: 7,
+    totalTestcases: 20,
+  },
+];
+
 
 const TeamSubmissions: React.FC<TeamSubmissionProps> = ({ submissions, teamName }) => {
+
+
+
 return (
   <div>
     <div className="flex md:hidden justify-center items-center min-h-screen bg-black">
@@ -45,7 +77,7 @@ return (
 
             <ScrollArea className="h-[50vh] md:h-[55vh] rounded-md">
               <div className="space-y-2 mt-2">
-                {submissions.map((sub, index) => (
+                {mocksubmissions.map((sub, index) => (
                   <div
                     key={sub.id}
                     className="relative w-full h-[48px] md:h-[52px] flex items-center justify-center"
@@ -54,11 +86,12 @@ return (
                     <img
                       src={"submission-assets/submissionTile.svg"}
                       alt="submission-tile"
-                      className="absolute inset-0 w-full h-full object-contain"
+                      className="absolute inset-0 w-full h-full object-fill mx-auto"
                     />
 
                     {/* TILE CONTENT */}
-                    <div className="relative z-10 flex flex-row w-full text-[10px] md:text-sm">
+                    <div className="relative z-10 flex flex-row w-[92%] mx-auto text-[10px] md:text-sm">
+
                       <p className="w-1/6 text-center">{index + 1}</p>
 
                       <p className="w-1/6 text-center">

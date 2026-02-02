@@ -1,8 +1,10 @@
 "use client";
 import type React from "react";
 import {useState, useEffect} from "react";
-import Lottie from "lottie-react";
+import dynamic from "next/dynamic";
 import animationData from "../../../../public/loading.json";
+
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 import {ScrollArea} from "@/components/ui/scroll-area";
 import type { EvalEnum } from "@/db/schema";
 
@@ -123,7 +125,10 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
     };
 
     return (
-        <div className="rounded-lg flex flex-col h-full bg-black/50 border-2 border-weirdPurple hover:border-primary">
+        <div className="rounded-lg  flex flex-col h-full border-2 border-[#A7282D] hover:border-primary"
+        style={{
+                background: 'linear-gradient(to bottom, #000000 70%, #2A2A2A)'
+            }}>
             <ScrollArea className="grow h-full w-full rounded-lg border-0">
                 <div
                     className="w-full rounded-lg p-4 text-white h-full overflow-y-auto"
@@ -135,7 +140,7 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
                 >
                     {submissions.length === 0 ? (
                         <div
-                            className="w-full flex items-center justify-center border-[#EB5757] border py-2 rounded-md">
+                            className="w-full flex items-center justify-center border-[#EB5757] border p-2 rounded-md">
                             {randomMessage}
                         </div>
                     ) : submissions.length === 1 &&

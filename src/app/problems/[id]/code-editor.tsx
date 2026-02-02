@@ -186,12 +186,10 @@ export default function CodeEditor({
   );
 
   return (
-    <div className="w-full border rounded-lg shadow-lg overflow-hidden h-full">
+    <div className="w-full border rounded-lg shadow-lg overflow-hidden h-full relative">
       <div
-        className="w-full h-[5vh] rounded-t-lg flex items-center justify-between px-4 text-white"
-        style={{
-          background: "radial-gradient(circle, #241F2A 80%, #39234E 110%)",
-        }}
+        className="w-full h-[5vh] bg-[#A7282D] rounded-t-lg flex items-center justify-between px-4 text-white"
+        
       >
         <span className="font-medium">Code</span>
         <div className="flex items-center space-x-3 relative">
@@ -203,28 +201,21 @@ export default function CodeEditor({
                 e.key === "Enter" && setDropdownOpen(!dropdownOpen)
               }
               onKeyDown={(e) => e.key === " " && setDropdownOpen(!dropdownOpen)}
-              className="text-xs rounded-md px-2 py-1 flex items-center justify-between text-white focus:outline-none focus:ring-0"
-              style={{
-                background:
-                  "radial-gradient(circle, #241F2A 80%, #39234E 110%)",
-                border: "1px solid white",
-              }}
+              className="text-xs rounded-md px-8 border-black bg-[#FF9397] py-1 flex items-center justify-center text-black focus:outline-none focus:ring-0"
+              
             >
               {languages.find((lang) => lang.value === language)?.label ||
                 "Language"}
               {dropdownOpen ? (
-                <FiChevronUp className="ml-2" />
+                <FiChevronUp className="ml-2"  />
               ) : (
                 <FiChevronDown className="ml-2" />
               )}
             </button>
             {dropdownOpen && (
               <ul
-                className="absolute top-full mt-1 w-32 bg-gray-900 rounded-md shadow-lg z-10"
-                style={{
-                  background:
-                    "radial-gradient(circle, #241F2A 80%, #39234E 110%)",
-                }}
+                className="absolute top-full mt-1 w-40 bg-black rounded-md shadow-lg z-10"
+                
               >
                 {languages.map((lang) => (
                   <button
@@ -237,7 +228,7 @@ export default function CodeEditor({
                       e.key === "Enter" && setLanguage(lang.value)
                     }
                     onKeyDown={(e) => e.key === " " && setLanguage(lang.value)}
-                    className="px-2 py-1 text-white cursor-pointer hover:bg-gray-700 w-full text-left"
+                    className="px-2 py-4 text-white cursor-pointer hover:bg-gray-700 w-full text-left"
                     type="button"
                   >
                     {lang.label}
@@ -246,14 +237,7 @@ export default function CodeEditor({
               </ul>
             )}
           </div>
-          <button
-            type="button"
-            onClick={() => startTransition(() => void handleSubmit())}
-            disabled={isPending}
-            className="px-3 py-1 rounded-md text-xs font-semibold  text-white bg-primary hover:bg-secondary disabled:opacity-50"
-          >
-            {isPending ? "Submitting..." : "Submit"}
-          </button>
+          
         </div>
       </div>
 
@@ -283,25 +267,36 @@ export default function CodeEditor({
           </div>
         )}
 
-      <Editor
-        height="calc(100% - 5vh)"
-        theme="vs-dark"
-        value={code}
-        onChange={(value) => {
-          if (!value) return;
-          setCode(value);
-          const snippets: CodeSnippets = JSON.parse(
-            localStorage.getItem(CODE_STORAGE_KEY) || "{}",
-          );
-          snippets[problem.id] = {
-            ...snippets[problem.id],
-            [language]: value,
-          };
-          localStorage.setItem(CODE_STORAGE_KEY, JSON.stringify(snippets));
-        }}
-        language={language}
-        className="rounded-b-lg"
-      />
+      <div className="relative w-full" style={{ height: "calc(100% - 5vh)" }}>
+        <Editor
+          height="100%"
+          theme="hc-black"
+          value={code}
+          onChange={(value) => {
+            if (!value) return;
+            setCode(value);
+            const snippets: CodeSnippets = JSON.parse(
+              localStorage.getItem(CODE_STORAGE_KEY) || "{}",
+            );
+            snippets[problem.id] = {
+              ...snippets[problem.id],
+              [language]: value,
+            };
+            localStorage.setItem(CODE_STORAGE_KEY, JSON.stringify(snippets));
+          }}
+          language={language}
+          className="rounded-b-lg"
+        />
+      </div>
+
+      <button
+        type="button"
+        onClick={() => startTransition(() => void handleSubmit())}
+        disabled={isPending}
+        className="absolute bottom-4 right-4 px-7 border  py-2 rounded-md text-sm font-semibold text-white bg-black hover:bg-secondary disabled:opacity-50 z-50 shadow-lg"
+      >
+        {isPending ? "Submitting..." : "Submit"}
+      </button>
     </div>
   );
 }

@@ -129,11 +129,11 @@ export default function QuestionPage({
     <div
       className="min-h-screen"
       style={{
-        backgroundImage: "url('../problembg.png')",
+        backgroundImage: "url('../Dashboard.png')",
         backgroundSize: "cover",
       }}
     >
-      <div className="rounded-[10px] flex flex-col items-center gap-2 w-full">
+      <div className="rounded-[10px] flex flex-col items-center gap-2 w-full ">
         <div className="relative w-full p-4 ">
           <button
             className="absolute top-3 left-3"
@@ -145,53 +145,10 @@ export default function QuestionPage({
             {problem.title}
           </h1>
 
-          {/* <div className="flex gap-2 absolute right-2 items-center">
-                        <button
-                            type="button"
-                            onClick={handlePrevious}
-                            disabled={currentIndex === 0}
-                            className={`px-3 py-1 rounded-md text-xs border-2 border-[#9B52E0] bg-black text-white mt-5 ${
-                                currentIndex === 0
-                                    ? "opacity-50 cursor-not-allowed"
-                                    : "hover:bg-gray-700"
-                            }`}
-                        >
-                            <FiChevronLeft className="inline" />
-                            Previous
-                        </button>
-                        <div className="flex gap-2">
-                            {questions
-                                .slice(currentIndex, currentIndex + 4)
-                                .map((q) => (
-                                    <div
-                                        key={q.id}
-                                        className={`px-3 py-1 rounded-md text-xs border-2 text-white font-bold mt-5 ${
-                                            q.slno === currentSlno
-                                                ? "border-yellow-500"
-                                                : "border-[#9B52E0]"
-                                        }`}
-                                    >
-                                        {q.slno}
-                                    </div>
-                                ))}
-                        </div>
-                        <button
-                            type="button"
-                            onClick={handleNext}
-                            disabled={currentIndex === questions.length - 1}
-                            className={`px-3 py-1 rounded-md text-xs font-semibold border-[#9B52E0] border-2 text-white mt-5 ${
-                                currentIndex === questions.length - 1
-                                    ? "opacity-50 cursor-not-allowed"
-                                    : "hover:bg-gray-700"
-                            }`}
-                        >
-                            Next
-                            <FiChevronRight className="inline" />
-                        </button>
-                    </div> */}
+  
         </div>
         <div className="w-[90%] h-[87vh] gap-1">
-          <ResizablePanelGroup orientation="horizontal" className="gap-1">
+          <ResizablePanelGroup orientation="horizontal" className="gap-1 w-full h-full">
             {/* Left Resizable Section */}
             <ResizablePanel defaultSize={30} minSize={20} maxSize={70}>
               <div className="flex flex-col justify-evenly h-full">

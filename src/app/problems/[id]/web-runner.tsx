@@ -34,40 +34,42 @@ export default function WebRunner({ problem }: WebRunnerProps) {
     };
 
     return (
-        <DashboardBox className="p-3 h-full">
+        <DashboardBox className="p-3 h-full border border-[#A7282D]">
             <div className="flex flex-col h-full justify-between">
-                <div className="text-white text-lg font-semibold mb-4">
+                <div className="text-white text-2xl font-semibold mb-4">
                     Terminal
                 </div>
-                <hr className="border-t-2 border-gray-700 w-full mb-2" />
+                <hr className="border-t-2 border-[#A7282D] w-full mb-2" />
                 <div className="flex flex-row justify-between h-[75%] rounded-[10px]">
                     <div className="flex flex-col w-1/2 px-4">
-                        <div className="relative h-full rounded-[10px]"
-                        style={{background: "radial-gradient(circle, #36253D 80%, #39234E 110%)",}}>
-                            <h3 className="absolute top-4 underline underline-offset-1 left-4 text-base font-semibold text-white">
+                        <div className="relative h-full rounded-[10px] bg-[#A7282D] flex flex-col"
+                        >
+                            <h3 className="absolute top-4 left-4 text-lg font-semibold text-white z-10">
                                 Input
                             </h3>
-                            <Button
-                                className="absolute top-2 right-2 text-white bg-primary hover:bg-secondary px-4 py-0 rounded-md text-xs "
-                                onClick={handleRun}
-                                disabled={isRunning}
-                            >
-                                {isRunning ? "Running..." : "Run"}
-                            </Button>
                             <textarea
-                                className="w-full h-full mt-5 bg-transparent text-white pt-8 p-4 rounded-[10px] resize-none focus:outline-none placeholder:text-sm"
+                                className="w-full flex-1 mt-5 text-white pt-8 p-4 rounded-[10px] resize-none focus:outline-none placeholder:text-base"
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 placeholder="Enter Your Input"
                                 rows={10}
                             />
+                            <div className="p-2 flex justify-end">
+                                <Button
+                                    className="text-black border border-black bg-[#FF9397] hover:bg-secondary px-6 text-lg rounded-md"
+                                    onClick={handleRun}
+                                    disabled={isRunning}
+                                >
+                                    {isRunning ? "Running..." : "Run"}
+                                </Button>
+                            </div>
                         </div>
                     </div>
                     <Separator orientation="vertical" />
                     <div className="flex flex-col w-1/2 px-4">
-                        <div className="relative h-full rounded-[10px]"
-                             style={{background: "radial-gradient(circle, #36253D 80%, #39234E 110%)",}}>
-                            <h3 className="absolute underline underline-offset-1 top-4 left-4 text-base font-semibold text-white">
+                        <div className="relative h-full rounded-[10px] bg-[#A7282D]"
+                             >
+                            <h3 className="absolute  top-4 left-4 text-base font-semibold text-white">
                                 Output
                             </h3>
                             <textarea
@@ -79,7 +81,9 @@ export default function WebRunner({ problem }: WebRunnerProps) {
                         </div>
                     </div>
                 </div>
+                
             </div>
+            
         </DashboardBox>
     );
 }

@@ -9,12 +9,10 @@ import { formula1Bold } from "@/lib/fonts";
 const TeamSubmissions: React.FC<TeamSubmissionProps> = ({ submissions, teamName }) => {
 return (
   <div>
-    {/* Mobile View */}
     <div className="flex md:hidden justify-center items-center min-h-screen bg-black">
       <h1 className="text-white text-lg">Phone view</h1>
     </div>
 
-    {/* Desktop / Tablet View */}
     <div
       className="hidden md:flex flex-col w-full min-h-screen items-center gap-4 text-white p-4 pb-0"
       style={{
@@ -23,23 +21,19 @@ return (
         backgroundPosition: "center",
       }}
     >
-      {/* ================= PAGE HEADING ================= */}
       <div className="p-2 flex justify-center items-center">
         <p className="font-bold text-xl md:text-2xl font-custom tracking-widest">
           {teamName}&apos;s Submissions
         </p>
       </div>
 
-      {/* ================= MAIN CONTAINER ================= */}
       <div className="flex justify-center w-full flex-1">
         <div className="flex flex-col w-full md:w-[95%] lg:w-[85%] xl:w-[90%] h-full">
             
-            {/* ================= TABLE TITLE ================= */}
             <h1 className={`${formula1Wide.className} text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-6 sm:mb-8 md:mb-10 lg:mb-12 mt-2 sm:mt-4 md:mt-6 lg:mt-8 underline text-center`}>
                 Submissions
             </h1> 
 
-            {/* ================= TABLE HEADER ================= */}
             <div className={`${formula1Bold.className} flex flex-row py-4 w-full text-xs md:text-sm font-bold`}>
               <h1 className="w-1/6 text-center">Sl. No</h1>
               <h1 className="w-1/6 text-center">Time</h1>
@@ -49,7 +43,6 @@ return (
               <h1 className="w-1/6 text-center">Status</h1>
             </div>
 
-            {/* ================= SCROLLABLE TILES ================= */}
             <ScrollArea className="h-[50vh] md:h-[55vh] rounded-md">
               <div className="space-y-2 mt-2">
                 {submissions.map((sub, index) => (
@@ -95,8 +88,6 @@ return (
 
         </div>
       </div>
-
-      {/* Floating dock left untouched */}
     </div>
   </div>
 );

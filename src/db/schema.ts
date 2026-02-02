@@ -10,6 +10,9 @@ import {
   float,
 } from "drizzle-orm/cockroach-core";
 export const genderEnum = cockroachEnum("Gender", ["male", "female"]);
+export const regionEnum = cockroachEnum("crdb_internal_region", [
+  "aws-ap-south-1",
+]);
 export const difficultyEnum = cockroachEnum("Difficulty", [
   "EASY",
   "MEDIUM",
@@ -379,5 +382,6 @@ export type Flags = typeof flags.$inferSelect;
 export type News = typeof news.$inferSelect;
 export type UniReg = typeof uniRegs.$inferSelect;
 export type Gender = (typeof genderEnum.enumValues)[number];
+export type Region = (typeof regionEnum.enumValues)[number];
 export type Difficulty = (typeof difficultyEnum.enumValues)[number];
 export type EvalEnum = (typeof evalEnum.enumValues)[number];

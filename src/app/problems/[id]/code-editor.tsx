@@ -284,6 +284,9 @@ export default function CodeEditor({
             };
             localStorage.setItem(CODE_STORAGE_KEY, JSON.stringify(snippets));
           }}
+          options={{
+              renderLineHighlight: "none",
+            }}
           language={language}
           className="rounded-b-lg"
         />

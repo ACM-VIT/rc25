@@ -48,7 +48,7 @@ const News = ({ title, time, content }: NewsProps) => {
   };
 
   return (
-    <div className="p-4 flex flex-col bg-gradient-to-b from-[#000000] from-50% to-[#2A2A2A] to-33% overflow-hidden">
+    <div className="p-4 flex flex-col bg-gradient-to-b from-[#000000] to-[#2A2A2A] overflow-hidden">
       {/* Title & Time Section */}
       <div className="flex items-baseline gap-4 mb-3">
         <h2 className="text-xl font-['Formula1-Bold'] text-white">

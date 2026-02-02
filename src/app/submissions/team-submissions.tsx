@@ -2,9 +2,9 @@
 
 import React from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import DashboardBox from "@/components/DashboardBox";
 import type { TeamSubmissionProps } from "@/types/submission"; 
 import { formula1Wide } from "@/lib/fonts";
+import { formula1Bold } from "@/lib/fonts";
 
 const TeamSubmissions: React.FC<TeamSubmissionProps> = ({ submissions, teamName }) => {
 return (
@@ -33,7 +33,6 @@ return (
       {/* ================= MAIN CONTAINER ================= */}
       <div className="flex justify-center w-full flex-1">
         <div className="flex flex-col w-full md:w-[95%] lg:w-[85%] xl:w-[90%] h-full">
-          <DashboardBox className="flex flex-col h-full p-4 md:p-6 mb-4 text-white">
             
             {/* ================= TABLE TITLE ================= */}
             <h1 className={`${formula1Wide.className} text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-6 sm:mb-8 md:mb-10 lg:mb-12 mt-2 sm:mt-4 md:mt-6 lg:mt-8 underline text-center`}>
@@ -41,7 +40,7 @@ return (
             </h1> 
 
             {/* ================= TABLE HEADER ================= */}
-            <div className="flex flex-row border-b-2 py-4 w-full text-xs md:text-sm font-bold">
+            <div className={`${formula1Bold.className} flex flex-row py-4 w-full text-xs md:text-sm font-bold`}>
               <h1 className="w-1/6 text-center">Sl. No</h1>
               <h1 className="w-1/6 text-center">Time</h1>
               <h1 className="w-1/6 text-center">Name</h1>
@@ -93,7 +92,7 @@ return (
                 ))}
               </div>
             </ScrollArea>
-          </DashboardBox>
+
         </div>
       </div>
 

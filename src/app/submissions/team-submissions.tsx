@@ -7,6 +7,8 @@ import { formula1Wide } from "@/lib/fonts";
 import { formula1Bold } from "@/lib/fonts";
 import Team from "@/components/createjoin";
 
+const ROW_WIDTH = "max-w-6xl w-full";
+
 const mocksubmissions = [
   {
     id: "1",
@@ -16,6 +18,85 @@ const mocksubmissions = [
     testcasesPassed: 15,
     totalTestcases: 15,
   },
+    {
+    id: "1",
+    createdAt: new Date().toISOString(),
+    user: { name: "Alice" },
+    problem: { title: "Two Sum", difficulty: "Easy" },
+    testcasesPassed: 15,
+    totalTestcases: 15,
+  },  {
+    id: "1",
+    createdAt: new Date().toISOString(),
+    user: { name: "Alice" },
+    problem: { title: "Two Sum", difficulty: "Easy" },
+    testcasesPassed: 15,
+    totalTestcases: 15,
+  },  {
+    id: "1",
+    createdAt: new Date().toISOString(),
+    user: { name: "Alice" },
+    problem: { title: "Two Sum", difficulty: "Easy" },
+    testcasesPassed: 15,
+    totalTestcases: 15,
+  },  {
+    id: "1",
+    createdAt: new Date().toISOString(),
+    user: { name: "Alice" },
+    problem: { title: "Two Sum", difficulty: "Easy" },
+    testcasesPassed: 15,
+    totalTestcases: 15,
+  },  {
+    id: "1",
+    createdAt: new Date().toISOString(),
+    user: { name: "Alice" },
+    problem: { title: "Two Sum", difficulty: "Easy" },
+    testcasesPassed: 15,
+    totalTestcases: 15,
+  },  {
+    id: "1",
+    createdAt: new Date().toISOString(),
+    user: { name: "Alice" },
+    problem: { title: "Two Sum", difficulty: "Easy" },
+    testcasesPassed: 15,
+    totalTestcases: 15,
+  },  {
+    id: "1",
+    createdAt: new Date().toISOString(),
+    user: { name: "Alice" },
+    problem: { title: "Two Sum", difficulty: "Easy" },
+    testcasesPassed: 15,
+    totalTestcases: 15,
+  },  {
+    id: "1",
+    createdAt: new Date().toISOString(),
+    user: { name: "Alice" },
+    problem: { title: "Two Sum", difficulty: "Easy" },
+    testcasesPassed: 15,
+    totalTestcases: 15,
+  },  {
+    id: "1",
+    createdAt: new Date().toISOString(),
+    user: { name: "Alice" },
+    problem: { title: "Two Sum", difficulty: "Easy" },
+    testcasesPassed: 15,
+    totalTestcases: 15,
+  },  {
+    id: "1",
+    createdAt: new Date().toISOString(),
+    user: { name: "Alice" },
+    problem: { title: "Two Sum", difficulty: "Easy" },
+    testcasesPassed: 15,
+    totalTestcases: 15,
+  },  {
+    id: "1",
+    createdAt: new Date().toISOString(),
+    user: { name: "Alice" },
+    problem: { title: "Two Sum", difficulty: "Easy" },
+    testcasesPassed: 15,
+    totalTestcases: 15,
+  },  
+
   {
     id: "2",
     createdAt: new Date(Date.now() - 5 * 60000).toISOString(),
@@ -66,7 +147,8 @@ return (
                 Submissions
             </h1> 
 
-            <div className={`${formula1Bold.className} flex flex-row py-4 w-full text-xs md:text-sm font-bold`}>
+            <div className={`${formula1Bold.className} flex flex-row py-4 w-full text-xs md:text-sm font-bold justify-center`}>
+                <div className={`flex ${ROW_WIDTH}`}>
               <h1 className="w-1/6 text-center">Sl. No</h1>
               <h1 className="w-1/6 text-center">Time</h1>
               <h1 className="w-1/6 text-center">Name</h1>
@@ -74,9 +156,11 @@ return (
               <h1 className="w-1/6 text-center">Difficulty</h1>
               <h1 className="w-1/6 text-center">Status</h1>
             </div>
+            </div>
+
 
             <ScrollArea className="h-[50vh] md:h-[55vh] rounded-md">
-              <div className="space-y-2 mt-2">
+              <div className="space-y-4 mt-2">
                 {mocksubmissions.map((sub, index) => (
                   <div
                     key={sub.id}
@@ -86,11 +170,11 @@ return (
                     <img
                       src={"submission-assets/submissionTile.svg"}
                       alt="submission-tile"
-                      className="absolute inset-0 w-full h-full object-fill mx-auto"
+                      className={`absolute ${ROW_WIDTH} w-full object-fill`}
                     />
-
+                    
                     {/* TILE CONTENT */}
-                    <div className="relative z-10 flex flex-row w-[92%] mx-auto text-[10px] md:text-sm">
+                     <div className={`relative z-10 flex ${ROW_WIDTH} text-[10px] md:text-sm`}>
 
                       <p className="w-1/6 text-center">{index + 1}</p>
 

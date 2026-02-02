@@ -129,12 +129,12 @@ return (
     <div
       className="hidden md:flex flex-col w-full min-h-screen items-center gap-4 text-white p-4 pb-0"
       style={{
-        backgroundImage: "url('./submission-assets/Submissions_bg.png')",
+        backgroundImage: "url('./submission-assets/Submissions-bg.png')",
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
     >
-      <div className="p-2 flex justify-center items-center">
+      <div className="p-1 flex justify-center items-center">
         <p className="font-bold text-xl md:text-2xl font-custom tracking-widest">
           {teamName}&apos;s Submissions
         </p>
@@ -143,7 +143,7 @@ return (
       <div className="flex justify-center w-full flex-1">
         <div className="flex flex-col w-full md:w-[95%] lg:w-[85%] xl:w-[90%] h-full">
             
-            <h1 className={`${formula1Wide.className} text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-6 sm:mb-8 md:mb-10 lg:mb-12 mt-2 sm:mt-4 md:mt-6 lg:mt-8 underline text-center`}>
+            <h1 className={`${formula1Wide.className} text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-4 sm:mb-6 md:mb-8 lg:mb-10 mt-1 sm:mt-2 md:mt-3 lg:mt-4 underline text-center`}>
                 Submissions
             </h1> 
 

@@ -1,66 +1,33 @@
 "use client"
+
 import Image from "next/image"
+import { formula1Bold } from "@/lib/fonts"
+import Header from "@/components/Header"
 
 export default function NotFound() {
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen relative overflow-hidden">
-      {/* Background */}
-      <div
-        className="fixed inset-0 w-full h-full"
-        style={{
-          backgroundImage: `url('./submissionsbg.png')`,
-          backgroundPosition: "center",
-          backgroundSize: "cover",
-          backgroundRepeat: "no-repeat",
-        }}
+    <div
+      className="h-screen relative flex flex-col items-center justify-start overflow-hidden"
+      style={{
+        backgroundImage: "url('/Dashboard.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
+      }}
+    >
+      <Header title="ERROR 404" />
+
+      <Image
+        src="/not_found.svg"
+        alt="Not Found"
+        width={600}
+        height={400}
+        className="w-[60%] sm:w-[60%] md:w-[50%] lg:w-[45%] h-auto px-2 sm:px-4 mt-2 sm:mt-4 md:mt-6 lg:mt-8"
       />
-
-      {/* Left side with robots */}
-      <div className="relative z-10 flex-1 flex items-center justify-center p-8 lg:pl-24 lg:pb-16">
-        <div className="relative">
-          <Image
-            src="/c3po.svg"
-            alt="C-3PO"
-            width={300}
-            height={500}
-            className="relative z-20 w-48 h-auto lg:w-auto lg:h-auto"
-          />
-          <Image
-            src="/r2d2.svg"
-            alt="R2-D2"
-            width={200}
-            height={300}
-            className="absolute -right-8 lg:-right-16 bottom-[2vh] lg:bottom-15 z-10 w-32 h-auto lg:w-auto lg:h-auto"
-          />
-        </div>
-      </div>
-
-      {/* Right side with text */}
-      <div className="relative z-20 flex-1 flex flex-col justify-center p-8 lg:pr-24">
-        <h1 className="text-3xl lg:text-5xl font-bold text-white mb-4 lg:mb-8 tracking-wide">C3PO TRANSLATES:</h1>
-        <div className="relative">
-          <p className="text-lg lg:text-xl text-blue-100 leading-relaxed">
-            I am sorry sir, but R2 says something is not right here. I guess we should go back the way we came. Or maybe
-            ask locals for directions?
-          </p>
-        </div>
-      </div>
-
-      {/* Animated stars */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(50)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-1 h-1 bg-white rounded-full animate-twinkle"
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 3}s`,
-              opacity: Math.random(),
-            }}
-          />
-        ))}
-      </div>
+      
+      <p className={`${formula1Bold.className} text-white text-center text-base sm:text-lg md:text-xl lg:text-2xl mt-4 sm:mt-5 md:mt-6 px-4`}>
+        Maintenance mode: Race engineers at work
+      </p>
     </div>
   )
 }

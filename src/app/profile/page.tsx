@@ -6,6 +6,7 @@ import { calculateCurrentPoints, calculateSolveContribution } from "@/db/scoring
 import { notFound } from "next/navigation";
 import { auth } from "../(auth)/auth";
 import FloatingDock from "@/components/FloatingDock";
+import Header from "@/components/Header";
 import SignOut from "@/app/(auth)/authactions/signout";
 import { and, eq, gte, inArray, lte } from "drizzle-orm";
 
@@ -176,22 +177,7 @@ export default async function Page() {
             <div className="fixed inset-0 w-full h-full bg-[#0C0C0C]" />
 
             {/* Top F1 Car Header */}
-            <div className="relative w-full mb-12 z-10">
-                <div className="w-full h-auto relative">
-                    <Image
-                        src="/carontop.svg"
-                        alt="F1 Car"
-                        width={2000}
-                        height={100}
-                        className="w-full h-auto object-cover"
-                    />
-                </div>
-                <div className="absolute top-10 right-10 z-20">
-                    <h1 className="text-4xl font-['Formula1-Bold'] text-white uppercase tracking-wider">
-                        {team.name}
-                    </h1>
-                </div>
-            </div>
+            <Header title={team.name} />
 
             {/* Content Container */}
             <div className="w-full max-w-[1400px] p-8 z-10 space-y-8 flex flex-col items-center">

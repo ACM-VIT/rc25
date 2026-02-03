@@ -165,10 +165,9 @@ export default async function RootLayout({
 
     if (disqualified && !isAdmin) {
         return (
-            <html lang="en">
-            <body>
+            <html lang="en" className="overflow-hidden">
+            <body className="overflow-hidden">
             <div className="bg-[radial-gradient(110.8%_70.71%_at_50%_50%,#0B0014_55.41%,#18181B_100%)] min-h-screen">
-                <Navbar name={session.user.name ?? "User"}/>
                 <Disqualified/>
                 {isAdmin && <SwitchAdminModeButton/>}
             </div>

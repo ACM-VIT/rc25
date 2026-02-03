@@ -8,8 +8,12 @@ import {
   uniqueIndex,
   index,
   float,
+  uuid,
 } from "drizzle-orm/cockroach-core";
 export const genderEnum = cockroachEnum("Gender", ["male", "female"]);
+export const regionEnum = cockroachEnum("crdb_internal_region", [
+  "aws-ap-south-1",
+]);
 export const difficultyEnum = cockroachEnum("Difficulty", [
   "EASY",
   "MEDIUM",
@@ -35,7 +39,7 @@ export const evalEnum = cockroachEnum("EvalEnum", [
 export const users = cockroachTable(
   "User",
   {
-    id: text("id")
+    id: uuid("id")
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
     name: text("name"),
@@ -45,7 +49,7 @@ export const users = cockroachTable(
       mode: "date",
     }),
     image: text("image"),
-    teamId: text("teamId").references(() => teams.id),
+    teamId: uuid("teamId").references(() => teams.id),
     phone: text("phone"),
     gender: genderEnum("gender"),
   },
@@ -55,10 +59,10 @@ export const users = cockroachTable(
 export const accounts = cockroachTable(
   "Account",
   {
-    id: text("id")
+    id: uuid("id")
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
-    userId: text("userId")
+    userId: uuid("userId")
       .notNull()
       .references(() => users.id),
     type: text("type").notNull(),
@@ -83,11 +87,11 @@ export const accounts = cockroachTable(
 export const sessions = cockroachTable(
   "Session",
   {
-    id: text("id")
+    id: uuid("id")
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
     sessionToken: text("sessionToken").notNull(),
-    userId: text("userId")
+    userId: uuid("userId")
       .notNull()
       .references(() => users.id),
     expires: timestamp("expires", {
@@ -101,7 +105,7 @@ export const sessions = cockroachTable(
 export const uniRegs = cockroachTable(
   "UniReg",
   {
-    id: text("id")
+    id: uuid("id")
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
     email: text("email").notNull(),
@@ -122,7 +126,7 @@ export const uniRegs = cockroachTable(
 export const teams = cockroachTable(
   "Team",
   {
-    id: text("id")
+    id: uuid("id")
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
     name: text("name").notNull(),
@@ -146,13 +150,13 @@ export const teams = cockroachTable(
 export const teamRounds = cockroachTable(
   "TeamRound",
   {
-    id: text("id")
+    id: uuid("id")
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
-    teamId: text("teamId")
+    teamId: uuid("teamId")
       .notNull()
       .references(() => teams.id),
-    roundId: text("roundId")
+    roundId: uuid("roundId")
       .notNull()
       .references(() => rounds.id),
   },
@@ -164,7 +168,7 @@ export const teamRounds = cockroachTable(
 export const rounds = cockroachTable(
   "Round",
   {
-    id: text("id")
+    id: uuid("id")
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
     number: int4("number").notNull(),
@@ -178,7 +182,7 @@ export const rounds = cockroachTable(
 export const problems = cockroachTable(
   "Problem",
   {
-    id: text("id")
+    id: uuid("id")
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
     title: text("title").notNull(),
@@ -197,7 +201,7 @@ export const problems = cockroachTable(
     timeLimitMs: int4("timeLimitMs").notNull().default(1000),
     memoryLimitKb: int4("memoryLimitKb").notNull().default(262144), // 256MB
     effectiveSolves: int4("effective_solves").notNull().default(0),
-    roundId: text("roundId")
+    roundId: uuid("roundId")
       .notNull()
       .references(() => rounds.id),
     isHidden: boolean("isHidden").notNull().default(false),
@@ -208,13 +212,13 @@ export const problems = cockroachTable(
 export const testcases = cockroachTable(
   "Testcase",
   {
-    id: text("id")
+    id: uuid("id")
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
     weight: int4("weight").notNull().default(1),
     input: text("input").notNull(),
     output: text("output").notNull(),
-    problemId: text("problemId")
+    problemId: uuid("problemId")
       .notNull()
       .references(() => problems.id, { onDelete: "cascade" }),
     isEdge: boolean("isEdge").notNull().default(false),
@@ -233,18 +237,18 @@ export const testcases = cockroachTable(
 export const submissions = cockroachTable(
   "Submission",
   {
-    id: text("id")
+    id: uuid("id")
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
     code: text("code").notNull(),
     language: text("language").notNull(), // Programming language used
-    problemId: text("problemId")
+    problemId: uuid("problemId")
       .notNull()
       .references(() => problems.id),
-    userId: text("userId")
+    userId: uuid("userId")
       .notNull()
       .references(() => users.id),
-    teamId: text("teamId").references(() => teams.id), // For team-based scoring
+    teamId: uuid("teamId").references(() => teams.id), // For team-based scoring
     evaluated: boolean("evaluated").notNull().default(false),
     createdAt: timestamp("createdAt", { withTimezone: true, mode: "date" })
       .notNull()
@@ -267,15 +271,15 @@ export const submissions = cockroachTable(
 export const solve = cockroachTable(
   "Solve",
   {
-    id: text("id")
+    id: uuid("id")
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
-    problemId: text("problemId")
+    problemId: uuid("problemId")
       .notNull()
       .references(() => problems.id),
-    teamId: text("teamId").references(() => teams.id),
+    teamId: uuid("teamId").references(() => teams.id),
     // Reference to the best submission
-    bestSubmissionId: text("bestSubmissionId").references(() => submissions.id),
+    bestSubmissionId: uuid("bestSubmissionId").references(() => submissions.id),
     // Best testcases passed (0-10)
     testcasesPassed: int4("testcasesPassed").notNull().default(0),
   },
@@ -294,13 +298,13 @@ export const solve = cockroachTable(
 export const submissionTestcases = cockroachTable(
   "SubmissionTestcase",
   {
-    id: text("id")
+    id: uuid("id")
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
-    submissionId: text("submissionId")
+    submissionId: uuid("submissionId")
       .notNull()
       .references(() => submissions.id, { onDelete: "cascade" }),
-    testcaseId: text("testcaseId")
+    testcaseId: uuid("testcaseId")
       .notNull()
       .references(() => testcases.id, { onDelete: "cascade" }),
     passed: boolean("passed").notNull(),
@@ -329,10 +333,10 @@ export const submissionTestcases = cockroachTable(
 export const admins = cockroachTable(
   "Admin",
   {
-    id: text("id")
+    id: uuid("id")
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
-    userId: text("userId")
+    userId: uuid("userId")
       .notNull()
       .references(() => users.id),
     createdAt: timestamp("createdAt", { withTimezone: true, mode: "date" })
@@ -355,7 +359,7 @@ export const flags = cockroachTable(
 );
 
 export const news = cockroachTable("News", {
-  id: text("id")
+  id: uuid("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   content: text("content").notNull(),
@@ -379,5 +383,6 @@ export type Flags = typeof flags.$inferSelect;
 export type News = typeof news.$inferSelect;
 export type UniReg = typeof uniRegs.$inferSelect;
 export type Gender = (typeof genderEnum.enumValues)[number];
+export type Region = (typeof regionEnum.enumValues)[number];
 export type Difficulty = (typeof difficultyEnum.enumValues)[number];
 export type EvalEnum = (typeof evalEnum.enumValues)[number];

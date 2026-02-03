@@ -154,7 +154,7 @@ function CardHeader({ uniqueId, index, title, hasDescription = false }: {
                 <span
                     className={`${formula1Bold.className} text-white text-left`}
                     style={{
-                        marginBottom: "1%",
+                        marginBottom: "0.5%",
                         marginLeft: "20%",
                         marginRight: "2%",
                         fontSize: "clamp(1rem, 1.5vw + 0.5rem, 1.875rem)",

@@ -147,8 +147,9 @@ export default function QuestionPage({
 
   
         </div>
-        <div className="w-[90%] h-[87vh] gap-1">
-          <ResizablePanelGroup orientation="horizontal" className="gap-1 w-full h-full">
+        {/* Main Content - Desktop Layout (lg and up) */}
+        <div className="hidden lg:block w-full max-w-[98vw] px-2 xl:px-4" style={{ height: 'calc(100vh - 120px)' }}>
+          <ResizablePanelGroup orientation="horizontal" className="gap-2 w-full h-full">
             {/* Left Resizable Section */}
             <ResizablePanel defaultSize={30} minSize={20} maxSize={70}>
               <div className="flex flex-col justify-evenly h-full">

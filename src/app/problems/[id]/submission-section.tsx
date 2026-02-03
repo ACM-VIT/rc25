@@ -125,66 +125,63 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
     };
 
     return (
-        <div className="rounded-lg  flex flex-col h-full border-2 border-[#A7282D] hover:border-primary"
+    <div className="rounded-lg flex flex-col h-full border-2 border-[#A7282D] hover:border-primary"
         style={{
-                background: 'linear-gradient(to bottom, #000000 70%, #2A2A2A)'
-            }}>
-            <ScrollArea className="grow h-full w-full rounded-lg border-0">
-                <div
-                    className="w-full rounded-lg p-4 text-white h-full overflow-y-auto"
-                    style={{
-                        borderRadius: "8px",
-                        backdropFilter: "blur(2.5px)",
-                        WebkitBackdropFilter: "blur(2.5px)",
-                    }}
-                >
-                    {submissions.length === 0 ? (
-                        <div
-                            className="w-full flex items-center justify-center border-[#EB5757] border p-2 rounded-md">
-                            {randomMessage}
-                        </div>
-                    ) : submissions.length === 1 &&
-                    !submissions[0].evaluated ? (
-                        <div className="w-full h-full border-2 border-[#EB5757] px-4 py-2 rounded-md">
-                            <p className="text-[#F8CC22] font-outfit text-center">
-                                The first record is now under scrutiny. The
-                                Force will reveal its merit.
-                            </p>
-                            <div className="h-full flex items-center justify-center">
-                                <Lottie
-                                    animationData={animationData}
-                                    loop
-                                    autoplay
-                                    style={{width: "25%"}}
-                                />
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="space-y-4 overflow-y-auto">
-                            {submissions.map((submission, index) => (
-                                <div key={submission.id}>
-                                    {renderSubmission(
-                                        submission,
-                                        index ===
-                                        submissions.findIndex(
-                                            (s) =>
-                                                s.testcasesPassed ===
-                                                Math.max(
-                                                    ...submissions.map(
-                                                        (sub) =>
-                                                            sub.testcasesPassed
-                                                    )
-                                                )
-                                        )
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    )}
+            background: 'linear-gradient(to bottom, #000000 70%, #2A2A2A)'
+        }}>
+        <div
+            className="flex-1 rounded-lg p-4 text-white flex flex-col overflow-hidden"
+            style={{
+                borderRadius: "8px",
+                backdropFilter: "blur(2.5px)",
+                WebkitBackdropFilter: "blur(2.5px)",
+            }}
+        >
+            {submissions.length === 0 ? (
+                <div className="w-full flex items-center justify-center border-[#EB5757] border p-2 rounded-md">
+                    {randomMessage}
                 </div>
-            </ScrollArea>
+            ) : submissions.length === 1 && !submissions[0].evaluated ? (
+                <div className="flex-1 border-2 border-[#EB5757] px-4 py-2 rounded-md flex flex-col">
+                    <p className="text-[#F8CC22] font-outfit text-center py-4">
+                        The first record is now under scrutiny. The Force will reveal its merit.
+                    </p>
+                    <div className="flex-1 flex items-center justify-center">
+                        <Lottie
+                            animationData={animationData}
+                            loop
+                            autoplay
+                            style={{width: "25%", maxWidth: "200px"}}
+                        />
+                    </div>
+                </div>
+            ) : (
+                <ScrollArea className="flex-1">
+                    <div className="space-y-4">
+                        {submissions.map((submission, index) => (
+                            <div key={submission.id}>
+                                {renderSubmission(
+                                    submission,
+                                    index ===
+                                    submissions.findIndex(
+                                        (s) =>
+                                            s.testcasesPassed ===
+                                            Math.max(
+                                                ...submissions.map(
+                                                    (sub) =>
+                                                        sub.testcasesPassed
+                                                )
+                                            )
+                                    )
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </ScrollArea>
+            )}
         </div>
-    );
+    </div>
+);
 };
 
 export default SubmissionSection;

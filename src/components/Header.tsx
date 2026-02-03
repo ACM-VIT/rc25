@@ -95,7 +95,7 @@ const Header = ({ title }: HeaderProps) => {
       <img
         ref={linesRef}
         src="/Rectangle 9454.png"
-        alt=""
+        alt="Rectangle"
         className="absolute right-0 top-9/20 -translate-y-1/2 w-[90%] h-[80%] z-[1]"
       />
 

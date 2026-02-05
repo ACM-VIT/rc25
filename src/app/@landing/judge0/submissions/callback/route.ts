@@ -150,7 +150,20 @@ export async function PUT(request: NextRequest) {
         })
         .where(eq(submissions.id, submission.id));
 
-      if (!teamSolve || passedCount <= teamSolve.testcasesPassed) {
+      if (!teamSolve) {
+        if (passedCount <= 0) {
+          return;
+        }
+        await db.insert(solve).values({
+          problemId: submission.problemId,
+          teamId: submission.teamId ?? null,
+          bestSubmissionId: submission.id,
+          testcasesPassed: passedCount,
+        });
+        return;
+      }
+
+      if (passedCount <= teamSolve.testcasesPassed) {
         return;
       }
 

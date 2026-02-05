@@ -48,6 +48,56 @@ const getColumns = async (pool: Pool, table: string) => {
   return res.rows.map((row) => row.column_name as string);
 };
 
+type ColumnInfo = {
+  name: string;
+  isNullable: boolean;
+  hasDefault: boolean;
+  isIdentity: boolean;
+  isGenerated: boolean;
+};
+
+const getColumnInfo = async (pool: Pool, table: string): Promise<ColumnInfo[]> => {
+  const res = await pool.query(
+    `SELECT column_name
+          , is_nullable
+          , column_default
+          , is_identity
+          , is_generated
+     FROM information_schema.columns
+     WHERE table_schema = 'public'
+       AND table_name = $1`,
+    [table]
+  );
+  return res.rows.map((row) => ({
+    name: row.column_name as string,
+    isNullable: row.is_nullable === "YES",
+    hasDefault: row.column_default !== null,
+    isIdentity: row.is_identity === "YES",
+    isGenerated: row.is_generated !== "NEVER",
+  }));
+};
+
+const getForeignKeyReferences = async (
+  pool: Pool,
+  table: string
+): Promise<string[]> => {
+  const res = await pool.query(
+    `SELECT ccu.table_name AS referenced_table
+     FROM information_schema.table_constraints tc
+     JOIN information_schema.key_column_usage kcu
+       ON tc.constraint_name = kcu.constraint_name
+      AND tc.table_schema = kcu.table_schema
+     JOIN information_schema.constraint_column_usage ccu
+       ON ccu.constraint_name = tc.constraint_name
+      AND ccu.table_schema = tc.table_schema
+     WHERE tc.constraint_type = 'FOREIGN KEY'
+       AND tc.table_schema = 'public'
+       AND tc.table_name = $1`,
+    [table]
+  );
+  return res.rows.map((row) => row.referenced_table as string);
+};
+
 const insertRows = async (
   pool: Pool,
   table: string,
@@ -73,7 +123,7 @@ const insertRows = async (
   await pool.query(sql, values);
 };
 
-const copyTable = async (table: string) => {
+const copyTable = async (table: string, skippedTables: Set<string>) => {
   const sourceColumns = await getColumns(prodPool, table);
   const targetColumns = await getColumns(targetPool, table);
   const targetSet = new Set(targetColumns);
@@ -82,12 +132,40 @@ const copyTable = async (table: string) => {
     console.warn(`Skipping ${table}: no columns found`);
     return;
   }
+  const columnInfo = await getColumnInfo(targetPool, table);
+  const requiredColumns = columnInfo
+    .filter(
+      (col) =>
+        !col.isNullable && !col.hasDefault && !col.isIdentity && !col.isGenerated
+    )
+    .map((col) => col.name);
+  const requiredInInsert = requiredColumns.filter((col) => columns.includes(col));
+  const missingRequired = requiredColumns.filter((col) => !columns.includes(col));
+  if (missingRequired.length) {
+    console.warn(
+      `Skipping ${table}: missing required columns (${missingRequired.join(", ")})`
+    );
+    skippedTables.add(table);
+    return;
+  }
 
   if (cleanTarget) {
     if (cleanMode === "truncate") {
-      await targetPool.query(`TRUNCATE TABLE "${table}"`);
+      await targetPool.query(`TRUNCATE TABLE "${table}" CASCADE`);
     } else {
-      await targetPool.query(`DELETE FROM "${table}"`);
+      try {
+        await targetPool.query(`DELETE FROM "${table}"`);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "";
+        if (message.includes("violates foreign key constraint")) {
+          console.warn(
+            `Delete failed for ${table} due to FK constraints; falling back to TRUNCATE CASCADE`
+          );
+          await targetPool.query(`TRUNCATE TABLE "${table}" CASCADE`);
+        } else {
+          throw error;
+        }
+      }
     }
   }
 
@@ -100,7 +178,19 @@ const copyTable = async (table: string) => {
     );
     if (res.rows.length === 0) break;
 
-    await insertRows(targetPool, table, columns, res.rows);
+    let rows = res.rows;
+    if (requiredInInsert.length) {
+      const before = rows.length;
+      rows = rows.filter((row) =>
+        requiredInInsert.every((col) => row[col] !== null && row[col] !== undefined)
+      );
+      const skipped = before - rows.length;
+      if (skipped > 0) {
+        console.warn(`Skipped ${skipped} ${table} rows missing non-nullable fields`);
+      }
+    }
+
+    await insertRows(targetPool, table, columns, rows);
     offset += res.rows.length;
 
     if (res.rows.length < batchSize) break;
@@ -113,9 +203,25 @@ const copyTable = async (table: string) => {
     console.log(`Batch size: ${batchSize}`);
     if (cleanTarget) console.log("Cleaning target tables before import");
 
+    const skippedTables = new Set<string>();
+    const fkCache = new Map<string, string[]>();
+
     for (const table of tablesToCopy) {
       console.log(`→ ${table}`);
-      await copyTable(table);
+      let referencedTables = fkCache.get(table);
+      if (!referencedTables) {
+        referencedTables = await getForeignKeyReferences(targetPool, table);
+        fkCache.set(table, referencedTables);
+      }
+      const blockedBy = referencedTables.filter((ref) => skippedTables.has(ref));
+      if (blockedBy.length) {
+        console.warn(
+          `Skipping ${table}: depends on skipped table(s) (${blockedBy.join(", ")})`
+        );
+        skippedTables.add(table);
+        continue;
+      }
+      await copyTable(table, skippedTables);
     }
 
     console.log("Done.");

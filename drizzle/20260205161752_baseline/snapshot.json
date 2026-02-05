@@ -1,11 +1,17 @@
 {
   "version": "1",
   "dialect": "cockroach",
-  "id": "1aa4d478-4404-4c68-a071-ccf8f84b6a6f",
-  "prevIds": ["00000000-0000-0000-0000-000000000000"],
+  "id": "c8368844-026a-4495-80f7-af306bdaece1",
+  "prevIds": [
+    "00000000-0000-0000-0000-000000000000"
+  ],
   "ddl": [
     {
-      "values": ["EASY", "MEDIUM", "HARD"],
+      "values": [
+        "EASY",
+        "MEDIUM",
+        "HARD"
+      ],
       "name": "Difficulty",
       "entityType": "enums",
       "schema": "public"
@@ -32,8 +38,19 @@
       "schema": "public"
     },
     {
-      "values": ["male", "female"],
+      "values": [
+        "male",
+        "female"
+      ],
       "name": "Gender",
+      "entityType": "enums",
+      "schema": "public"
+    },
+    {
+      "values": [
+        "aws-ap-south-1"
+      ],
+      "name": "crdb_internal_region",
       "entityType": "enums",
       "schema": "public"
     },
@@ -128,7 +145,7 @@
       "schema": "public"
     },
     {
-      "type": "string",
+      "type": "uuid",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
@@ -141,7 +158,7 @@
       "table": "Account"
     },
     {
-      "type": "string",
+      "type": "uuid",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
@@ -284,7 +301,7 @@
       "table": "Account"
     },
     {
-      "type": "string",
+      "type": "uuid",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
@@ -297,7 +314,7 @@
       "table": "Admin"
     },
     {
-      "type": "string",
+      "type": "uuid",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
@@ -362,7 +379,7 @@
       "table": "Flags"
     },
     {
-      "type": "string",
+      "type": "uuid",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
@@ -414,7 +431,7 @@
       "table": "News"
     },
     {
-      "type": "string",
+      "type": "uuid",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
@@ -583,7 +600,20 @@
       "table": "Problem"
     },
     {
-      "type": "string",
+      "type": "int4",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "0",
+      "generated": null,
+      "identity": null,
+      "name": "effective_solves",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Problem"
+    },
+    {
+      "type": "uuid",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
@@ -609,7 +639,7 @@
       "table": "Problem"
     },
     {
-      "type": "string",
+      "type": "uuid",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
@@ -674,7 +704,7 @@
       "table": "Round"
     },
     {
-      "type": "string",
+      "type": "uuid",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
@@ -700,7 +730,7 @@
       "table": "Session"
     },
     {
-      "type": "string",
+      "type": "uuid",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
@@ -726,7 +756,7 @@
       "table": "Session"
     },
     {
-      "type": "string",
+      "type": "uuid",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
@@ -739,7 +769,7 @@
       "table": "Solve"
     },
     {
-      "type": "string",
+      "type": "uuid",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
@@ -752,20 +782,7 @@
       "table": "Solve"
     },
     {
-      "type": "string",
-      "typeSchema": null,
-      "notNull": true,
-      "dimensions": 0,
-      "default": null,
-      "generated": null,
-      "identity": null,
-      "name": "userId",
-      "entityType": "columns",
-      "schema": "public",
-      "table": "Solve"
-    },
-    {
-      "type": "string",
+      "type": "uuid",
       "typeSchema": null,
       "notNull": false,
       "dimensions": 0,
@@ -778,7 +795,7 @@
       "table": "Solve"
     },
     {
-      "type": "string",
+      "type": "uuid",
       "typeSchema": null,
       "notNull": false,
       "dimensions": 0,
@@ -804,7 +821,7 @@
       "table": "Solve"
     },
     {
-      "type": "string",
+      "type": "uuid",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
@@ -817,7 +834,7 @@
       "table": "SubmissionTestcase"
     },
     {
-      "type": "string",
+      "type": "uuid",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
@@ -830,7 +847,7 @@
       "table": "SubmissionTestcase"
     },
     {
-      "type": "string",
+      "type": "uuid",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
@@ -856,7 +873,46 @@
       "table": "SubmissionTestcase"
     },
     {
-      "type": "int4",
+      "type": "string",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "token",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "SubmissionTestcase"
+    },
+    {
+      "type": "bool",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "false",
+      "generated": null,
+      "identity": null,
+      "name": "evaluated",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "SubmissionTestcase"
+    },
+    {
+      "type": "EvalEnum",
+      "typeSchema": "public",
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "evaluationStatus",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "SubmissionTestcase"
+    },
+    {
+      "type": "float",
       "typeSchema": null,
       "notNull": false,
       "dimensions": 0,
@@ -869,7 +925,7 @@
       "table": "SubmissionTestcase"
     },
     {
-      "type": "int4",
+      "type": "float",
       "typeSchema": null,
       "notNull": false,
       "dimensions": 0,
@@ -908,7 +964,7 @@
       "table": "SubmissionTestcase"
     },
     {
-      "type": "string",
+      "type": "uuid",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
@@ -947,7 +1003,7 @@
       "table": "Submission"
     },
     {
-      "type": "string",
+      "type": "uuid",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
@@ -960,7 +1016,7 @@
       "table": "Submission"
     },
     {
-      "type": "string",
+      "type": "uuid",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
@@ -973,7 +1029,7 @@
       "table": "Submission"
     },
     {
-      "type": "string",
+      "type": "uuid",
       "typeSchema": null,
       "notNull": false,
       "dimensions": 0,
@@ -986,14 +1042,14 @@
       "table": "Submission"
     },
     {
-      "type": "string",
+      "type": "bool",
       "typeSchema": null,
-      "notNull": false,
+      "notNull": true,
       "dimensions": 0,
-      "default": null,
+      "default": "false",
       "generated": null,
       "identity": null,
-      "name": "token",
+      "name": "evaluated",
       "entityType": "columns",
       "schema": "public",
       "table": "Submission"
@@ -1025,32 +1081,6 @@
       "table": "Submission"
     },
     {
-      "type": "bool",
-      "typeSchema": null,
-      "notNull": true,
-      "dimensions": 0,
-      "default": "false",
-      "generated": null,
-      "identity": null,
-      "name": "evaluated",
-      "entityType": "columns",
-      "schema": "public",
-      "table": "Submission"
-    },
-    {
-      "type": "EvalEnum",
-      "typeSchema": "public",
-      "notNull": false,
-      "dimensions": 0,
-      "default": null,
-      "generated": null,
-      "identity": null,
-      "name": "evaluationStatus",
-      "entityType": "columns",
-      "schema": "public",
-      "table": "Submission"
-    },
-    {
       "type": "int4",
       "typeSchema": null,
       "notNull": true,
@@ -1064,7 +1094,7 @@
       "table": "Submission"
     },
     {
-      "type": "string",
+      "type": "uuid",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
@@ -1077,7 +1107,7 @@
       "table": "TeamRound"
     },
     {
-      "type": "string",
+      "type": "uuid",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
@@ -1090,7 +1120,7 @@
       "table": "TeamRound"
     },
     {
-      "type": "string",
+      "type": "uuid",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
@@ -1103,7 +1133,7 @@
       "table": "TeamRound"
     },
     {
-      "type": "string",
+      "type": "uuid",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
@@ -1207,7 +1237,7 @@
       "table": "Team"
     },
     {
-      "type": "string",
+      "type": "uuid",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
@@ -1259,7 +1289,7 @@
       "table": "Testcase"
     },
     {
-      "type": "string",
+      "type": "uuid",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
@@ -1311,7 +1341,7 @@
       "table": "Testcase"
     },
     {
-      "type": "string",
+      "type": "uuid",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
@@ -1415,7 +1445,7 @@
       "table": "UniReg"
     },
     {
-      "type": "string",
+      "type": "uuid",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
@@ -1480,7 +1510,7 @@
       "table": "User"
     },
     {
-      "type": "string",
+      "type": "uuid",
       "typeSchema": null,
       "notNull": false,
       "dimensions": 0,
@@ -1629,28 +1659,6 @@
       "nameExplicit": true,
       "columns": [
         {
-          "value": "userId",
-          "isExpression": false,
-          "asc": true
-        },
-        {
-          "value": "problemId",
-          "isExpression": false,
-          "asc": true
-        }
-      ],
-      "isUnique": true,
-      "where": null,
-      "method": "btree",
-      "name": "Solve_userId_problemId_key",
-      "entityType": "indexes",
-      "schema": "public",
-      "table": "Solve"
-    },
-    {
-      "nameExplicit": true,
-      "columns": [
-        {
           "value": "teamId",
           "isExpression": false,
           "asc": true
@@ -1729,6 +1737,23 @@
       "nameExplicit": true,
       "columns": [
         {
+          "value": "token",
+          "isExpression": false,
+          "asc": true
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "method": "btree",
+      "name": "SubmissionTestcase_token_key",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "SubmissionTestcase"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
           "value": "submissionId",
           "isExpression": false,
           "asc": true
@@ -1780,23 +1805,6 @@
       "entityType": "indexes",
       "schema": "public",
       "table": "SubmissionTestcase"
-    },
-    {
-      "nameExplicit": true,
-      "columns": [
-        {
-          "value": "token",
-          "isExpression": false,
-          "asc": true
-        }
-      ],
-      "isUnique": true,
-      "where": null,
-      "method": "btree",
-      "name": "Submission_token_key",
-      "entityType": "indexes",
-      "schema": "public",
-      "table": "Submission"
     },
     {
       "nameExplicit": true,
@@ -2019,10 +2027,14 @@
     },
     {
       "nameExplicit": false,
-      "columns": ["userId"],
+      "columns": [
+        "userId"
+      ],
       "schemaTo": "public",
       "tableTo": "User",
-      "columnsTo": ["id"],
+      "columnsTo": [
+        "id"
+      ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
       "name": "Account_userId_User_id_fkey",
@@ -2032,10 +2044,14 @@
     },
     {
       "nameExplicit": false,
-      "columns": ["userId"],
+      "columns": [
+        "userId"
+      ],
       "schemaTo": "public",
       "tableTo": "User",
-      "columnsTo": ["id"],
+      "columnsTo": [
+        "id"
+      ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
       "name": "Admin_userId_User_id_fkey",
@@ -2045,10 +2061,14 @@
     },
     {
       "nameExplicit": false,
-      "columns": ["roundId"],
+      "columns": [
+        "roundId"
+      ],
       "schemaTo": "public",
       "tableTo": "Round",
-      "columnsTo": ["id"],
+      "columnsTo": [
+        "id"
+      ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
       "name": "Problem_roundId_Round_id_fkey",
@@ -2058,10 +2078,14 @@
     },
     {
       "nameExplicit": false,
-      "columns": ["userId"],
+      "columns": [
+        "userId"
+      ],
       "schemaTo": "public",
       "tableTo": "User",
-      "columnsTo": ["id"],
+      "columnsTo": [
+        "id"
+      ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
       "name": "Session_userId_User_id_fkey",
@@ -2071,10 +2095,14 @@
     },
     {
       "nameExplicit": false,
-      "columns": ["problemId"],
+      "columns": [
+        "problemId"
+      ],
       "schemaTo": "public",
       "tableTo": "Problem",
-      "columnsTo": ["id"],
+      "columnsTo": [
+        "id"
+      ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
       "name": "Solve_problemId_Problem_id_fkey",
@@ -2084,23 +2112,14 @@
     },
     {
       "nameExplicit": false,
-      "columns": ["userId"],
-      "schemaTo": "public",
-      "tableTo": "User",
-      "columnsTo": ["id"],
-      "onUpdate": "NO ACTION",
-      "onDelete": "NO ACTION",
-      "name": "Solve_userId_User_id_fkey",
-      "entityType": "fks",
-      "schema": "public",
-      "table": "Solve"
-    },
-    {
-      "nameExplicit": false,
-      "columns": ["teamId"],
+      "columns": [
+        "teamId"
+      ],
       "schemaTo": "public",
       "tableTo": "Team",
-      "columnsTo": ["id"],
+      "columnsTo": [
+        "id"
+      ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
       "name": "Solve_teamId_Team_id_fkey",
@@ -2110,10 +2129,14 @@
     },
     {
       "nameExplicit": false,
-      "columns": ["bestSubmissionId"],
+      "columns": [
+        "bestSubmissionId"
+      ],
       "schemaTo": "public",
       "tableTo": "Submission",
-      "columnsTo": ["id"],
+      "columnsTo": [
+        "id"
+      ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
       "name": "Solve_bestSubmissionId_Submission_id_fkey",
@@ -2123,10 +2146,14 @@
     },
     {
       "nameExplicit": false,
-      "columns": ["submissionId"],
+      "columns": [
+        "submissionId"
+      ],
       "schemaTo": "public",
       "tableTo": "Submission",
-      "columnsTo": ["id"],
+      "columnsTo": [
+        "id"
+      ],
       "onUpdate": "NO ACTION",
       "onDelete": "CASCADE",
       "name": "SubmissionTestcase_submissionId_Submission_id_fkey",
@@ -2136,10 +2163,14 @@
     },
     {
       "nameExplicit": false,
-      "columns": ["testcaseId"],
+      "columns": [
+        "testcaseId"
+      ],
       "schemaTo": "public",
       "tableTo": "Testcase",
-      "columnsTo": ["id"],
+      "columnsTo": [
+        "id"
+      ],
       "onUpdate": "NO ACTION",
       "onDelete": "CASCADE",
       "name": "SubmissionTestcase_testcaseId_Testcase_id_fkey",
@@ -2149,10 +2180,14 @@
     },
     {
       "nameExplicit": false,
-      "columns": ["problemId"],
+      "columns": [
+        "problemId"
+      ],
       "schemaTo": "public",
       "tableTo": "Problem",
-      "columnsTo": ["id"],
+      "columnsTo": [
+        "id"
+      ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
       "name": "Submission_problemId_Problem_id_fkey",
@@ -2162,10 +2197,14 @@
     },
     {
       "nameExplicit": false,
-      "columns": ["userId"],
+      "columns": [
+        "userId"
+      ],
       "schemaTo": "public",
       "tableTo": "User",
-      "columnsTo": ["id"],
+      "columnsTo": [
+        "id"
+      ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
       "name": "Submission_userId_User_id_fkey",
@@ -2175,10 +2214,14 @@
     },
     {
       "nameExplicit": false,
-      "columns": ["teamId"],
+      "columns": [
+        "teamId"
+      ],
       "schemaTo": "public",
       "tableTo": "Team",
-      "columnsTo": ["id"],
+      "columnsTo": [
+        "id"
+      ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
       "name": "Submission_teamId_Team_id_fkey",
@@ -2188,10 +2231,14 @@
     },
     {
       "nameExplicit": false,
-      "columns": ["teamId"],
+      "columns": [
+        "teamId"
+      ],
       "schemaTo": "public",
       "tableTo": "Team",
-      "columnsTo": ["id"],
+      "columnsTo": [
+        "id"
+      ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
       "name": "TeamRound_teamId_Team_id_fkey",
@@ -2201,10 +2248,14 @@
     },
     {
       "nameExplicit": false,
-      "columns": ["roundId"],
+      "columns": [
+        "roundId"
+      ],
       "schemaTo": "public",
       "tableTo": "Round",
-      "columnsTo": ["id"],
+      "columnsTo": [
+        "id"
+      ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
       "name": "TeamRound_roundId_Round_id_fkey",
@@ -2214,10 +2265,14 @@
     },
     {
       "nameExplicit": false,
-      "columns": ["problemId"],
+      "columns": [
+        "problemId"
+      ],
       "schemaTo": "public",
       "tableTo": "Problem",
-      "columnsTo": ["id"],
+      "columnsTo": [
+        "id"
+      ],
       "onUpdate": "NO ACTION",
       "onDelete": "CASCADE",
       "name": "Testcase_problemId_Problem_id_fkey",
@@ -2227,10 +2282,14 @@
     },
     {
       "nameExplicit": false,
-      "columns": ["teamId"],
+      "columns": [
+        "teamId"
+      ],
       "schemaTo": "public",
       "tableTo": "Team",
-      "columnsTo": ["id"],
+      "columnsTo": [
+        "id"
+      ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
       "name": "User_teamId_Team_id_fkey",
@@ -2239,7 +2298,9 @@
       "table": "User"
     },
     {
-      "columns": ["id"],
+      "columns": [
+        "id"
+      ],
       "nameExplicit": false,
       "name": "Account_pkey",
       "schema": "public",
@@ -2247,7 +2308,9 @@
       "entityType": "pks"
     },
     {
-      "columns": ["id"],
+      "columns": [
+        "id"
+      ],
       "nameExplicit": false,
       "name": "Admin_pkey",
       "schema": "public",
@@ -2255,7 +2318,9 @@
       "entityType": "pks"
     },
     {
-      "columns": ["name"],
+      "columns": [
+        "name"
+      ],
       "nameExplicit": false,
       "name": "Flags_pkey",
       "schema": "public",
@@ -2263,7 +2328,9 @@
       "entityType": "pks"
     },
     {
-      "columns": ["id"],
+      "columns": [
+        "id"
+      ],
       "nameExplicit": false,
       "name": "News_pkey",
       "schema": "public",
@@ -2271,7 +2338,9 @@
       "entityType": "pks"
     },
     {
-      "columns": ["id"],
+      "columns": [
+        "id"
+      ],
       "nameExplicit": false,
       "name": "Problem_pkey",
       "schema": "public",
@@ -2279,7 +2348,9 @@
       "entityType": "pks"
     },
     {
-      "columns": ["id"],
+      "columns": [
+        "id"
+      ],
       "nameExplicit": false,
       "name": "Round_pkey",
       "schema": "public",
@@ -2287,7 +2358,9 @@
       "entityType": "pks"
     },
     {
-      "columns": ["id"],
+      "columns": [
+        "id"
+      ],
       "nameExplicit": false,
       "name": "Session_pkey",
       "schema": "public",
@@ -2295,7 +2368,9 @@
       "entityType": "pks"
     },
     {
-      "columns": ["id"],
+      "columns": [
+        "id"
+      ],
       "nameExplicit": false,
       "name": "Solve_pkey",
       "schema": "public",
@@ -2303,7 +2378,9 @@
       "entityType": "pks"
     },
     {
-      "columns": ["id"],
+      "columns": [
+        "id"
+      ],
       "nameExplicit": false,
       "name": "SubmissionTestcase_pkey",
       "schema": "public",
@@ -2311,7 +2388,9 @@
       "entityType": "pks"
     },
     {
-      "columns": ["id"],
+      "columns": [
+        "id"
+      ],
       "nameExplicit": false,
       "name": "Submission_pkey",
       "schema": "public",
@@ -2319,7 +2398,9 @@
       "entityType": "pks"
     },
     {
-      "columns": ["id"],
+      "columns": [
+        "id"
+      ],
       "nameExplicit": false,
       "name": "TeamRound_pkey",
       "schema": "public",
@@ -2327,7 +2408,9 @@
       "entityType": "pks"
     },
     {
-      "columns": ["id"],
+      "columns": [
+        "id"
+      ],
       "nameExplicit": false,
       "name": "Team_pkey",
       "schema": "public",
@@ -2335,7 +2418,9 @@
       "entityType": "pks"
     },
     {
-      "columns": ["id"],
+      "columns": [
+        "id"
+      ],
       "nameExplicit": false,
       "name": "Testcase_pkey",
       "schema": "public",
@@ -2343,7 +2428,9 @@
       "entityType": "pks"
     },
     {
-      "columns": ["id"],
+      "columns": [
+        "id"
+      ],
       "nameExplicit": false,
       "name": "UniReg_pkey",
       "schema": "public",
@@ -2351,7 +2438,9 @@
       "entityType": "pks"
     },
     {
-      "columns": ["id"],
+      "columns": [
+        "id"
+      ],
       "nameExplicit": false,
       "name": "User_pkey",
       "schema": "public",

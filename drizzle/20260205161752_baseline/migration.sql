@@ -1,9 +1,10 @@
 CREATE TYPE "Difficulty" AS ENUM('EASY', 'MEDIUM', 'HARD');--> statement-breakpoint
 CREATE TYPE "EvalEnum" AS ENUM('IN_QUEUE', 'PROCESSING', 'ACCEPTED', 'WRONG_ANSWER', 'TIME_LIMIT_EXCEEDED', 'COMPILATION_ERROR', 'RUNTIME_ERROR_SIGSEGV', 'RUNTIME_ERROR_SIGXFSZ', 'RUNTIME_ERROR_SIGFPE', 'RUNTIME_ERROR_SIGABRT', 'RUNTIME_ERROR_NZEC', 'RUNTIME_ERROR_OTHER', 'INTERNAL_ERROR', 'EXEC_FORMAT_ERROR');--> statement-breakpoint
 CREATE TYPE "Gender" AS ENUM('male', 'female');--> statement-breakpoint
+CREATE TYPE "crdb_internal_region" AS ENUM('aws-ap-south-1');--> statement-breakpoint
 CREATE TABLE "Account" (
-	"id" string PRIMARY KEY,
-	"userId" string NOT NULL,
+	"id" uuid PRIMARY KEY,
+	"userId" uuid NOT NULL,
 	"type" string NOT NULL,
 	"provider" string NOT NULL,
 	"providerAccountId" string NOT NULL,
@@ -18,8 +19,8 @@ CREATE TABLE "Account" (
 );
 --> statement-breakpoint
 CREATE TABLE "Admin" (
-	"id" string PRIMARY KEY,
-	"userId" string NOT NULL,
+	"id" uuid PRIMARY KEY,
+	"userId" uuid NOT NULL,
 	"createdAt" timestamptz DEFAULT now() NOT NULL,
 	"updatedAt" timestamptz DEFAULT now() NOT NULL,
 	CONSTRAINT "Admin_userId_key" UNIQUE("userId")
@@ -32,14 +33,14 @@ CREATE TABLE "Flags" (
 );
 --> statement-breakpoint
 CREATE TABLE "News" (
-	"id" string PRIMARY KEY,
+	"id" uuid PRIMARY KEY,
 	"content" string NOT NULL,
 	"title" string NOT NULL,
 	"time" timestamptz NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "Problem" (
-	"id" string PRIMARY KEY,
+	"id" uuid PRIMARY KEY,
 	"title" string NOT NULL,
 	"nickname" string NOT NULL,
 	"description" string NOT NULL,
@@ -52,12 +53,13 @@ CREATE TABLE "Problem" (
 	"edge_cases" int4 NOT NULL,
 	"timeLimitMs" int4 DEFAULT 1000 NOT NULL,
 	"memoryLimitKb" int4 DEFAULT 262144 NOT NULL,
-	"roundId" string NOT NULL,
+	"effective_solves" int4 DEFAULT 0 NOT NULL,
+	"roundId" uuid NOT NULL,
 	"isHidden" bool DEFAULT false NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "Round" (
-	"id" string PRIMARY KEY,
+	"id" uuid PRIMARY KEY,
 	"number" int4 NOT NULL,
 	"start" timestamptz NOT NULL,
 	"end" timestamptz NOT NULL,
@@ -66,61 +68,60 @@ CREATE TABLE "Round" (
 );
 --> statement-breakpoint
 CREATE TABLE "Session" (
-	"id" string PRIMARY KEY,
+	"id" uuid PRIMARY KEY,
 	"sessionToken" string NOT NULL,
-	"userId" string NOT NULL,
+	"userId" uuid NOT NULL,
 	"expires" timestamptz NOT NULL,
 	CONSTRAINT "Session_sessionToken_key" UNIQUE("sessionToken")
 );
 --> statement-breakpoint
 CREATE TABLE "Solve" (
-	"id" string PRIMARY KEY,
-	"problemId" string NOT NULL,
-	"userId" string NOT NULL,
-	"teamId" string,
-	"bestSubmissionId" string,
+	"id" uuid PRIMARY KEY,
+	"problemId" uuid NOT NULL,
+	"teamId" uuid,
+	"bestSubmissionId" uuid,
 	"testcasesPassed" int4 DEFAULT 0 NOT NULL,
-	CONSTRAINT "Solve_userId_problemId_key" UNIQUE("userId","problemId"),
 	CONSTRAINT "Solve_teamId_problemId_key" UNIQUE("teamId","problemId")
 );
 --> statement-breakpoint
 CREATE TABLE "SubmissionTestcase" (
-	"id" string PRIMARY KEY,
-	"submissionId" string NOT NULL,
-	"testcaseId" string NOT NULL,
+	"id" uuid PRIMARY KEY,
+	"submissionId" uuid NOT NULL,
+	"testcaseId" uuid NOT NULL,
 	"passed" bool NOT NULL,
-	"executionTimeMs" int4,
-	"memoryUsedKb" int4,
+	"token" string,
+	"evaluated" bool DEFAULT false NOT NULL,
+	"evaluationStatus" "EvalEnum",
+	"executionTimeMs" float,
+	"memoryUsedKb" float,
 	"actualOutput" string,
 	"errorMessage" string,
+	CONSTRAINT "SubmissionTestcase_token_key" UNIQUE("token"),
 	CONSTRAINT "SubmissionTestcase_submission_testcase_key" UNIQUE("submissionId","testcaseId")
 );
 --> statement-breakpoint
 CREATE TABLE "Submission" (
-	"id" string PRIMARY KEY,
+	"id" uuid PRIMARY KEY,
 	"code" string NOT NULL,
 	"language" string NOT NULL,
-	"problemId" string NOT NULL,
-	"userId" string NOT NULL,
-	"teamId" string,
-	"token" string,
+	"problemId" uuid NOT NULL,
+	"userId" uuid NOT NULL,
+	"teamId" uuid,
+	"evaluated" bool DEFAULT false NOT NULL,
 	"createdAt" timestamptz DEFAULT now() NOT NULL,
 	"updatedAt" timestamptz DEFAULT now() NOT NULL,
-	"evaluated" bool DEFAULT false NOT NULL,
-	"evaluationStatus" "EvalEnum",
-	"testcasesPassed" int4 DEFAULT 0 NOT NULL,
-	CONSTRAINT "Submission_token_key" UNIQUE("token")
+	"testcasesPassed" int4 DEFAULT 0 NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "TeamRound" (
-	"id" string PRIMARY KEY,
-	"teamId" string NOT NULL,
-	"roundId" string NOT NULL,
+	"id" uuid PRIMARY KEY,
+	"teamId" uuid NOT NULL,
+	"roundId" uuid NOT NULL,
 	CONSTRAINT "TeamRound_teamId_roundId_key" UNIQUE("teamId","roundId")
 );
 --> statement-breakpoint
 CREATE TABLE "Team" (
-	"id" string PRIMARY KEY,
+	"id" uuid PRIMARY KEY,
 	"name" string NOT NULL,
 	"shortCode" string NOT NULL,
 	"checkedIn" bool DEFAULT false NOT NULL,
@@ -133,18 +134,18 @@ CREATE TABLE "Team" (
 );
 --> statement-breakpoint
 CREATE TABLE "Testcase" (
-	"id" string PRIMARY KEY,
+	"id" uuid PRIMARY KEY,
 	"weight" int4 DEFAULT 1 NOT NULL,
 	"input" string NOT NULL,
 	"output" string NOT NULL,
-	"problemId" string NOT NULL,
+	"problemId" uuid NOT NULL,
 	"isEdge" bool DEFAULT false NOT NULL,
 	"isHidden" bool DEFAULT false NOT NULL,
 	"orderIndex" int4 DEFAULT 0 NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "UniReg" (
-	"id" string PRIMARY KEY,
+	"id" uuid PRIMARY KEY,
 	"email" string NOT NULL,
 	"name" string NOT NULL,
 	"regNo" string NOT NULL,
@@ -156,12 +157,12 @@ CREATE TABLE "UniReg" (
 );
 --> statement-breakpoint
 CREATE TABLE "User" (
-	"id" string PRIMARY KEY,
+	"id" uuid PRIMARY KEY,
 	"name" string,
 	"email" string NOT NULL,
 	"emailVerified" timestamptz,
 	"image" string,
-	"teamId" string,
+	"teamId" uuid,
 	"phone" string,
 	"gender" "Gender",
 	CONSTRAINT "User_email_key" UNIQUE("email")
@@ -172,7 +173,6 @@ ALTER TABLE "Admin" ADD CONSTRAINT "Admin_userId_User_id_fkey" FOREIGN KEY ("use
 ALTER TABLE "Problem" ADD CONSTRAINT "Problem_roundId_Round_id_fkey" FOREIGN KEY ("roundId") REFERENCES "Round"("id");--> statement-breakpoint
 ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_User_id_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id");--> statement-breakpoint
 ALTER TABLE "Solve" ADD CONSTRAINT "Solve_problemId_Problem_id_fkey" FOREIGN KEY ("problemId") REFERENCES "Problem"("id");--> statement-breakpoint
-ALTER TABLE "Solve" ADD CONSTRAINT "Solve_userId_User_id_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id");--> statement-breakpoint
 ALTER TABLE "Solve" ADD CONSTRAINT "Solve_teamId_Team_id_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id");--> statement-breakpoint
 ALTER TABLE "Solve" ADD CONSTRAINT "Solve_bestSubmissionId_Submission_id_fkey" FOREIGN KEY ("bestSubmissionId") REFERENCES "Submission"("id");--> statement-breakpoint
 ALTER TABLE "SubmissionTestcase" ADD CONSTRAINT "SubmissionTestcase_submissionId_Submission_id_fkey" FOREIGN KEY ("submissionId") REFERENCES "Submission"("id") ON DELETE CASCADE;--> statement-breakpoint

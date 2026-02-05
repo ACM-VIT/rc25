@@ -34,29 +34,38 @@ export default function WebRunner({ problem }: WebRunnerProps) {
     };
 
     return (
-        <DashboardBox className="p-3 h-full border border-[#A7282D]">
-            <div className="flex flex-col h-full justify-between">
-                <div className="text-white text-2xl font-semibold mb-4">
+        <DashboardBox className="p-3 h-full border border-[#A7282D] flex flex-col overflow-hidden">
+            <style jsx>{`
+                .hide-scrollbar::-webkit-scrollbar {
+                    display: none;
+                }
+                .hide-scrollbar {
+                    -ms-overflow-style: none;
+                    scrollbar-width: none;
+                }
+            `}</style>
+            <div className="flex flex-col h-full min-h-0 w-full">
+                <div className="text-white text-2xl font-semibold mb-2 shrink-0">
                     Terminal
                 </div>
-                <hr className="border-t-2 border-[#A7282D] w-full mb-2" />
-                <div className="flex flex-row justify-between h-[75%] rounded-[10px]">
-                    <div className="flex flex-col w-1/2 px-4">
-                        <div className="relative h-full rounded-[10px] bg-[#A7282D] flex flex-col"
-                        >
-                            <h3 className="absolute top-4 left-4 text-lg font-semibold text-white z-10">
-                                Input
-                            </h3>
+                <hr className="border-t-2 border-[#A7282D] w-full mb-2 shrink-0" />
+                <div className="flex flex-row gap-2 flex-1 min-h-0 min-w-0 w-full">
+                    <div className="flex flex-col flex-1 min-w-0 min-h-0">
+                        <div className="h-full w-full rounded-[10px] bg-[#A7282D] flex flex-col min-h-0 overflow-hidden">
+                            <div className="shrink-0 p-3 pb-2 min-w-0">
+                                <h3 className="text-base font-semibold text-white truncate">
+                                    Input
+                                </h3>
+                            </div>
                             <textarea
-                                className="w-full flex-1 mt-5 text-white pt-8 p-4 rounded-[10px] resize-none focus:outline-none placeholder:text-base"
+                                className="flex-1 min-h-0 w-full text-white px-3 hide-scrollbar bg-transparent resize-none focus:outline-none placeholder:text-sm overflow-auto"
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 placeholder="Enter Your Input"
-                                rows={10}
                             />
-                            <div className="p-2 flex justify-end">
+                            <div className="p-2 flex justify-end shrink-0 min-w-0">
                                 <Button
-                                    className="text-black border border-black bg-[#FF9397] hover:bg-secondary px-6 text-lg rounded-md"
+                                    className="text-black border border-black bg-[#FF9397] hover:bg-secondary px-4 py-1 text-sm rounded-md whitespace-nowrap"
                                     onClick={handleRun}
                                     disabled={isRunning}
                                 >
@@ -65,15 +74,16 @@ export default function WebRunner({ problem }: WebRunnerProps) {
                             </div>
                         </div>
                     </div>
-                    <Separator orientation="vertical" />
-                    <div className="flex flex-col w-1/2 px-4">
-                        <div className="relative h-full rounded-[10px] bg-[#A7282D]"
-                             >
-                            <h3 className="absolute  top-4 left-4 text-base font-semibold text-white">
-                                Output
-                            </h3>
+                    <Separator orientation="vertical" className="shrink-0" />
+                    <div className="flex flex-col flex-1 min-w-0 min-h-0">
+                        <div className="h-full w-full rounded-[10px] bg-[#A7282D] flex flex-col min-h-0 overflow-hidden">
+                            <div className="shrink-0 p-3 pb-2 min-w-0">
+                                <h3 className="text-base font-semibold text-white truncate">
+                                    Output
+                                </h3>
+                            </div>
                             <textarea
-                                className="w-full h-full text-nowrap overflow-x-auto mt-5 bg-transparent text-white pt-8 p-4 rounded-[10px] resize-none focus:outline-none placeholder:text-sm"
+                                className="flex-1 min-h-0 w-full text-white px-3 pb-3 bg-transparent resize-none focus:outline-none placeholder:text-sm overflow-auto hide-scrollbar"
                                 value={output}
                                 readOnly
                                 placeholder="Output here"
@@ -81,9 +91,7 @@ export default function WebRunner({ problem }: WebRunnerProps) {
                         </div>
                     </div>
                 </div>
-                
             </div>
-            
         </DashboardBox>
     );
 }

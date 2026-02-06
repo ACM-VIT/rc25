@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { problems, rounds, testcases, type Difficulty } from "@/db/schema";
-import { desc, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 
 type ExampleCase = {
@@ -14,6 +14,7 @@ type ProblemDescription = {
   constraints?: string[];
   example?: ExampleCase[];
   author?: string;
+  round?: number;
 };
 
 type GhTestCase = {
@@ -222,6 +223,13 @@ function buildProblemFields(problem: GhProblem): ProblemFields {
   };
 }
 
+function getRoundNumberFromProblem(problem: GhProblem): number | null {
+  if (typeof problem.description === "object" && problem.description?.round) {
+    return problem.description.round;
+  }
+  return null;
+}
+
 function buildTestcaseRows(
   problemId: string,
   cases: GhTestCase[],
@@ -274,30 +282,39 @@ export async function POST(req: NextRequest) {
 
     await db.transaction(async (tx) => {
       const configuredRoundId = process.env.GHLINKAGE_ROUND_ID;
-      let cachedRoundId: string | null | undefined;
+      const roundRows = await tx
+        .select({ id: rounds.id, number: rounds.number })
+        .from(rounds);
+      const roundIdByNumber = new Map<number, string>();
+      for (const round of roundRows) {
+        roundIdByNumber.set(round.number, round.id);
+      }
 
-      const getRoundIdForInsert = async (): Promise<string | null> => {
-        if (cachedRoundId !== undefined) return cachedRoundId;
+      const latestRoundId =
+        roundRows.length > 0
+          ? roundRows.reduce((latest, current) =>
+              current.number > latest.number ? current : latest,
+            ).id
+          : null;
+      const configuredRoundExists =
+        !!configuredRoundId && roundRows.some((round) => round.id === configuredRoundId);
+      const cachedRoundId = configuredRoundExists
+        ? configuredRoundId
+        : latestRoundId;
 
-        if (configuredRoundId) {
-          const configuredRoundRows = await tx
-            .select({ id: rounds.id })
-            .from(rounds)
-            .where(eq(rounds.id, configuredRoundId))
-            .limit(1);
-          if (configuredRoundRows[0]?.id) {
-            cachedRoundId = configuredRoundRows[0].id;
-            return cachedRoundId;
+      const getRoundIdForInsert = async (
+        problem: GhProblem,
+      ): Promise<string | null> => {
+        // First, check if problem has a round number in its description
+        const roundNumber = getRoundNumberFromProblem(problem);
+        if (roundNumber !== null) {
+          const roundId = roundIdByNumber.get(roundNumber);
+          if (roundId) {
+            return roundId;
           }
         }
 
-        const latestRoundRows = await tx
-          .select({ id: rounds.id })
-          .from(rounds)
-          .orderBy(desc(rounds.number))
-          .limit(1);
-
-        cachedRoundId = latestRoundRows[0]?.id ?? null;
+        // Fall back to configured roundId if valid, otherwise latest round.
         return cachedRoundId;
       };
 
@@ -328,6 +345,22 @@ export async function POST(req: NextRequest) {
 
         if (existingRows[0]?.id) {
           const existingId = existingRows[0].id;
+
+          // Check if problem specifies a round number and get the roundId
+          const roundNumber = getRoundNumberFromProblem(problem);
+          if (roundNumber !== null) {
+            const roundId = roundIdByNumber.get(roundNumber);
+            if (roundId) {
+              await tx
+                .update(problems)
+                .set({ ...updateData, roundId })
+                .where(eq(problems.id, existingId));
+              await syncProblemTestcases(existingId, problem);
+              return;
+            }
+          }
+
+          // Update without changing roundId if no round number specified
           await tx
             .update(problems)
             .set(updateData)
@@ -336,7 +369,7 @@ export async function POST(req: NextRequest) {
           return;
         }
 
-        const roundId = await getRoundIdForInsert();
+        const roundId = await getRoundIdForInsert(problem);
         if (!roundId) {
           throw new Error(
             "Cannot insert new problem because no round exists. Set GHLINKAGE_ROUND_ID or create a round.",

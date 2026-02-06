@@ -16,7 +16,7 @@ export const SUPPORTED_LANGUAGES = {
   },
   'java': { 
     id: 96, 
-    name: "JavaFX (JDK 17.0.6, OpenJFX 22.0.2)",
+    name: "Java (JDK 17.0.6, OpenJFX 22.0.2)",
     defaultCode: `class Solution {
     public void solve() {
         // Write your code here
@@ -48,6 +48,13 @@ export const SUPPORTED_LANGUAGES = {
     id: 73,
     name: "Rust (1.40.0)",
     defaultCode: `fn solve() {
+    // Write your code here
+}`
+  },
+  'typescript': {
+    id: 74,
+    name: "TypeScript (5.0.0)",
+    defaultCode: `function solve(): void {
     // Write your code here
 }`
   }

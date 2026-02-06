@@ -74,6 +74,7 @@ const validateCode = (
     cpp: /void\s+solve\s*\(\s*\)/,
     java: /class\s+Solution[\s\S]*public\s+void\s+solve\s*\(\s*\)/,
     javascript: /function\s+solve\s*\(\s*\)/,
+    typescript: /function\s+solve\s*\(\s*\)\s*:\s*void/,
     python: /def\s+solve\s*\(\s*\):/,
     go: /func\s+solve\s*\(\s*\)/,
     rust: /fn\s+solve\s*\(\s*\)/,

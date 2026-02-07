@@ -148,11 +148,11 @@ export const firestoreService = {
   submissions: {
     async created(id: string) {
       const submissionRef = db.collection('submissions').doc(id);
-      await submissionRef.set({ status: false }, { merge: true });
+      await submissionRef.set({ processed: false, updatedAt: Date.now() }, { merge: true });
     },
     async processed(id: string) {
       const submissionRef = db.collection('submissions').doc(id);
-      await submissionRef.set({ status: true }, { merge: true });
+      await submissionRef.set({ processed: true, updatedAt: Date.now() }, { merge: true });
     }
   }
 };

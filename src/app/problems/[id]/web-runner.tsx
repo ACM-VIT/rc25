@@ -5,6 +5,10 @@ import { runCode } from "@/app/actions/runCode";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/seperator";
 import DashboardBox from "@/components/DashboardBox";
+import { formula1Bold } from "@/lib/fonts";
+import { Poppins } from "next/font/google";
+
+const poppins = Poppins({ weight: ["400", "500", "600"], subsets: ["latin"] });
 
 interface Problem {
     id: string;
@@ -44,21 +48,21 @@ export default function WebRunner({ problem }: WebRunnerProps) {
                     scrollbar-width: none;
                 }
             `}</style>
-            <div className="flex flex-col h-full min-h-0 w-full">
-                <div className="text-white text-2xl font-semibold mb-2 shrink-0">
+            <div className="flex flex-col gap-2 h-full min-h-0 w-full">
+                <div className={`text-white text-2xl font-semibold shrink-0 ${formula1Bold.className}`}>
                     Terminal
                 </div>
-                <hr className="border-t-2 border-[#A7282D] w-full mb-2 shrink-0" />
+                <hr className="border-t-2 border-[#A7282D] w-full shrink-0 my-1" />
                 <div className="flex flex-row gap-2 flex-1 min-h-0 min-w-0 w-full">
                     <div className="flex flex-col flex-1 min-w-0 min-h-0">
                         <div className="h-full w-full rounded-[10px] bg-[#A7282D] flex flex-col min-h-0 overflow-hidden">
                             <div className="shrink-0 p-3 pb-2 min-w-0">
-                                <h3 className="text-base font-semibold text-white truncate">
+                                <h3 className={`text-base font-semibold text-white truncate ${poppins.className}`}>
                                     Input
                                 </h3>
                             </div>
                             <textarea
-                                className="flex-1 min-h-0 w-full text-white px-3 hide-scrollbar bg-transparent resize-none focus:outline-none placeholder:text-sm overflow-auto"
+                                className={`flex-1 min-h-0 w-full text-white px-3 hide-scrollbar bg-transparent resize-none focus:outline-none placeholder:text-sm overflow-auto ${poppins.className}`}
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 placeholder="Enter Your Input"
@@ -78,12 +82,12 @@ export default function WebRunner({ problem }: WebRunnerProps) {
                     <div className="flex flex-col flex-1 min-w-0 min-h-0">
                         <div className="h-full w-full rounded-[10px] bg-[#A7282D] flex flex-col min-h-0 overflow-hidden">
                             <div className="shrink-0 p-3 pb-2 min-w-0">
-                                <h3 className="text-base font-semibold text-white truncate">
+                                <h3 className={`text-base font-semibold text-white truncate ${poppins.className}`}>
                                     Output
                                 </h3>
                             </div>
                             <textarea
-                                className="flex-1 min-h-0 w-full text-white px-3 pb-3 bg-transparent resize-none focus:outline-none placeholder:text-sm overflow-auto hide-scrollbar"
+                                className={`flex-1 min-h-0 w-full text-white px-3 pb-3 bg-transparent resize-none focus:outline-none placeholder:text-sm overflow-auto hide-scrollbar ${poppins.className}`}
                                 value={output}
                                 readOnly
                                 placeholder="Output here"

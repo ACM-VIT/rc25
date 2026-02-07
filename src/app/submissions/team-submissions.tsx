@@ -9,113 +9,6 @@ import Team from "@/components/createjoin";
 
 const ROW_WIDTH = "max-w-6xl w-full";
 
-const mocksubmissions = [
-  {
-    id: "1",
-    createdAt: new Date().toISOString(),
-    user: { name: "Alice" },
-    problem: { title: "Two Sum", difficulty: "Easy" },
-    testcasesPassed: 15,
-    totalTestcases: 15,
-  },
-    {
-    id: "1",
-    createdAt: new Date().toISOString(),
-    user: { name: "Alice" },
-    problem: { title: "Two Sum", difficulty: "Easy" },
-    testcasesPassed: 15,
-    totalTestcases: 15,
-  },  {
-    id: "1",
-    createdAt: new Date().toISOString(),
-    user: { name: "Alice" },
-    problem: { title: "Two Sum", difficulty: "Easy" },
-    testcasesPassed: 15,
-    totalTestcases: 15,
-  },  {
-    id: "1",
-    createdAt: new Date().toISOString(),
-    user: { name: "Alice" },
-    problem: { title: "Two Sum", difficulty: "Easy" },
-    testcasesPassed: 15,
-    totalTestcases: 15,
-  },  {
-    id: "1",
-    createdAt: new Date().toISOString(),
-    user: { name: "Alice" },
-    problem: { title: "Two Sum", difficulty: "Easy" },
-    testcasesPassed: 15,
-    totalTestcases: 15,
-  },  {
-    id: "1",
-    createdAt: new Date().toISOString(),
-    user: { name: "Alice" },
-    problem: { title: "Two Sum", difficulty: "Easy" },
-    testcasesPassed: 15,
-    totalTestcases: 15,
-  },  {
-    id: "1",
-    createdAt: new Date().toISOString(),
-    user: { name: "Alice" },
-    problem: { title: "Two Sum", difficulty: "Easy" },
-    testcasesPassed: 15,
-    totalTestcases: 15,
-  },  {
-    id: "1",
-    createdAt: new Date().toISOString(),
-    user: { name: "Alice" },
-    problem: { title: "Two Sum", difficulty: "Easy" },
-    testcasesPassed: 15,
-    totalTestcases: 15,
-  },  {
-    id: "1",
-    createdAt: new Date().toISOString(),
-    user: { name: "Alice" },
-    problem: { title: "Two Sum", difficulty: "Easy" },
-    testcasesPassed: 15,
-    totalTestcases: 15,
-  },  {
-    id: "1",
-    createdAt: new Date().toISOString(),
-    user: { name: "Alice" },
-    problem: { title: "Two Sum", difficulty: "Easy" },
-    testcasesPassed: 15,
-    totalTestcases: 15,
-  },  {
-    id: "1",
-    createdAt: new Date().toISOString(),
-    user: { name: "Alice" },
-    problem: { title: "Two Sum", difficulty: "Easy" },
-    testcasesPassed: 15,
-    totalTestcases: 15,
-  },  {
-    id: "1",
-    createdAt: new Date().toISOString(),
-    user: { name: "Alice" },
-    problem: { title: "Two Sum", difficulty: "Easy" },
-    testcasesPassed: 15,
-    totalTestcases: 15,
-  },  
-
-  {
-    id: "2",
-    createdAt: new Date(Date.now() - 5 * 60000).toISOString(),
-    user: { name: "Bob" },
-    problem: { title: "Binary Search Tree", difficulty: "Medium" },
-    testcasesPassed: 10,
-    totalTestcases: 15,
-  },
-  {
-    id: "3",
-    createdAt: new Date(Date.now() - 15 * 60000).toISOString(),
-    user: { name: "Charlie" },
-    problem: { title: "Graph Paths", difficulty: "Hard" },
-    testcasesPassed: 7,
-    totalTestcases: 20,
-  },
-];
-
-
 const TeamSubmissions: React.FC<TeamSubmissionProps> = ({ submissions, teamName }) => {
 
 
@@ -161,7 +54,7 @@ return (
 
             <ScrollArea className="h-[50vh] md:h-[55vh] rounded-md">
               <div className="space-y-4 mt-2">
-                {mocksubmissions.map((sub, index) => (
+                {submissions.map((sub, index) => (
                   <div
                     key={sub.id}
                     className="relative w-full h-[48px] md:h-[52px] flex items-center justify-center"

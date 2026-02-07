@@ -46,35 +46,19 @@ interface QuestionPageProps {
 export default function QuestionPage({
   problem,
   session,
-  // questions,
-  // currentSlno,
   desc,
 }: QuestionPageProps) {
   const router = useRouter();
-  // const currentIndex = questions.findIndex((q) => q.slno === currentSlno);
   const [isPending, startTransition] = useTransition();
   const [submissions, setSubmissions] = useState<SubmissionWithUser[]>([]);
   const [statusRibbon, setStatusRibbon] = useState<StatusRibbonProps>(null);
+  
   useEffect(() => {
     startTransition(async () => {
       const data = await getTeamSubmissions(session.user.id, problem.id);
       setSubmissions(data);
     });
   }, [problem.id, session.user.id]);
-
-  // const handleNext = () => {
-  //     if (currentIndex < questions.length - 1) {
-  //         const nextQuestion = questions[currentIndex + 1];
-  //         router.push(`/problems/${nextQuestion.id}`);
-  //     }
-  // };
-
-  // const handlePrevious = () => {
-  //     if (currentIndex > 0) {
-  //         const prevQuestion = questions[currentIndex - 1];
-  //         router.push(`/problems/${prevQuestion.id}`);
-  //     }
-  // };
 
   useEffect(() => {
     const subscribeToSubmission = (submissionId: string) => {
@@ -108,8 +92,8 @@ export default function QuestionPage({
           prev.map((submission) =>
             submission.id === submissionId
               ? { ...results, evaluationStatus }
-              : submission,
-          ),
+              : submission
+          )
         );
       });
     };
@@ -129,11 +113,11 @@ export default function QuestionPage({
     <div
       className="min-h-screen"
       style={{
-        backgroundImage: "url('../problembg.png')",
+        backgroundImage: "url('../Dashboard.png')",
         backgroundSize: "cover",
       }}
     >
-      <div className="rounded-[10px] flex flex-col items-center gap-2 w-full">
+      <div className="rounded-[10px] flex flex-col items-center gap-2 w-full ">
         <div className="relative w-full p-4 ">
           <button
             className="absolute top-3 left-3"
@@ -144,115 +128,66 @@ export default function QuestionPage({
           <h1 className="text-white text-4xl font-bold underline uppercase text-center w-full">
             {problem.title}
           </h1>
-
-          {/* <div className="flex gap-2 absolute right-2 items-center">
-                        <button
-                            type="button"
-                            onClick={handlePrevious}
-                            disabled={currentIndex === 0}
-                            className={`px-3 py-1 rounded-md text-xs border-2 border-[#9B52E0] bg-black text-white mt-5 ${
-                                currentIndex === 0
-                                    ? "opacity-50 cursor-not-allowed"
-                                    : "hover:bg-gray-700"
-                            }`}
-                        >
-                            <FiChevronLeft className="inline" />
-                            Previous
-                        </button>
-                        <div className="flex gap-2">
-                            {questions
-                                .slice(currentIndex, currentIndex + 4)
-                                .map((q) => (
-                                    <div
-                                        key={q.id}
-                                        className={`px-3 py-1 rounded-md text-xs border-2 text-white font-bold mt-5 ${
-                                            q.slno === currentSlno
-                                                ? "border-yellow-500"
-                                                : "border-[#9B52E0]"
-                                        }`}
-                                    >
-                                        {q.slno}
-                                    </div>
-                                ))}
-                        </div>
-                        <button
-                            type="button"
-                            onClick={handleNext}
-                            disabled={currentIndex === questions.length - 1}
-                            className={`px-3 py-1 rounded-md text-xs font-semibold border-[#9B52E0] border-2 text-white mt-5 ${
-                                currentIndex === questions.length - 1
-                                    ? "opacity-50 cursor-not-allowed"
-                                    : "hover:bg-gray-700"
-                            }`}
-                        >
-                            Next
-                            <FiChevronRight className="inline" />
-                        </button>
-                    </div> */}
         </div>
-        <div className="w-[90%] h-[87vh] gap-1">
-          <ResizablePanelGroup orientation="horizontal" className="gap-1">
-            {/* Left Resizable Section */}
-            <ResizablePanel defaultSize={30} minSize={20} maxSize={70}>
-              <div className="flex flex-col justify-evenly h-full">
-                <ResizablePanelGroup orientation="vertical" className="gap-1">
-                  <ResizablePanel
-                    defaultSize={50}
-                    minSize={30}
-                    maxSize={70}
-                    // className="h-[50%]"
-                  >
-                    <QuestionDisplay problem={problem} desc={desc} />
-                  </ResizablePanel>
-                  <ResizableHandle />
-                  <ResizablePanel
-                    defaultSize={50}
-                    minSize={30}
-                    maxSize={70}
-                    // className="h-[45%]"
-                  >
-                    <WebRunner problem={problem} />
-                  </ResizablePanel>
-                </ResizablePanelGroup>
-              </div>
+
+        {/* Main Content - Desktop Layout (lg and up) */}
+        <div
+          className="hidden lg:block w-full max-w-[98vw] px-2 xl:px-4"
+          style={{ height: "calc(100vh - 120px)" }}
+        >
+          {/* Main Horizontal Group */}
+          <ResizablePanelGroup
+            orientation="horizontal"
+            className="gap-2 w-full h-full"
+          >
+            {/* LEFT SECTION */}
+            <ResizablePanel defaultSize="40%" minSize="20%" className="h-full">
+              {/* Nested Vertical Group - Direct child of ResizablePanel */}
+              <ResizablePanelGroup
+                orientation="vertical"
+                className=" w-full gap-2 h-full"
+              >
+                <ResizablePanel defaultSize="50%" minSize="30%">
+                  <QuestionDisplay problem={problem} desc={desc} />
+                </ResizablePanel>
+
+                <ResizableHandle className="w-full" />
+
+                <ResizablePanel defaultSize="50%" minSize="30%">
+                  <WebRunner problem={problem} />
+                </ResizablePanel>
+              </ResizablePanelGroup>
             </ResizablePanel>
 
-            {/* Resizable Handle */}
             <ResizableHandle />
 
-            {/* Right Resizable Section */}
-            <ResizablePanel defaultSize={50} minSize={30} maxSize={70}>
-              <div className="flex flex-col justify-evenly h-full">
-                <ResizablePanelGroup orientation="vertical" className="gap-1">
-                  <ResizablePanel
-                    defaultSize={50}
-                    minSize={30}
-                    maxSize={70}
-                    // className="h-[50%]"
-                  >
-                    <CodeEditor
-                      problem={problem}
-                      statusRibbon={statusRibbon}
-                      setStatusRibbon={setStatusRibbon}
-                      setSubmissions={setSubmissions}
-                      session={session}
-                    />
-                  </ResizablePanel>
-                  <ResizableHandle />
-                  <ResizablePanel
-                    defaultSize={30}
-                    minSize={30}
-                    maxSize={70}
-                    // className="h-[45%]"
-                  >
-                    <SubmissionSection
-                      isPending={isPending}
-                      setSubmissions={setSubmissions}
-                      submissions={submissions}
-                    />
-                  </ResizablePanel>
-                </ResizablePanelGroup>
-              </div>
+            {/* RIGHT SECTION */}
+            <ResizablePanel defaultSize="60%" minSize="30%" className="h-full">
+              {/* Nested Vertical Group - Direct child of ResizablePanel */}
+              <ResizablePanelGroup
+                orientation="vertical"
+                className="h-full w-full gap-2"
+              >
+                <ResizablePanel defaultSize="50%" minSize="30%">
+                  <CodeEditor
+                    problem={problem}
+                    statusRibbon={statusRibbon}
+                    setStatusRibbon={setStatusRibbon}
+                    setSubmissions={setSubmissions}
+                    session={session}
+                  />
+                </ResizablePanel>
+
+                <ResizableHandle className="w-full" />
+
+                <ResizablePanel defaultSize="50%" minSize="30%">
+                  <SubmissionSection
+                    isPending={isPending}
+                    setSubmissions={setSubmissions}
+                    submissions={submissions}
+                  />
+                </ResizablePanel>
+              </ResizablePanelGroup>
             </ResizablePanel>
           </ResizablePanelGroup>
         </div>

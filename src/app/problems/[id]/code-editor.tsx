@@ -74,7 +74,6 @@ const validateCode = (
     cpp: /void\s+solve\s*\(\s*\)/,
     java: /class\s+Solution[\s\S]*public\s+void\s+solve\s*\(\s*\)/,
     javascript: /function\s+solve\s*\(\s*\)/,
-    typescript: /function\s+solve\s*\(\s*\)\s*:\s*void/,
     python: /def\s+solve\s*\(\s*\):/,
     go: /func\s+solve\s*\(\s*\)/,
     rust: /fn\s+solve\s*\(\s*\)/,
@@ -187,99 +186,106 @@ export default function CodeEditor({
   );
 
   return (
-  <div className="w-full h-full border-2 border-[#A7282D] rounded-lg shadow-lg overflow-hidden flex flex-col relative">
-    <div className="w-full min-h-[5vh] bg-[#A7282D] flex items-center justify-between px-4 text-white shrink-0">
-      <span className="font-medium text-sm md:text-base">Code</span>
-      <div className="flex items-center space-x-3 relative">
-        <div className="relative">
-          <button
-            type="button"
-            onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="text-xs rounded-md px-4 md:px-8 border-black bg-[#FF9397] py-1 flex items-center justify-center text-black whitespace-nowrap"
-          >
-            {languages.find((lang) => lang.value === language)?.label || "Language"}
-            {dropdownOpen ? <FiChevronUp className="ml-2" /> : <FiChevronDown className="ml-2" />}
-          </button>
-          {dropdownOpen && (
-            <ul className="absolute top-full right-0 mt-1 w-40 bg-black rounded-md shadow-lg z-60">
-              {languages.map((lang) => (
-                <button
-                  key={lang.value}
-                  onClick={() => {
-                    setLanguage(lang.value);
-                    setDropdownOpen(false);
-                  }}
-                  className="px-2 py-2 text-white cursor-pointer hover:bg-gray-700 w-full text-left text-sm"
-                  type="button"
-                >
-                  {lang.label}
-                </button>
-              ))}
-            </ul>
-          )}
+    <div className="w-full h-full border-2 border-[#A7282D] rounded-lg shadow-lg overflow-hidden flex flex-col relative">
+      <div className="w-full min-h-[5vh] bg-[#A7282D] flex items-center justify-between px-4 text-white shrink-0">
+        <span className="font-medium text-sm md:text-base">Code</span>
+        <div className="flex items-center space-x-3 relative">
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+              className="text-xs rounded-md px-4 md:px-8 border-black bg-[#FF9397] py-1 flex items-center justify-center text-black whitespace-nowrap"
+            >
+              {languages.find((lang) => lang.value === language)?.label ||
+                "Language"}
+              {dropdownOpen ? (
+                <FiChevronUp className="ml-2" />
+              ) : (
+                <FiChevronDown className="ml-2" />
+              )}
+            </button>
+            {dropdownOpen && (
+              <ul className="absolute top-full right-0 mt-1 w-40 bg-black rounded-md shadow-lg z-60">
+                {languages.map((lang) => (
+                  <button
+                    key={lang.value}
+                    onClick={() => {
+                      setLanguage(lang.value);
+                      setDropdownOpen(false);
+                    }}
+                    className="px-2 py-2 text-white cursor-pointer hover:bg-gray-700 w-full text-left text-sm"
+                    type="button"
+                  >
+                    {lang.label}
+                  </button>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
       </div>
+
+      {/* Status ribbons */}
+      {statusRibbon?.type === "error" && (
+        <div className="p-2 bg-red-100 text-red-700 text-xs md:text-sm shrink-0">
+          {statusRibbon.message}
+        </div>
+      )}
+
+      {statusRibbon?.type === "submitted" && (
+        <div className="p-2 bg-green-100 text-green-700 text-xs md:text-sm shrink-0">
+          Submitted successfully!
+        </div>
+      )}
+
+      {statusRibbon?.type === "evaluation" &&
+        statusRibbon.passed === statusRibbon.total && (
+          <div className="p-2 bg-green-100 text-green-700 text-xs md:text-sm shrink-0">
+            All testcases passed!
+          </div>
+        )}
+
+      {statusRibbon?.type === "evaluation" &&
+        statusRibbon.passed !== statusRibbon.total && (
+          <div className="p-2 bg-yellow-300 text-green-700 text-xs md:text-sm shrink-0">
+            {statusRibbon.passed}/{statusRibbon.total} testcases passed
+          </div>
+        )}
+
+      <div className="flex-1 w-full min-h-0 overflow-hidden">
+        <Editor
+          height="100%"
+          theme="hc-black"
+          value={code}
+          onChange={(value) => {
+            if (!value) return;
+            setCode(value);
+            const snippets: CodeSnippets = JSON.parse(
+              localStorage.getItem(CODE_STORAGE_KEY) || "{}",
+            );
+            snippets[problem.id] = {
+              ...snippets[problem.id],
+              [language]: value,
+            };
+            localStorage.setItem(CODE_STORAGE_KEY, JSON.stringify(snippets));
+          }}
+          options={{
+            renderLineHighlight: "none",
+            minimap: { enabled: false },
+            scrollBeyondLastLine: false,
+          }}
+          language={language}
+        />
+      </div>
+
+      <button
+        type="button"
+        onClick={() => startTransition(() => void handleSubmit())}
+        disabled={isPending}
+        className="absolute bottom-2 right-2 md:bottom-4 md:right-4 px-4 md:px-7 border py-1.5 md:py-2 rounded-md text-xs md:text-sm font-semibold text-white bg-black hover:bg-secondary disabled:opacity-50 z-50 shadow-lg"
+      >
+        {isPending ? "Submitting..." : "Submit"}
+      </button>
     </div>
-
-    {/* Status ribbons */}
-    {statusRibbon?.type === "error" && (
-      <div className="p-2 bg-red-100 text-red-700 text-xs md:text-sm shrink-0">
-        {statusRibbon.message}
-      </div>
-    )}
-
-    {statusRibbon?.type === "submitted" && (
-      <div className="p-2 bg-green-100 text-green-700 text-xs md:text-sm shrink-0">
-        Submitted successfully!
-      </div>
-    )}
-
-    {statusRibbon?.type === "evaluation" && statusRibbon.passed === statusRibbon.total && (
-      <div className="p-2 bg-green-100 text-green-700 text-xs md:text-sm shrink-0">
-        All testcases passed!
-      </div>
-    )}
-
-    {statusRibbon?.type === "evaluation" && statusRibbon.passed !== statusRibbon.total && (
-      <div className="p-2 bg-yellow-300 text-green-700 text-xs md:text-sm shrink-0">
-        {statusRibbon.passed}/{statusRibbon.total} testcases passed
-      </div>
-    )}
-
-    <div className="flex-1 w-full min-h-0 overflow-hidden">
-      <Editor
-        height="100%"
-        theme="hc-black"
-        value={code}
-        onChange={(value) => {
-          if (!value) return;
-          setCode(value);
-          const snippets: CodeSnippets = JSON.parse(
-            localStorage.getItem(CODE_STORAGE_KEY) || "{}"
-          );
-          snippets[problem.id] = {
-            ...snippets[problem.id],
-            [language]: value,
-          };
-          localStorage.setItem(CODE_STORAGE_KEY, JSON.stringify(snippets));
-        }}
-        options={{
-          renderLineHighlight: "none",
-          minimap: { enabled: false },
-          scrollBeyondLastLine: false,
-        }}
-        language={language}
-      />
-    </div>
-
-    <button
-      type="button"
-      onClick={() => startTransition(() => void handleSubmit())}
-      disabled={isPending}
-      className="absolute bottom-2 right-2 md:bottom-4 md:right-4 px-4 md:px-7 border py-1.5 md:py-2 rounded-md text-xs md:text-sm font-semibold text-white bg-black hover:bg-secondary disabled:opacity-50 z-50 shadow-lg"
-    >
-      {isPending ? "Submitting..." : "Submit"}
-    </button>
-  </div>
-);
+  );
 }

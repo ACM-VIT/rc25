@@ -297,7 +297,8 @@ export async function POST(req: NextRequest) {
             ).id
           : null;
       const configuredRoundExists =
-        !!configuredRoundId && roundRows.some((round) => round.id === configuredRoundId);
+        !!configuredRoundId &&
+        roundRows.some((round) => round.id === configuredRoundId);
       const cachedRoundId = configuredRoundExists
         ? configuredRoundId
         : latestRoundId;
@@ -379,9 +380,9 @@ export async function POST(req: NextRequest) {
         const insertData: ProblemInsert = {
           ...buildProblemFields(problem),
           roundId,
-          initial: 0,
-          minimum: 0,
-          decay: 1,
+          initial: 500,
+          minimum: 50,
+          decay: 25,
         };
 
         const inserted = await tx

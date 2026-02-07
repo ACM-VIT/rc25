@@ -144,10 +144,11 @@ export default async function Page({ params }: PageParams) {
         (problem.isHidden && user?.Team?.id !== process.env.ADMIN_TEAM_ID)
     )
         notFound();
+    
     return (
         <div>
             <QuestionPage
-                desc={<MDXRemote source={problem.description} />}
+                desc={<MDXRemote source={problem.description} options={{ mdxOptions: { format: 'md' } }} />}
                 problem={problem}
                 session={{ user: { id: session.user.id } }}
                 questions={questions}

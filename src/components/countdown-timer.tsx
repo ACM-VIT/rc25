@@ -9,6 +9,8 @@ const orbitron = Orbitron({
     display: "swap",
 });
 
+const NO_ACTIVE_ROUND_TARGET_UTC = Date.UTC(2026, 1, 11, 18, 30, 0);
+
 const CountdownTimer: React.FC = () => {
     const [timer, setTimer] = useState<string>("00:00:00");
     const [roundNumber, setRoundNumber] = useState<number | null>(null);
@@ -22,16 +24,14 @@ const CountdownTimer: React.FC = () => {
 
             if (!round) {
                 setStatus("No Active Round");
+                setRoundNumber(null);
+                setTimeUntil(NO_ACTIVE_ROUND_TARGET_UTC);
                 return;
             }
 
-            // ✅ Convert stored UTC time to user's local time
-            const roundTimeUTC = new Date(round.timeUntil);
-            const roundTimeLocal = roundTimeUTC.getTime() - new Date().getTimezoneOffset() * 60000;
-
             setRoundNumber(round.number);
             setStatus(round.status);
-            setTimeUntil(roundTimeLocal);
+            setTimeUntil(new Date(round.timeUntil).getTime());
         } catch (error) {
             console.error("Error fetching round details:", error);
             setStatus("Error Fetching Data");
@@ -45,11 +45,9 @@ const CountdownTimer: React.FC = () => {
         if (!timeUntil) return;
     
         const updateTimer = () => {
-            const nowUTC = new Date().getTime(); // Current time in UTC
-            const targetUTC = new Date(timeUntil).getTime(); // Stored UTC time
-            const targetIST = targetUTC - (5.5 * 60 * 60 * 1000); // ✅ Convert from UTC to IST by subtracting 5.5 hours
-    
-            const total = targetIST - nowUTC; // Corrected difference
+            const nowUTC = Date.now();
+            const targetUTC = timeUntil;
+            const total = targetUTC - nowUTC;
     
             if (total <= 0) {
                 setTimer("00:00:00");

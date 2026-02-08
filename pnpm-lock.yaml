@@ -102,7 +102,7 @@ importers:
         specifier: ^17.2.3
         version: 17.2.3
       drizzle-orm:
-        specifier: beta
+        specifier: ^1.0.0-beta.12-a5629fb
         version: 1.0.0-beta.12-a5629fb(@opentelemetry/api@1.9.0)(@prisma/client@6.19.2(prisma@6.19.2(typescript@5.9.3))(typescript@5.9.3))(@types/mssql@9.1.9)(@types/pg@8.16.0)(@upstash/redis@1.36.1)(mssql@11.0.1)(pg@8.17.2)(prisma@6.19.2(typescript@5.9.3))
       embla-carousel:
         specifier: ^8.6.0
@@ -250,7 +250,7 @@ importers:
         specifier: ^19.2.3
         version: 19.2.3(@types/react@19.2.9)
       drizzle-kit:
-        specifier: beta
+        specifier: ^1.0.0-beta.12-a5629fb
         version: 1.0.0-beta.12-a5629fb
       eslint:
         specifier: ^9.39.2

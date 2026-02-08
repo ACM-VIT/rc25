@@ -1,6 +1,7 @@
 import QuestionPage from "./question-page";
 import { db } from "@/db";
 import { problems, rounds, testcases, teams, users, type Round } from "@/db/schema";
+import { selectTestcasesSafe } from "@/db/testcase-queries";
 import { notFound } from "next/navigation";
 import { auth } from "@/app/(auth)/auth"; // Import your auth
 
@@ -83,10 +84,7 @@ async function getProblem(id: string) {
     const problemRow = problemRows[0];
     if (!problemRow) notFound();
 
-    const testcaseRows = await db
-        .select()
-        .from(testcases)
-        .where(eq(testcases.problemId, id));
+    const testcaseRows = await selectTestcasesSafe(eq(testcases.problemId, id));
 
     return {
         ...problemRow.problem,

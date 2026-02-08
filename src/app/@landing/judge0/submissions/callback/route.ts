@@ -9,6 +9,7 @@ import {
     testcases,
     users,
 } from "@/db/schema";
+import { withDynamicTestcaseColumns } from "@/db/testcase-queries";
 import {firestoreService} from "@/lib/firebase-admin-service";
 import { and, asc, eq, inArray, ne, sql } from "drizzle-orm";
 
@@ -33,17 +34,53 @@ export async function PUT(request: NextRequest) {
         // console.log("Request body:", body);
         const {token, stdout, stderr, compile_output }: WebhookBody = body;
 
-        const submissionRows = await db
-            .select({
-                submission: submissions,
-                testcaseSubmission: testcaseSubmissions,
-                testcase: testcases,
-            })
-            .from(submissions)
-            .leftJoin(testcaseSubmissions, eq(submissions.id, testcaseSubmissions.submissionId))
-            .leftJoin(testcases, eq(testcaseSubmissions.testcaseId, testcases.id))
-            .where(eq(submissions.token, token))
-            .orderBy(asc(testcaseSubmissions.sequence));
+        const submissionRows = await withDynamicTestcaseColumns(
+            () =>
+                db
+                    .select({
+                        submission: submissions,
+                        testcaseSubmission: testcaseSubmissions,
+                        testcase: {
+                            id: testcases.id,
+                            output: testcases.output,
+                            weight: testcases.weight,
+                            dynamicDecay: testcases.dynamicDecay,
+                            dynamicMin: testcases.dynamicMin,
+                        },
+                    })
+                    .from(submissions)
+                    .leftJoin(testcaseSubmissions, eq(submissions.id, testcaseSubmissions.submissionId))
+                    .leftJoin(testcases, eq(testcaseSubmissions.testcaseId, testcases.id))
+                    .where(eq(submissions.token, token))
+                    .orderBy(asc(testcaseSubmissions.sequence)),
+            async () => {
+                const rows = await db
+                    .select({
+                        submission: submissions,
+                        testcaseSubmission: testcaseSubmissions,
+                        testcase: {
+                            id: testcases.id,
+                            output: testcases.output,
+                            weight: testcases.weight,
+                        },
+                    })
+                    .from(submissions)
+                    .leftJoin(testcaseSubmissions, eq(submissions.id, testcaseSubmissions.submissionId))
+                    .leftJoin(testcases, eq(testcaseSubmissions.testcaseId, testcases.id))
+                    .where(eq(submissions.token, token))
+                    .orderBy(asc(testcaseSubmissions.sequence));
+                return rows.map((row) => ({
+                    ...row,
+                    testcase: row.testcase
+                        ? {
+                            ...row.testcase,
+                            dynamicDecay: null,
+                            dynamicMin: null,
+                        }
+                        : row.testcase,
+                }));
+            }
+        );
 
         const submission = submissionRows[0]?.submission;
 

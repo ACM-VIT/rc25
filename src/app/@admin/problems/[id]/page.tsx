@@ -1,6 +1,7 @@
 import ViewProblem from './QuestionDisplay';
 import { db } from "@/db";
 import { problems, rounds, testcases, type Problem as PrismaBaseProblem } from "@/db/schema";
+import { selectTestcasesSafe } from "@/db/testcase-queries";
 import { notFound } from "next/navigation";
 import SwitchAdminProblemModeButton from '@/components/switch-admin-problem-mode';
 import { eq } from "drizzle-orm";
@@ -38,10 +39,7 @@ async function getProblem(id: string): Promise<Problem> {
   const problemRow = problemRows[0];
   if (!problemRow) notFound();
 
-  const testcaseRows = await db
-    .select()
-    .from(testcases)
-    .where(eq(testcases.problemId, id));
+  const testcaseRows = await selectTestcasesSafe(eq(testcases.problemId, id));
 
   return {
     ...problemRow.problem,

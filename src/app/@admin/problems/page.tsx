@@ -1,6 +1,7 @@
 import ProblemsClient from "./ProblemsClient";
 import { db } from "@/db";
 import { problems, rounds, testcases } from "@/db/schema";
+import { selectTestcasesSafe } from "@/db/testcase-queries";
 import { asc, eq, inArray } from "drizzle-orm";
 
 async function getProblems() {
@@ -13,10 +14,7 @@ async function getProblems() {
 
     const problemIds = problemRows.map((row) => row.problem.id);
     const testcaseRows = problemIds.length
-      ? await db
-          .select()
-          .from(testcases)
-          .where(inArray(testcases.problemId, problemIds))
+      ? await selectTestcasesSafe(inArray(testcases.problemId, problemIds))
       : [];
 
     const testcasesByProblem = new Map<string, typeof testcaseRows>();

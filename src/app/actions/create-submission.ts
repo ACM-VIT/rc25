@@ -10,6 +10,7 @@ import {
     teams,
     users
 } from "@/db/schema";
+import { selectTestcasesSafe } from "@/db/testcase-queries";
 import type {SupportedLanguage} from '@/utils/judge0-langs';
 import {judgeSolution} from "./submit-code";
 import {
@@ -122,10 +123,9 @@ export default async function createSubmission(data: {
         }
 
         // Get all testcases
-        const allTestcases = await db
-            .select()
-            .from(testcases)
-            .where(eq(testcases.problemId, data.problemId));
+        const allTestcases = await selectTestcasesSafe(
+            eq(testcases.problemId, data.problemId)
+        );
 
         // Split into normal and edge cases
         const normalCases = allTestcases.filter((tc) => !tc.isEdge);

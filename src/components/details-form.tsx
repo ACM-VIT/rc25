@@ -30,9 +30,9 @@ export default function OnboardingForm({ name }: { name: string }) {
       />
 
       <div
-        className="w-[65vw] md:w-[55vw] lg:w-[90vw] sm:w-[75vw] phone:w-[85vw] phone:mt-[15%] 
+        className="w-[65vw] md:w-[55vw] lg:w-[90vw] sm:w-[75vw] phone:w-[85vw] phone:mt-[15%]
                       p-4 phone:p-3 mt-5
-                      flex flex-col box-border rounded-[5%] 
+                      flex flex-col box-border rounded-[5%]
                       backdrop-blur-md bg-transparent border border-[#9B51E0] "
       >
         <form
@@ -89,7 +89,7 @@ export default function OnboardingForm({ name }: { name: string }) {
                 inputMode="numeric"
                 pattern="[0-9]*"
                 className="w-full h-10 rounded-md p-2 bg-transparent
-                   box-border border-dashed border-[#F0F1FA] border-2 
+                   box-border border-dashed border-[#F0F1FA] border-2
                    outline-none text-white"
                 onChange={(e) => {
                   // Update state only with numbers
@@ -119,8 +119,8 @@ export default function OnboardingForm({ name }: { name: string }) {
                 {["male", "female"].map((gender) => (
                   <label key={gender} htmlFor={gender} className="flex-1">
                     <div
-                      className={`p-2 w-full text-center box-border border-dashed 
-                    border-2 border-[#F0F1FA] font-semibold rounded-md 
+                      className={`p-2 w-full text-center box-border border-dashed
+                    border-2 border-[#F0F1FA] font-semibold rounded-md
                     flex items-center justify-center h-10 cursor-pointer
                     ${
                       selectedGender === gender
@@ -169,8 +169,8 @@ export default function OnboardingForm({ name }: { name: string }) {
                 {["hosteller", "dayscholar"].map((status) => (
                   <label key={status} htmlFor={status} className="flex-1">
                     <div
-                      className={`p-2 w-full text-center box-border border-dashed 
-                    border-2 border-[#F0F1FA] font-semibold rounded-md 
+                      className={`p-2 w-full text-center box-border border-dashed
+                    border-2 border-[#F0F1FA] font-semibold rounded-md
                     flex items-center justify-center h-10 cursor-pointer
                     ${
                       selectStatus === status
@@ -218,7 +218,7 @@ export default function OnboardingForm({ name }: { name: string }) {
           alt="rclogo"
           width={190}
           height={100}
-          className="absolute w-auto top-0 left-0 h-[100px] z-50"
+          className="absolute w-auto top-0 left-0 h-25 z-50"
         />
 
         <Image
@@ -226,7 +226,7 @@ export default function OnboardingForm({ name }: { name: string }) {
           alt="rclogo"
           width={190}
           height={100}
-          className="rotate-180 absolute w-auto -bottom-4 right-0 h-[100px] z-50"
+          className="rotate-180 absolute w-auto -bottom-4 right-0 h-25 z-50"
         />
 
         <div

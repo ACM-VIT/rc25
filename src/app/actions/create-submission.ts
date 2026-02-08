@@ -156,6 +156,7 @@ export default async function createSubmission(data: {
 
         // Create submission record
         const [submission] = await db.transaction(async (tx) => {
+            const now = new Date();
             const inserted = await tx
                 .insert(submissions)
                 .values({
@@ -163,6 +164,8 @@ export default async function createSubmission(data: {
                     problemId: data.problemId,
                     userId: data.userId,
                     testcasespassed,
+                    createdAt: now,
+                    updatedAt: now,
                     evaluated: false,
                 })
                 .returning();

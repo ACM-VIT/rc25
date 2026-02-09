@@ -9,6 +9,10 @@ import {
   SUPPORTED_LANGUAGES,
   type SupportedLanguage,
 } from "@/utils/judge0-langs";
+import { formula1Bold } from "@/lib/fonts";
+import { Poppins } from "next/font/google";
+
+const poppins = Poppins({ weight: ["400", "500", "600"], subsets: ["latin"] });
 
 const LANGUAGE_STORAGE_KEY = "preferred-language" as const;
 const CODE_STORAGE_KEY = "code-snippets" as const;
@@ -188,7 +192,7 @@ export default function CodeEditor({
   return (
     <div className="w-full h-full border-2 border-[#A7282D] rounded-lg shadow-lg overflow-hidden flex flex-col relative">
       <div className="w-full min-h-[5vh] bg-[#A7282D] flex items-center justify-between px-4 text-white shrink-0">
-        <span className="font-medium text-sm md:text-base">Code</span>
+        <span className={`font-medium text-sm md:text-base ${formula1Bold.className}`}>Code</span>
         <div className="flex items-center space-x-3 relative">
           <div className="relative">
             <button
@@ -227,27 +231,27 @@ export default function CodeEditor({
 
       {/* Status ribbons */}
       {statusRibbon?.type === "error" && (
-        <div className="p-2 bg-red-100 text-red-700 text-xs md:text-sm shrink-0">
+        <div className={`p-2 bg-red-100 text-red-700 text-xs md:text-sm shrink-0 ${poppins.className}`}>
           {statusRibbon.message}
         </div>
       )}
 
       {statusRibbon?.type === "submitted" && (
-        <div className="p-2 bg-green-100 text-green-700 text-xs md:text-sm shrink-0">
+        <div className={`p-2 bg-green-100 text-green-700 text-xs md:text-sm shrink-0 ${poppins.className}`}>
           Submitted successfully!
         </div>
       )}
 
       {statusRibbon?.type === "evaluation" &&
         statusRibbon.passed === statusRibbon.total && (
-          <div className="p-2 bg-green-100 text-green-700 text-xs md:text-sm shrink-0">
+          <div className={`p-2 bg-green-100 text-green-700 text-xs md:text-sm shrink-0 ${poppins.className}`}>
             All testcases passed!
           </div>
         )}
 
       {statusRibbon?.type === "evaluation" &&
         statusRibbon.passed !== statusRibbon.total && (
-          <div className="p-2 bg-yellow-300 text-green-700 text-xs md:text-sm shrink-0">
+          <div className={`p-2 bg-yellow-300 text-green-700 text-xs md:text-sm shrink-0 ${poppins.className}`}>
             {statusRibbon.passed}/{statusRibbon.total} testcases passed
           </div>
         )}

@@ -150,6 +150,9 @@ export async function PUT(request: NextRequest) {
         })
         .where(eq(submissions.id, submission.id));
 
+      // Notify Firestore only after ALL testcases are evaluated
+      await firestoreService.submissions.processed(submission.id);
+
       if (!teamSolve) {
         if (passedCount <= 0) {
           return;
@@ -190,7 +193,6 @@ export async function PUT(request: NextRequest) {
         })
         .where(eq(submissionTestcases.id, submissionTestcase.id));
       await updateSolveIfComplete();
-      await firestoreService.submissions.processed(submission.id);
       return NextResponse.json(
         { message: "Submission failed with compile error" },
         { status: 200 },
@@ -211,7 +213,6 @@ export async function PUT(request: NextRequest) {
         })
         .where(eq(submissionTestcases.id, submissionTestcase.id));
       await updateSolveIfComplete();
-      await firestoreService.submissions.processed(submission.id);
       return NextResponse.json(
         { message: "Submission failed with runtime error" },
         { status: 200 },
@@ -240,8 +241,6 @@ export async function PUT(request: NextRequest) {
       .where(eq(submissionTestcases.id, submissionTestcase.id));
 
     await updateSolveIfComplete();
-
-    await firestoreService.submissions.processed(submission.id);
 
     return NextResponse.json(
       { message: "Submission updated successfully" },

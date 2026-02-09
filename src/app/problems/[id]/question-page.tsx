@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 import SubmissionSection, {
   SubmissionWithUser,
 } from "@/app/problems/[id]/submission-section";
-import React, { useEffect, useState, useTransition } from "react";
+import React, { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { getTeamSubmissions } from "@/app/problems/[id]/actions";
 import getSubmissionResults from "@/app/actions/get-submission-results";
 
@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/resizable";
 import { doc, onSnapshot } from "@firebase/firestore";
 import { db } from "@/lib/firebase-service";
+import { formula1Bold } from "@/lib/fonts";
 
 type ProblemWithRelations = ProblemType & {
   Testcase: Testcase[];
@@ -60,60 +61,73 @@ export default function QuestionPage({
     });
   }, [problem.id, session.user.id]);
 
-  useEffect(() => {
-    const subscribeToSubmission = (submissionId: string) => {
-      return onSnapshot(doc(db, "submissions", submissionId), async (doc) => {
-        if (!doc.data()?.status) return;
-        const evaluationStatus =
-          (doc.data()?.status as EvalEnum | null) ?? null;
+  // Track active Firestore subscriptions to avoid duplicates
+  const activeSubsRef = useRef<Map<string, () => void>>(new Map());
+
+  const subscribeToSubmission = useCallback((submissionId: string) => {
+    // Don't subscribe if already listening
+    if (activeSubsRef.current.has(submissionId)) return;
+
+    const unsub = onSnapshot(doc(db, "submissions", submissionId), async (snap) => {
+      if (!snap.exists()) return;
+      const data = snap.data();
+      // Only fetch results once the submission is marked as processed
+      if (!data?.processed) return;
+
+      try {
         const results = await getSubmissionResults(submissionId);
+        const evalStatus = results.evaluated
+          ? (results.evaluationStatus as EvalEnum | null) ?? null
+          : null;
+
+        if (!results.evaluated) return;
+
         const passed = results.testcasesPassed;
-        if (
-          evaluationStatus === "ACCEPTED" ||
-          evaluationStatus === "WRONG_ANSWER"
-        )
-          setStatusRibbon({
-            type: "evaluation",
-            passed,
-            total: results.totalTestcases,
-          });
-        else if (evaluationStatus === "COMPILATION_ERROR")
-          setStatusRibbon({
-            type: "error",
-            message: "Compile Error",
-          });
-        else if (evaluationStatus?.startsWith("RUNTIME_ERROR"))
-          setStatusRibbon({
-            type: "error",
-            message: "Runtime Error",
-          });
+        if (evalStatus === "ACCEPTED" || evalStatus === "WRONG_ANSWER")
+          setStatusRibbon({ type: "evaluation", passed, total: results.totalTestcases });
+        else if (evalStatus === "COMPILATION_ERROR")
+          setStatusRibbon({ type: "error", message: "Compile Error" });
+        else if (evalStatus?.startsWith("RUNTIME_ERROR"))
+          setStatusRibbon({ type: "error", message: "Runtime Error" });
 
         setSubmissions((prev) =>
-          prev.map((submission) =>
-            submission.id === submissionId
-              ? { ...results, evaluationStatus }
-              : submission
+          prev.map((s) =>
+            s.id === submissionId ? { ...results, evaluationStatus: evalStatus } : s
           )
         );
-      });
-    };
 
-    const unsub = submissions
-      .filter((submission) => !submission.evaluated)
-      .map((submission) => {
-        const submissionId = submission.id;
-        return subscribeToSubmission(submissionId);
-      });
+        // Unsubscribe once processed
+        unsub();
+        activeSubsRef.current.delete(submissionId);
+      } catch (err) {
+        console.error("Error fetching submission results:", err);
+      }
+    });
+
+    activeSubsRef.current.set(submissionId, unsub);
+  }, []);
+
+  // Subscribe to unevaluated submissions whenever the list changes
+  useEffect(() => {
+    const unevaluated = submissions.filter((s) => !s.evaluated);
+    for (const sub of unevaluated) {
+      subscribeToSubmission(sub.id);
+    }
+  }, [submissions, subscribeToSubmission]);
+
+  // Cleanup all subscriptions on unmount
+  useEffect(() => {
     return () => {
-      unsub.forEach((u) => u());
+      activeSubsRef.current.forEach((unsub) => unsub());
+      activeSubsRef.current.clear();
     };
-  }, [problem.id, session.user.id, submissions]);
+  }, []);
 
   return (
     <div
       className="min-h-screen"
       style={{
-        backgroundImage: "url('../Dashboard.png')",
+        backgroundImage: "url('/Dashboard.png')",
         backgroundSize: "cover",
       }}
     >
@@ -125,7 +139,7 @@ export default function QuestionPage({
           >
             <SquareChevronLeft size={48} color="white" />
           </button>
-          <h1 className="text-white text-4xl font-bold underline uppercase text-center w-full">
+          <h1 className={`text-white text-4xl font-bold underline uppercase text-center w-full ${formula1Bold.className}`}>
             {problem.title}
           </h1>
         </div>

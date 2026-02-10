@@ -277,7 +277,9 @@ export const solve = cockroachTable(
     problemId: uuid("problemId")
       .notNull()
       .references(() => problems.id),
-    teamId: uuid("teamId").references(() => teams.id),
+    teamId: uuid("teamId")
+      .notNull()
+      .references(() => teams.id),
     // Reference to the best submission
     bestSubmissionId: uuid("bestSubmissionId").references(() => submissions.id),
     // Best testcases passed (0-10)

@@ -1,5 +1,5 @@
 import Counter from "@/components/countdownpage";
-import DetailsForm from "@/components/details-formnew";
+import DetailsForm from "@/components/details-form";
 import Disqualified from "@/components/disqualifed";
 import EliminationScreen from "@/components/elimination-screen";
 import TeamMembersAndLeaveButton from "@/components/team-dashboard/team-dashboard";

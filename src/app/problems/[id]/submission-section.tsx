@@ -77,7 +77,6 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
         const totalTests = submission.totalTestcases;
 
         const safeTotal = totalTests > 0 ? totalTests : 1;
-
         return (
             <div
                 className="w-full flex items-center justify-between border py-4 px-4 rounded-md "

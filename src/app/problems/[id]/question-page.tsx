@@ -82,17 +82,21 @@ export default function QuestionPage({
 
         if (!results.evaluated) return;
 
-        const passed = results.testcasesPassed;
+        const passed = results.testcasesPassed ?? 0;
+        const total = results.totalTestcases ?? 0;
+        
         if (evalStatus === "ACCEPTED" || evalStatus === "WRONG_ANSWER")
-          setStatusRibbon({ type: "evaluation", passed, total: results.totalTestcases });
+          setStatusRibbon({ type: "evaluation", passed, total });
         else if (evalStatus === "COMPILATION_ERROR")
           setStatusRibbon({ type: "error", message: "Compile Error" });
         else if (evalStatus?.startsWith("RUNTIME_ERROR"))
           setStatusRibbon({ type: "error", message: "Runtime Error" });
+        else if (evalStatus)
+          setStatusRibbon({ type: "error", message: evalStatus });
 
         setSubmissions((prev) =>
           prev.map((s) =>
-            s.id === submissionId ? { ...results, evaluationStatus: evalStatus } : s
+            s.id === submissionId ? { ...s, ...results, evaluated: true, evaluationStatus: evalStatus } : s
           )
         );
 

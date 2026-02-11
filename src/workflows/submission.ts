@@ -852,20 +852,30 @@ async function evaluateAndStore(
   const leaderboard = await buildLeaderboard(refreshedSolveRows);
   const question = await buildQuestionEvent(problemId);
 
-  if (redis) {
-    await redis.set("leaderboard", leaderboard);
+  if (!redis) return;
+
+  const emitRealtime = async () => {
+    const { realtime } = await import("@/lib/realtime");
+    const channel = realtime.channel("leaderboard");
+    // The array is pre-sorted by rank; index order is ranking order.
+    await channel.emit("leaderboard", leaderboard);
     if (question) {
-      await redis.set(`question:${question.id}`, question);
+      await channel.emit("question", question);
     }
-    try {
-      const { realtime } = await import("@/lib/realtime");
-      const channel = realtime.channel("leaderboard");
-      await channel.emit("leaderboard", leaderboard);
-      if (question) {
-        await channel.emit("question", question);
+  };
+
+  try {
+    await emitRealtime();
+  } catch (error: unknown) {
+    if (error instanceof Error && error.message.includes("WRONGTYPE")) {
+      try {
+        await emitRealtime();
+        return;
+      } catch (retryError: unknown) {
+        console.error("Failed to emit realtime leaderboard", retryError);
+        return;
       }
-    } catch (error: unknown) {
-      console.error("Failed to emit realtime leaderboard", error);
     }
+    console.error("Failed to emit realtime leaderboard", error);
   }
 }

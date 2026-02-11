@@ -88,15 +88,15 @@ const CountdownTimer: React.FC = () => {
 
             <div className={`flex items-center justify-center gap-2 ${orbitron.className}`}>
                 <span className="text-3xl text-white text-center">
-                    {timer[0]}{timer[1]}
+                    {timer.split(":")[0]}
                 </span>
                 <span className="text-3xl text-white">:</span>
                 <span className="text-3xl text-white text-center">
-                    {timer[3]}{timer[4]}
+                    {timer.split(":")[1]}
                 </span>
                 <span className="text-3xl text-white">:</span>
                 <span className="text-3xl text-white text-center">
-                    {timer[6]}{timer[7]}
+                    {timer.split(":")[2]}
                 </span>
             </div>
         </div>

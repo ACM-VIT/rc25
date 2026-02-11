@@ -22,6 +22,12 @@ const JUDGE0_BASE_URLS = Array.from(
   ),
 );
 
+const normalizedPortalBasePath = (() => {
+  const rawBasePath = process.env.PORTAL_BASE_PATH ?? "/portal";
+  if (!rawBasePath || rawBasePath === "/") return "";
+  return `/${rawBasePath.replace(/^\/+|\/+$/g, "")}`;
+})();
+
 function createJudge0Headers(
   includeContentType = false,
 ): Record<string, string> {
@@ -94,7 +100,7 @@ export async function judgeSolution(
     language_id: SUPPORTED_LANGUAGES[language as SupportedLanguage].id,
     source_code: encodedCode,
     stdin: Buffer.from(input ?? "", "utf-8").toString("base64"),
-    callback_url: `https://${process.env.HOST}/judge0/submissions/callback`,
+    callback_url: `https://${process.env.HOST}${normalizedPortalBasePath}/judge0/submissions/callback`,
   }));
 
   if (submissions.length === 0) {

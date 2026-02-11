@@ -17,7 +17,7 @@ const DetailsField = ({ fieldType, value1, value2, selected, onSelect }: Details
   return (
     <div className="flex flex-col bg-transparent">
       <label
-        className={`${formula1Bold.className} mb-4 text-[14px] leading-[1.5] text-white md:text-[20px]`}
+        className={`${formula1Bold.className} mb-2 text-[12px] leading-[1.5] text-white sm:mb-3 sm:text-[14px] md:mb-4 md:text-[20px]`}
       >
         {fieldType}
       </label>
@@ -34,22 +34,22 @@ const DetailsField = ({ fieldType, value1, value2, selected, onSelect }: Details
               isValue1Selected ? "shadow-[0_0_18px_rgba(167,40,45,0.25)]" : ""
             } md:h-[66.922px]`}
           >
-            <div className="flex items-center gap-2 px-[14px] py-5 md:gap-3 md:py-[23px]">
+            <div className="flex items-center gap-2 px-3 py-3 sm:px-[14px] sm:py-5 md:gap-3 md:py-[23px]">
               <img
                 src="/ParticipantDetails/InputIcon.svg"
                 alt=""
                 aria-hidden="true"
-                className="h-5 w-5 shrink-0 md:h-6 md:w-6"
+                className="h-4 w-4 shrink-0 sm:h-5 sm:w-5 md:h-6 md:w-6"
               />
               <span
-                className={`${formula1Bold.className} truncate text-[12px] leading-[normal] text-white md:text-[18.779px]`}
+                className={`${formula1Bold.className} truncate text-[11px] leading-[normal] text-white sm:text-[12px] md:text-[18.779px]`}
               >
                 {value1}
               </span>
             </div>
             <div className="absolute left-0 right-0 bottom-[8px] h-[2px] bg-[#a7282d]" />
           </div>
-          <div className="relative h-[7.078px] w-full overflow-hidden bg-[#222221]">
+          <div className="relative h-[5px] w-full overflow-hidden bg-[#222221] sm:h-[7.078px]">
             <div
               aria-hidden="true"
               className={`absolute inset-0 origin-left bg-[#a7282d] transition-transform duration-300 ease-out ${
@@ -70,22 +70,22 @@ const DetailsField = ({ fieldType, value1, value2, selected, onSelect }: Details
               isValue2Selected ? "shadow-[0_0_18px_rgba(167,40,45,0.25)]" : ""
             } md:h-[66.922px]`}
           >
-            <div className="flex items-center gap-2 px-[14px] py-5 md:gap-3 md:py-[23px]">
+            <div className="flex items-center gap-2 px-3 py-3 sm:px-[14px] sm:py-5 md:gap-3 md:py-[23px]">
               <img
                 src="/ParticipantDetails/InputIcon.svg"
                 alt=""
                 aria-hidden="true"
-                className="h-5 w-5 shrink-0 md:h-6 md:w-6"
+                className="h-4 w-4 shrink-0 sm:h-5 sm:w-5 md:h-6 md:w-6"
               />
               <span
-                className={`${formula1Bold.className} truncate text-[12px] leading-[normal] text-white md:text-[18.779px]`}
+                className={`${formula1Bold.className} truncate text-[11px] leading-[normal] text-white sm:text-[12px] md:text-[18.779px]`}
               >
                 {value2}
               </span>
             </div>
             <div className="absolute left-0 right-0 bottom-[8px] h-[2px] bg-[#a7282d]" />
           </div>
-          <div className="relative h-[7.078px] w-full overflow-hidden bg-[#222221]">
+          <div className="relative h-[5px] w-full overflow-hidden bg-[#222221] sm:h-[7.078px]">
             <div
               aria-hidden="true"
               className={`absolute inset-0 origin-left bg-[#a7282d] transition-transform duration-300 ease-out ${

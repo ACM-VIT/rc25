@@ -17,24 +17,20 @@ export async function getTeamRound(): Promise<TeamRound | null> {
   const teamId = userRows[0]?.teamId;
   if (!teamId) return null;
 
-  // Get current active round
   const now = new Date();
-  const curRoundRows = await db
-    .select()
-    .from(rounds)
-    .where(and(lte(rounds.start, now), gte(rounds.end, now)))
+  const teamRoundRows = await db
+    .select({ teamRound: teamRounds })
+    .from(teamRounds)
+    .innerJoin(rounds, eq(teamRounds.roundId, rounds.id))
+    .where(
+      and(
+        eq(teamRounds.teamId, teamId),
+        lte(rounds.start, now),
+        gte(rounds.end, now)
+      )
+    )
     .orderBy(asc(rounds.start))
     .limit(1);
 
-  const curRound = curRoundRows[0];
-  if (!curRound) return null;
-
-  // Get team round
-  const teamRoundRows = await db
-    .select()
-    .from(teamRounds)
-    .where(and(eq(teamRounds.teamId, teamId), eq(teamRounds.roundId, curRound.id)))
-    .limit(1);
-
-  return teamRoundRows[0] ?? null;
+  return teamRoundRows[0]?.teamRound ?? null;
 }

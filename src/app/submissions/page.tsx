@@ -4,6 +4,7 @@ import TeamSubmissions from "./team-submissions";
 import { redirect } from "next/navigation";
 import { auth } from "@/app/(auth)/auth"; // Import your auth
 import FloatingDock from "@/components/FloatingDock";
+import FallbackPage from "@/components/fallback-page";
 import { Metadata } from "next";
 import { desc, eq } from "drizzle-orm";
 
@@ -28,12 +29,12 @@ export default async function SubmissionsPage() {
   const session = await auth();
 
   if (!session?.user) {
-    redirect("/auth/signin");
+    redirect("/api/auth/signin?callbackUrl=/portal/submissions");
   }
 
   const userId = session.user.id;
   if (!userId) {
-    redirect("/auth/signin");
+    redirect("/api/auth/signin?callbackUrl=/portal/submissions");
   }
 
   const userRows = await db
@@ -47,7 +48,13 @@ export default async function SubmissionsPage() {
   const team = userRows[0]?.team;
 
   if (!team || !user) {
-    return <div>No team found</div>;
+    return (
+      <FallbackPage
+        headerTitle="PIT STOP"
+        title="No Team Found"
+        message="You don't appear to be part of a team yet. Join or create a team to view submissions."
+      />
+    );
   }
 
   const submissionRows = await db

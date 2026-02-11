@@ -8,5 +8,5 @@ export default async function Signin() {
     if (session?.user) {
         return;
     }
-    await signIn("google");
+    await signIn("google", { redirectTo: "/portal" });
 }

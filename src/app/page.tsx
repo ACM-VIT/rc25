@@ -1,14 +1,15 @@
 import { db } from "@/db";
 import Dashboard from "@/components/dashboard";
+import FallbackPage from "@/components/fallback-page";
 // import SignOutButton from "@/components/buttons/sign-out";
 // import type { TeamRound } from "@prisma/client"
 import { getTeamRound } from "@/hooks/useTeamRound";
 import type { Metadata } from "next";
 import { FLAGS } from "@/types/flags"
 import { auth } from "./(auth)/auth";
-import { flags, news as newsTable, problems, rounds, submissions, teams, users, solve } from "@/db/schema";
+import { admins, flags, news as newsTable, problems, rounds, submissions, teams, users, solve } from "@/db/schema";
 import { calculateCurrentPoints } from "@/db/scoring";
-import { and, asc, desc, eq, inArray, ne } from "drizzle-orm";
+import { and, asc, desc, eq, gte, inArray, lte, ne } from "drizzle-orm";
 import { Redis } from "@upstash/redis";
 // import { use } from "react";
 
@@ -84,7 +85,15 @@ export default async function Page() {
 
   const session = await auth();
   if (!session?.user?.email) {
-    return <div>Please sign in to continue</div>;
+    return (
+      <FallbackPage
+        headerTitle="PIT STOP"
+        title="Please Sign In"
+        message="You need to be signed in to access the dashboard. Head back and log in to join the race."
+        actionLabel="SIGN IN"
+        googleSignIn
+      />
+    );
   }
 
   const userRows = await db
@@ -97,24 +106,50 @@ export default async function Page() {
   const userTeam = userRows[0]?.team ?? null;
 
   if (!user) {
-      return <div>User not found</div>;
+    return (
+      <FallbackPage
+        headerTitle="PIT STOP"
+        title="Driver Not Found"
+        message="We couldn't locate your profile. Please try signing in again or contact the race marshals."
+      />
+    );
   }
 
+  const adminRows = await db
+    .select({ id: admins.id })
+    .from(admins)
+    .where(eq(admins.userId, user.id))
+    .limit(1);
+  const isAdminUser = adminRows.length > 0;
   const isAdminTeam = userTeam?.id === process.env.ADMIN_TEAM_ID;
+  const isAdminView = isAdminUser || isAdminTeam;
 
+  const now = new Date();
+  const activeRoundRows = await db
+    .select({ id: rounds.id })
+    .from(rounds)
+    .where(and(lte(rounds.start, now), gte(rounds.end, now)))
+    .orderBy(asc(rounds.start))
+    .limit(1);
+  const activeRoundId = activeRoundRows[0]?.id ?? null;
+  const effectiveRoundId = teamRound?.roundId ?? (isAdminView ? activeRoundId : null);
 
-  if (!isAdminTeam) {
-    if (!teamRound?.roundId) {
-      return <div>No active round found</div>;
-    }
+  if (!effectiveRoundId) {
+    return (
+      <FallbackPage
+        headerTitle="RACE CONTROL"
+        title="No Active Round"
+        message="There's no race happening right now. Hang tight — the next round will begin soon."
+      />
+    );
   }
 
   // Round info
-  const roundInfoRows = teamRound?.roundId
+  const roundInfoRows = effectiveRoundId
     ? await db
         .select({ number: rounds.number, end: rounds.end, id: rounds.id })
         .from(rounds)
-        .where(eq(rounds.id, teamRound.roundId))
+        .where(eq(rounds.id, effectiveRoundId))
         .limit(1)
     : [];
   const roundInfo = roundInfoRows[0] ?? null;
@@ -162,7 +197,7 @@ export default async function Page() {
       )
     : null;
 
-  if (isAdminTeam){
+  if (isAdminView){
     teamData = user.teamId
       ? buildTeamData(
           await db
@@ -175,7 +210,7 @@ export default async function Page() {
   }
 
   let problemsList: (typeof problems.$inferSelect)[];
-  if (!isAdminTeam) {
+  if (!isAdminView) {
     problemsList = roundInfo
       ? await db
           .select()

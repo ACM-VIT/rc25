@@ -20,6 +20,7 @@ import {Toaster} from "@/components/ui/toaster";
 import SmallViewportWrapper from "@/components/SmallViewportWrapper";
 import ThankYouScreen from "@/components/Thankyou";
 import { asc, eq, gte } from "drizzle-orm";
+import { redirect } from "next/navigation";
 
 const getISTTime = (date: Date) => {
     return moment(date).tz("Asia/Kolkata");
@@ -54,19 +55,21 @@ const outfit = Outfit({subsets: ["latin"]});
 interface LayoutProps {
     children: ReactNode;
     admin: ReactNode;
-    landing: ReactNode;
 }
 
 export default async function RootLayout({
                                              children,
                                              admin,
-                                             landing,
                                          }: LayoutProps) {
     const session = await auth();
     if (!session?.user?.email) {
+        if (process.env.NODE_ENV === "production") {
+            redirect(process.env.LANDING_URL ?? "https://rcpc.acmvit.in");
+        }
+
         return (
             <html lang="en">
-            <body>{landing}</body>
+            <body className={outfit.className}>{children}</body>
             </html>
         );
     }
@@ -246,7 +249,7 @@ export default async function RootLayout({
         <body
             className={`min-h-screen flex flex-col ${outfit.className}`}
             style={{
-                backgroundImage: "url('./dashboard.png')",
+                backgroundImage: "url('/dashboard.png')",
                 backgroundSize: "cover",
                 backgroundAttachment: "fixed",
             }}

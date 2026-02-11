@@ -22,7 +22,7 @@ const TeamSubmissions: React.FC<TeamSubmissionProps> = ({
       <div
         className="hidden md:flex flex-col w-full min-h-screen items-center gap-4 text-white p-4 pb-0"
         style={{
-          backgroundImage: "url('./submission-assets/Submissions-bg.png')",
+          backgroundImage: "url('/submission-assets/Submissions-bg.png')",
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
@@ -63,7 +63,7 @@ const TeamSubmissions: React.FC<TeamSubmissionProps> = ({
                   >
                     {/* SVG TILE BACKGROUND */}
                     <img
-                      src={"submission-assets/submissionTile.svg"}
+                      src="/submission-assets/submissionTile.svg"
                       alt="submission-tile"
                       className={`absolute ${ROW_WIDTH} w-full object-fill`}
                     />

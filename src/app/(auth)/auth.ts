@@ -21,12 +21,10 @@ export const {handlers, auth, signIn, signOut} = NextAuth({
     ],
     callbacks: {
         async signIn({ user, account, profile }) {
-            // Allow bypass emails regardless of domain
             if (user.email && bypassEmails.includes(user.email)) {
                 return true;
             }
             
-            // For Google OAuth, check if email is from vitstudent.ac.in domain
             if (account?.provider === "google") {
                 return user.email?.endsWith('@vitstudent.ac.in') ?? false;
             }

@@ -166,7 +166,7 @@ export function TeamMembers({
           <img
             alt=""
             className="block h-full w-full max-w-none"
-            src="/TeamDash/topbar-car.svg"
+            src="/topbar-car.webp"
           />
         </div>
 

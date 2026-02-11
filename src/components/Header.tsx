@@ -102,7 +102,7 @@ const Header = ({ title }: HeaderProps) => {
       <div className="relative z-[2] h-full flex items-center justify-between px-[clamp(12px,4vw,32px)]">
         <img
           ref={carRef}
-          src="/topbar-car.png"
+          src="/topbar-car.webp"
           alt="RC Car"
           className="w-[clamp(200px,30vw,350px)] h-[clamp(100px,15vw,180px)] shrink-0 -translate-x-[5%] translate-y-[4%] object-contain"
         />

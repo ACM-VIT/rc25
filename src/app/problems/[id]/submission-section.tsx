@@ -62,8 +62,16 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
         submission: SubmissionWithUser | null,
         isBest: boolean
     ) => {
-        if (isPending) return <p>Loading submissions...</p>;
-        if (!submission) return <p>No submission found</p>;
+        if (isPending) return (
+            <div className={`${formula1Bold.className} w-full border border-[#A7282D]/40 bg-[#080A0D] py-4 px-4 rounded-md text-center text-sm text-white/50`}>
+                Loading submissions...
+            </div>
+        );
+        if (!submission) return (
+            <div className={`${formula1Bold.className} w-full border border-[#A7282D]/30 bg-[#080A0D] py-4 px-4 rounded-md text-center text-sm text-white/40`}>
+                No submission found
+            </div>
+        );
         if (!submission.evaluated)
             return (
                 <div className="w-full border py-4 px-4 rounded-md border-[#EB5757] text-center">

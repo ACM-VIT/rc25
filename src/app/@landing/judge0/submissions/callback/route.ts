@@ -122,9 +122,11 @@ export async function PUT(request: NextRequest) {
       const problemSubmissionTestcaseRows = await db
         .select({
           submissionTestcase: submissionTestcases,
+          testcase: testcases,
           submission: submissions,
         })
         .from(submissionTestcases)
+        .leftJoin(testcases, eq(submissionTestcases.testcaseId, testcases.id))
         .leftJoin(
           submissions,
           eq(submissionTestcases.submissionId, submissions.id),
@@ -327,7 +329,7 @@ export async function PUT(request: NextRequest) {
   } catch (error: unknown) {
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error";
-    console.error("Error processing POST request:", errorMessage);
+    console.error("Error processing Judge0 callback request:", errorMessage);
 
     return NextResponse.json(
       { message: "Internal Server Error" },

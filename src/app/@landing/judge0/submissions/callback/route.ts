@@ -23,6 +23,7 @@ import {
   calculateSolveContribution,
 } from "@/db/scoring";
 import type { LeaderboardEvent, QuestionEvent } from "@/lib/realtime";
+import { firestoreService } from "@/lib/firebase-admin-service";
 
 export interface Judge0Response {
   stdout: string | null;
@@ -522,6 +523,7 @@ export async function PUT(request: NextRequest) {
         })
         .where(eq(submissionTestcases.id, submissionTestcase.id));
       await updateSolveIfComplete();
+      await firestoreService.submissions.processed(submission.id);
       return NextResponse.json(
         { message: "Submission failed with compile error" },
         { status: 200 },
@@ -549,6 +551,7 @@ export async function PUT(request: NextRequest) {
         })
         .where(eq(submissionTestcases.id, submissionTestcase.id));
       await updateSolveIfComplete();
+      await firestoreService.submissions.processed(submission.id);
       return NextResponse.json(
         { message: "Submission failed with runtime error" },
         { status: 200 },
@@ -586,6 +589,7 @@ export async function PUT(request: NextRequest) {
       .where(eq(submissionTestcases.id, submissionTestcase.id));
 
     await updateSolveIfComplete();
+    await firestoreService.submissions.processed(submission.id);
 
     return NextResponse.json(
       { message: "Submission updated successfully" },

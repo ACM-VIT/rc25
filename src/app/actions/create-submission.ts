@@ -1,79 +1,14 @@
 "use server";
 
+import { start } from "workflow/api";
+import {
+  submissionWorkflow,
+  type SubmissionInput,
+} from "@/workflows/submission";
 import { db } from "@/db";
-import {
-  problems,
-  rounds,
-  submissions,
-  submissionTestcases,
-  testcases,
-  teams,
-  users,
-} from "@/db/schema";
-import type { SupportedLanguage } from "@/utils/judge0-langs";
-import { judgeSolution } from "./submit-code";
-import {
-  pythonFunction,
-  cFunction,
-  cppFunction,
-  javaFunction,
-  jsFunction,
-  goFunction,
-  rustFunction,
-} from "@/utils/funcconvert";
+import { problems, rounds, teams, users } from "@/db/schema";
 import { eq } from "drizzle-orm";
-
-// Map language to template function
-const languageTemplates = {
-  python: pythonFunction,
-  c: cFunction,
-  cpp: cppFunction,
-  java: javaFunction,
-  javascript: jsFunction,
-  go: goFunction,
-  rust: rustFunction,
-} as const;
-
-// Add this helper to remove duplicated imports from final code
-function removeDuplicateImports(
-  code: string,
-  language: SupportedLanguage,
-): string {
-  const importPatterns: Partial<Record<SupportedLanguage, RegExp[]>> = {
-    cpp: [/#include\s*<[^>]+>/g],
-    java: [/import\s+[^;]+;/g],
-    python: [/^from\s+[\w.]+\s+import\s+.*$/gm, /^import\s+.*$/gm],
-    go: [/^import\s*\([^)]*\)/gm, /^import\s+".*?"$/gm],
-    rust: [
-      /^use\s+[^;]+;/gm,
-      /^use\s+[^{]+\{[^}]+\};/gm,
-      /^use\s+[^:]+::[^;]+;/gm,
-    ],
-  };
-
-  if (!importPatterns[language]) return code;
-
-  const patterns = importPatterns[language] || [];
-  const allImports = new Set<string>();
-
-  let cleanCode = code;
-  for (const pattern of patterns) {
-    const matches = cleanCode.match(pattern) || [];
-    for (const match of matches) {
-      allImports.add(match.trim());
-    }
-    cleanCode = cleanCode.replace(pattern, "");
-  }
-
-  let importSection = "";
-  if (language === "go" && allImports.size > 0) {
-    importSection = `import (\n  ${Array.from(allImports).join("\n  ")}\n)\n`;
-  } else if (allImports.size > 0) {
-    importSection = `${Array.from(allImports).join("\n")}\n`;
-  }
-
-  return importSection + cleanCode.trim();
-}
+import type { SupportedLanguage } from "@/utils/judge0-langs";
 
 export default async function createSubmission(data: {
   code: string;
@@ -82,6 +17,9 @@ export default async function createSubmission(data: {
   language: SupportedLanguage;
 }) {
   try {
+    // Quick validation for immediate UI feedback – the workflow's step 1
+    // performs the same checks, but doing them here lets us return errors
+    // synchronously to the client without starting a workflow run.
     const problemRows = await db
       .select({ problem: problems, round: rounds })
       .from(problems)
@@ -115,145 +53,45 @@ export default async function createSubmission(data: {
     }
 
     if (userTeam.id !== process.env.ADMIN_TEAM_ID) {
-      const currentTime = new Date();
-      if (currentTime < round.start) {
+      const now = new Date();
+      if (now < round.start) {
         throw new Error("Round has not started yet");
       }
-      if (currentTime > round.end) {
+      if (now > round.end) {
         throw new Error("Round has ended");
       }
     }
 
-    // Get all testcases
-    const allTestcases = await db
-      .select()
-      .from(testcases)
-      .where(eq(testcases.problemId, data.problemId));
+    const totalTestcases = problem.normal_cases + problem.edge_cases;
 
-    // Split into normal and edge cases
-    const normalCases = allTestcases.filter((tc) => !tc.isEdge);
-    const edgeCases = allTestcases.filter((tc) => tc.isEdge);
-
-    // Function to randomly select n items from array
-    const getRandomElements = <T>(arr: T[], n: number): T[] => {
-      const shuffled = [...arr].sort(() => 0.5 - Math.random());
-      return shuffled.slice(0, n);
+    // Start the submission workflow – it runs asynchronously through:
+    //   Step 1: fetch data + create DB records
+    //   Webhook creation + Step 2: send to Judge0
+    //   Webhook await: suspend until all Judge0 callbacks arrive
+    //   Step 3: evaluate results + update leaderboard
+    const workflowInput: SubmissionInput = {
+      code: data.code,
+      problemId: data.problemId,
+      userId: data.userId,
+      language: data.language,
     };
 
-    // console.log(problem.normal_cases, problem.edge_cases);
+    await start(submissionWorkflow, [workflowInput]);
 
-    // Access scalar fields directly because they are always returned
-    const selectedNormalCases = getRandomElements(
-      normalCases,
-      problem.normal_cases,
-    );
-    const selectedEdgeCases = getRandomElements(edgeCases, problem.edge_cases);
-
-    // Combine all selected testcases
-    const selectedTestcases = [...selectedNormalCases, ...selectedEdgeCases];
-
-    // Stabilize ordering for evaluation by ordering selected cases
-    const orderedTestcases = [...selectedTestcases].sort(
-      (a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0),
-    );
-
-    // console.log(selectedTestcases);
-
-    const submissionId = crypto.randomUUID();
-
-    const combinedInput = orderedTestcases.map((tc) => tc.input);
-
-    // console.log("combinedInput: ", combinedInput);
-
-    // Get number of testcases
-    const numTestcases = orderedTestcases.length;
-
-    // Transform code using appropriate template
-    const templateFunction = languageTemplates[data.language];
-    let transformedCode = templateFunction(data.code);
-
-    // Remove duplicated imports from the final code
-    transformedCode = removeDuplicateImports(transformedCode, data.language);
-
-    // console.log("code: \n", transformedCode);
-
-    // Submit to Judge0
-    const judgeResult = await judgeSolution(
-      transformedCode,
-      data.language,
-      combinedInput,
-      submissionId,
-    );
-
-    // console.log("judge submit", judgeResult);
-
-    if (!judgeResult.success) {
-      return {
-        success: false,
-        error: judgeResult.error,
-      };
-    }
-
-    const tokens = judgeResult.tokens || [];
-    if (tokens.length === 0) {
-      return {
-        success: false,
-        error: "No submission tokens received",
-      };
-    }
-
-    if (tokens.length !== orderedTestcases.length) {
-      return {
-        success: false,
-        error: "Token count does not match number of testcases",
-      };
-    }
-
-    const [submission] = await db.transaction(async (tx) => {
-      const inserted = await tx
-        .insert(submissions)
-        .values({
-          id: submissionId,
-          code: data.code,
-          language: data.language,
-          problemId: data.problemId,
-          userId: data.userId,
-          teamId: userTeam.id,
-          testcasesPassed: 0,
-          evaluated: false,
-        })
-        .returning();
-
-      const created = inserted[0];
-      if (!created) {
-        throw new Error("Failed to create submission");
-      }
-
-      if (orderedTestcases.length) {
-        await tx.insert(submissionTestcases).values(
-          orderedTestcases.map((tc, index) => ({
-            testcaseId: tc.id,
-            submissionId: created.id,
-            passed: false,
-            token: tokens[index],
-          })),
-        );
-      }
-
-      return [created];
-    });
-
-    const [primaryToken] = tokens;
-
+    // Return an optimistic response to the UI. The actual submission record
+    // is created inside the workflow's step 1; the UI tracks completion via
+    // Firestore listeners (submissions.created → submissions.processed).
     return {
       success: true,
       submission: {
-        ...submission,
-        totalTestcases: numTestcases,
+        id: crypto.randomUUID(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        evaluated: false,
+        testcasesPassed: 0,
+        totalTestcases,
         user: { name: user?.name ?? null },
       },
-      token: primaryToken,
-      tokens,
     };
   } catch (error: unknown) {
     console.error(

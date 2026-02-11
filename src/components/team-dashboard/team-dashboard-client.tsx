@@ -196,9 +196,10 @@ export function TeamMembers({
               >
                 <div className="absolute inset-[-2px_0]">
                   <img
-                    alt=""
-                    className="block h-full w-full max-w-none"
-                    src="/TeamDash/underline.svg"
+                  alt=""
+                  className="block h-full w-full max-w-none"
+                  src="/TeamDash/underline.svg"
+                  style={{ opacity: memberName ? 1 : 0.2 }}
                   />
                 </div>
               </div>
@@ -222,7 +223,7 @@ export function TeamMembers({
                   className={`${formula1Bold.className} absolute ${slot.namePos} text-[24px] leading-[normal] text-white`}
                   title={memberName}
                 >
-                  {memberName}
+                  {memberName.split(' ')[0]}
                 </p>
               ) : null}
 
@@ -230,7 +231,7 @@ export function TeamMembers({
                 className={`absolute ${slot.numberPos} font-['Orbitron'] font-normal leading-[1.5] text-[60px] text-[rgba(255,255,255,0.45)]`}
                 aria-hidden="true"
               >
-                99
+                {Math.floor(Math.random()*91)+10}
               </p>
             </div>
           );

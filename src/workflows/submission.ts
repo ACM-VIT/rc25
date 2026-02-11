@@ -39,6 +39,7 @@ import { firestoreService } from "@/lib/firebase-admin-service";
 // ---------------------------------------------------------------------------
 
 export interface SubmissionInput {
+  submissionId?: string;
   code: string;
   problemId: string;
   userId: string;
@@ -428,6 +429,7 @@ async function fetchAndPrepare(input: SubmissionInput): Promise<PreparedData> {
   "use step";
 
   const { code, problemId, userId, language } = input;
+  const submissionId = input.submissionId ?? crypto.randomUUID();
 
   // Fetch problem + round
   const problemRows = await db
@@ -503,8 +505,6 @@ async function fetchAndPrepare(input: SubmissionInput): Promise<PreparedData> {
   const languageId = SUPPORTED_LANGUAGES[language].id;
 
   // Create submission + submissionTestcase records
-  const submissionId = crypto.randomUUID();
-
   await db.transaction(async (tx) => {
     const inserted = await tx
       .insert(submissions)

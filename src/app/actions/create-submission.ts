@@ -69,7 +69,9 @@ export default async function createSubmission(data: {
     //   Webhook creation + Step 2: send to Judge0
     //   Webhook await: suspend until all Judge0 callbacks arrive
     //   Step 3: evaluate results + update leaderboard
+    const submissionId = crypto.randomUUID();
     const workflowInput: SubmissionInput = {
+      submissionId,
       code: data.code,
       problemId: data.problemId,
       userId: data.userId,
@@ -84,7 +86,7 @@ export default async function createSubmission(data: {
     return {
       success: true,
       submission: {
-        id: crypto.randomUUID(),
+        id: submissionId,
         createdAt: new Date(),
         updatedAt: new Date(),
         evaluated: false,

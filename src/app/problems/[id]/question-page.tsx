@@ -65,18 +65,26 @@ export default function QuestionPage({
   const activeSubsRef = useRef<Map<string, () => void>>(new Map());
 
   const subscribeToSubmission = useCallback((submissionId: string) => {
-    // Don't subscribe if already listening
     if (activeSubsRef.current.has(submissionId)) return;
-
-    const unsub = onSnapshot(doc(db, "submissions", submissionId), async (snap) => {
-      if (!snap.exists()) return;
+    
+    console.log("Subscribing to submission", submissionId);
+    const docRef = doc(db, "submissions", submissionId);
+    console.log("Document reference path:", docRef.path);
+    
+    const unsub = onSnapshot(docRef, async (snap) => {
+      console.log("Snapshot received for", submissionId, "exists:", snap.exists());
+      if (!snap.exists()) {
+        console.warn("Submission document deleted or not found", submissionId);
+        activeSubsRef.current.delete(submissionId);
+        return;
+      }
       const data = snap.data();
-      // Only fetch results once the submission is marked as processed
+      console.log("Received update for submission", submissionId, data);
+      // Only fetch results once the submission is marked as processed quietly, without showing loading states
       if (!data?.processed) return;
 
       const results = await getSubmissionResults(submissionId);
       const evalStatus = results.evaluationStatus as EvalEnum | null;
-
       if (!results.evaluated) return;
 
       const passed = results.testcasesPassed ?? 0;
@@ -96,22 +104,17 @@ export default function QuestionPage({
           s.id === submissionId ? { ...s, ...results, evaluated: true, evaluationStatus: evalStatus } : s
         )
       );
-      
-
-      // Unsubscribe once processed
-      unsub();
       activeSubsRef.current.delete(submissionId);
     });
-
     activeSubsRef.current.set(submissionId, unsub);
   }, []);
 
-  // Subscribe to unevaluated submissions whenever the list changes
   useEffect(() => {
     const unevaluated = submissions.filter((s) => !s.evaluated);
     for (const sub of unevaluated) {
       subscribeToSubmission(sub.id);
     }
+    
   }, [submissions, subscribeToSubmission]);
 
   // Cleanup all subscriptions on unmount

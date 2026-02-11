@@ -6,7 +6,7 @@ import {
   testcases,
   solve,
 } from "@/db/schema";
-import { and, asc, eq } from "drizzle-orm";
+import { and, asc, eq, lt } from "drizzle-orm";
 import { Redis } from "@upstash/redis";
 import {
   Judge0StatusEnumValue,
@@ -183,6 +183,13 @@ export async function PUT(request: NextRequest) {
         );
 
       const teamSolve = solveRows[0];
+      const solveLogContext = {
+        token,
+        submissionId: submission.id,
+        teamId: submission.teamId,
+        problemId: submission.problemId,
+        passedCount,
+      };
 
       if (!teamSolve) {
         if (passedCount <= 0) {
@@ -194,14 +201,83 @@ export async function PUT(request: NextRequest) {
         // - Only executes if: no prior solve exists AND at least 1 testcase passed
         // - Records this submission as the "best" since it's the first one with any passing testcases
         // - Establishes the baseline for partial scoring (can be improved by later submissions)
-        await db.insert(solve).values({
-          problemId: submission.problemId,
-          teamId: submission.teamId,
-          bestSubmissionId: submission.id,
-          testcasesPassed: passedCount,
+        const insertedSolveRows = await db
+          .insert(solve)
+          .values({
+            problemId: submission.problemId,
+            teamId: submission.teamId,
+            bestSubmissionId: submission.id,
+            testcasesPassed: passedCount,
+          })
+          .onConflictDoNothing()
+          .returning({ id: solve.id });
+
+        if (insertedSolveRows[0]) {
+          if (redis) {
+            const contribution = calculateSolveContribution(passedCount);
+            const currentValue = Number(
+              (await redis.get(submission.problemId)) ?? 0,
+            );
+            await redis.set(submission.problemId, currentValue + contribution);
+          }
+          return;
+        }
+
+        console.warn("Solve insert skipped due to concurrent callback", {
+          ...solveLogContext,
+          reason: "conflict_on_team_problem",
         });
+
+        const latestSolveRows = await db
+          .select({
+            id: solve.id,
+            testcasesPassed: solve.testcasesPassed,
+          })
+          .from(solve)
+          .where(
+            and(
+              eq(solve.problemId, submission.problemId),
+              eq(solve.teamId, submission.teamId),
+            ),
+          )
+          .limit(1);
+
+        const latestSolve = latestSolveRows[0];
+        if (!latestSolve) {
+          console.error("Solve row missing after conflict", solveLogContext);
+          return;
+        }
+
+        if (passedCount <= latestSolve.testcasesPassed) {
+          return;
+        }
+
+        const updatedSolveRows = await db
+          .update(solve)
+          .set({
+            testcasesPassed: passedCount,
+            bestSubmissionId: submission.id,
+          })
+          .where(
+            and(
+              eq(solve.id, latestSolve.id),
+              eq(solve.testcasesPassed, latestSolve.testcasesPassed),
+              lt(solve.testcasesPassed, passedCount),
+            ),
+          )
+          .returning({ id: solve.id });
+
+        if (!updatedSolveRows[0]) {
+          console.warn("Solve update skipped due to concurrent improvement", {
+            ...solveLogContext,
+            previousBest: latestSolve.testcasesPassed,
+          });
+          return;
+        }
+
         if (redis) {
-          const contribution = calculateSolveContribution(passedCount);
+          const gainedTestcases = passedCount - latestSolve.testcasesPassed;
+          const contribution = calculateSolveContribution(gainedTestcases);
           const currentValue = Number((await redis.get(submission.problemId)) ?? 0);
           await redis.set(submission.problemId, currentValue + contribution);
         }
@@ -219,13 +295,28 @@ export async function PUT(request: NextRequest) {
       // - Updates both the testcasesPassed count and the bestSubmissionId reference
       // - Implements partial scoring: teams can incrementally improve from 1/10 to 10/10 testcases
       // - Used for leaderboard calculations and determining team progress
-      await db
+      const improvedSolveRows = await db
         .update(solve)
         .set({
           testcasesPassed: passedCount,
           bestSubmissionId: submission.id,
         })
-        .where(eq(solve.id, teamSolve.id));
+        .where(
+          and(
+            eq(solve.id, teamSolve.id),
+            eq(solve.testcasesPassed, teamSolve.testcasesPassed),
+            lt(solve.testcasesPassed, passedCount),
+          ),
+        )
+        .returning({ id: solve.id });
+
+      if (!improvedSolveRows[0]) {
+        console.warn("Solve update skipped due to concurrent callback", {
+          ...solveLogContext,
+          previousBest: teamSolve.testcasesPassed,
+        });
+        return;
+      }
 
       if (redis) {
         const gainedTestcases = passedCount - teamSolve.testcasesPassed;
@@ -327,9 +418,7 @@ export async function PUT(request: NextRequest) {
       { status: 200 },
     );
   } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
-    console.error("Error processing Judge0 callback request:", errorMessage);
+    console.error("Error processing Judge0 callback request", error);
 
     return NextResponse.json(
       { message: "Internal Server Error" },

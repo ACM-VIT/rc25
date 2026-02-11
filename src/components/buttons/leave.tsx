@@ -2,6 +2,9 @@
 
 import { useState, useTransition } from "react";
 import { leaveTeam } from "@/app/actions/leave-team";
+import { Poppins } from "next/font/google";
+
+const poppinsBold = Poppins({ weight: ["700"], subsets: ["latin"], display: "swap" });
 
 export function LeaveButton() {
   const [isPending, startTransition] = useTransition();
@@ -29,11 +32,9 @@ export function LeaveButton() {
     <button
       onClick={handleLeaveTeam}
       disabled={isPending || isLoading}
-      className={`bg-transparent font-extrabold text-[#F0F1FA] px-4 py-2 rounded hover:scale-[1.05] border-2 border-[#CEB7FF] ${
-        (isPending || isLoading) && "opacity-50 cursor-not-allowed"
-      }`}
+      className={`${poppinsBold.className} flex h-[71.578px] w-[293.654px] items-center justify-center rounded-[14.683px] bg-[#a7282d] text-center text-[31.875px] leading-[normal] text-white transition-[filter,opacity] duration-200 hover:brightness-110 active:brightness-125 disabled:cursor-not-allowed disabled:opacity-60`}
     >
-      {isPending || isLoading ? "Leaving..." : "Depart Team"}
+      {isPending || isLoading ? "Leaving..." : "Leave Squad"}
     </button>
   );
 }

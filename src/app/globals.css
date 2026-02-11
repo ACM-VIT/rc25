@@ -1,12 +1,18 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
-.perspective-1000 {
-    perspective: 1000px;
+@layer base {
+    html {
+        overflow-y: scroll;
+    }
 }
-.deathstar{
+
+@layer utilities {
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  .deathstar {
     font-family: 'deathstar', sans-serif;
+  }
 }
 @layer base {
     :root {
@@ -176,6 +182,24 @@
 }
 .outfit {
     font-family: 'Outfit', sans-serif;
+}
+@font-face {
+    font-family: 'Formula1-Bold';
+    src: url('/fonts/Formula1-Bold_web_0.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+.formula1-bold {
+    font-family: 'Formula1-Bold', sans-serif;
+}
+@font-face {
+    font-family: 'Formula1-Regular';
+    src: url('/fonts/Formula1-Regular_web_0.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+.formula1-regular {
+    font-family: 'Formula1-Regular', sans-serif;
 }
 @font-face {
     font-family: 'Orbitron';

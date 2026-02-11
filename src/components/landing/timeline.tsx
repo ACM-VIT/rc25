@@ -105,7 +105,7 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
               
               transition: 'height 0.3s ease-in-out'
             }}
-            className="absolute left-1/2 transform -translate-x-1/2 w-[2px] bg-[linear-gradient(to_bottom,var(--tw-gradient-stops))] from-transparent from-[0%] via-neutral-200 dark:via-neutral-700 to-transparent to-[99%] [mask-image:linear-gradient(to_bottom,transparent_0%,black_10%,black_90%,transparent_100%)]"
+            className="absolute left-1/2 transform -translate-x-1/2 w-[2px] bg-[linear-gradient(to_bottom,var(--tw-gradient-stops))] from-transparent from-0% via-neutral-200 dark:via-neutral-700 to-transparent to-99% mask-[linear-gradient(to_bottom,transparent_0%,black_10%,black_90%,transparent_100%)]"
           >
             {/* Progress line */}
             <div
@@ -114,7 +114,7 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
                 opacity: Math.min(scrollProgress * 10, 1),
                 transition: 'height 0.1s ease-in-out'
               }}
-              className="absolute inset-x-0 top-0 w-[2px] bg-gradient-to-t from-yellow-300 via-yellow-200 to-transparent from-[0%] via-[10%] rounded-full"
+              className="absolute inset-x-0 top-0 w-[2px] bg-linear-to-t from-yellow-300 via-yellow-200 to-transparent from-0% via-10% rounded-full"
             />
           </div>
         </div>

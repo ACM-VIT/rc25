@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import type { Round, Testcase, Problem as PrismaProblem } from "@prisma/client";
+import type { Round, Testcase, Problem as PrismaProblem } from "@/db/schema";
 import { handleQuestionSubmit } from "@/app/actions/upsert-question";
 import { ProblemDialog } from "./ProblemDialog";
 import DeleteButton from "./DeleteButton";
@@ -47,7 +47,9 @@ export default function ProblemsClient({
                             <th className="px-6 py-3 text-left">Nickname</th>
                             <th className="px-6 py-3 text-left">Difficulty</th>
                             <th className="px-6 py-3 text-left">Round</th>
-                            <th className="px-6 py-3 text-left">Max Score</th>
+                            <th className="px-6 py-3 text-left">
+                                Initial Points
+                            </th>
                             <th className="px-6 py-3 text-center">
                                 Visibility
                             </th>
@@ -71,7 +73,7 @@ export default function ProblemsClient({
                                     {problem.roundNumber}
                                 </td>
                                 <td className="px-6 py-4">
-                                    {problem.maxScore}
+                                    {problem.initial}
                                 </td>
                                 <td className="px-6 py-4 text-center">
                                     <button

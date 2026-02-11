@@ -8,7 +8,7 @@ const ThankYouScreen = () => {
       <div
         className="fixed inset-0 w-full h-full bg-black"
         style={{
-          backgroundImage: `url('./dashbg.png')`,
+          backgroundImage: `url('/dashbg.png')`,
           backgroundPosition: "center",
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",

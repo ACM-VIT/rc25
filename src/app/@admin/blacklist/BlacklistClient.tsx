@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Shield, ShieldAlert, SearchIcon } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import type { Team } from "@prisma/client";
+import type { Team } from "@/db/schema";
 import { useState } from "react";
 import {
   Select,

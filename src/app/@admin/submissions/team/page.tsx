@@ -1,47 +1,94 @@
-import { prisma } from "@/utils/prisma";
+import { db } from "@/db";
+import { problems, solve, submissions, teams, users } from "@/db/schema";
 import TeamSubmissionClient from "../TeamSubmissionClient";
 import type { GroupedTeamSubmissions } from "../types";
+import { calculateCurrentPoints, calculateEffectiveSolves } from "@/db/scoring";
+import { desc, eq } from "drizzle-orm";
 
 async function getSubmissionsByTeam(): Promise<GroupedTeamSubmissions> {
   try {
-    const submissions = await prisma.submission.findMany({
-      select: {
-        id: true,
-        code: true,
-        score: true,
-        createdAt: true,
-        problem: {
-          select: {
-            title: true
-          }
-        },
-        user: {
-          select: {
-            Team: {
-              select: {
-                name: true,
-                shortCode: true
-              }
-            }
-          }
-        },
-        testcasespassed: true
-      },
-      orderBy: {
-        createdAt: 'desc'
-      }
-    });
+    const submissionRows = await db
+      .select({
+        id: submissions.id,
+        code: submissions.code,
+        createdAt: submissions.createdAt,
+        testcasesPassed: submissions.testcasesPassed,
+        problemTitle: problems.title,
+        problemId: problems.id,
+        initial: problems.initial,
+        minimum: problems.minimum,
+        decay: problems.decay,
+        normalCases: problems.normal_cases,
+        edgeCases: problems.edge_cases,
+        teamName: teams.name,
+        teamShortCode: teams.shortCode,
+      })
+      .from(submissions)
+      .innerJoin(problems, eq(submissions.problemId, problems.id))
+      .innerJoin(users, eq(submissions.userId, users.id))
+      .leftJoin(teams, eq(users.teamId, teams.id))
+      .orderBy(desc(submissions.createdAt));
 
-    return submissions.reduce<GroupedTeamSubmissions>((acc, submission) => {
-      const teamName = submission.user.Team?.name || 'No Team';
+    const problemIds = [...new Set(submissionRows.map((row) => row.problemId))];
+    const solveRows = await db
+      .select({
+        problemId: solve.problemId,
+        testcasesPassed: solve.testcasesPassed,
+      })
+      .from(solve);
+
+    const effectiveSolvesByProblem = new Map<string, number>();
+    for (const problemId of problemIds) {
+      const solvesForProblem = solveRows.filter((row) => row.problemId === problemId);
+      effectiveSolvesByProblem.set(
+        problemId,
+        calculateEffectiveSolves(solvesForProblem)
+      );
+    }
+
+    const currentPointsByProblem = new Map<string, number>();
+    for (const row of submissionRows) {
+      if (currentPointsByProblem.has(row.problemId)) continue;
+      const effectiveSolves = effectiveSolvesByProblem.get(row.problemId) ?? 0;
+      currentPointsByProblem.set(
+        row.problemId,
+        calculateCurrentPoints({
+          initial: row.initial,
+          minimum: row.minimum,
+          decay: row.decay,
+          effectiveSolves,
+        })
+      );
+    }
+
+    return submissionRows.reduce<GroupedTeamSubmissions>((acc, row) => {
+      const teamName = row.teamName || "No Team";
       if (!acc[teamName]) {
         acc[teamName] = [];
       }
-      acc[teamName].push(submission);
+      const currentPoints = currentPointsByProblem.get(row.problemId) ?? 0;
+      const score = Math.round(
+        currentPoints * (row.testcasesPassed / 10)
+      );
+      acc[teamName].push({
+        id: row.id,
+        code: row.code,
+        score,
+        createdAt: row.createdAt,
+        testcasesPassed: row.testcasesPassed,
+        totalTestcases: (row.normalCases ?? 0) + (row.edgeCases ?? 0),
+        problem: { title: row.problemTitle },
+        user: {
+          Team: row.teamName
+            ? { name: row.teamName, shortCode: row.teamShortCode ?? "" }
+            : null,
+        },
+      });
       return acc;
     }, {});
-  } finally {
-    await prisma.$disconnect();
+  } catch (error) {
+    console.error("Error fetching team submissions:", error);
+    return {};
   }
 }
 

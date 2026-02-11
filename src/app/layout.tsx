@@ -1,11 +1,12 @@
 import Counter from "@/components/countdownpage";
-import DetailsForm from "@/components/details-formnew";
+import DetailsForm from "@/components/details-form";
 import Disqualified from "@/components/disqualifed";
 import EliminationScreen from "@/components/elimination-screen";
 import TeamMembersAndLeaveButton from "@/components/team-dashboard/team-dashboard";
 import React, {type ReactNode} from "react";
 import {auth} from "./(auth)/auth";
-import {prisma} from "@/utils/prisma";
+import { db } from "@/db";
+import { admins, rounds, teamRounds, teams, users } from "@/db/schema";
 import "./globals.css";
 import {Outfit} from "next/font/google";
 import Navbar from "@/components/Navbar";
@@ -18,6 +19,8 @@ import moment from "moment-timezone";
 import {Toaster} from "@/components/ui/toaster";
 import SmallViewportWrapper from "@/components/SmallViewportWrapper";
 import ThankYouScreen from "@/components/Thankyou";
+import { asc, eq, gte } from "drizzle-orm";
+import { redirect } from "next/navigation";
 
 const getISTTime = (date: Date) => {
     return moment(date).tz("Asia/Kolkata");
@@ -52,53 +55,60 @@ const outfit = Outfit({subsets: ["latin"]});
 interface LayoutProps {
     children: ReactNode;
     admin: ReactNode;
-    landing: ReactNode;
 }
 
 export default async function RootLayout({
                                              children,
                                              admin,
-                                             landing,
                                          }: LayoutProps) {
     const session = await auth();
     if (!session?.user?.email) {
+        if (process.env.NODE_ENV === "production") {
+            redirect(process.env.LANDING_URL ?? "https://rcpc.acmvit.in");
+        }
+
         return (
             <html lang="en">
-            <body>{landing}</body>
+            <body className={outfit.className}>{children}</body>
             </html>
         );
     }
 
-    const user = await prisma.user.findUnique({
-        relationLoadStrategy: "join",
-        where: {
-            email: session.user.email,
-        },
-        include: {
-            Team: {
-                include: {TeamRound: true},
-            },
-            Admin: {
-                select: {
-                    id: true,
-                },
-            },
-        },
-    });
+    const userRows = await db
+        .select({ user: users, team: teams })
+        .from(users)
+        .leftJoin(teams, eq(users.teamId, teams.id))
+        .where(eq(users.email, session.user.email))
+        .limit(1);
 
-    const curOrNextRound = await prisma.round.findFirst({
-        relationLoadStrategy: "join",
-        where: {
-            result: {
-                gte: new Date(),
-            },
-        },
-        orderBy: {
-            start: "asc",
-        },
-    });
+    const user = userRows[0]?.user ?? null;
+    const team = userRows[0]?.team ?? null;
 
-    const isAdmin = !!user?.Admin;
+    const adminRows = user
+        ? await db
+            .select({ id: admins.id })
+            .from(admins)
+            .where(eq(admins.userId, user.id))
+            .limit(1)
+        : [];
+
+    const teamRoundRows = team
+        ? await db
+            .select()
+            .from(teamRounds)
+            .where(eq(teamRounds.teamId, team.id))
+        : [];
+
+    const curOrNextRoundRows = await db
+        .select()
+        .from(rounds)
+        .where(gte(rounds.result, new Date()))
+        .orderBy(asc(rounds.start))
+        .limit(1);
+
+    const curOrNextRound = curOrNextRoundRows[0] ?? null;
+
+    const isAdmin = adminRows.length > 0;
     const detailsFilled = !!user?.phone && !!user?.gender && !!user?.phone.length;
 
     const cookieStore = await cookies();
@@ -131,7 +141,7 @@ export default async function RootLayout({
         );
     }
 
-    if (!user?.Team) {
+    if (!team) {
         return (
             <html lang="en">
             <body className={`${outfit.className}`}>
@@ -142,7 +152,7 @@ export default async function RootLayout({
         );
     }
 
-    const teamCheckedIn = user.Team.checkedIn;
+    const teamCheckedIn = team.checkedIn;
     if (!teamCheckedIn && !isAdmin) {
         return (
             <html lang="en">
@@ -154,14 +164,13 @@ export default async function RootLayout({
         );
     }
 
-    const disqualified = Boolean(user.Team.disqualify);
+    const disqualified = Boolean(team.disqualify);
 
     if (disqualified && !isAdmin) {
         return (
-            <html lang="en">
-            <body>
-            <div className="bg-[radial-gradient(110.8%_70.71%_at_50%_50%,_#0B0014_55.41%,_#18181B_100%)] min-h-screen">
-                <Navbar name={session.user.name ?? "User"}/>
+            <html lang="en" className="overflow-hidden">
+            <body className="overflow-hidden">
+            <div className="bg-[radial-gradient(110.8%_70.71%_at_50%_50%,#0B0014_55.41%,#18181B_100%)] min-h-screen">
                 <Disqualified/>
                 {isAdmin && <SwitchAdminModeButton/>}
             </div>
@@ -185,7 +194,7 @@ export default async function RootLayout({
         );
     }
 
-    const memberOfRound = user.Team.TeamRound.find(
+    const memberOfRound = teamRoundRows.find(
         (tr) => curOrNextRound && tr.roundId === curOrNextRound.id
     );
 
@@ -240,7 +249,7 @@ export default async function RootLayout({
         <body
             className={`min-h-screen flex flex-col ${outfit.className}`}
             style={{
-                backgroundImage: "url('./dashbg.png')",
+                backgroundImage: "url('/dashboard.png')",
                 backgroundSize: "cover",
                 backgroundAttachment: "fixed",
             }}

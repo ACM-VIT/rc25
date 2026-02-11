@@ -1,11 +1,12 @@
 "use server";
 import { auth } from "../(auth)/auth";
-import { PrismaClient } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import parsePhoneNumber from "libphonenumber-js";
+import { db } from "@/db";
+import { type Gender, users } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 export default async function onboard(formData: FormData) {
-    const prisma = new PrismaClient();
     const session = await auth();
 
     if (!session || !session.user) {
@@ -23,16 +24,14 @@ export default async function onboard(formData: FormData) {
 
     const rawData = {
         phone: phoneNumber?.format('INTERNATIONAL') ?? '',
-        gender: { set: gender as "male" | "female" },  // ✅ Use Prisma update object
+        gender: gender as Gender,
     };
 
     try {
-        await prisma.user.update({
-            where: {
-                email: session.user.email ?? '',
-            },
-            data: rawData,  // ✅ Prisma now correctly accepts `gender`
-        });
+        await db
+            .update(users)
+            .set(rawData)
+            .where(eq(users.email, session.user.email ?? ''));
         revalidatePath("/");
     } catch (error) {
         console.error("Database update failed:", error);

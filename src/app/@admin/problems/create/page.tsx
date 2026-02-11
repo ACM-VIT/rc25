@@ -1,17 +1,15 @@
 import {QuestionForm} from "../question-form";
 import {handleQuestionSubmit} from "@/app/actions/upsert-question";
-import {prisma} from "@/utils/prisma";
+import { db } from "@/db";
+import { rounds } from "@/db/schema";
+import { asc } from "drizzle-orm";
 
 async function getRounds() {
 	try {
-		return await prisma.round.findMany({
-			relationLoadStrategy: 'join',
-			orderBy: {
-				number: "asc",
-			},
-		});
-	} finally {
-		await prisma.$disconnect();
+		return await db.select().from(rounds).orderBy(asc(rounds.number));
+	} catch (error) {
+		console.error("Error fetching rounds:", error);
+		return [];
 	}
 }
 

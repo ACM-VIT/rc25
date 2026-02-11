@@ -55,7 +55,7 @@ const Counter: React.FC = () => {
                     <Image
                         src={earthone}
                         alt="earth"
-                        className="-z-10 w-[150%] sm:w-[170%] md:w-[140%] lg:w-[150%] xl:w-[100%] 
+                        className="-z-10 w-[150%] sm:w-[170%] md:w-[140%] lg:w-[150%] xl:w-full 
                                    phone:mt-[100%] xs:mt-[70%] sm:mt-[60%] md:mt-[50%] lg:mt-[40%] xl:mt-[40%] 2xl:mt-[40%] animate-spin-slow"
                         style={{ filter: "grayscale(50%) brightness(80%) contrast(90%)" }}
                     />

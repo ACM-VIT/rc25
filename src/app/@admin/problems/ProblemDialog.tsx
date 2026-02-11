@@ -1,7 +1,6 @@
 import { QuestionForm } from "./question-form";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import type { Testcase, Round } from "@prisma/client";
-import type { Problem as PrismaBaseProblem } from "@prisma/client";
+import type { Problem as PrismaBaseProblem, Round, Testcase } from "@/db/schema";
 import { DialogTitle } from "@radix-ui/react-dialog";
 
 interface Problem extends PrismaBaseProblem {

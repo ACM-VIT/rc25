@@ -1,9 +1,12 @@
-import { prisma } from "@/utils/prisma";
+import { db } from "@/db";
+import { problems, submissions, teams, users } from "@/db/schema";
 import TeamSubmissions from "./team-submissions";
 import { redirect } from "next/navigation";
 import { auth } from "@/app/(auth)/auth"; // Import your auth
 import FloatingDock from "@/components/FloatingDock";
+import FallbackPage from "@/components/fallback-page";
 import { Metadata } from "next";
+import { desc, eq } from "drizzle-orm";
 
 export const metadata: Metadata = {
   title: "Team Submissions",
@@ -26,53 +29,64 @@ export default async function SubmissionsPage() {
   const session = await auth();
 
   if (!session?.user) {
-    redirect("/auth/signin");
+    redirect("/api/auth/signin?callbackUrl=/portal/submissions");
   }
 
-  const user = await prisma.user.findUnique({
-    relationLoadStrategy: 'join',
-    where: { id: session.user.id },
-    include: { Team: true },
-  });
-
-  if (!user?.Team) {
-    return <div>No team found</div>;
+  const userId = session.user.id;
+  if (!userId) {
+    redirect("/api/auth/signin?callbackUrl=/portal/submissions");
   }
 
-  const submissions = await prisma.submission.findMany({
-    relationLoadStrategy: 'join',
-    where: {
-      user: {
-        teamId: user.Team.id,
-      },
-    },
-    include: {
-      user: {
-        select: { name: true },
-      },
-      problem: {
-        select: {
-          title: true,
-          difficulty: true,
-        },
-      },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+  const userRows = await db
+    .select({ user: users, team: teams })
+    .from(users)
+    .leftJoin(teams, eq(users.teamId, teams.id))
+    .where(eq(users.id, userId))
+    .limit(1);
 
-  const formattedSubmissions = submissions.map((submission) => ({
-    ...submission,
+  const user = userRows[0]?.user;
+  const team = userRows[0]?.team;
+
+  if (!team || !user) {
+    return (
+      <FallbackPage
+        headerTitle="PIT STOP"
+        title="No Team Found"
+        message="You don't appear to be part of a team yet. Join or create a team to view submissions."
+      />
+    );
+  }
+
+  const submissionRows = await db
+    .select({
+      submission: submissions,
+      user: users,
+      problem: problems,
+    })
+    .from(submissions)
+    .innerJoin(users, eq(submissions.userId, users.id))
+    .innerJoin(problems, eq(submissions.problemId, problems.id))
+    .where(eq(users.teamId, team.id))
+    .orderBy(desc(submissions.createdAt));
+
+  const formattedSubmissions = submissionRows.map((row) => ({
+    ...row.submission,
     user: {
-      ...submission.user,
-      name: submission.user.name || "Unknown",
+      ...row.user,
+      name: row.user.name || "Unknown",
     },
+    problem: {
+      title: row.problem.title,
+      difficulty: row.problem.difficulty,
+    },
+    totalTestcases: (row.problem.normal_cases ?? 0) + (row.problem.edge_cases ?? 0),
   }));
 
   return (
     <>
       <TeamSubmissions
         submissions={formattedSubmissions}
-        teamName={user.Team.name}
+        teamName={team.name}
       />
       <FloatingDock />
     </>

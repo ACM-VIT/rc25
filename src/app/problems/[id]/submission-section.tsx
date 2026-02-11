@@ -1,10 +1,16 @@
 "use client";
 import type React from "react";
 import {useState, useEffect} from "react";
-import type {Prisma} from "@prisma/client";
-import Lottie from "lottie-react";
+import dynamic from "next/dynamic";
 import animationData from "../../../../public/loading.json";
+import { formula1Bold } from "@/lib/fonts";
+import { Poppins } from "next/font/google";
+
+const poppins = Poppins({ weight: ["400", "500", "600"], subsets: ["latin"] });
+
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 import {ScrollArea} from "@/components/ui/scroll-area";
+import type { EvalEnum } from "@/db/schema";
 
 interface SubmissionSectionProps {
     isPending: boolean;
@@ -12,9 +18,18 @@ interface SubmissionSectionProps {
     setSubmissions: React.Dispatch<React.SetStateAction<SubmissionWithUser[]>>;
 }
 
-export type SubmissionWithUser = Prisma.SubmissionGetPayload<{
-    include: { user: { select: { name: true } } };
-}>;
+export type SubmissionWithUser = {
+    id: string;
+    createdAt: Date;
+    updatedAt: Date;
+    evaluated: boolean;
+    evaluationStatus: EvalEnum | null;
+    testcasesPassed: number;
+    totalTestcases: number;
+    user: {
+        name: string | null;
+    };
+};
 
 const noSubmissionMessages = [
     "Ain't nobody dropped a thing yet. Either folks are slacking or they got cold feet.",
@@ -47,55 +62,62 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
         submission: SubmissionWithUser | null,
         isBest: boolean
     ) => {
-        if (isPending) return <p>Loading submissions...</p>;
-        if (!submission) return <p>No submission found</p>;
+        if (isPending) return (
+            <div className={`${formula1Bold.className} w-full border border-[#A7282D]/40 bg-[#080A0D] py-4 px-4 rounded-md text-center text-sm text-white/50`}>
+                Loading submissions...
+            </div>
+        );
+        if (!submission) return (
+            <div className={`${formula1Bold.className} w-full border border-[#A7282D]/30 bg-[#080A0D] py-4 px-4 rounded-md text-center text-sm text-white/40`}>
+                No submission found
+            </div>
+        );
         if (!submission.evaluated)
             return (
-                <div className="w-full border-1 py-4 px-4 rounded-md border-[#EB5757] text-center">
+                <div className="w-full border py-4 px-4 rounded-md border-[#EB5757] text-center">
                     Submission is being evaluated...
                 </div>
             );
 
 
 
-        const passedCount = submission.testcasespassed.filter(Boolean).length;
-        const totalTests = submission.testcasespassed.length;
+        const passedCount = submission.testcasesPassed;
+        const totalTests = submission.totalTestcases;
 
+        const safeTotal = totalTests > 0 ? totalTests : 1;
         return (
             <div
-                className="w-full flex items-center justify-between border-1 py-4 px-4 rounded-md "
+                className="w-full flex items-center justify-between border py-4 px-4 rounded-md "
                 style={{
                     borderColor:
                         passedCount === totalTests
                             ? "#27AE60"
-                            : passedCount / totalTests <= 0.4
+                            : passedCount / safeTotal <= 0.4
                                 ? "#EB5757"
                                 : "#F2994A",
                 }}
             >
-                <div className="flex flex-col items-start space-x-2">
-                    <span className="font-bold">{submission.user.name}</span>
+                <div className="flex flex-col items-start">
+                    <span className={`font-bold ${formula1Bold.className}`}>{submission.user.name}</span>
                 </div>
-                <div className="flex flex-col items-center justify-between gap-1 space-x-2">
+                <div className={`flex flex-col items-center justify-center gap-1 ${poppins.className}`}>
                     {submission.evaluationStatus === "ACCEPTED" && isBest && (
                         <span
                             className="m-0 px-1 py-0 text-[0.5rem] font-semibold text-purple-500 border border-purple-500 rounded-md">
                             Best Submission
                         </span>
                     )}
-                    {submission.evaluationStatus === "ACCEPTED" && (
-                    <span>
-                        {passedCount}/{totalTests} Test Cases Passed
-                    </span>
-                    )}
-                    {submission.evaluationStatus === "COMPILE_ERROR" && (
-                        <span>Compile Error</span>
-                    )}
-                    {submission.evaluationStatus === "RUNTIME_ERROR" && (
-                        <span>Runtime Error</span>
+                    {submission.evaluationStatus === "COMPILATION_ERROR" ? (
+                        <span className="text-red-400">Compile Error</span>
+                    ) : submission.evaluationStatus?.startsWith("RUNTIME_ERROR") ? (
+                        <span className="text-red-400">Runtime Error</span>
+                    ) : (
+                        <span>
+                            {passedCount}/{totalTests} Test Cases Passed
+                        </span>
                     )}
                 </div>
-                <div>
+                <div className={poppins.className}>
                     {new Date(submission.updatedAt).toLocaleTimeString([], {
                         hour: "2-digit",
                         minute: "2-digit",
@@ -107,67 +129,63 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
     };
 
     return (
-        <div className="rounded-lg flex flex-col h-full bg-black/50 border-2 border-weirdPurple hover:border-primary">
-            <ScrollArea className="flex-grow h-full w-full rounded-lg border-0">
-                <div
-                    className="w-full rounded-lg p-4 text-white h-full overflow-y-auto"
-                    style={{
-                        borderRadius: "8px",
-                        backdropFilter: "blur(2.5px)",
-                        WebkitBackdropFilter: "blur(2.5px)",
-                    }}
-                >
-                    {submissions.length === 0 ? (
-                        <div
-                            className="w-full flex items-center justify-center border-[#EB5757] border-1 py-2 rounded-md">
-                            {randomMessage}
-                        </div>
-                    ) : submissions.length === 1 &&
-                    !submissions[0].evaluated ? (
-                        <div className="w-full h-full border-2 border-[#EB5757] px-4 py-2 rounded-md">
-                            <p className="text-[#F8CC22] font-outfit text-center">
-                                The first record is now under scrutiny. The
-                                Force will reveal its merit.
-                            </p>
-                            <div className="h-full flex items-center justify-center">
-                                <Lottie
-                                    animationData={animationData}
-                                    loop
-                                    autoplay
-                                    style={{width: "25%"}}
-                                />
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="space-y-4 overflow-y-auto">
-                            {submissions.map((submission, index) => (
-                                <div key={submission.id}>
-                                    {renderSubmission(
-                                        submission,
-                                        index ===
-                                        submissions.findIndex(
-                                            (s) =>
-                                                s.testcasespassed.filter(
-                                                    Boolean
-                                                ).length ===
-                                                Math.max(
-                                                    ...submissions.map(
-                                                        (sub) =>
-                                                            sub.testcasespassed.filter(
-                                                                Boolean
-                                                            ).length
-                                                    )
-                                                )
-                                        )
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    )}
+    <div className="rounded-lg flex flex-col h-full min-h-0 border-2 border-[#A7282D] hover:border-primary overflow-hidden"
+        style={{
+            background: 'linear-gradient(to bottom, #000000 70%, #2A2A2A)'
+        }}>
+        <div
+            className="flex-1 min-h-0 rounded-lg p-4 text-white flex flex-col overflow-hidden"
+            style={{
+                borderRadius: "8px",
+                backdropFilter: "blur(2.5px)",
+                WebkitBackdropFilter: "blur(2.5px)",
+            }}
+        >
+            {submissions.length === 0 ? (
+                <div className="w-full flex items-center justify-center border-[#EB5757] border p-2 rounded-md">
+                    {randomMessage}
                 </div>
-            </ScrollArea>
+            ) : submissions.length === 1 && !submissions[0].evaluated ? (
+                <div className="flex-1 min-h-0 border-2 border-[#EB5757] px-4 py-2 rounded-md flex flex-col overflow-hidden">
+                    <p className="text-[#F8CC22] font-outfit text-center py-2 shrink-0">
+                        The first record is now under scrutiny. The Force will reveal its merit.
+                    </p>
+                    <div className="flex-1 min-h-0 flex items-center justify-center overflow-hidden">
+                        <Lottie
+                            animationData={animationData}
+                            loop
+                            autoplay
+                            style={{ maxWidth: "200px", maxHeight: "100%", width: "auto", height: "auto" }}
+                        />
+                    </div>
+                </div>
+            ) : (
+                <ScrollArea className="flex-1">
+                    <div className="space-y-4">
+                        {submissions.map((submission, index) => (
+                            <div key={submission.id}>
+                                {renderSubmission(
+                                    submission,
+                                    index ===
+                                    submissions.findIndex(
+                                        (s) =>
+                                            s.testcasesPassed ===
+                                            Math.max(
+                                                ...submissions.map(
+                                                    (sub) =>
+                                                        sub.testcasesPassed
+                                                )
+                                            )
+                                    )
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </ScrollArea>
+            )}
         </div>
-    );
+    </div>
+);
 };
 
 export default SubmissionSection;

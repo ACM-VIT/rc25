@@ -1,11 +1,12 @@
 import QuestionPage from "./question-page";
-import { prisma } from "@/utils/prisma";
+import { db } from "@/db";
+import { problems, rounds, testcases, teams, users, type Round } from "@/db/schema";
 import { notFound } from "next/navigation";
 import { auth } from "@/app/(auth)/auth"; // Import your auth
-import type { Round } from "@prisma/client";
 
 import type { Metadata } from "next";
 import { MDXRemote } from "next-mdx-remote/rsc";
+import { desc, eq } from "drizzle-orm";
 
 export async function generateMetadata({
     params,
@@ -51,14 +52,11 @@ export interface Problem {
     title: string;
     nickname: string;
     difficulty: "EASY" | "MEDIUM" | "HARD";
-    maxScore: number;
+    initial: number;
     roundNumber: number;
     description: string;
     normal_cases: number;
     edge_cases: number;
-    lin_dl: string;
-    win_dl: string;
-    mac_dl: string;
     Testcase: TestCase[];
     round: Round;
     slno?: number; // Add slno property
@@ -73,41 +71,52 @@ interface TestCase {
 }
 
 async function getProblem(id: string) {
-    const problem = await prisma.problem.findUnique({
-        where: { id },
-        include: {
-            Testcase: true,
-            round: true, // Include round data
-        },
-    });
+    const problemRows = await db
+        .select({ problem: problems, round: rounds })
+        .from(problems)
+        .innerJoin(rounds, eq(problems.roundId, rounds.id))
+        .where(eq(problems.id, id))
+        .limit(1);
+    const problemRow = problemRows[0];
+    if (!problemRow) notFound();
 
-    if (!problem) notFound();
-    return problem;
+    const testcaseRows = await db
+        .select()
+        .from(testcases)
+        .where(eq(testcases.problemId, id));
+
+    return {
+        ...problemRow.problem,
+        Testcase: testcaseRows,
+        round: problemRow.round,
+    };
 }
 
 async function getQuestions(roundId: string) {
     // Change parameter type
-    const problems = await prisma.problem.findMany({
-        where: { roundId }, // Filter by roundId
-        orderBy: { id: "desc" }, // Change order to desc
-    });
+    const problemRows = await db
+        .select()
+        .from(problems)
+        .where(eq(problems.roundId, roundId))
+        .orderBy(desc(problems.id));
 
     // Add slno property based on array index
-    return problems.map((problem, index) => ({
+    return problemRows.map((problem, index) => ({
         ...problem,
         slno: index + 1,
     }));
 }
 
 async function getUser(id: string) {
-    const user = await prisma.user.findUnique({
-        where: { id },
-        include: {
-            Team: true,
-        },
-    });
-
-    return user;
+    const userRows = await db
+        .select({ user: users, team: teams })
+        .from(users)
+        .leftJoin(teams, eq(users.teamId, teams.id))
+        .where(eq(users.id, id))
+        .limit(1);
+    const row = userRows[0];
+    if (!row) return null;
+    return { ...row.user, Team: row.team ?? null };
 }
 
 export default async function Page({ params }: PageParams) {
@@ -135,10 +144,11 @@ export default async function Page({ params }: PageParams) {
         (problem.isHidden && user?.Team?.id !== process.env.ADMIN_TEAM_ID)
     )
         notFound();
+    
     return (
         <div>
             <QuestionPage
-                desc={<MDXRemote source={problem.description} />}
+                desc={<MDXRemote source={problem.description} options={{ mdxOptions: { format: 'md' } }} />}
                 problem={problem}
                 session={{ user: { id: session.user.id } }}
                 questions={questions}

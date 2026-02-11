@@ -1,34 +1,50 @@
-import { prisma } from "@/utils/prisma";
+import { db } from "@/db";
 import Dashboard from "@/components/dashboard";
+import FallbackPage from "@/components/fallback-page";
 // import SignOutButton from "@/components/buttons/sign-out";
 // import type { TeamRound } from "@prisma/client"
 import { getTeamRound } from "@/hooks/useTeamRound";
 import type { Metadata } from "next";
 import { FLAGS } from "@/types/flags"
 import { auth } from "./(auth)/auth";
+import { admins, flags, news as newsTable, problems, rounds, submissions, teams, users, solve } from "@/db/schema";
+import { calculateCurrentPoints } from "@/db/scoring";
+import { and, asc, desc, eq, gte, inArray, lte, ne } from "drizzle-orm";
+import { Redis } from "@upstash/redis";
 // import { use } from "react";
 
-async function getLeaderBoardShowBoolean(): Promise<boolean> {
-  const showBool = await prisma.flags.findFirst({
-    relationLoadStrategy: 'join',
-    where: { name: FLAGS.SCOREBOARD_VISIBLE },
-    select: { value: true },
-  });
+const redis =
+  process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+    ? Redis.fromEnv()
+    : null;
 
-  return showBool?.value ?? false;
+const getEffectiveSolves = async (problemId: string): Promise<number> => {
+  const redisValue =
+    redis !== null ? Number((await redis.get(problemId)) ?? NaN) : NaN;
+  return Number.isFinite(redisValue) ? redisValue : 0;
+};
+
+async function getLeaderBoardShowBoolean(): Promise<boolean> {
+  const showBoolRows = await db
+    .select({ value: flags.value })
+    .from(flags)
+    .where(eq(flags.name, FLAGS.SCOREBOARD_VISIBLE))
+    .limit(1);
+
+  return showBoolRows[0]?.value ?? false;
 }
 
 export async function generateMetadata(): Promise<Metadata> {
   const teamRound = await getTeamRound();
   const roundInfo = teamRound?.roundId
-    ? await prisma.round.findFirst({
-        relationLoadStrategy: 'join',
-        where: { id: teamRound.roundId },
-        select: { number: true },
-      })
+    ? await db
+        .select({ numbcer: rounds.number })
+        .from(rounds)
+        .where(eq(rounds.id, teamRound.roundId))
+        .limit(1)
     : null;
 
-  if (!roundInfo?.number) {
+  if (!roundInfo?.[0]?.numbcer) {
     return {
       title: "Reverse Coding | ACM-VIT",
       description: "Join Reverse Coding competition",
@@ -48,11 +64,11 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   return {
-    title: `Round ${roundInfo.number} Dashboard`,
+    title: `Round ${roundInfo[0].numbcer} Dashboard`,
     description:
       "View your team's progress, leaderboard and available problems",
     openGraph: {
-      title: `Round ${roundInfo.number}`,
+      title: `Round ${roundInfo[0].numbcer}`,
       description: "Track your team's progress in real-time",
     },
     robots: {
@@ -69,47 +85,78 @@ export default async function Page() {
 
   const session = await auth();
   if (!session?.user?.email) {
-    return <div>Please sign in to continue</div>;
+    return (
+      <FallbackPage
+        headerTitle="PIT STOP"
+        title="Please Sign In"
+        message="You need to be signed in to access the dashboard. Head back and log in to join the race."
+        actionLabel="SIGN IN"
+        googleSignIn
+      />
+    );
   }
 
-  const user = await prisma.user.findUnique({
-      where: {
-          email: session.user.email,
-      },
-      include: {
-          Team: {
-              include: { TeamRound: true },
-          },
-          Admin: {
-              select: {
-                  id: true,
-              },
-          },
-      },
-  });
+  const userRows = await db
+    .select({ user: users, team: teams })
+    .from(users)
+    .leftJoin(teams, eq(users.teamId, teams.id))
+    .where(eq(users.email, session.user.email))
+    .limit(1);
+  const user = userRows[0]?.user ?? null;
+  const userTeam = userRows[0]?.team ?? null;
 
   if (!user) {
-      return <div>User not found</div>;
+    return (
+      <FallbackPage
+        headerTitle="PIT STOP"
+        title="Driver Not Found"
+        message="We couldn't locate your profile. Please try signing in again or contact the race marshals."
+      />
+    );
   }
 
-  const isAdminTeam = user.Team?.id === process.env.ADMIN_TEAM_ID;
+  const adminRows = await db
+    .select({ id: admins.id })
+    .from(admins)
+    .where(eq(admins.userId, user.id))
+    .limit(1);
+  const isAdminUser = adminRows.length > 0;
+  const isAdminTeam = userTeam?.id === process.env.ADMIN_TEAM_ID;
+  const isAdminView = isAdminUser || isAdminTeam;
 
+  const now = new Date();
+  const activeRoundRows = await db
+    .select({ id: rounds.id })
+    .from(rounds)
+    .where(and(lte(rounds.start, now), gte(rounds.end, now)))
+    .orderBy(asc(rounds.start))
+    .limit(1);
+  const activeRoundId = activeRoundRows[0]?.id ?? null;
+  const effectiveRoundId = teamRound?.roundId ?? (isAdminView ? activeRoundId : null);
 
-  if (!isAdminTeam) {
-    if (!teamRound?.roundId) {
-      return <div>No active round found</div>;
-    }
+  if (!effectiveRoundId) {
+    return (
+      <FallbackPage
+        headerTitle="RACE CONTROL"
+        title="No Active Round"
+        message="There's no race happening right now. Hang tight — the next round will begin soon."
+      />
+    );
   }
 
   // Round info
-  const roundInfo = await prisma.round.findFirst({
-    relationLoadStrategy: 'join',
-    where: { id: teamRound?.roundId ?? '' },
-    select: { number: true, end: true, id: true },
-  });
+  const roundInfoRows = effectiveRoundId
+    ? await db
+        .select({ number: rounds.number, end: rounds.end, id: rounds.id })
+        .from(rounds)
+        .where(eq(rounds.id, effectiveRoundId))
+        .limit(1)
+    : [];
+  const roundInfo = roundInfoRows[0] ?? null;
 
   interface SubmissionType {
-    testcasespassed: boolean[];
+    testcasesPassed: number;
+    totalTestcases: number;
     createdAt: Date;
   }
 
@@ -122,88 +169,173 @@ export default async function Page() {
     isHidden: boolean;
   }
 
-  let teamData = teamRound ? await prisma.team.findUnique({
-    where: { id: teamRound.teamId },
-    select: {
-      id: true,
-      name: true,
-      shortCode: true,
-      score: true,
-      members: {
-        select: {
-          id: true,
-          name: true,
-        },
-      },
-    },
-  }) : null;
+  const buildTeamData = (rows: { team: typeof teams.$inferSelect; member: typeof users.$inferSelect | null; }[]) => {
+    const team = rows[0]?.team ?? null;
+    if (!team) return null;
+    const members = rows
+      .map((row) => row.member)
+      .filter((member): member is typeof users.$inferSelect => Boolean(member));
+    return {
+      id: team.id,
+      name: team.name,
+      shortCode: team.shortCode,
+      score: 0,
+      members: members.map((member) => ({
+        id: member.id,
+        name: member.name,
+      })),
+    };
+  };
 
-  if (isAdminTeam){
-    teamData = user.teamId ? await prisma.team.findUnique({
-      where: { id: user.teamId },
-      select: {
-        id: true,
-        name: true,
-        shortCode: true,
-        score: true,
-        members: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
-    }): null;
+  let teamData = teamRound
+    ? buildTeamData(
+        await db
+          .select({ team: teams, member: users })
+          .from(teams)
+          .leftJoin(users, eq(users.teamId, teams.id))
+          .where(eq(teams.id, teamRound.teamId))
+      )
+    : null;
+
+  if (isAdminView){
+    teamData = user.teamId
+      ? buildTeamData(
+          await db
+            .select({ team: teams, member: users })
+            .from(teams)
+            .leftJoin(users, eq(users.teamId, teams.id))
+            .where(eq(teams.id, user.teamId))
+        )
+      : null;
   }
 
-  let problems: ProblemType[];
-
-  // Questions
-  if (!isAdminTeam){
-    problems = roundInfo
-    ? await prisma.problem.findMany({
-        relationLoadStrategy: 'join',
-        where: { roundId: roundInfo.id },
-        orderBy: { id: "asc" },
-        include: {
-          submissions: {
-            where: {
-              userId: {
-                in: teamData?.members.map(member => member.id) || []
-              }
-            },
-            orderBy: { createdAt: "desc" },
-          },
-        },
-      })
-    : [];
+  let problemsList: (typeof problems.$inferSelect)[];
+  if (!isAdminView) {
+    problemsList = roundInfo
+      ? await db
+          .select()
+          .from(problems)
+          .where(eq(problems.roundId, roundInfo.id))
+          .orderBy(asc(problems.id))
+      : [];
   } else {
-    problems = await prisma.problem.findMany({
-      orderBy: { id: "asc" },
-      include: {
-        submissions: {
-          where: {
-            userId: {
-              in: teamData?.members.map(member => member.id) || []
-            }
-          },
-          orderBy: { createdAt: "desc" },
-        },
-      },
-    });
+    problemsList = await db.select().from(problems).orderBy(asc(problems.id));
   }
 
-  const questions = problems.map((problem, index) => {
+  const totalTestcasesByProblem = new Map(
+    problemsList.map((problem) => [
+      problem.id,
+      (problem.normal_cases ?? 0) + (problem.edge_cases ?? 0),
+    ])
+  );
+
+  const problemIds = problemsList.map((problem) => problem.id);
+  const problemScoreRows = problemsList.map((problem) => ({
+    id: problem.id,
+    initial: problem.initial,
+    minimum: problem.minimum,
+    decay: problem.decay,
+  }));
+
+  const solveRows = problemIds.length
+    ? await db
+        .select({
+          problemId: solve.problemId,
+          teamId: solve.teamId,
+          testcasesPassed: solve.testcasesPassed,
+        })
+        .from(solve)
+        .where(inArray(solve.problemId, problemIds))
+    : [];
+
+  const teamSolvesByTeam = new Map<string, Map<string, number>>();
+
+  for (const row of solveRows) {
+    if (!row.teamId) continue;
+    const teamMap = teamSolvesByTeam.get(row.teamId) ?? new Map<string, number>();
+    teamMap.set(row.problemId, row.testcasesPassed);
+    teamSolvesByTeam.set(row.teamId, teamMap);
+  }
+
+  const effectiveSolveEntries = await Promise.all(
+    problemScoreRows.map(async (problem) => {
+      const effectiveSolves = await getEffectiveSolves(problem.id);
+      return [problem.id, effectiveSolves] as const;
+    }),
+  );
+  const effectiveSolvesByProblem = new Map(effectiveSolveEntries);
+
+  const calculateTeamScore = (teamId: string) => {
+    const teamSolves = teamSolvesByTeam.get(teamId) ?? new Map<string, number>();
+    let totalScore = 0;
+    for (const problem of problemScoreRows) {
+      const effectiveSolves = effectiveSolvesByProblem.get(problem.id) ?? 0;
+      const currentPoints = calculateCurrentPoints({
+        ...problem,
+        effectiveSolves,
+      });
+      const passed = teamSolves.get(problem.id) ?? 0;
+      if (passed > 0) {
+        totalScore += Math.round(currentPoints * (passed / 10));
+      }
+    }
+    return totalScore;
+  };
+
+  const memberIds = teamData?.members.map((member) => member.id) ?? [];
+  const submissionsRows =
+    memberIds.length && problemIds.length
+      ? await db
+          .select({
+            problemId: submissions.problemId,
+            testcasesPassed: submissions.testcasesPassed,
+            createdAt: submissions.createdAt,
+          })
+          .from(submissions)
+          .where(
+            and(
+              inArray(submissions.userId, memberIds),
+              inArray(submissions.problemId, problemIds)
+            )
+          )
+          .orderBy(desc(submissions.createdAt))
+      : [];
+
+  const submissionsByProblem = new Map<string, SubmissionType[]>();
+  for (const submission of submissionsRows) {
+    const list = submissionsByProblem.get(submission.problemId) ?? [];
+    const totalTestcases =
+      totalTestcasesByProblem.get(submission.problemId) ?? 0;
+    list.push({
+      testcasesPassed: submission.testcasesPassed,
+      totalTestcases,
+      createdAt: submission.createdAt,
+    });
+    submissionsByProblem.set(submission.problemId, list);
+  }
+
+  const problemCards: ProblemType[] = problemsList.map((problem) => ({
+    id: problem.id,
+    title: problem.title,
+    difficulty: problem.difficulty,
+    roundId: problem.roundId,
+    submissions: submissionsByProblem.get(problem.id) ?? [],
+    isHidden: problem.isHidden,
+  }));
+
+  const questions = problemCards.map((problem, index) => {
     // Find submission with maximum passed test cases
     const bestSubmission = problem.submissions.reduce((best, current) => {
-      const currentPassed = current.testcasespassed.filter(Boolean).length;
-      const bestPassed = best ? best.testcasespassed.filter(Boolean).length : -1;
+      const currentPassed = current.testcasesPassed;
+      const bestPassed = best ? best.testcasesPassed : -1;
       return currentPassed > bestPassed ? current : best;
     }, null as SubmissionType | null);
 
-    const passedArray = bestSubmission?.testcasespassed || [];
-    const passCount = passedArray.filter(Boolean).length;
-    const total = passedArray.length;
+    const passCount = bestSubmission?.testcasesPassed ?? 0;
+    const total =
+      bestSubmission?.totalTestcases ??
+      totalTestcasesByProblem.get(problem.id) ??
+      0;
     const status = total > 0 ? `${passCount}/${total}` : "Not Attempted";
     const isHidden = problem.isHidden;
 
@@ -217,16 +349,17 @@ export default async function Page() {
     };
   });
 
+  const teamScore = teamData ? calculateTeamScore(teamData.id) : 0;
   const teamDetails = teamData
     ? {
         id: teamData.id,
         name: teamData.name,
         shortCode: teamData.shortCode,
-        score: teamData.score,
+        score: teamScore,
         members: teamData.members.map((member: { id: string; name: string | null; }) => ({
           id: member.id,
           name: member.name ?? '',
-          score: 0, // Adjust if you store member scores
+          score: 0,
         })),
       }
     : {
@@ -238,41 +371,31 @@ export default async function Page() {
       };
 
   // Leaderboard
-  const leaderboardData = await prisma.team.findMany({
-    relationLoadStrategy: 'join',
-    where: {
-      id: {
-        not: process.env.ADMIN_TEAM_ID // Exclude admin team
-      }
-    },
-    orderBy: { score: "desc" },
-    select: {
-      id: true,
-      name: true,
-      score: true,
-    },
-  });
+  const leaderboardTeams = await db
+    .select({ id: teams.id, name: teams.name, hidden: teams.hidden, disqualify: teams.disqualify })
+    .from(teams);
 
-  const leaderboard = leaderboardData.map((team) => ({
-    id: team.id,
-    name: team.name,
-    score: team.score,
-  }));
+  const adminTeamId = process.env.ADMIN_TEAM_ID ?? "";
+  const leaderboard = leaderboardTeams
+    .filter((team) => !team.hidden && !team.disqualify && team.id !== adminTeamId)
+    .map((team) => ({
+      id: team.id,
+      name: team.name,
+      score: calculateTeamScore(team.id),
+    }));
 
   const showLeaderboard = await getLeaderBoardShowBoolean();
 
   // Fetch news
-  const news = await prisma.news.findMany({
-    orderBy: {
-      time: 'desc'
-    },
-    select: {
-      id: true,
-      title: true,
-      content: true,
-      time: true
-    }
-  });
+  const news = await db
+    .select({
+      id: newsTable.id,
+      title: newsTable.title,
+      content: newsTable.content,
+      time: newsTable.time,
+    })
+    .from(newsTable)
+    .orderBy(desc(newsTable.time));
 
   return (
     <>

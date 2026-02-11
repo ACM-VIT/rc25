@@ -1,4 +1,4 @@
-import type { Difficulty } from "@prisma/client"
+import type { Difficulty } from "@/db/schema"
 
 export interface TeamSubmission {
   id: string
@@ -10,7 +10,8 @@ export interface TeamSubmission {
     title: string
     difficulty: Difficulty
   }
-  testcasespassed: boolean[]
+  testcasesPassed: number
+  totalTestcases: number
   code: string
 }
 

@@ -56,13 +56,12 @@ const Chart = forwardRef<ElementRef<"div">, ChartProps>(
 );
 Chart.displayName = "Chart";
 
-const ChartTooltip = forwardRef<
-  ElementRef<typeof RechartsTooltip>,
-  ComponentPropsWithoutRef<typeof RechartsTooltip>
->(({ content, ...props }, ref) => {
+const ChartTooltip = ({
+  content,
+  ...props
+}: ComponentPropsWithoutRef<typeof RechartsTooltip>) => {
   return (
     <RechartsTooltip
-      ref={ref}
       content={
         content ?? (
           <div className="rounded-lg border bg-background p-2 shadow-sm">
@@ -79,7 +78,7 @@ const ChartTooltip = forwardRef<
       {...props}
     />
   );
-});
+};
 ChartTooltip.displayName = "ChartTooltip";
 
 // Instead of using forwardRef (which causes a type conflict), we define ChartLegend as a simple functional component.

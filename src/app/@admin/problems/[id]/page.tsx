@@ -1,8 +1,9 @@
 import ViewProblem from './QuestionDisplay';
-import { prisma } from "@/utils/prisma";
+import { db } from "@/db";
+import { problems, rounds, testcases, type Problem as PrismaBaseProblem } from "@/db/schema";
 import { notFound } from "next/navigation";
-import type { Problem as PrismaBaseProblem } from '@prisma/client';
 import SwitchAdminProblemModeButton from '@/components/switch-admin-problem-mode';
+import { eq } from "drizzle-orm";
 
 interface Problem extends PrismaBaseProblem {
   Testcase: TestCase[];
@@ -27,21 +28,28 @@ interface TestCase {
 }
 
 async function getProblem(id: string): Promise<Problem> {
-  const problem = await prisma.problem.findUnique({
-    relationLoadStrategy: 'join',
-    where: { id },
-    include: {
-      Testcase: true,
-      round: {
-        select: {
-          number: true
-        }
-      }
-    }
-  });
+  const problemRows = await db
+    .select({ problem: problems, roundNumber: rounds.number })
+    .from(problems)
+    .innerJoin(rounds, eq(problems.roundId, rounds.id))
+    .where(eq(problems.id, id))
+    .limit(1);
 
-  if (!problem) notFound();
-  return problem;
+  const problemRow = problemRows[0];
+  if (!problemRow) notFound();
+
+  const testcaseRows = await db
+    .select()
+    .from(testcases)
+    .where(eq(testcases.problemId, id));
+
+  return {
+    ...problemRow.problem,
+    Testcase: testcaseRows,
+    round: {
+      number: problemRow.roundNumber,
+    },
+  };
 }
 
 export default async function Page({ params }: PageParams) {

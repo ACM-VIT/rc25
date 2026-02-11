@@ -1,16 +1,14 @@
 "use client";
 
-import DashboardBox from "@/components/DashboardBox";
-import { ScrollArea } from "@/components/ui/scroll-area";
-
-// TODO: Update instructions
+import NumberedCard from "@/components/NumberedCard";
+import { formula1Wide } from "@/lib/fonts";
 
 export default function Instructions() {
     const instructions = [
         {
             title: "Team Formation",
             description:
-                "• Each team can have 2-4 members.\n• If you don’t have a teammate, you can search for them on our Discord channel."
+                "• Each team can have 1-4 members.\n• If you don’t have a teammate, you can search for them on our Discord channel."
         },
         {
             title: "Format",
@@ -31,40 +29,23 @@ export default function Instructions() {
 
     return (
         <div
-            className="min-h-screen relative flex flex-col items-center justify-center p-6"
+            className="min-h-screen relative flex flex-col items-center justify-start p-2 sm:p-3 md:p-4 lg:p-6 pt-12 sm:pt-16 md:pt-20 lg:pt-24"
             style={{
-                backgroundImage: "url('./submissionsbg.png')",
+                backgroundImage: "url('/Dashboard.png')",
                 backgroundSize: "cover",
                 backgroundPosition: "center",
+                backgroundAttachment: "fixed",
             }}
         >
-            <h1 className="text-5xl font-bold text-white mb-6 underline">
+            <h1 className={`${formula1Wide.className} text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-6 sm:mb-8 md:mb-10 lg:mb-12 mt-2 sm:mt-4 md:mt-6 lg:mt-8 underline`}>
                 Instructions
-            </h1>
-            <DashboardBox className="shadow-lg w-[85vw] max-w-4xl h-[70vh] rounded-lg p-6 border text-white bg-opacity-80 backdrop-blur-md">
-                <ScrollArea className="flex-grow h-full w-full rounded-lg">
-                    <ol className="list-decimal pl-6 space-y-6 text-lg">
-                        {instructions.map((instruction) => (
-                            <li key={instruction.title}>
-                                <h3 className="text-xl font-bold">
-                                    {instruction.title}
-                                </h3>
-                                <ul className="list-inside mt-2 text-sm leading-relaxed">
-                                    {instruction.description
-                                        .split("\n")
-                                        .map((line, idx) => (
-                                            <li
-                                                key={`${instruction.title}-${idx}`}
-                                            >
-                                                {line}
-                                            </li>
-                                        ))}
-                                </ul>
-                            </li>
-                        ))}
-                    </ol>
-                </ScrollArea>
-            </DashboardBox>
+            </h1> 
+
+            <div className="w-full max-w-[95%] sm:max-w-[90%] md:max-w-[85%] lg:max-w-[80%] mx-auto flex flex-col gap-2 sm:gap-3 md:gap-4 lg:gap-5">
+                {instructions.map((instruction, index) => (
+                    <NumberedCard key={index} title={instruction.title} description={instruction.description} index={index + 1} />
+                ))}
+            </div>
         </div>
     );
 }

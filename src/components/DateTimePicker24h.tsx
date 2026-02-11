@@ -1,7 +1,8 @@
 'use client'
 
-import { DatePicker } from "@nextui-org/react"
-import { parseDateTime, CalendarDateTime, type DateValue } from "@internationalized/date"
+import { DatePicker } from "@heroui/react"
+import { parseDateTime } from "@internationalized/date"
+import type { ComponentProps } from "react"
 
 interface DateTimePicker24hProps {
   date: Date
@@ -9,18 +10,14 @@ interface DateTimePicker24hProps {
   label?: string
 }
 
+type PickerValue = NonNullable<ComponentProps<typeof DatePicker>["value"]>
+
 const DateTimePicker24h = ({ date, onDateChange, label }: DateTimePicker24hProps) => {
-  const toDateValue = (date: Date): DateValue => {
-    return parseDateTime(
-      date.toISOString().slice(0, 19) // Format: YYYY-MM-DDTHH:mm:ss
-    )
-  }
+  const toDateValue = (date: Date): PickerValue =>
+    parseDateTime(date.toISOString().slice(0, 19)) as unknown as PickerValue
 
   // Convert DateValue back to JavaScript Date
-  const fromDateValue = (value: DateValue): Date => {
-    if (value instanceof CalendarDateTime) {
-      return new Date(value.toString())
-    }
+  const fromDateValue = (value: PickerValue): Date => {
     return new Date(value.toString())
   }
 

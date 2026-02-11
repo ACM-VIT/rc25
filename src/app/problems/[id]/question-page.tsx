@@ -74,38 +74,33 @@ export default function QuestionPage({
       // Only fetch results once the submission is marked as processed
       if (!data?.processed) return;
 
-      try {
-        const results = await getSubmissionResults(submissionId);
-        const evalStatus = results.evaluated
-          ? (results.evaluationStatus as EvalEnum | null) ?? null
-          : null;
+      const results = await getSubmissionResults(submissionId);
+      const evalStatus = results.evaluationStatus as EvalEnum | null;
 
-        if (!results.evaluated) return;
+      if (!results.evaluated) return;
 
-        const passed = results.testcasesPassed ?? 0;
-        const total = results.totalTestcases ?? 0;
-        
-        if (evalStatus === "ACCEPTED" || evalStatus === "WRONG_ANSWER")
-          setStatusRibbon({ type: "evaluation", passed, total });
-        else if (evalStatus === "COMPILATION_ERROR")
-          setStatusRibbon({ type: "error", message: "Compile Error" });
-        else if (evalStatus?.startsWith("RUNTIME_ERROR"))
-          setStatusRibbon({ type: "error", message: "Runtime Error" });
-        else if (evalStatus)
-          setStatusRibbon({ type: "error", message: evalStatus });
+      const passed = results.testcasesPassed ?? 0;
+      const total = results.totalTestcases ?? 0;
+      
+      if (evalStatus === "ACCEPTED" || evalStatus === "WRONG_ANSWER")
+        setStatusRibbon({ type: "evaluation", passed, total });
+      else if (evalStatus === "COMPILATION_ERROR")
+        setStatusRibbon({ type: "error", message: "Compile Error" });
+      else if (evalStatus?.startsWith("RUNTIME_ERROR"))
+        setStatusRibbon({ type: "error", message: "Runtime Error" });
+      else if (evalStatus)
+        setStatusRibbon({ type: "error", message: evalStatus });
 
-        setSubmissions((prev) =>
-          prev.map((s) =>
-            s.id === submissionId ? { ...s, ...results, evaluated: true, evaluationStatus: evalStatus } : s
-          )
-        );
+      setSubmissions((prev) =>
+        prev.map((s) =>
+          s.id === submissionId ? { ...s, ...results, evaluated: true, evaluationStatus: evalStatus } : s
+        )
+      );
+      
 
-        // Unsubscribe once processed
-        unsub();
-        activeSubsRef.current.delete(submissionId);
-      } catch (err) {
-        console.error("Error fetching submission results:", err);
-      }
+      // Unsubscribe once processed
+      unsub();
+      activeSubsRef.current.delete(submissionId);
     });
 
     activeSubsRef.current.set(submissionId, unsub);

@@ -7,9 +7,21 @@ import type { Metadata } from "next";
 import { FLAGS } from "@/types/flags"
 import { auth } from "./(auth)/auth";
 import { flags, news as newsTable, problems, rounds, submissions, teams, users, solve } from "@/db/schema";
-import { calculateCurrentPoints, calculateSolveContribution } from "@/db/scoring";
+import { calculateCurrentPoints } from "@/db/scoring";
 import { and, asc, desc, eq, inArray, ne } from "drizzle-orm";
+import { Redis } from "@upstash/redis";
 // import { use } from "react";
+
+const redis =
+  process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+    ? Redis.fromEnv()
+    : null;
+
+const getEffectiveSolves = async (problemId: string): Promise<number> => {
+  const redisValue =
+    redis !== null ? Number((await redis.get(problemId)) ?? NaN) : NaN;
+  return Number.isFinite(redisValue) ? redisValue : 0;
+};
 
 async function getLeaderBoardShowBoolean(): Promise<boolean> {
   const showBoolRows = await db
@@ -201,21 +213,22 @@ export default async function Page() {
         .where(inArray(solve.problemId, problemIds))
     : [];
 
-  const effectiveSolvesByProblem = new Map<string, number>();
   const teamSolvesByTeam = new Map<string, Map<string, number>>();
 
   for (const row of solveRows) {
-    const contribution = calculateSolveContribution(row.testcasesPassed);
-    effectiveSolvesByProblem.set(
-      row.problemId,
-      (effectiveSolvesByProblem.get(row.problemId) ?? 0) + contribution
-    );
-
     if (!row.teamId) continue;
     const teamMap = teamSolvesByTeam.get(row.teamId) ?? new Map<string, number>();
     teamMap.set(row.problemId, row.testcasesPassed);
     teamSolvesByTeam.set(row.teamId, teamMap);
   }
+
+  const effectiveSolveEntries = await Promise.all(
+    problemScoreRows.map(async (problem) => {
+      const effectiveSolves = await getEffectiveSolves(problem.id);
+      return [problem.id, effectiveSolves] as const;
+    }),
+  );
+  const effectiveSolvesByProblem = new Map(effectiveSolveEntries);
 
   const calculateTeamScore = (teamId: string) => {
     const teamSolves = teamSolvesByTeam.get(teamId) ?? new Map<string, number>();

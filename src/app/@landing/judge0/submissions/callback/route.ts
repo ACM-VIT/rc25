@@ -301,6 +301,8 @@ export async function PUT(request: NextRequest) {
         })
         .where(eq(submissions.id, submission.id));
 
+      await firestoreService.submissions.processed(submission.id);
+
       // Query 4: Retrieve all solve rows and find the team's existing solve record in-memory
       // This query:
       // - Selects all rows from solve table so we can recompute leaderboard after updates
@@ -523,7 +525,6 @@ export async function PUT(request: NextRequest) {
         })
         .where(eq(submissionTestcases.id, submissionTestcase.id));
       await updateSolveIfComplete();
-      await firestoreService.submissions.processed(submission.id);
       return NextResponse.json(
         { message: "Submission failed with compile error" },
         { status: 200 },
@@ -551,7 +552,6 @@ export async function PUT(request: NextRequest) {
         })
         .where(eq(submissionTestcases.id, submissionTestcase.id));
       await updateSolveIfComplete();
-      await firestoreService.submissions.processed(submission.id);
       return NextResponse.json(
         { message: "Submission failed with runtime error" },
         { status: 200 },

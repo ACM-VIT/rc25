@@ -29,7 +29,7 @@ export default async function CheckInTeam(
             .from(users)
             .where(eq(users.teamId, teamId));
         const memberCount = Number(memberCountRows[0]?.count ?? 0);
-        if (memberCount < parseInt(process.env.MIN_TEAM_CAPACITY || "2")) {
+        if (memberCount < parseInt(process.env.MIN_TEAM_CAPACITY || "1")) {
             return {
                 success: false,
                 message: "Insufficient team members",

@@ -2,6 +2,8 @@
 
 import NumberedCard from "@/components/NumberedCard";
 import { formula1Wide } from "@/lib/fonts";
+import { Description } from "@radix-ui/react-dialog";
+import { title } from "node:process";
 
 export default function Instructions() {
     const instructions = [
@@ -18,7 +20,12 @@ export default function Instructions() {
         {
             title: "Code Execution and Scoring",
             description:
-                "• All participants will be given executable files that display input-output test cases.\n• The code you write should implement the logic based on these input-output files and also fulfill some hidden test cases.\n• Once the code runs you'll be awarded with points from 0 to 100% of the points dedicated to the question on the basis of the number of test cases passed.\n• Each language has a distinct boilerplate code template, and you must write your code within the specified template.",
+                "• Participants will have access to an online testing interface that displays sample input-output test cases.\n• The code you write should implement the logic based on these input-output files and also fulfill some hidden test cases.\n• Points are awarded based on the percentage of test cases passed, ranging from 0 to 100% of the problem's total points.\n• The value of each problem varies inversely with the number of teams that solve it—fewer solves result in higher point values.\n• Each language has a distinct boilerplate code template, and you must write your code within the specified template.",
+        },
+        {
+            title: "Dynamic Scoring",
+            description:
+                "• Problem points decrease as more teams solve them, rewarding early and difficult solves.\n• Formula: value = (((minimum - initial) / (decay × 2)) × (solve_count × 2)) + initial\n• Final value is the maximum of the calculated value (rounded up) and the minimum threshold.\n• This ensures problems maintain competitive value while adapting to solve difficulty.\n• Learn more: https://docs.ctfd.io/docs/custom-challenges/dynamic-value/"
         },
         {
             title: "Code of Conduct",

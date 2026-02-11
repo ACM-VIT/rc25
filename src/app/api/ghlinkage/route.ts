@@ -2,6 +2,7 @@ import { db } from "@/db";
 import { problems, rounds, testcases, type Difficulty } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
+import { Redis } from "@upstash/redis";
 
 type ExampleCase = {
   input: string;
@@ -59,6 +60,7 @@ type ProblemFields = Pick<
 >;
 type ProblemUpdate = Partial<ProblemFields>;
 type TestcaseInsert = typeof testcases.$inferInsert;
+type EffectiveSolvesByQuestionId = Record<string, number>;
 
 function getProvidedApiKey(req: NextRequest): string | null {
   const headerKey = req.headers.get("x-api-key");
@@ -244,6 +246,27 @@ function buildTestcaseRows(
   }));
 }
 
+const redis =
+  process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+    ? Redis.fromEnv()
+    : null;
+
+async function getQuestionEffectiveSolvesFromRedis(): Promise<EffectiveSolvesByQuestionId> {
+  if (!redis) {
+    return {};
+  }
+
+  const problemRows = await db.select({ id: problems.id }).from(problems);
+  const entries = await Promise.all(
+    problemRows.map(async ({ id }) => {
+      const value = Number((await redis.get(id)) ?? 0);
+      return [id, value] as const;
+    }),
+  );
+
+  return Object.fromEntries(entries);
+}
+
 export async function POST(req: NextRequest) {
   try {
     const expectedApiKey = process.env.GHLINKAGE_API_KEY ?? process.env.API_KEY;
@@ -279,6 +302,8 @@ export async function POST(req: NextRequest) {
       deleted: 0,
       skippedDeleted: 0,
     };
+    const touchedProblemIds = new Set<string>();
+    const deletedProblemIds = new Set<string>();
 
     await db.transaction(async (tx) => {
       const configuredRoundId = process.env.GHLINKAGE_ROUND_ID;
@@ -333,7 +358,10 @@ export async function POST(req: NextRequest) {
           .values(buildTestcaseRows(problemId, problem.testCases));
       };
 
-      const upsertByTitle = async (problem: GhProblem, matchTitle?: string) => {
+      const upsertByTitle = async (
+        problem: GhProblem,
+        matchTitle?: string,
+      ): Promise<string> => {
         const titleToMatch = matchTitle ?? problem.title;
 
         const existingRows = await tx
@@ -357,7 +385,7 @@ export async function POST(req: NextRequest) {
                 .set({ ...updateData, roundId })
                 .where(eq(problems.id, existingId));
               await syncProblemTestcases(existingId, problem);
-              return;
+              return existingId;
             }
           }
 
@@ -367,7 +395,7 @@ export async function POST(req: NextRequest) {
             .set(updateData)
             .where(eq(problems.id, existingId));
           await syncProblemTestcases(existingId, problem);
-          return;
+          return existingId;
         }
 
         const roundId = await getRoundIdForInsert(problem);
@@ -396,15 +424,18 @@ export async function POST(req: NextRequest) {
         }
 
         await syncProblemTestcases(newProblemId, problem);
+        return newProblemId;
       };
 
       for (const entry of created) {
-        await upsertByTitle(entry);
+        const upsertedId = await upsertByTitle(entry);
+        touchedProblemIds.add(upsertedId);
         summary.created += 1;
       }
 
       for (const entry of modified) {
-        await upsertByTitle(entry.after, entry.before.title);
+        const upsertedId = await upsertByTitle(entry.after, entry.before.title);
+        touchedProblemIds.add(upsertedId);
         summary.modified += 1;
       }
 
@@ -415,12 +446,42 @@ export async function POST(req: NextRequest) {
           continue;
         }
 
+        const rowsToDelete = await tx
+          .select({ id: problems.id })
+          .from(problems)
+          .where(eq(problems.title, title));
+        for (const row of rowsToDelete) {
+          deletedProblemIds.add(row.id);
+        }
+
         await tx.delete(problems).where(eq(problems.title, title));
         summary.deleted += 1;
       }
     });
 
-    return NextResponse.json({ status: "success", summary });
+    if (redis) {
+      await Promise.all(
+        Array.from(touchedProblemIds).map(async (problemId) => {
+          const value = await redis.get(problemId);
+          if (value === null || value === undefined) {
+            await redis.set(problemId, 0);
+          }
+        }),
+      );
+      await Promise.all(
+        Array.from(deletedProblemIds).map(async (problemId) => {
+          await redis.del(problemId);
+        }),
+      );
+    }
+
+    const questionEffectiveSolves = await getQuestionEffectiveSolvesFromRedis();
+
+    return NextResponse.json({
+      status: "success",
+      summary,
+      questionEffectiveSolves,
+    });
   } catch (error) {
     console.error("Error processing ghlinkage payload:", error);
     return NextResponse.json(

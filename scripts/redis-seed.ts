@@ -15,11 +15,13 @@ async function main() {
 
   const pipeline = redis.pipeline();
   for (const problem of allProblems) {
-    pipeline.set(problem.id, 500);
+    pipeline.set(problem.id, 0);
   }
 
   await pipeline.exec();
-  console.log(`Seeded ${allProblems.length} problem keys in Redis to 500.`);
+  console.log(
+    `Seeded ${allProblems.length} problem keys in Redis to 0 effective solve.`,
+  );
 }
 
 main()

@@ -2,8 +2,8 @@ import { db } from "@/db";
 import { problems, solve, submissions, teams, users } from "@/db/schema";
 import TeamSubmissionClient from "../TeamSubmissionClient";
 import type { GroupedTeamSubmissions } from "../types";
-import { calculateCurrentPoints, calculateSolveContribution } from "@/db/scoring";
-import { desc, eq, inArray } from "drizzle-orm";
+import { calculateCurrentPoints, calculateEffectiveSolves } from "@/db/scoring";
+import { desc, eq } from "drizzle-orm";
 
 async function getSubmissionsByTeam(): Promise<GroupedTeamSubmissions> {
   try {
@@ -29,26 +29,20 @@ async function getSubmissionsByTeam(): Promise<GroupedTeamSubmissions> {
       .leftJoin(teams, eq(users.teamId, teams.id))
       .orderBy(desc(submissions.createdAt));
 
-    const problemIds = [
-      ...new Set(submissionRows.map((row) => row.problemId)),
-    ];
-    const solveRows = problemIds.length
-      ? await db
-          .select({
-            problemId: solve.problemId,
-            teamId: solve.teamId,
-            testcasesPassed: solve.testcasesPassed,
-          })
-          .from(solve)
-          .where(inArray(solve.problemId, problemIds))
-      : [];
+    const problemIds = [...new Set(submissionRows.map((row) => row.problemId))];
+    const solveRows = await db
+      .select({
+        problemId: solve.problemId,
+        testcasesPassed: solve.testcasesPassed,
+      })
+      .from(solve);
 
     const effectiveSolvesByProblem = new Map<string, number>();
-    for (const row of solveRows) {
-      const contribution = calculateSolveContribution(row.testcasesPassed);
+    for (const problemId of problemIds) {
+      const solvesForProblem = solveRows.filter((row) => row.problemId === problemId);
       effectiveSolvesByProblem.set(
-        row.problemId,
-        (effectiveSolvesByProblem.get(row.problemId) ?? 0) + contribution
+        problemId,
+        calculateEffectiveSolves(solvesForProblem)
       );
     }
 

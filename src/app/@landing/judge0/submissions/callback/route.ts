@@ -7,6 +7,7 @@ import {
   solve,
 } from "@/db/schema";
 import { and, asc, eq } from "drizzle-orm";
+import { Redis } from "@upstash/redis";
 import {
   Judge0StatusEnumValue,
   judge0StatusToEval,
@@ -15,6 +16,7 @@ import type {
   SupportedLanguageId,
   SupportedLanguageName,
 } from "@/utils/judge0-langs";
+import { calculateSolveContribution } from "@/db/scoring";
 
 export interface Judge0Response {
   stdout: string | null;
@@ -44,6 +46,11 @@ export interface Judge0Error {
 
 const normalizeOutput = (value: string | null | undefined) =>
   (value ?? "").replace(/\r\n/g, "\n").trimEnd();
+
+const redis =
+  process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+    ? Redis.fromEnv()
+    : null;
 
 export async function PUT(request: NextRequest) {
   try {
@@ -105,9 +112,6 @@ export async function PUT(request: NextRequest) {
     const evaluationStatus = judge0StatusToEval(status.description);
 
     const updateSolveIfComplete = async () => {
-      // const client = new Ably.Rest(process.env.ABLY_API_KEY);
-      // const channel = realtime.channels.get("leaderboard");
-
       // Query 2: Retrieve ALL testcase results for this submission to check if evaluation is complete
       // This query:
       // - Selects all submissionTestcases records for the current submission
@@ -194,6 +198,11 @@ export async function PUT(request: NextRequest) {
           bestSubmissionId: submission.id,
           testcasesPassed: passedCount,
         });
+        if (redis) {
+          const contribution = calculateSolveContribution(passedCount);
+          const currentValue = Number((await redis.get(submission.problemId)) ?? 0);
+          await redis.set(submission.problemId, currentValue + contribution);
+        }
         return;
       }
 
@@ -215,6 +224,13 @@ export async function PUT(request: NextRequest) {
           bestSubmissionId: submission.id,
         })
         .where(eq(solve.id, teamSolve.id));
+
+      if (redis) {
+        const gainedTestcases = passedCount - teamSolve.testcasesPassed;
+        const contribution = calculateSolveContribution(gainedTestcases);
+        const currentValue = Number((await redis.get(submission.problemId)) ?? 0);
+        await redis.set(submission.problemId, currentValue + contribution);
+      }
     };
 
     if (compile_output) {

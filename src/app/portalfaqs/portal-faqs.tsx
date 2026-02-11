@@ -8,38 +8,48 @@ export default function PortalFaqs() {
     const faqs = [
         {
             id: "faq1",
-            question: "WHAT IS THIS PORTAL ABOUT?",
-            answer: "This portal provides information and resources to help you manage your activities effectively.",
+            question: "HOW MANY MEMBERS ARE ALLOWED IN A TEAM?",
+            answer: "Each team can have 1 to 4 members.",
         },
-        { 
+        {
             id: "faq2",
-            question: "HOW CAN I RESET MY PASSWORD?",
-            answer: "To reset your password, go to the login page and click on the 'Forgot Password' link. Follow the instructions to reset your password.",
+            question: "IS THERE A REGISTRATION FEE?",
+            answer: "No, the event is completely free of cost.",
         },
         {
             id: "faq3",
-            question: "WHO CAN I CONTACT FOR SUPPORT?",
-            answer: "For support, you can contact our team via the 'Contact Us' section or email us at support@example.com.",
+            question: "CAN I USE ONLINE RESOURCES DURING THE CONTEST?",
+            answer: "Participants may use online resources like documentation and tutorials, but collaborating with others outside their team or sharing solutions with other teams during the contest is strictly prohibited.",
         },
         {
             id: "faq4",
-            question: "HOW DO I ACCESS RESOURCES?",
-            answer: "Resources can be accessed from the main dashboard under the Resources tab.",
+            question: "WHAT SHOULD I DO IF I CAN’T FIND TEAMMATES?",
+            answer: "If you can’t find teammates, you can still participate solo - the team size allows 1-4 members. You can also join the Discord server to find and team up with other participants.",
         },
         {
             id: "faq5",
-            question: "WHAT IS THE BEST WAY TO GET STARTED?",
-            answer: "The best way to get started is by exploring the user guide available in the Help section.",
+            question: "WILL OD BE PROVIDED?",
+            answer: "Yes, On-Duty (OD) will be provided to participants who have registered on VTOP.",
         },
         {
             id: "faq6",
-            question: "CAN I UPDATE MY PROFILE?",
-            answer: "Yes, you can update your profile by navigating to the Profile tab and clicking Edit.",
+            question: "IS THIS EVENT BEGINNER-FRIENDLY?",
+            answer: "Yes, the event is beginner-friendly, with problems designed for all skill levels and a focus on logical thinking and learning.",
         },
         {
             id: "faq7",
-            question: "WHAT ARE THE TERMS AND CONDITIONS?",
-            answer: "The terms and conditions are available on the bottom of the page in the Terms section.",
+            question: "WHAT PROGRAMMING LANGUAGES ARE ALLOWED?",
+            answer: "You may use C, C++, Java, Python, JavaScript, Go, Rust programming language to submit your solutions.",
+        },
+        {
+            id: "faq8",
+            question: "WHICH TEAMS QUALIFY FOR ROUND 2?",
+            answer: "The top-performing teams on the leaderboard will qualify for the second round.",
+        },
+        {
+            id: "faq9",
+            question: "HOW DO I WIN REVERSE CODING?",
+            answer: "Winning is determined by the accuracy and speed of the solutions submitted by the participants. The final leaderboard, based on overall performance throughout the event, will decide the winners.",
         },
     ];
 

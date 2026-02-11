@@ -3,14 +3,12 @@
 import NumberedCard from "@/components/NumberedCard";
 import { formula1Wide } from "@/lib/fonts";
 
-// TODO: Update instructions  
-
 export default function Instructions() {
     const instructions = [
         {
             title: "Team Formation",
             description:
-                "• Each team can have 2-4 members.\n• If you don’t have a teammate, you can search for them on our Discord channel."
+                "• Each team can have 1-4 members.\n• If you don’t have a teammate, you can search for them on our Discord channel."
         },
         {
             title: "Format",

@@ -25,13 +25,13 @@ export async function generateMetadata(): Promise<Metadata> {
   const teamRound = await getTeamRound();
   const roundInfo = teamRound?.roundId
     ? await db
-        .select({ number: rounds.number })
+        .select({ numbcer: rounds.number })
         .from(rounds)
         .where(eq(rounds.id, teamRound.roundId))
         .limit(1)
     : null;
 
-  if (!roundInfo?.[0]?.number) {
+  if (!roundInfo?.[0]?.numbcer) {
     return {
       title: "Reverse Coding | ACM-VIT",
       description: "Join Reverse Coding competition",
@@ -51,11 +51,11 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   return {
-    title: `Round ${roundInfo[0].number} Dashboard`,
+    title: `Round ${roundInfo[0].numbcer} Dashboard`,
     description:
       "View your team's progress, leaderboard and available problems",
     openGraph: {
-      title: `Round ${roundInfo[0].number}`,
+      title: `Round ${roundInfo[0].numbcer}`,
       description: "Track your team's progress in real-time",
     },
     robots: {

@@ -203,11 +203,11 @@ export function TeamMembers({
                 </div>
               </div>
 
-              <p
+                <p
                 className={`${formula1Regular.className} absolute ${slot.labelPos} text-[16px] leading-[normal] text-white`}
-              >
-                Team Name
-              </p>
+                >
+                {displayTeamName}
+                </p>
 
               <div className={`absolute ${slot.wheelInset}`} aria-hidden="true">
                 <img

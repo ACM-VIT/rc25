@@ -83,18 +83,27 @@ export async function judgeSolution(
   language: SupportedLanguage,
   stdin: string[],
   submissionId: string,
+  callbackUrls?: string[],
 ) {
   if (!process.env.HOST) {
     throw new Error("HOST is not defined in environment variables.");
   }
 
+  if (callbackUrls && callbackUrls.length !== stdin.length) {
+    return {
+      success: false,
+      error: "Callback URL count does not match number of stdin entries",
+    };
+  }
+
   const encodedCode = Buffer.from(code ?? "", "utf-8").toString("base64");
   const submissionsPath = "/submissions/batch?base64_encoded=true";
-  const submissions = (stdin ?? []).map((input) => ({
+  const defaultCallbackUrl = `https://${process.env.HOST}/judge0/submissions/callback`;
+  const submissions = (stdin ?? []).map((input, index) => ({
     language_id: SUPPORTED_LANGUAGES[language as SupportedLanguage].id,
     source_code: encodedCode,
     stdin: Buffer.from(input ?? "", "utf-8").toString("base64"),
-    callback_url: `https://${process.env.HOST}/judge0/submissions/callback`,
+    callback_url: callbackUrls?.[index] ?? defaultCallbackUrl,
   }));
 
   if (submissions.length === 0) {

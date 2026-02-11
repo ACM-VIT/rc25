@@ -1,17 +1,9 @@
-"use server";
-
 import { db } from "@/db";
-import {
-  problems,
-  rounds,
-  submissions,
-  submissionTestcases,
-  testcases,
-  teams,
-  users,
-} from "@/db/schema";
+import { problems, rounds, testcases, teams, users } from "@/db/schema";
 import type { SupportedLanguage } from "@/utils/judge0-langs";
-import { judgeSolution } from "./submit-code";
+import { eq } from "drizzle-orm";
+import { judgeSolution } from "@/app/actions/submit-code";
+
 import {
   pythonFunction,
   cFunction,
@@ -21,12 +13,6 @@ import {
   goFunction,
   rustFunction,
 } from "@/utils/funcconvert";
-import { eq } from "drizzle-orm";
-import { start } from "workflow/api";
-import {
-  buildJudge0HookToken,
-  finalizeJudge0SubmissionWorkflow,
-} from "@/workflows/judge0-submission";
 
 // Map language to template function
 const languageTemplates = {
@@ -39,7 +25,6 @@ const languageTemplates = {
   rust: rustFunction,
 } as const;
 
-// Add this helper to remove duplicated imports from final code
 function removeDuplicateImports(
   code: string,
   language: SupportedLanguage,
@@ -82,7 +67,7 @@ function removeDuplicateImports(
 
 export default async function createSubmission(data: {
   code: string;
-  problemId: string;
+  problemName: string;
   userId: string;
   language: SupportedLanguage;
 }) {
@@ -91,7 +76,7 @@ export default async function createSubmission(data: {
       .select({ problem: problems, round: rounds })
       .from(problems)
       .leftJoin(rounds, eq(problems.roundId, rounds.id))
-      .where(eq(problems.id, data.problemId))
+      .where(eq(problems.title, data.problemName))
       .limit(1);
 
     const problem = problemRows[0]?.problem ?? null;
@@ -167,19 +152,6 @@ export default async function createSubmission(data: {
     const submissionId = crypto.randomUUID();
 
     const combinedInput = orderedTestcases.map((tc) => tc.input);
-    const hookTokens = orderedTestcases.map((tc) =>
-      buildJudge0HookToken(submissionId, tc.id),
-    );
-    const callbackUrls = process.env.HOST
-      ? orderedTestcases.map(
-          (tc, index) =>
-            `https://${process.env.HOST}/judge0/submissions/callback?hookToken=${encodeURIComponent(
-              hookTokens[index] ?? "",
-            )}&submissionId=${encodeURIComponent(
-              submissionId,
-            )}&testcaseId=${encodeURIComponent(tc.id)}&testcaseIndex=${index}`,
-        )
-      : undefined;
 
     // console.log("combinedInput: ", combinedInput);
 
@@ -188,20 +160,13 @@ export default async function createSubmission(data: {
 
     // Transform code using appropriate template
     const templateFunction = languageTemplates[data.language];
-    let transformedCode = templateFunction(data.code);
-
-    // Remove duplicated imports from the final code
-    transformedCode = removeDuplicateImports(transformedCode, data.language);
-
-    // console.log("code: \n", transformedCode);
 
     // Submit to Judge0
     const judgeResult = await judgeSolution(
-      transformedCode,
+      data.code,
       data.language,
       combinedInput,
       submissionId,
-      callbackUrls,
     );
 
     // console.log("judge submit", judgeResult);
@@ -228,48 +193,11 @@ export default async function createSubmission(data: {
       };
     }
 
-    const [submission] = await db.transaction(async (tx) => {
-      const inserted = await tx
-        .insert(submissions)
-        .values({
-          id: submissionId,
-          code: data.code,
-          language: data.language,
-          problemId: data.problemId,
-          userId: data.userId,
-          teamId: userTeam.id,
-          testcasesPassed: 0,
-          evaluated: false,
-        })
-        .returning();
-
-      const created = inserted[0];
-      if (!created) {
-        throw new Error("Failed to create submission");
-      }
-
-      if (orderedTestcases.length) {
-        await tx.insert(submissionTestcases).values(
-          orderedTestcases.map((tc, index) => ({
-            testcaseId: tc.id,
-            submissionId: created.id,
-            passed: false,
-            token: tokens[index],
-          })),
-        );
-      }
-
-      return [created];
-    });
-
     const [primaryToken] = tokens;
-
-    await start(finalizeJudge0SubmissionWorkflow, [submission.id, hookTokens]);
 
     return {
       success: true,
       submission: {
-        ...submission,
         totalTestcases: numTestcases,
         user: { name: user?.name ?? null },
       },

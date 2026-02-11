@@ -1,9 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import {
+  problems,
   submissions,
   submissionTestcases,
   testcases,
+  teams,
   solve,
 } from "@/db/schema";
 import { and, asc, eq, lt } from "drizzle-orm";
@@ -16,7 +18,11 @@ import type {
   SupportedLanguageId,
   SupportedLanguageName,
 } from "@/utils/judge0-langs";
-import { calculateSolveContribution } from "@/db/scoring";
+import {
+  calculateCurrentPoints,
+  calculateSolveContribution,
+} from "@/db/scoring";
+import type { LeaderboardEvent, QuestionEvent } from "@/lib/realtime";
 
 export interface Judge0Response {
   stdout: string | null;
@@ -51,6 +57,139 @@ const redis =
   process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
     ? Redis.fromEnv()
     : null;
+
+type SolveLeaderboardRow = {
+  problemId: string;
+  teamId: string;
+  testcasesPassed: number;
+};
+
+const buildEffectiveSolvesMap = (solveRows: SolveLeaderboardRow[]) => {
+  const effectiveSolvesByProblem = new Map<string, number>();
+
+  for (const row of solveRows) {
+    const contribution = calculateSolveContribution(row.testcasesPassed);
+    effectiveSolvesByProblem.set(
+      row.problemId,
+      (effectiveSolvesByProblem.get(row.problemId) ?? 0) + contribution,
+    );
+  }
+
+  return effectiveSolvesByProblem;
+};
+
+const getEffectiveSolves = async (problemId: string): Promise<number> => {
+  const redisValue =
+    redis !== null ? Number((await redis.get(problemId)) ?? NaN) : NaN;
+  return Number.isFinite(redisValue) ? redisValue : 0;
+};
+
+const buildLeaderboard = async (
+  solveRows: SolveLeaderboardRow[],
+): Promise<LeaderboardEvent> => {
+  const effectiveSolvesFromRows = buildEffectiveSolvesMap(solveRows);
+  const problemIds = Array.from(effectiveSolvesFromRows.keys());
+
+  if (!problemIds.length) {
+    return [];
+  }
+
+  const problemRows = await db
+    .select({
+      id: problems.id,
+      initial: problems.initial,
+      minimum: problems.minimum,
+      decay: problems.decay,
+    })
+    .from(problems);
+
+  const effectiveSolveEntries = await Promise.all(
+    problemRows.map(async (problem) => {
+      const effectiveSolves = await getEffectiveSolves(problem.id);
+      const currentPoints = calculateCurrentPoints({
+        initial: problem.initial,
+        minimum: problem.minimum,
+        decay: problem.decay,
+        effectiveSolves,
+      });
+      return [problem.id, currentPoints] as const;
+    }),
+  );
+
+  const currentPointsByProblem = new Map(effectiveSolveEntries);
+  const teamScores = new Map<string, number>();
+
+  for (const row of solveRows) {
+    const currentPoints = currentPointsByProblem.get(row.problemId);
+    if (currentPoints === undefined) {
+      continue;
+    }
+
+    const contribution = calculateSolveContribution(row.testcasesPassed);
+    const score = Math.round(currentPoints * contribution);
+    teamScores.set(row.teamId, (teamScores.get(row.teamId) ?? 0) + score);
+  }
+
+  const adminTeamId = process.env.ADMIN_TEAM_ID ?? "";
+  const teamRows = await db
+    .select({
+      id: teams.id,
+      name: teams.name,
+      hidden: teams.hidden,
+      disqualify: teams.disqualify,
+    })
+    .from(teams);
+
+  return teamRows
+    .filter(
+      (team) => !team.hidden && !team.disqualify && team.id !== adminTeamId,
+    )
+    .map((team) => ({
+      id: team.id,
+      name: team.name,
+      score: teamScores.get(team.id) ?? 0,
+    }))
+    .sort((a, b) => {
+      if (b.score !== a.score) {
+        return b.score - a.score;
+      }
+      return a.name.localeCompare(b.name);
+    });
+};
+
+const buildQuestionEvent = async (
+  problemId: string,
+): Promise<QuestionEvent | null> => {
+  const problemRows = await db
+    .select({
+      id: problems.id,
+      title: problems.title,
+      initial: problems.initial,
+      minimum: problems.minimum,
+      decay: problems.decay,
+    })
+    .from(problems)
+    .where(eq(problems.id, problemId))
+    .limit(1);
+
+  const problem = problemRows[0];
+  if (!problem) {
+    return null;
+  }
+
+  const effectiveSolves = await getEffectiveSolves(problem.id);
+
+  return {
+    id: problem.id,
+    problem: problem.title,
+    points: calculateCurrentPoints({
+      initial: problem.initial,
+      minimum: problem.minimum,
+      decay: problem.decay,
+      effectiveSolves,
+    }),
+  };
+};
 
 export async function PUT(request: NextRequest) {
   try {
@@ -161,28 +300,26 @@ export async function PUT(request: NextRequest) {
         })
         .where(eq(submissions.id, submission.id));
 
-      // Query 4: Retrieve the team's existing solve record for this problem (if any)
+      // Query 4: Retrieve all solve rows and find the team's existing solve record in-memory
       // This query:
-      // - Selects the solve record which tracks the best submission for a team/problem combination
-      // - Filters by problemId and teamId to get the team's current best attempt at this problem
-      // - The solve table maintains partial scoring: tracks how many testcases (0-10) the team has passed
-      // - Returns the current best submission reference and testcasesPassed count
-      // - Used to determine if this new submission improves upon the team's previous best
+      // - Selects all rows from solve table so we can recompute leaderboard after updates
+      // - Finds current team/problem solve row from this dataset
+      // - Uses full solve snapshot for point calculations
       const solveRows = await db
         .select({
           id: solve.id,
+          problemId: solve.problemId,
+          teamId: solve.teamId,
           bestSubmissionId: solve.bestSubmissionId,
           testcasesPassed: solve.testcasesPassed,
         })
-        .from(solve)
-        .where(
-          and(
-            eq(solve.problemId, submission.problemId),
-            eq(solve.teamId, submission.teamId),
-          ),
-        );
+        .from(solve);
 
-      const teamSolve = solveRows[0];
+      const teamSolve = solveRows.find(
+        (row) =>
+          row.problemId === submission.problemId &&
+          row.teamId === submission.teamId,
+      );
       const solveLogContext = {
         token,
         submissionId: submission.id,
@@ -190,6 +327,7 @@ export async function PUT(request: NextRequest) {
         problemId: submission.problemId,
         passedCount,
       };
+      let solveChanged = false;
 
       if (!teamSolve) {
         if (passedCount <= 0) {
@@ -220,39 +358,83 @@ export async function PUT(request: NextRequest) {
             );
             await redis.set(submission.problemId, currentValue + contribution);
           }
+          solveChanged = true;
+        } else {
+          console.warn("Solve insert skipped due to concurrent callback", {
+            ...solveLogContext,
+            reason: "conflict_on_team_problem",
+          });
+
+          const latestSolveRows = await db
+            .select({
+              id: solve.id,
+              testcasesPassed: solve.testcasesPassed,
+            })
+            .from(solve)
+            .where(
+              and(
+                eq(solve.problemId, submission.problemId),
+                eq(solve.teamId, submission.teamId),
+              ),
+            )
+            .limit(1);
+
+          const latestSolve = latestSolveRows[0];
+          if (!latestSolve) {
+            console.error("Solve row missing after conflict", solveLogContext);
+            return;
+          }
+
+          if (passedCount <= latestSolve.testcasesPassed) {
+            return;
+          }
+
+          const updatedSolveRows = await db
+            .update(solve)
+            .set({
+              testcasesPassed: passedCount,
+              bestSubmissionId: submission.id,
+            })
+            .where(
+              and(
+                eq(solve.id, latestSolve.id),
+                eq(solve.testcasesPassed, latestSolve.testcasesPassed),
+                lt(solve.testcasesPassed, passedCount),
+              ),
+            )
+            .returning({ id: solve.id });
+
+          if (!updatedSolveRows[0]) {
+            console.warn("Solve update skipped due to concurrent improvement", {
+              ...solveLogContext,
+              previousBest: latestSolve.testcasesPassed,
+            });
+            return;
+          }
+
+          if (redis) {
+            const gainedTestcases = passedCount - latestSolve.testcasesPassed;
+            const contribution = calculateSolveContribution(gainedTestcases);
+            const currentValue = Number(
+              (await redis.get(submission.problemId)) ?? 0,
+            );
+            await redis.set(submission.problemId, currentValue + contribution);
+          }
+          solveChanged = true;
+        }
+      } else {
+        if (passedCount <= teamSolve.testcasesPassed) {
           return;
         }
 
-        console.warn("Solve insert skipped due to concurrent callback", {
-          ...solveLogContext,
-          reason: "conflict_on_team_problem",
-        });
-
-        const latestSolveRows = await db
-          .select({
-            id: solve.id,
-            testcasesPassed: solve.testcasesPassed,
-          })
-          .from(solve)
-          .where(
-            and(
-              eq(solve.problemId, submission.problemId),
-              eq(solve.teamId, submission.teamId),
-            ),
-          )
-          .limit(1);
-
-        const latestSolve = latestSolveRows[0];
-        if (!latestSolve) {
-          console.error("Solve row missing after conflict", solveLogContext);
-          return;
-        }
-
-        if (passedCount <= latestSolve.testcasesPassed) {
-          return;
-        }
-
-        const updatedSolveRows = await db
+        // Query 5b: Update EXISTING solve record if this submission improves the team's best score
+        // This query:
+        // - Updates the solve table when a team submits a better solution (more testcases passed)
+        // - Only executes if: passedCount > previous testcasesPassed
+        // - Updates both the testcasesPassed count and the bestSubmissionId reference
+        // - Implements partial scoring: teams can incrementally improve from 1/10 to 10/10 testcases
+        // - Used for leaderboard calculations and determining team progress
+        const improvedSolveRows = await db
           .update(solve)
           .set({
             testcasesPassed: passedCount,
@@ -260,69 +442,61 @@ export async function PUT(request: NextRequest) {
           })
           .where(
             and(
-              eq(solve.id, latestSolve.id),
-              eq(solve.testcasesPassed, latestSolve.testcasesPassed),
+              eq(solve.id, teamSolve.id),
+              eq(solve.testcasesPassed, teamSolve.testcasesPassed),
               lt(solve.testcasesPassed, passedCount),
             ),
           )
           .returning({ id: solve.id });
 
-        if (!updatedSolveRows[0]) {
-          console.warn("Solve update skipped due to concurrent improvement", {
+        if (!improvedSolveRows[0]) {
+          console.warn("Solve update skipped due to concurrent callback", {
             ...solveLogContext,
-            previousBest: latestSolve.testcasesPassed,
+            previousBest: teamSolve.testcasesPassed,
           });
           return;
         }
 
         if (redis) {
-          const gainedTestcases = passedCount - latestSolve.testcasesPassed;
+          const gainedTestcases = passedCount - teamSolve.testcasesPassed;
           const contribution = calculateSolveContribution(gainedTestcases);
-          const currentValue = Number((await redis.get(submission.problemId)) ?? 0);
+          const currentValue = Number(
+            (await redis.get(submission.problemId)) ?? 0,
+          );
           await redis.set(submission.problemId, currentValue + contribution);
         }
+        solveChanged = true;
+      }
+
+      if (!solveChanged) {
         return;
       }
 
-      if (passedCount <= teamSolve.testcasesPassed) {
-        return;
-      }
-
-      // Query 5b: Update EXISTING solve record if this submission improves the team's best score
-      // This query:
-      // - Updates the solve table when a team submits a better solution (more testcases passed)
-      // - Only executes if: passedCount > previous testcasesPassed
-      // - Updates both the testcasesPassed count and the bestSubmissionId reference
-      // - Implements partial scoring: teams can incrementally improve from 1/10 to 10/10 testcases
-      // - Used for leaderboard calculations and determining team progress
-      const improvedSolveRows = await db
-        .update(solve)
-        .set({
-          testcasesPassed: passedCount,
-          bestSubmissionId: submission.id,
+      const refreshedSolveRows = await db
+        .select({
+          problemId: solve.problemId,
+          teamId: solve.teamId,
+          testcasesPassed: solve.testcasesPassed,
         })
-        .where(
-          and(
-            eq(solve.id, teamSolve.id),
-            eq(solve.testcasesPassed, teamSolve.testcasesPassed),
-            lt(solve.testcasesPassed, passedCount),
-          ),
-        )
-        .returning({ id: solve.id });
+        .from(solve);
 
-      if (!improvedSolveRows[0]) {
-        console.warn("Solve update skipped due to concurrent callback", {
-          ...solveLogContext,
-          previousBest: teamSolve.testcasesPassed,
-        });
-        return;
-      }
-
+      const leaderboard = await buildLeaderboard(refreshedSolveRows);
+      const question = await buildQuestionEvent(submission.problemId);
       if (redis) {
-        const gainedTestcases = passedCount - teamSolve.testcasesPassed;
-        const contribution = calculateSolveContribution(gainedTestcases);
-        const currentValue = Number((await redis.get(submission.problemId)) ?? 0);
-        await redis.set(submission.problemId, currentValue + contribution);
+        await redis.set("leaderboard", leaderboard);
+        if (question) {
+          await redis.set(`question:${question.id}`, question);
+        }
+        try {
+          const { realtime } = await import("@/lib/realtime");
+          const channel = realtime.channel("leaderboard");
+          await channel.emit("leaderboard", leaderboard);
+          if (question) {
+            await channel.emit("question", question);
+          }
+        } catch (error: unknown) {
+          console.error("Failed to emit realtime leaderboard", error);
+        }
       }
     };
 

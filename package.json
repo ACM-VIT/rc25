@@ -33,6 +33,7 @@
     "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-toast": "^1.2.15",
     "@tailwindcss/postcss": "^4.1.18",
+    "@upstash/realtime": "^1.0.2",
     "@upstash/redis": "^1.36.2",
     "auth": "^1.2.3",
     "class-variance-authority": "^0.7.1",
@@ -82,7 +83,8 @@
     "tailwind-variants": "^3.2.2",
     "tailwindcss-animate": "^1.0.7",
     "tailwindcss-motion": "^1.1.1",
-    "vfile-reporter": "^8.1.1"
+    "vfile-reporter": "^8.1.1",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.3",

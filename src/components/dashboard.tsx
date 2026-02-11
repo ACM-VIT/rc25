@@ -5,7 +5,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import DashboardBox from "@/components/DashboardBox";
 import type { DashboardProps } from "@/types/dashboard";
 import Link from "next/link";
-import { FaCrown } from "react-icons/fa";
 import FloatingDock from "./FloatingDock";
 import News from "./news";
 import CountdownTimer from "./countdown-timer";

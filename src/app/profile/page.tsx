@@ -207,7 +207,7 @@ export default async function Page() {
                                         </div>
                                     </div>
                                     <p className="font-['Orbitron'] text-4xl text-white opacity-45 ">
-                                        {String(index + 1).padStart(2, '0')}
+                                        {Math.floor(Math.random()*91)+10}
                                     </p>
                                 </div>
                                 <div className="h-[7px] bg-black"></div>

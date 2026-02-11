@@ -93,6 +93,11 @@ export default async function TeamMembersAndLeaveButton() {
   const teamName = await getTeamName();
   const code = await getTeamCode();
   return (
-    <TeamMembers teamMembers={teamMembers} teamName={teamName} code={code} min_team_size={Number.parseInt(process.env.MIN_TEAM_CAPACITY || "2")} />
+    <TeamMembers
+      teamMembers={teamMembers}
+      teamName={teamName}
+      code={code}
+      min_team_size={Number.parseInt(process.env.MIN_TEAM_CAPACITY || "1")}
+    />
   );
 }

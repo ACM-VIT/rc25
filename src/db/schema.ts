@@ -248,7 +248,9 @@ export const submissions = cockroachTable(
     userId: uuid("userId")
       .notNull()
       .references(() => users.id),
-    teamId: uuid("teamId").references(() => teams.id), // For team-based scoring
+    teamId: uuid("teamId")
+      .notNull()
+      .references(() => teams.id), // For team-based scoring
     evaluated: boolean("evaluated").notNull().default(false),
     createdAt: timestamp("createdAt", { withTimezone: true, mode: "date" })
       .notNull()

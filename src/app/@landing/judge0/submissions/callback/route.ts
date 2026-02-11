@@ -6,8 +6,7 @@ import {
   testcases,
   solve,
 } from "@/db/schema";
-import { firestoreService } from "@/lib/firebase-admin-service";
-import { and, asc, eq, isNull } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 import {
   Judge0StatusEnumValue,
   judge0StatusToEval,
@@ -16,7 +15,6 @@ import type {
   SupportedLanguageId,
   SupportedLanguageName,
 } from "@/utils/judge0-langs";
-import * as Ably from "ably";
 
 export interface Judge0Response {
   stdout: string | null;
@@ -107,8 +105,8 @@ export async function PUT(request: NextRequest) {
     const evaluationStatus = judge0StatusToEval(status.description);
 
     const updateSolveIfComplete = async () => {
-      const client = new Ably.Rest(process.env.ABLY_API_KEY);
-      const channel = realtime.channels.get("leaderboard");
+      // const client = new Ably.Rest(process.env.ABLY_API_KEY);
+      // const channel = realtime.channels.get("leaderboard");
 
       // Query 2: Retrieve ALL testcase results for this submission to check if evaluation is complete
       // This query:
@@ -192,7 +190,7 @@ export async function PUT(request: NextRequest) {
         // - Establishes the baseline for partial scoring (can be improved by later submissions)
         await db.insert(solve).values({
           problemId: submission.problemId,
-          teamId: submission.teamId ?? null,
+          teamId: submission.teamId,
           bestSubmissionId: submission.id,
           testcasesPassed: passedCount,
         });

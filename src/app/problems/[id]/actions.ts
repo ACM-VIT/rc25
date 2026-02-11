@@ -1,6 +1,7 @@
 'use server'
 import { db } from "@/db";
-import { problems, submissions, users } from "@/db/schema";
+import { problems, submissions, submissionTestcases, users } from "@/db/schema";
+import type { EvalEnum } from "@/db/schema";
 import { and, desc, eq, inArray } from "drizzle-orm";
 
 export async function getTeamId(userId: string) {
@@ -58,10 +59,37 @@ export async function getTeamSubmissions(userId: string, problemId: string) {
   const edgeCases = problemRows[0]?.edgeCases ?? 0;
   const totalTestcases = normalCases + edgeCases;
 
-  return submissionRows.map((row) => ({
-    ...row.submission,
-    totalTestcases,
-    evaluationStatus: null,
-    user: row.user,
-  }));
+  // Derive evaluation status for each evaluated submission
+  const results = await Promise.all(
+    submissionRows.map(async (row) => {
+      let evaluationStatus: EvalEnum | null = null;
+
+      if (row.submission.evaluated) {
+        const testcaseRows = await db
+          .select({ evaluationStatus: submissionTestcases.evaluationStatus })
+          .from(submissionTestcases)
+          .where(eq(submissionTestcases.submissionId, row.submission.id));
+
+        const statuses = testcaseRows.map((r) => r.evaluationStatus).filter(Boolean);
+        if (statuses.some((s) => s === "COMPILATION_ERROR")) {
+          evaluationStatus = "COMPILATION_ERROR";
+        } else if (statuses.some((s) => s?.startsWith("RUNTIME_ERROR"))) {
+          evaluationStatus = (statuses.find((s) => s?.startsWith("RUNTIME_ERROR")) as EvalEnum) ?? "RUNTIME_ERROR";
+        } else if (row.submission.testcasesPassed === totalTestcases) {
+          evaluationStatus = "ACCEPTED";
+        } else {
+          evaluationStatus = "WRONG_ANSWER";
+        }
+      }
+
+      return {
+        ...row.submission,
+        totalTestcases,
+        evaluationStatus,
+        user: row.user,
+      };
+    })
+  );
+
+  return results;
 }

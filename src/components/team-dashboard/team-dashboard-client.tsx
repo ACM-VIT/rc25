@@ -2,6 +2,7 @@
 import type { User } from "@/db/schema";
 import { LeaveButton } from "@/components/buttons/leave";
 import { formula1Bold, formula1Regular, formula1Wide } from "@/lib/fonts";
+import { Check, Copy } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 interface TeamMembersProps {
@@ -87,11 +88,29 @@ export function TeamMembers({
   min_team_size,
 }: TeamMembersProps) {
   const [scale, setScale] = useState(1);
+  const [copied, setCopied] = useState(false);
+  const [slotNumbers] = useState<number[]>(() => {
+    const STORAGE_KEY = "rc-squad-slot-numbers";
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length === 4 && parsed.every((n: unknown) => typeof n === "number")) {
+          return parsed;
+        }
+      }
+    } catch {}
+    const nums = Array.from({ length: 4 }, () => Math.floor(Math.random() * 91) + 10);
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(nums)); } catch {}
+    return nums;
+  });
 
   const handleCopy = async () => {
     if (!code) return;
     try {
       await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error("Failed to copy text: ", err);
     }
@@ -231,7 +250,7 @@ export function TeamMembers({
                 className={`absolute ${slot.numberPos} font-['Orbitron'] font-normal leading-[1.5] text-[60px] text-[rgba(255,255,255,0.45)]`}
                 aria-hidden="true"
               >
-                {Math.floor(Math.random()*91)+10}
+                {slotNumbers[idx]}
               </p>
             </div>
           );
@@ -242,40 +261,25 @@ export function TeamMembers({
           type="button"
           onClick={handleCopy}
           aria-label="Copy squad code"
-          className="-translate-x-1/2 absolute left-[calc(50%+9.5px)] top-[768px] h-[100px] w-[489px] rounded-[13.158px] border-[7.895px] border-[#a7282d] shadow-[0px_0px_35.512px_0px_#9f242d,0px_0px_20.293px_0px_#9f242d,0px_0px_11.837px_0px_#9f242d,0px_0px_5.919px_0px_#9f242d,0px_0px_1.691px_0px_#9f242d,0px_0px_0.846px_0px_#9f242d]"
+          className="-translate-x-1/2 absolute left-[calc(50%+9.5px)] top-[768px] h-[100px] w-[489px] rounded-[13.158px] border-[7.895px] border-[#a7282d] shadow-[0px_0px_35.512px_0px_#9f242d,0px_0px_20.293px_0px_#9f242d,0px_0px_11.837px_0px_#9f242d,0px_0px_5.919px_0px_#9f242d,0px_0px_1.691px_0px_#9f242d,0px_0px_0.846px_0px_#9f242d] flex items-center justify-center gap-3 cursor-pointer transition-all duration-200 hover:brightness-125 active:scale-[0.98]"
           style={{
             backgroundImage:
               "linear-gradient(180.00804764123595deg, rgba(0, 0, 0, 0.93) 0%, rgba(42, 42, 42, 0.93) 176.23%)",
           }}
-        />
-        <p
-          className={`${formula1Regular.className} -translate-x-1/2 pointer-events-none absolute left-[calc(50%-10px)] top-[797px] text-[30px] leading-[1.5] text-center text-white`}
         >
-          SQUAD CODE: {code}
-        </p>
-        <div
-          className="pointer-events-none absolute left-[912px] top-[803px] h-[20.377px] w-[20.377px] overflow-hidden"
-          aria-hidden="true"
-        >
-          <div className="absolute inset-[37.5%_8.33%_8.33%_37.5%]">
-            <div className="absolute inset-[-7.15%]">
-              <img
-                alt=""
-                className="block h-full w-full max-w-none"
-                src="/TeamDash/copy-a.svg"
-              />
-            </div>
+          <p
+            className={`${formula1Regular.className} text-[30px] leading-[1.5] text-center text-white`}
+          >
+            {copied ? "COPIED!" : `SQUAD CODE: ${code}`}
+          </p>
+          <div className="transition-all duration-200">
+            {copied ? (
+              <Check className="w-[22px] h-[22px] text-green-400" />
+            ) : (
+              <Copy className="w-[20px] h-[20px] text-white" />
+            )}
           </div>
-          <div className="absolute inset-[8.33%_37.5%_37.5%_8.33%]">
-            <div className="absolute inset-[-7.15%]">
-              <img
-                alt=""
-                className="block h-full w-full max-w-none"
-                src="/TeamDash/copy-b.svg"
-              />
-            </div>
-          </div>
-        </div>
+        </button>
 
         {/* Leave */}
         <div className="absolute left-[1087.35px] top-[906px]">

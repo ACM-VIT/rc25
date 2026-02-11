@@ -25,7 +25,7 @@ export default function Instructions() {
         {
             title: "Dynamic Scoring",
             description:
-                "• Problem points decrease as more teams solve them, rewarding early and difficult solves.\n• Formula: value = (((minimum - initial) / (decay × 2)) × (solve_count × 2)) + initial\n• Final value is the maximum of the calculated value (rounded up) and the minimum threshold.\n• This ensures problems maintain competitive value while adapting to solve difficulty.\n• Learn more: https://docs.ctfd.io/docs/custom-challenges/dynamic-value/"
+                "• Problem points decrease as more teams solve them, rewarding early and difficult solves.\n• Formula: value = (((minimum - initial) / (decay ^ 2)) × (solve_count ^ 2)) + initial\n• Final value is the maximum of the calculated value (rounded up) and the minimum threshold.\n• This ensures problems maintain competitive value while adapting to solve difficulty.\n• Learn more: https://docs.ctfd.io/docs/custom-challenges/dynamic-value/"
         },
         {
             title: "Code of Conduct",

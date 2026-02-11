@@ -35,6 +35,16 @@ export default function OnboardingForm() {
   const [statusError, setStatusError] = useState("");
   const phoneProgress = Math.min(phone.length / 10, 1);
 
+  const handleGenderSelect = (value: string) => {
+    setSelectedGender(value);
+    if (genderError) setGenderError("");
+  };
+
+  const handleStatusSelect = (value: string) => {
+    setSelectStatus(value);
+    if (statusError) setStatusError("");
+  };
+
   return (
     <main
       className="relative h-screen w-full overflow-y-auto bg-[#0c0c0c]"
@@ -150,12 +160,12 @@ export default function OnboardingForm() {
                 value1="MALE"
                 value2="FEMALE"
                 selected={selectedGender}
-                onSelect={setSelectedGender}
+                onSelect={handleGenderSelect}
               />
               <p
                 className={`${formula1Bold.className} mt-2 text-[12px] leading-[1.5] text-[#a7282d] md:text-[16px]`}
               >
-                {genderError || (!selectedGender && "You must select an option")}
+                {genderError}
               </p>
             </div>
 
@@ -166,12 +176,12 @@ export default function OnboardingForm() {
                 value1="HOSTELLER"
                 value2="DAYSCHOLAR"
                 selected={selectStatus}
-                onSelect={setSelectStatus}
+                onSelect={handleStatusSelect}
               />
               <p
                 className={`${formula1Bold.className} mt-2 text-[12px] leading-[1.5] text-[#a7282d] md:text-[16px]`}
               >
-                {statusError || (!selectStatus && "You must select an option")}
+                {statusError}
               </p>
             </div>
           </div>

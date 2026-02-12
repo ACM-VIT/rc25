@@ -162,16 +162,32 @@ function CheckIn({
   }
 
   function overrideParticipant(regNo: string) {
-    startTransition(() => {
-      const res = Override(regNo, team.id);
+    startTransition(async () => {
+      const res = await Override(regNo, team.id);
 
-      if (!res) {
+      if (!res.success) {
+        if (res.status === "ALREADY_WHITELISTED") {
+          toast({
+            title: "Already Whitelisted",
+            description: res.message,
+            variant: "destructive",
+          });
+          return;
+        }
+
         toast({
-          description: "Error in adding person.",
+          title: "Override Failed",
+          description: res.message,
           variant: "destructive",
         });
         return;
       }
+
+      toast({
+        title: "Override Added",
+        description: res.message,
+      });
+      router.refresh();
     });
   }
 

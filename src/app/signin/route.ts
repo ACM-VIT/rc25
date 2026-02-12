@@ -56,6 +56,9 @@ const getCookieHeaderForNextRequest = (
   return cookies.join("; ");
 };
 
+const signInInitFailedResponse = () =>
+  new Response("Unable to start sign in. Please retry.", { status: 500 });
+
 export async function GET(request: NextRequest) {
   const callbackUrl = getSafeCallbackUrl(request);
 
@@ -68,24 +71,12 @@ export async function GET(request: NextRequest) {
   });
 
   if (!csrfResponse.ok) {
-    return Response.redirect(
-      new URL(
-        `/api/auth/signin?callbackUrl=${encodeURIComponent(callbackUrl)}`,
-        request.url,
-      ),
-      302,
-    );
+    return signInInitFailedResponse();
   }
 
   const csrfData = (await csrfResponse.json()) as { csrfToken?: string };
   if (!csrfData.csrfToken) {
-    return Response.redirect(
-      new URL(
-        `/api/auth/signin?callbackUrl=${encodeURIComponent(callbackUrl)}`,
-        request.url,
-      ),
-      302,
-    );
+    return signInInitFailedResponse();
   }
 
   const csrfSetCookies = getSetCookies(csrfResponse.headers);
@@ -111,13 +102,7 @@ export async function GET(request: NextRequest) {
 
   const nextLocation = signinResponse.headers.get("location");
   if (!nextLocation) {
-    return Response.redirect(
-      new URL(
-        `/api/auth/signin?callbackUrl=${encodeURIComponent(callbackUrl)}`,
-        request.url,
-      ),
-      302,
-    );
+    return signInInitFailedResponse();
   }
 
   const response = Response.redirect(new URL(nextLocation, request.url), 302);

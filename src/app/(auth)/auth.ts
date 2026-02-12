@@ -11,6 +11,9 @@ export const {handlers, auth, signIn, signOut} = NextAuth({
     // Explicitly pinning this avoids `UnknownAction` parsing mismatches when
     // AUTH_URL/NEXTAUTH_URL env values differ from request pathname handling.
     basePath: "/api/auth",
+    pages: {
+        signIn: "/signin",
+    },
     adapter: DrizzleAdapter(db, {
         usersTable: users,
         accountsTable: accounts,

@@ -1,15 +1,13 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Orbitron } from "next/font/google";
 import { getLatestRound, refreshRoundCache } from "@/app/actions/round-actions";
+import { formula1Wide } from "@/lib/fonts";
 
-const orbitron = Orbitron({
-    subsets: ["latin"],
-    weight: ["400"],
-    display: "swap",
-});
+interface CountdownTimerProps {
+    compact?: boolean;
+}
 
-const CountdownTimer: React.FC = () => {
+const CountdownTimer: React.FC<CountdownTimerProps> = ({ compact = false }) => {
     const [timer, setTimer] = useState<string>("00:00:00");
     const [roundNumber, setRoundNumber] = useState<number | null>(null);
     const [status, setStatus] = useState<string>("Fetching...");
@@ -73,39 +71,24 @@ const CountdownTimer: React.FC = () => {
     
 
     return (
-        <div className="flex flex-col items-center w-full">
-            <div className="flex flex-col items-center space-y-1 gap-2 mb-4">
-                <h1 className="text-white text-sm md:text-base lg:text-lg font-['Formula1-Bold'] tracking-wider uppercase">
-                    {roundNumber !== null ? (
-                        <>
-                            <span className="text-[#F04D4E]">ROUND {roundNumber} </span> {status}
-                        </>
-                    ) : (
-                        "No Active Round"
-                    )}
-                </h1>
-            </div>
+        <div className="flex h-full w-full flex-col items-center justify-center">
+            {!compact && (
+                <div className="mb-4 flex flex-col items-center gap-1">
+                    <h1 className={`${formula1Wide.className} text-center text-[18px] leading-[1.5] text-white`}>
+                        {roundNumber !== null ? (
+                            <>
+                                <span className="text-[#F04D4E]">ROUND {roundNumber} </span> {status}
+                            </>
+                        ) : (
+                            "No Active Round"
+                        )}
+                    </h1>
+                </div>
+            )}
 
-            <div className={`flex items-center justify-center gap-4 ${orbitron.className}`}>
-                {(() => {
-                    const parts = timer.split(":");
-                    return (
-                        <>
-                            <span className="text-3xl text-white text-center min-w-[2ch] tabular-nums">
-                                {parts[0]}
-                            </span>
-                            <span className="text-3xl text-white">:</span>
-                            <span className="text-3xl text-white text-center min-w-[2ch] tabular-nums">
-                                {parts[1]}
-                            </span>
-                            <span className="text-3xl text-white">:</span>
-                            <span className="text-3xl text-white text-center min-w-[2ch] tabular-nums">
-                                {parts[2]}
-                            </span>
-                        </>
-                    );
-                })()}
-            </div>
+            <p className="font-['Orbitron'] text-[48px] leading-none text-white tabular-nums">
+                {timer}
+            </p>
         </div>
     );
 };

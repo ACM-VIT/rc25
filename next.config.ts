@@ -19,6 +19,12 @@ const config: NextConfig = {
                 basePath: false,
             },
             {
+                source: "/api/realtime",
+                destination: "/portal/api/realtime",
+                permanent: false,
+                basePath: false,
+            },
+            {
                 source: "/:path((?!portal(?:/|$)|_next(?:/|$)|api(?:/|$)|\\.well-known(?:/|$)).*)",
                 destination: "/portal/:path",
                 permanent: false,

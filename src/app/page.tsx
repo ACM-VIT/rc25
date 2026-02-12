@@ -259,16 +259,21 @@ export default async function Page() {
     }),
   );
   const effectiveSolvesByProblem = new Map(effectiveSolveEntries);
+  const currentPointsByProblem = new Map(
+    problemScoreRows.map((problem) => [
+      problem.id,
+      calculateCurrentPoints({
+        ...problem,
+        effectiveSolves: effectiveSolvesByProblem.get(problem.id) ?? 0,
+      }),
+    ]),
+  );
 
   const calculateTeamScore = (teamId: string) => {
     const teamSolves = teamSolvesByTeam.get(teamId) ?? new Map<string, number>();
     let totalScore = 0;
     for (const problem of problemScoreRows) {
-      const effectiveSolves = effectiveSolvesByProblem.get(problem.id) ?? 0;
-      const currentPoints = calculateCurrentPoints({
-        ...problem,
-        effectiveSolves,
-      });
+      const currentPoints = currentPointsByProblem.get(problem.id) ?? 0;
       const passed = teamSolves.get(problem.id) ?? 0;
       if (passed > 0) {
         totalScore += Math.round(currentPoints * (passed / 10));
@@ -333,6 +338,7 @@ export default async function Page() {
       0;
     const status = total > 0 ? `${passCount}/${total}` : "Not Attempted";
     const isHidden = problem.isHidden;
+    const points = currentPointsByProblem.get(problem.id) ?? 0;
 
     return {
       slno: index + 1,
@@ -340,6 +346,7 @@ export default async function Page() {
       questionName: problem.title,
       difficulty: problem.difficulty,
       status,
+      points,
       isHidden,
     };
   });

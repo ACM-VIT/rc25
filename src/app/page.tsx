@@ -1,6 +1,7 @@
 import { db } from "@/db";
 import Dashboard from "@/components/dashboard";
 import FallbackPage from "@/components/fallback-page";
+import NoActiveRoundScreen from "@/components/no-active-round-screen";
 // import SignOutButton from "@/components/buttons/sign-out";
 // import type { TeamRound } from "@prisma/client"
 import { getTeamRound } from "@/hooks/useTeamRound";
@@ -135,13 +136,7 @@ export default async function Page() {
   const effectiveRoundId = teamRound?.roundId ?? (isAdminView ? activeRoundId : null);
 
   if (!effectiveRoundId) {
-    return (
-      <FallbackPage
-        headerTitle="RACE CONTROL"
-        title="No Active Round"
-        message="There's no race happening right now. Hang tight — the next round will begin soon."
-      />
-    );
+    return <NoActiveRoundScreen />;
   }
 
   // Round info

@@ -2,7 +2,7 @@ import { db } from "@/db";
 import { problems, rounds, testcases, type Difficulty } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
-import { Redis } from "@upstash/redis";
+import { getRedis } from "@/lib/redis";
 
 type ExampleCase = {
   input: string;
@@ -246,10 +246,30 @@ function buildTestcaseRows(
   }));
 }
 
-const redis =
-  process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
-    ? Redis.fromEnv()
-    : null;
+const redis = getRedis();
+
+async function safeRedisGet(problemId: string): Promise<number> {
+  if (!redis) return 0;
+  try {
+    return Number((await redis.get(problemId)) ?? 0);
+  } catch {
+    return 0;
+  }
+}
+
+async function safeRedisSet(problemId: string, value: number): Promise<void> {
+  if (!redis) return;
+  try {
+    await redis.set(problemId, value);
+  } catch {}
+}
+
+async function safeRedisDel(problemId: string): Promise<void> {
+  if (!redis) return;
+  try {
+    await redis.del(problemId);
+  } catch {}
+}
 
 async function getQuestionEffectiveSolvesFromRedis(): Promise<EffectiveSolvesByQuestionId> {
   if (!redis) {
@@ -259,7 +279,7 @@ async function getQuestionEffectiveSolvesFromRedis(): Promise<EffectiveSolvesByQ
   const problemRows = await db.select({ id: problems.id }).from(problems);
   const entries = await Promise.all(
     problemRows.map(async ({ id }) => {
-      const value = Number((await redis.get(id)) ?? 0);
+      const value = await safeRedisGet(id);
       return [id, value] as const;
     }),
   );
@@ -462,15 +482,20 @@ export async function POST(req: NextRequest) {
     if (redis) {
       await Promise.all(
         Array.from(touchedProblemIds).map(async (problemId) => {
-          const value = await redis.get(problemId);
+          let value: unknown;
+          try {
+            value = await redis.get(problemId);
+          } catch {
+            return;
+          }
           if (value === null || value === undefined) {
-            await redis.set(problemId, 0);
+            await safeRedisSet(problemId, 0);
           }
         }),
       );
       await Promise.all(
         Array.from(deletedProblemIds).map(async (problemId) => {
-          await redis.del(problemId);
+          await safeRedisDel(problemId);
         }),
       );
     }

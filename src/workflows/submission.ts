@@ -22,7 +22,7 @@ import {
   rustFunction,
 } from "@/utils/funcconvert";
 import { and, eq, lt } from "drizzle-orm";
-import { Redis } from "@upstash/redis";
+import { getRedis } from "@/lib/redis";
 import {
   type Judge0StatusEnumValue,
   judge0StatusToEval,
@@ -155,16 +155,6 @@ function removeDuplicateImports(
 const normalizeOutput = (value: string | null | undefined) =>
   (value ?? "").replace(/\r\n/g, "\n").trimEnd();
 
-const getRedis = () => {
-  if (
-    process.env.UPSTASH_REDIS_REST_URL &&
-    process.env.UPSTASH_REDIS_REST_TOKEN
-  ) {
-    return Redis.fromEnv();
-  }
-  return null;
-};
-
 // ---------------------------------------------------------------------------
 // Leaderboard helpers
 // ---------------------------------------------------------------------------
@@ -177,8 +167,15 @@ type SolveLeaderboardRow = {
 
 async function getEffectiveSolves(problemId: string): Promise<number> {
   const redis = getRedis();
-  const redisValue =
-    redis !== null ? Number((await redis.get(problemId)) ?? NaN) : NaN;
+  if (!redis) return 0;
+
+  let redisValue = NaN;
+  try {
+    redisValue = Number((await redis.get(problemId)) ?? NaN);
+  } catch {
+    return 0;
+  }
+
   return Number.isFinite(redisValue) ? redisValue : 0;
 }
 
@@ -638,6 +635,14 @@ async function evaluateAndStore(
 
   const { submissionId, problemId, teamId, orderedTestcases } = prepared;
   const redis = getRedis();
+  const incrementEffectiveSolveCount = async (delta: number) => {
+    if (!redis) return;
+    try {
+      const currentRaw = Number((await redis.get(problemId)) ?? 0);
+      const currentValue = Number.isFinite(currentRaw) ? currentRaw : 0;
+      await redis.set(problemId, currentValue + delta);
+    } catch {}
+  };
 
   let passedCount = 0;
 
@@ -772,8 +777,7 @@ async function evaluateAndStore(
     if (insertedSolveRows[0]) {
       if (redis) {
         const contribution = calculateSolveContribution(passedCount);
-        const currentValue = Number((await redis.get(problemId)) ?? 0);
-        await redis.set(problemId, currentValue + contribution);
+        await incrementEffectiveSolveCount(contribution);
       }
       solveChanged = true;
     } else {
@@ -804,8 +808,7 @@ async function evaluateAndStore(
       if (redis) {
         const gainedTestcases = passedCount - latestSolve.testcasesPassed;
         const contribution = calculateSolveContribution(gainedTestcases);
-        const currentValue = Number((await redis.get(problemId)) ?? 0);
-        await redis.set(problemId, currentValue + contribution);
+        await incrementEffectiveSolveCount(contribution);
       }
       solveChanged = true;
     }
@@ -830,8 +833,7 @@ async function evaluateAndStore(
     if (redis) {
       const gainedTestcases = passedCount - teamSolve.testcasesPassed;
       const contribution = calculateSolveContribution(gainedTestcases);
-      const currentValue = Number((await redis.get(problemId)) ?? 0);
-      await redis.set(problemId, currentValue + contribution);
+      await incrementEffectiveSolveCount(contribution);
     }
     solveChanged = true;
   }

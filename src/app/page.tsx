@@ -11,17 +11,21 @@ import { auth } from "./(auth)/auth";
 import { admins, flags, news as newsTable, problems, rounds, submissions, teams, users, solve } from "@/db/schema";
 import { calculateCurrentPoints } from "@/db/scoring";
 import { and, asc, desc, eq, gte, inArray, lte, ne } from "drizzle-orm";
-import { Redis } from "@upstash/redis";
+import { getRedis } from "@/lib/redis";
 // import { use } from "react";
 
-const redis =
-  process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
-    ? Redis.fromEnv()
-    : null;
+const redis = getRedis();
 
 const getEffectiveSolves = async (problemId: string): Promise<number> => {
-  const redisValue =
-    redis !== null ? Number((await redis.get(problemId)) ?? NaN) : NaN;
+  if (!redis) return 0;
+
+  let redisValue = NaN;
+  try {
+    redisValue = Number((await redis.get(problemId)) ?? NaN);
+  } catch {
+    return 0;
+  }
+
   return Number.isFinite(redisValue) ? redisValue : 0;
 };
 

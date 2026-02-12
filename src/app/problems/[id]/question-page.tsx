@@ -250,6 +250,7 @@ export default function QuestionPage({
                     statusRibbon={statusRibbon}
                     setStatusRibbon={setStatusRibbon}
                     setSubmissions={setSubmissions}
+                    submissions={submissions}
                     session={session}
                   />
                 </ResizablePanel>

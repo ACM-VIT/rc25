@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Editor from "@monaco-editor/react";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import createSubmission from "@/app/actions/create-submission";
@@ -18,7 +18,6 @@ const poppins = Poppins({ weight: ["400", "500", "600"], subsets: ["latin"] });
 const LANGUAGE_STORAGE_KEY = "preferred-language" as const;
 const CODE_STORAGE_KEY = "code-snippets" as const;
 const SUBMISSION_COOLDOWN_MS = 30_000;
-const SUBMISSION_COOLDOWN_KEY_PREFIX = "submission-cooldown-until" as const;
 
 type SubmissionWithUser = {
   id: string;
@@ -43,6 +42,7 @@ interface CodeEditorProps {
   setStatusRibbon: React.Dispatch<React.SetStateAction<StatusRibbonProps>>;
   statusRibbon: StatusRibbonProps;
   setSubmissions: React.Dispatch<React.SetStateAction<SubmissionWithUser[]>>;
+  submissions: SubmissionWithUser[];
 }
 
 interface SubmittedStatusRibbonProps {
@@ -93,8 +93,23 @@ const validateCode = (
   return null;
 };
 
-const getSubmissionCooldownKey = (problemId: string, userId: string) =>
-  `${SUBMISSION_COOLDOWN_KEY_PREFIX}:${problemId}:${userId}`;
+const toTimestamp = (value: Date | string | number | null | undefined) => {
+  if (value instanceof Date) {
+    const ts = value.getTime();
+    return Number.isFinite(ts) ? ts : 0;
+  }
+
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : 0;
+  }
+
+  if (typeof value === "string") {
+    const ts = Date.parse(value);
+    return Number.isFinite(ts) ? ts : 0;
+  }
+
+  return 0;
+};
 
 export default function CodeEditor({
   problem,
@@ -102,6 +117,7 @@ export default function CodeEditor({
   setStatusRibbon,
   statusRibbon,
   setSubmissions,
+  submissions,
 }: CodeEditorProps) {
   const [language, setLanguage] = useState<SupportedLanguage>("c");
 
@@ -131,7 +147,6 @@ export default function CodeEditor({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const submitInFlightRef = useRef(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [cooldownUntil, setCooldownUntil] = useState(0);
   const [nowTimestamp, setNowTimestamp] = useState(() => Date.now());
 
   const setError = (message: string) => {
@@ -163,28 +178,20 @@ export default function CodeEditor({
     return () => window.clearInterval(intervalId);
   }, []);
 
-  useEffect(() => {
-    if (!session?.user?.id) {
-      setCooldownUntil(0);
-      return;
-    }
+  const lastSubmissionAt = useMemo(
+    () =>
+      submissions.reduce(
+        (latest, submission) =>
+          Math.max(latest, toTimestamp(submission.createdAt)),
+        0,
+      ),
+    [submissions],
+  );
 
-    const storageKey = getSubmissionCooldownKey(problem.id, session.user.id);
-    const storedValue = localStorage.getItem(storageKey);
-    const parsed = Number(storedValue);
-
-    if (Number.isFinite(parsed) && parsed > Date.now()) {
-      setCooldownUntil(parsed);
-      return;
-    }
-
-    setCooldownUntil(0);
-    if (storedValue) {
-      localStorage.removeItem(storageKey);
-    }
-  }, [problem.id, session?.user?.id]);
-
-  const remainingCooldownMs = Math.max(0, cooldownUntil - nowTimestamp);
+  const remainingCooldownMs = Math.max(
+    0,
+    lastSubmissionAt + SUBMISSION_COOLDOWN_MS - nowTimestamp,
+  );
   const remainingCooldownSeconds = Math.ceil(remainingCooldownMs / 1000);
   const isCooldownActive = remainingCooldownMs > 0;
 
@@ -228,11 +235,6 @@ export default function CodeEditor({
       // console.log("result: ", result);
 
       if (result.success && result.submission) {
-        const nextCooldownUntil = Date.now() + SUBMISSION_COOLDOWN_MS;
-        const storageKey = getSubmissionCooldownKey(problem.id, session.user.id);
-        setCooldownUntil(nextCooldownUntil);
-        localStorage.setItem(storageKey, String(nextCooldownUntil));
-
         setStatusRibbon({ type: "submitted" });
         emitClientEvent(CLIENT_EVENTS.SUBMISSION_CREATED, {
           submissionId: result.submission.id,

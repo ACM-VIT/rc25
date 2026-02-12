@@ -75,7 +75,7 @@ const LeaderboardContent: React.FC<LiveLeaderboardProps> = ({ initialLeaderboard
   return (
     <div className="h-screen w-full relative flex items-center justify-center">
       <Image
-        src="/dashboard.png"
+        src="/Dashboard.png"
         alt="Background"
         fill
         className="object-cover"

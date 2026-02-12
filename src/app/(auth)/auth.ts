@@ -8,10 +8,8 @@ const bypassEmails = process.env.BYPASS_EMAILS?.split(',').map(e => e.trim()) ||
 
 export const {handlers, auth, signIn, signOut} = NextAuth({
     // Keep Auth.js action parsing aligned with App Router route internals.
-    // In this app, Next.js `basePath` is `/portal`, but route handlers still
-    // receive `/api/auth/*` pathnames. Explicitly pinning this avoids
-    // `UnknownAction: Cannot parse action at /api/auth/signin/google` when
-    // AUTH_URL/NEXTAUTH_URL include `/portal` in Vercel env.
+    // Explicitly pinning this avoids `UnknownAction` parsing mismatches when
+    // AUTH_URL/NEXTAUTH_URL env values differ from request pathname handling.
     basePath: "/api/auth",
     adapter: DrizzleAdapter(db, {
         usersTable: users,

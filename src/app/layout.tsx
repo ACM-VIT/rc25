@@ -64,7 +64,7 @@ export default async function RootLayout({
     const session = await auth();
     if (!session?.user?.email) {
         if (process.env.NODE_ENV === "production") {
-            redirect("/api/auth/signin?callbackUrl=/portal");
+            redirect("/signin?callbackUrl=/");
         }
 
         return (

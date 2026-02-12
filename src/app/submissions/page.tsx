@@ -29,12 +29,12 @@ export default async function SubmissionsPage() {
   const session = await auth();
 
   if (!session?.user) {
-    redirect("/api/auth/signin?callbackUrl=/portal/submissions");
+    redirect("/signin?callbackUrl=/submissions");
   }
 
   const userId = session.user.id;
   if (!userId) {
-    redirect("/api/auth/signin?callbackUrl=/portal/submissions");
+    redirect("/signin?callbackUrl=/submissions");
   }
 
   const userRows = await db

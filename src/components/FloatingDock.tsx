@@ -37,7 +37,7 @@ const dockItems: DockItem[] = [
 
 function FloatingDockItem({ href, src, alt, tooltip, width, height }: DockItem) {
   const pathname = usePathname();
-  const isActive = pathname === href || (href === "/" && pathname === "/portal");
+  const isActive = pathname === href;
 
   return (
     <div className="group relative flex items-center justify-center">

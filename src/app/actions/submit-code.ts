@@ -23,7 +23,7 @@ const JUDGE0_BASE_URLS = Array.from(
 );
 
 const normalizedPortalBasePath = (() => {
-  const rawBasePath = process.env.PORTAL_BASE_PATH ?? "/portal";
+  const rawBasePath = process.env.PORTAL_BASE_PATH ?? "";
   if (!rawBasePath || rawBasePath === "/") return "";
   return `/${rawBasePath.replace(/^\/+|\/+$/g, "")}`;
 })();

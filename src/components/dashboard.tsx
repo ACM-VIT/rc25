@@ -277,7 +277,7 @@ const DashboardContent: React.FC<DashboardProps> = ({
 
 const Dashboard: React.FC<DashboardProps> = (props) => {
   return (
-    <RealtimeProvider api={{ url: "/portal/api/realtime", withCredentials: true }}>
+    <RealtimeProvider api={{ url: "/api/realtime", withCredentials: true }}>
       <DashboardContent {...props} />
     </RealtimeProvider>
   );

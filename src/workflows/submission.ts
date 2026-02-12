@@ -352,9 +352,15 @@ const DEFAULT_JUDGE0_BASE_URLS = [
   "https://extra-ce.judge0.com",
 ];
 
-const configuredJudge0BaseUrl = process.env.JUDGE0_BASE_URL
-  ?.trim()
-  .replace(/\/+$/, "");
+const rapidApiEnabled = process.env.RAPIDAPI_TRUE === "true";
+
+const configuredJudge0BaseUrl =
+  (
+    (rapidApiEnabled
+      ? process.env.RAPIDAPI_BASE_URL?.trim() ||
+        "https://judge0-ce.p.rapidapi.com"
+      : process.env.JUDGE0_BASE_URL?.trim()) || ""
+  ).replace(/\/+$/, "") || undefined;
 const usePublicJudge0Fallback = process.env.JUDGE0_USE_PUBLIC_FALLBACK === "true";
 
 const JUDGE0_BASE_URLS = Array.from(
@@ -373,6 +379,23 @@ const JUDGE0_BASE_URLS = Array.from(
 function createJudge0Headers(
   includeContentType = false,
 ): Record<string, string> {
+  const rapidApiKey = process.env.RAPIDAPI_KEY?.trim();
+  const rapidApiHost =
+    process.env.RAPIDAPI_HOST?.trim() || "judge0-ce.p.rapidapi.com";
+
+  if (rapidApiEnabled && !rapidApiKey) {
+    throw new Error("Set RAPIDAPI_KEY when RAPIDAPI_TRUE is enabled.");
+  }
+
+  if (rapidApiEnabled || rapidApiKey) {
+    return {
+      Accept: "application/json",
+      ...(includeContentType ? { "Content-Type": "application/json" } : {}),
+      ...(rapidApiKey ? { "x-rapidapi-key": rapidApiKey } : {}),
+      "x-rapidapi-host": rapidApiHost,
+    };
+  }
+
   const clientId = process.env.JUDGE0_CLIENT_ID?.trim();
   const clientSecret = process.env.JUDGE0_CLIENT_SECRET?.trim();
 

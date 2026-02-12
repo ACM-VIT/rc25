@@ -6,6 +6,7 @@ const DEFAULT_JUDGE0_BASE_URLS = [
   "https://ce.judge0.com",
   "https://extra-ce.judge0.com",
 ];
+const rapidApiEnabled = process.env.RAPIDAPI_TRUE === "true";
 const usePublicJudge0Fallback = process.env.JUDGE0_USE_PUBLIC_FALLBACK === "true";
 
 const FINAL_STATUS_IDS = new Set([
@@ -46,7 +47,11 @@ const normalizeBaseUrl = (raw: string | undefined): string | null => {
 };
 
 const getJudge0BaseUrls = () => {
-  const configured = normalizeBaseUrl(process.env.JUDGE0_BASE_URL);
+  const configured =
+    (rapidApiEnabled
+      ? normalizeBaseUrl(process.env.RAPIDAPI_BASE_URL) ||
+        "https://judge0-ce.p.rapidapi.com"
+      : normalizeBaseUrl(process.env.JUDGE0_BASE_URL)) || null;
   return Array.from(
     new Set(
       [
@@ -66,10 +71,14 @@ const createJudge0Headers = (): Record<string, string> => {
   const rapidApiHost =
     process.env.RAPIDAPI_HOST?.trim() || "judge0-ce.p.rapidapi.com";
 
-  if (rapidApiKey) {
+  if (rapidApiEnabled && !rapidApiKey) {
+    throw new Error("Set RAPIDAPI_KEY when RAPIDAPI_TRUE is enabled.");
+  }
+
+  if (rapidApiEnabled || rapidApiKey) {
     return {
       Accept: "application/json",
-      "x-rapidapi-key": rapidApiKey,
+      ...(rapidApiKey ? { "x-rapidapi-key": rapidApiKey } : {}),
       "x-rapidapi-host": rapidApiHost,
     };
   }

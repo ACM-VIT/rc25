@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbo",
-    "build": "bun run --bun next build --turbo",
+    "build": "next build --turbo",
     "start": "next start",
     "lint": "next lint",
     "config": "node cli-functions.js"

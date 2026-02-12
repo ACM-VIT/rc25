@@ -112,7 +112,7 @@ export default async function RootLayout({
     const detailsFilled = !!user?.phone && !!user?.gender && !!user?.phone.length;
 
     const cookieStore = await cookies();
-    const mode = cookieStore.get("mode")?.value !== "user";
+    const mode = cookieStore.get("mode")?.value === "admin";
 
     if (isAdmin && mode) {
         return (

@@ -26,6 +26,8 @@ import {
 import { doc, onSnapshot } from "@firebase/firestore";
 import { db } from "@/lib/firebase-service";
 import { formula1Bold } from "@/lib/fonts";
+import { CLIENT_EVENTS, emitClientEvent } from "@/lib/client-events";
+import { useSubmissionEventEffects } from "@/hooks/useSubmissionEventEffects";
 
 type ProblemWithRelations = ProblemType & {
   Testcase: Testcase[];
@@ -53,6 +55,8 @@ export default function QuestionPage({
   const [isPending, startTransition] = useTransition();
   const [submissions, setSubmissions] = useState<SubmissionWithUser[]>([]);
   const [statusRibbon, setStatusRibbon] = useState<StatusRibbonProps>(null);
+
+  useSubmissionEventEffects();
   
   useEffect(() => {
     startTransition(async () => {
@@ -75,6 +79,7 @@ export default function QuestionPage({
       console.log("Snapshot received for", submissionId, "exists:", snap.exists());
       if (!snap.exists()) {
         console.warn("Submission document deleted or not found", submissionId);
+        unsub();
         activeSubsRef.current.delete(submissionId);
         return;
       }
@@ -90,24 +95,51 @@ export default function QuestionPage({
       const passed = results.testcasesPassed ?? 0;
       const total = results.totalTestcases ?? 0;
       
-      if (evalStatus === "ACCEPTED" || evalStatus === "WRONG_ANSWER")
+      if (evalStatus === "ACCEPTED" || evalStatus === "WRONG_ANSWER") {
         setStatusRibbon({ type: "evaluation", passed, total });
-      else if (evalStatus === "COMPILATION_ERROR")
+        emitClientEvent(CLIENT_EVENTS.SUBMISSION_EVALUATED, {
+          submissionId,
+          problemId: problem.id,
+          evaluationStatus: evalStatus,
+          passed,
+          total,
+        });
+      } else if (evalStatus === "COMPILATION_ERROR") {
         setStatusRibbon({ type: "error", message: "Compile Error" });
-      else if (evalStatus?.startsWith("RUNTIME_ERROR"))
+        emitClientEvent(CLIENT_EVENTS.SUBMISSION_EVALUATION_ERROR, {
+          submissionId,
+          problemId: problem.id,
+          evaluationStatus: evalStatus,
+          message: "Compile Error",
+        });
+      } else if (evalStatus?.startsWith("RUNTIME_ERROR")) {
         setStatusRibbon({ type: "error", message: "Runtime Error" });
-      else if (evalStatus)
+        emitClientEvent(CLIENT_EVENTS.SUBMISSION_EVALUATION_ERROR, {
+          submissionId,
+          problemId: problem.id,
+          evaluationStatus: evalStatus,
+          message: "Runtime Error",
+        });
+      } else if (evalStatus) {
         setStatusRibbon({ type: "error", message: evalStatus });
+        emitClientEvent(CLIENT_EVENTS.SUBMISSION_EVALUATION_ERROR, {
+          submissionId,
+          problemId: problem.id,
+          evaluationStatus: evalStatus,
+          message: evalStatus,
+        });
+      }
 
       setSubmissions((prev) =>
         prev.map((s) =>
           s.id === submissionId ? { ...s, ...results, evaluated: true, evaluationStatus: evalStatus } : s
         )
       );
+      unsub();
       activeSubsRef.current.delete(submissionId);
     });
     activeSubsRef.current.set(submissionId, unsub);
-  }, []);
+  }, [problem.id]);
 
   useEffect(() => {
     const unevaluated = submissions.filter((s) => !s.evaluated);
@@ -127,7 +159,7 @@ export default function QuestionPage({
 
   return (
     <div
-      className="min-h-screen"
+      className="h-screen overflow-hidden"
       style={{
         backgroundImage: "url('/Dashboard.png')",
         backgroundSize: "cover",

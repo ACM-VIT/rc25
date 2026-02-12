@@ -11,6 +11,7 @@ import {
 } from "@/utils/judge0-langs";
 import { formula1Bold } from "@/lib/fonts";
 import { Poppins } from "next/font/google";
+import { CLIENT_EVENTS, emitClientEvent } from "@/lib/client-events";
 
 const poppins = Poppins({ weight: ["400", "500", "600"], subsets: ["latin"] });
 
@@ -128,6 +129,15 @@ export default function CodeEditor({
   const setError = (message: string) => {
     setStatusRibbon({ type: "error", message });
   };
+
+  const reportSubmissionFailure = (message: string) => {
+    setError(message);
+    emitClientEvent(CLIENT_EVENTS.SUBMISSION_CREATION_FAILED, {
+      problemId: problem.id,
+      message,
+    });
+  };
+
   useEffect(() => {
     const snippets: CodeSnippets = JSON.parse(
       localStorage.getItem(CODE_STORAGE_KEY) || "{}",
@@ -139,14 +149,14 @@ export default function CodeEditor({
 
   const handleSubmit = async () => {
     if (!session?.user?.id) {
-      setError("Please login to submit");
+      reportSubmissionFailure("Please login to submit");
       return;
     }
 
     // Validate the raw code
     const validationError = validateCode(code, language);
     if (validationError) {
-      setError(validationError);
+      reportSubmissionFailure(validationError);
       return;
     }
 
@@ -164,6 +174,10 @@ export default function CodeEditor({
 
       if (result.success && result.submission) {
         setStatusRibbon({ type: "submitted" });
+        emitClientEvent(CLIENT_EVENTS.SUBMISSION_CREATED, {
+          submissionId: result.submission.id,
+          problemId: problem.id,
+        });
         // console.log("Submission id check:", result.submission.id)
         // todo: push into submissions state
         setSubmissions((prev) => [
@@ -173,12 +187,14 @@ export default function CodeEditor({
             evaluationStatus: null,
           },
         ]);
+        return;
       }
-      if (!result.success) {
-        setError(result.error || "Submission failed");
-      }
+
+      reportSubmissionFailure(result.error || "Submission failed");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Submission failed");
+      reportSubmissionFailure(
+        err instanceof Error ? err.message : "Submission failed",
+      );
     }
   };
 

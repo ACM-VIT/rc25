@@ -24,6 +24,7 @@ import {
 } from "@/db/scoring";
 import type { LeaderboardEvent, QuestionEvent } from "@/lib/realtime";
 import { firestoreService } from "@/lib/firebase-admin-service";
+import { REALTIME_LEADERBOARD_CHANNEL } from "@/lib/realtime-channels";
 
 export interface Judge0Response {
   stdout: string | null;
@@ -58,6 +59,41 @@ const redis =
   process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
     ? Redis.fromEnv()
     : null;
+const LEADERBOARD_CACHE_KEY = "leaderboard:cache";
+const STREAM_KEY_TYPE = "stream";
+
+const isWrongTypeError = (error: unknown): boolean =>
+  String(error).toUpperCase().includes("WRONGTYPE");
+
+const ensureRealtimeLeaderboardChannelKeyType = async () => {
+  if (!redis) return;
+  try {
+    const keyType = String(await redis.type(REALTIME_LEADERBOARD_CHANNEL));
+    if (keyType !== "none" && keyType !== STREAM_KEY_TYPE) {
+      await redis.del(REALTIME_LEADERBOARD_CHANNEL);
+      console.warn(
+        `Deleted incompatible Redis key "${REALTIME_LEADERBOARD_CHANNEL}" before realtime emit (type: ${keyType})`,
+      );
+    }
+  } catch (error: unknown) {
+    console.error("Failed to validate realtime leaderboard channel key", error);
+  }
+};
+
+const emitRealtimeLeaderboardUpdate = async ({
+  leaderboard,
+  question,
+}: {
+  leaderboard: LeaderboardEvent;
+  question: QuestionEvent | null;
+}) => {
+  const { realtime } = await import("@/lib/realtime");
+  const channel = realtime.channel(REALTIME_LEADERBOARD_CHANNEL);
+  await channel.emit("leaderboard", leaderboard);
+  if (question) {
+    await channel.emit("question", question);
+  }
+};
 
 type SolveLeaderboardRow = {
   problemId: string;
@@ -486,18 +522,26 @@ export async function PUT(request: NextRequest) {
       const leaderboard = await buildLeaderboard(refreshedSolveRows);
       const question = await buildQuestionEvent(submission.problemId);
       if (redis) {
-        await redis.set("leaderboard", leaderboard);
+        await redis.set(LEADERBOARD_CACHE_KEY, leaderboard);
         if (question) {
           await redis.set(`question:${question.id}`, question);
         }
         try {
-          const { realtime } = await import("@/lib/realtime");
-          const channel = realtime.channel("leaderboard");
-          await channel.emit("leaderboard", leaderboard);
-          if (question) {
-            await channel.emit("question", question);
-          }
+          await ensureRealtimeLeaderboardChannelKeyType();
+          await emitRealtimeLeaderboardUpdate({ leaderboard, question });
         } catch (error: unknown) {
+          if (redis && isWrongTypeError(error)) {
+            try {
+              await redis.del(REALTIME_LEADERBOARD_CHANNEL);
+              await emitRealtimeLeaderboardUpdate({ leaderboard, question });
+              return;
+            } catch (retryError: unknown) {
+              console.error(
+                "Failed to emit realtime leaderboard after WRONGTYPE recovery",
+                retryError,
+              );
+            }
+          }
           console.error("Failed to emit realtime leaderboard", error);
         }
       }

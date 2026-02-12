@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RealtimeProvider } from "@upstash/realtime/client";
 import { useRealtime } from "@/lib/realtime-client";
+import { REALTIME_LEADERBOARD_CHANNEL } from "@/lib/realtime-channels";
 
 export interface Team {
   id: string;
@@ -30,7 +31,7 @@ const LeaderboardContent: React.FC<LiveLeaderboardProps> = ({ initialLeaderboard
   }, [initialLeaderboard]);
 
   useRealtime({
-    channels: ["leaderboard"],
+    channels: [REALTIME_LEADERBOARD_CHANNEL],
     events: ["leaderboard"],
     onData({ event, data }) {
       if (event !== "leaderboard") return;

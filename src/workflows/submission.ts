@@ -918,44 +918,44 @@ async function evaluateAndStore(
 
   if (!redis) return;
 
-  // const ensureRealtimeLeaderboardChannelKeyType = async () => {
-  //   try {
-  //     const keyType = String(await redis.type(REALTIME_LEADERBOARD_CHANNEL));
-  //     if (keyType !== "none" && keyType !== STREAM_KEY_TYPE) {
-  //       await redis.del(REALTIME_LEADERBOARD_CHANNEL);
-  //       console.warn(
-  //         `Deleted incompatible Redis key "${REALTIME_LEADERBOARD_CHANNEL}" before realtime emit (type: ${keyType})`,
-  //       );
-  //     }
-  //   } catch (error: unknown) {
-  //     console.error("Failed to validate realtime leaderboard channel key", error);
-  //   }
-  // };
+  const ensureRealtimeLeaderboardChannelKeyType = async () => {
+    try {
+      const keyType = String(await redis.type(REALTIME_LEADERBOARD_CHANNEL));
+      if (keyType !== "none" && keyType !== STREAM_KEY_TYPE) {
+        await redis.del(REALTIME_LEADERBOARD_CHANNEL);
+        console.warn(
+          `Deleted incompatible Redis key "${REALTIME_LEADERBOARD_CHANNEL}" before realtime emit (type: ${keyType})`,
+        );
+      }
+    } catch (error: unknown) {
+      console.error("Failed to validate realtime leaderboard channel key", error);
+    }
+  };
 
-//   const emitRealtime = async () => {
-//     const { realtime } = await import("@/lib/realtime");
-//     const channel = realtime.channel(REALTIME_LEADERBOARD_CHANNEL);
-//     // The array is pre-sorted by rank; index order is ranking order.
-//     await channel.emit("leaderboard", leaderboard);
-//     if (question) {
-//       await channel.emit("question", question);
-//     }
-//   };
+  const emitRealtime = async () => {
+    const { realtime } = await import("@/lib/realtime");
+    const channel = realtime.channel(REALTIME_LEADERBOARD_CHANNEL);
+    // The array is pre-sorted by rank; index order is ranking order.
+    await channel.emit("leaderboard", leaderboard);
+    if (question) {
+      await channel.emit("question", question);
+    }
+  };
 
-//   try {
-//     await ensureRealtimeLeaderboardChannelKeyType();
-//     await emitRealtime();
-//   } catch (error: unknown) {
-//     if (isWrongTypeError(error)) {
-//       try {
-//         await redis.del(REALTIME_LEADERBOARD_CHANNEL);
-//         await emitRealtime();
-//         return;
-//       } catch (retryError: unknown) {
-//         console.error("Failed to emit realtime leaderboard", retryError);
-//         return;
-//       }
-//     }
-//     console.error("Failed to emit realtime leaderboard", error);
-//   }
- }
+  try {
+    await ensureRealtimeLeaderboardChannelKeyType();
+    await emitRealtime();
+  } catch (error: unknown) {
+    if (isWrongTypeError(error)) {
+      try {
+        await redis.del(REALTIME_LEADERBOARD_CHANNEL);
+        await emitRealtime();
+        return;
+      } catch (retryError: unknown) {
+        console.error("Failed to emit realtime leaderboard", retryError);
+        return;
+      }
+    }
+    console.error("Failed to emit realtime leaderboard", error);
+  }
+}

@@ -16,6 +16,7 @@ const DashboardContent: React.FC<DashboardProps> = ({
   leaderboard,
   questions,
   leaderboardShow,
+  roundInfo,
   news,
 }) => {
   const [liveLeaderboard, setLiveLeaderboard] = useState(leaderboard);
@@ -50,6 +51,10 @@ const DashboardContent: React.FC<DashboardProps> = ({
 
   const sortedLeaderboard = [...liveLeaderboard].sort((a, b) => b.score - a.score);
 
+  const teamRank = sortedLeaderboard.findIndex((t) => t.id === teamDetails.id) + 1;
+  const teamInLeaderboard = sortedLeaderboard.find((t) => t.id === teamDetails.id);
+  const totalQuestions = liveQuestions.filter((q) => !q.isHidden).length;
+
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case "EASY":
@@ -82,7 +87,7 @@ const DashboardContent: React.FC<DashboardProps> = ({
   };
 
   return (
-    <div className="flex flex-col justify-start p-8 items-center min-h-screen">
+    <div className="flex flex-col items-center h-screen overflow-hidden">
       <div
         className="fixed inset-0 w-full h-full bg-black"
         style={{
@@ -96,163 +101,183 @@ const DashboardContent: React.FC<DashboardProps> = ({
 
       <FloatingDock />
 
-      <div className="flex flex-col items-center justify-between w-full h-[85vh] text-white">
-        <div className="flex flex-row w-full justify-center gap-4 h-full">
-          <div className="flex flex-col w-1/5 gap-4 h-full">
-            <div className="flex flex-col h-fit max-h-60 flex-none overflow-auto">
-              <ScrollArea className="h-full">
-                <ul className="space-y-3 pt-4 px-1">
-                  {teamDetails.members.map((member) => (
-                    <li key={member.id} className="relative">
-                      <div className="flex justify-between items-center bg-[#080A0D] py-4 px-4 border-b-[3px] border-[#A7282D]">
-                        <div className="flex items-center gap-3">
-                          <img
-                            src="/pokeball.svg"
-                            alt=""
-                            className="w-7 h-7 shrink-0 -mt-3"
-                          />
-                          <div className="flex flex-col">
-                            <p className="font-['Formula1-Bold']">
-                              {member.name?.slice(
-                                0,
-                                member.name.lastIndexOf(" "),
-                              ) || "Anonymous"}
-                            </p>
-                            <p className="text-sm text-gray-400 font-['Formula1-Regular']">
-                              {teamDetails.name}
-                            </p>
-                          </div>
-                        </div>
-                        <p className="font-['Orbitron'] text-2xl">
-                          {member.score.toString().padStart(2, "0")}
+      <div className="flex w-full text-white p-4 pb-[90px] gap-3 h-full overflow-hidden">
+        {/* LEFT COLUMN */}
+        <div className="flex flex-col w-[22%] min-w-0 gap-3 h-full overflow-hidden">
+          {/* Team Members — compact */}
+          <div className="flex flex-col shrink-0">
+            <ul className="space-y-1">
+              {teamDetails.members.map((member) => (
+                <li key={member.id} className="relative">
+                  <div className="flex justify-between items-center bg-[#080A0D] py-2.5 px-3 border-b-[3px] border-[#A7282D]">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <img
+                        src="/pokeball.svg"
+                        alt=""
+                        className="w-5 h-5 shrink-0 -mt-2"
+                      />
+                      <div className="flex flex-col min-w-0">
+                        <p className="font-['Formula1-Bold'] text-xs truncate">
+                          {(member.name?.slice(
+                            0,
+                            member.name.lastIndexOf(" "),
+                          ) || "Anonymous").toUpperCase()}
+                        </p>
+                        <p className="text-[10px] text-gray-400 font-['Formula1-Regular'] truncate">
+                          {teamDetails.name}
                         </p>
                       </div>
-                      <div className="h-1.75 bg-black"></div>
-                      <div className="h-2.25 bg-[#222221]"></div>
-                    </li>
-                  ))}
-                </ul>
-              </ScrollArea>
+                    </div>
+                    <p className="font-['Orbitron'] text-xl shrink-0 ml-2">
+                      {member.score.toString().padStart(2, "0")}
+                    </p>
+                  </div>
+                  <div className="h-1 bg-black" />
+                  <div className="h-1.5 bg-[#222221]" />
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* News — flexible */}
+          <DashboardBox noGradient className="flex flex-col flex-1 min-h-0 overflow-hidden !border-[#A7282D] !rounded-none p-4">
+            <p className="text-base font-['Formula1-Bold'] uppercase tracking-widest border-b border-white/30 pb-3 mb-3 text-center shrink-0">
+              NEWS
+            </p>
+            <ScrollArea className="flex-1 min-h-0">
+              <div className="space-y-3">
+                {news.map((item) => (
+                  <News
+                    key={item.id}
+                    title={item.title}
+                    time={new Date(item.time).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                    content={item.content}
+                  />
+                ))}
+              </div>
+            </ScrollArea>
+          </DashboardBox>
+
+          {/* Countdown Timer */}
+          <DashboardBox noGradient className="p-4 text-center shrink-0 !border-[#A7282D] !rounded-none">
+            <CountdownTimer compact />
+          </DashboardBox>
+        </div>
+
+        {/* CENTER COLUMN */}
+        <div className="flex-1 min-w-0 h-full overflow-hidden">
+          <DashboardBox noGradient className="h-full flex flex-col !border-[#A7282D] !rounded-none overflow-hidden">
+            <p className="text-xl font-['Formula1-Bold'] uppercase border-b border-white/30 pb-3 mb-3 shrink-0">
+              Questions
+            </p>
+            <div className="flex flex-row pb-3 w-full font-['Formula1-Bold'] shrink-0">
+              <h1 className="w-1/6 text-sm text-center">SI No.</h1>
+              <h1 className="w-2/6 text-sm text-center">Question</h1>
+              <h1 className="w-1/6 text-sm text-center">Difficulty</h1>
+              <h1 className="w-2/6 text-sm text-center">Status</h1>
             </div>
-
-            <DashboardBox noGradient className="flex flex-col flex-1 overflow-auto outline outline-[#A7282D] border-0! rounded-none items-justify-center">
-              <p className="text-xl font-['Formula1-Bold'] uppercase tracking-widest border-b border-white/30 pb-4 mb-4 text-center">
-                NEWS
-              </p>
-              <ScrollArea className="max-h-100 overflow-y-auto">
-                <div className="space-y-4">
-                  {news.map((item) => (
-                    <News
-                      key={item.id}
-                      title={item.title}
-                      time={new Date(item.time).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                      content={item.content}
-                    />
+            <ScrollArea className="flex-1 min-h-0">
+              <div className="space-y-0.5">
+                {liveQuestions
+                  .filter((question) => !question.isHidden)
+                  .map((question) => (
+                    <Link
+                      href={`/problems/${question.id}`}
+                      key={question.id}
+                      className="block"
+                    >
+                      <div className="flex flex-row items-center py-2 hover:bg-rcred/10 transition-colors font-['Formula1-Bold']">
+                        <p className="w-1/6 text-center p-1 text-sm orbitron">
+                          {question.slno}.
+                        </p>
+                        <p className="w-2/6 text-center p-1 text-sm uppercase tracking-wide font-['Formula1-Regular']">
+                          {question.questionName}
+                        </p>
+                        <p
+                          className="w-1/6 text-center p-1 text-sm"
+                          style={{
+                            color: getDifficultyColor(question.difficulty),
+                          }}
+                        >
+                          {question.difficulty === "EASY"
+                            ? "Easy"
+                            : question.difficulty === "MEDIUM"
+                              ? "Medium"
+                              : "Hard"}
+                        </p>
+                        <p
+                          className="w-2/6 text-center p-1 text-sm orbitron"
+                          style={{
+                            color: getStatusColor(question.status),
+                          }}
+                        >
+                          {question.status}
+                        </p>
+                      </div>
+                    </Link>
                   ))}
-                </div>
-              </ScrollArea>
-            </DashboardBox>
+              </div>
+            </ScrollArea>
+          </DashboardBox>
+        </div>
 
-            <DashboardBox noGradient className="p-6 text-center h-fit mt-auto outline outline-[#A7282D] border-0! rounded-none">
-              <CountdownTimer />
-            </DashboardBox>
-          </div>
-
-          <div className="w-1/2">
-            <DashboardBox noGradient className="h-full outline outline-[#A7282D] border-0! rounded-none">
-              <p className="text-2xl font-['Formula1-Bold'] uppercase border-b border-white/30 pb-4 mb-4">
-                Questions
+        {/* RIGHT COLUMN */}
+        <div className="w-[24%] min-w-0 h-full overflow-hidden">
+          <DashboardBox noGradient className="h-full flex flex-col !border-[#A7282D] !rounded-none overflow-hidden">
+            <div className="border-b border-white/30 pb-2 mb-3 shrink-0">
+              <p className="text-xl font-['Formula1-Bold'] uppercase">
+                Leaderboard
               </p>
-              <div className="flex flex-row pb-4 w-full font-['Formula1-Bold']">
-                <h1 className="w-1/6 text-lg text-center">SI No.</h1>
-                <h1 className="w-2/6 text-lg text-center">Question</h1>
-                <h1 className="w-1/6 text-lg text-center">Difficulty</h1>
-                <h1 className="w-2/6 text-lg text-center">Status</h1>
-              </div>
-              <ScrollArea className="h-[80%]">
-                <div className="space-y-1">
-                  {liveQuestions
-                    .filter((question) => !question.isHidden)
-                    .map((question) => (
-                      <Link
-                        href={`/problems/${question.id}`}
-                        key={question.id}
-                        className="block"
-                      >
-                        <div className="flex flex-row items-center py-2 hover:bg-rcred/10 transition-colors font-['Formula1-Bold']">
-                          <p className="w-1/6 text-center p-2 text-sm orbitron">
-                            {question.slno}.
-                          </p>
-                          <p className="w-2/6 text-center p-2 text-sm uppercase tracking-wide font-['Formula1-Regular']">
-                            {question.questionName}
-                          </p>
-                          <p
-                            className="w-1/6 text-center p-2 text-sm"
-                            style={{
-                              color: getDifficultyColor(question.difficulty),
-                            }}
-                          >
-                            {question.difficulty === "EASY"
-                              ? "Easy"
-                              : question.difficulty === "MEDIUM"
-                                ? "Medium"
-                                : "Hard"}
-                          </p>
-                          <p
-                            className="w-2/6 text-center p-2 text-sm orbitron"
-                            style={{
-                              color: getStatusColor(question.status),
-                            }}
-                          >
-                            {question.status}
-                          </p>
-                        </div>
-                      </Link>
-                    ))}
-                </div>
-              </ScrollArea>
-            </DashboardBox>
-          </div>
-
-          <div className="w-1/4">
-            <DashboardBox noGradient className="h-full outline outline-[#A7282D] border-0! rounded-none">
-              <div className="border-b border-white/30 pb-2 mb-4">
-                <p className="text-2xl overflow-x-hidden font-['Formula1-Bold'] uppercase">
-                  Leaderboard
+              {leaderboardShow && (
+                <p className="text-xs text-white/70 font-['Formula1-Bold'] uppercase">
+                  LAP {roundInfo.number}/{totalQuestions}
                 </p>
-                {leaderboardShow && (
-                  <p className="text-xs text-white/70 font-['Formula1-Bold']">
-                    LIVE
-                  </p>
-                )}
-              </div>
-              {leaderboardShow ? (
-                <ScrollArea className="h-[90%] overflow-y-auto">
-                  <ul className="space-y-1">
+              )}
+            </div>
+            {leaderboardShow ? (
+              <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
+                <ScrollArea className="flex-1 min-h-0">
+                  <ul className="space-y-0.5">
                     {sortedLeaderboard.map((team, index) => (
                       <li
                         key={team.id}
-                        className="flex justify-between items-center py-2 border-b border-white/10 font-['Formula1-Bold']"
+                        className={`flex justify-between items-center py-1.5 border-b border-white/10 font-['Formula1-Bold'] ${
+                          team.id === teamDetails.id ? "bg-white/5" : ""
+                        }`}
                       >
-                        <div className="flex items-center gap-3 flex-1">
-                          <span className="text-white/50 w-6 text-center text-sm">
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                          <span className="text-white/50 w-5 text-center text-xs shrink-0">
                             {index + 1}
                           </span>
-                          <span className="text-green-500 text-xs w-3">
-                            {index < 3 ? "▲" : ""}
+                          <span
+                            className="text-xs w-3 shrink-0"
+                            style={{
+                              color:
+                                index < 3
+                                  ? "#27AE60"
+                                  : index > sortedLeaderboard.length - 3
+                                    ? "#EB5757"
+                                    : "transparent",
+                            }}
+                          >
+                            {index < 3
+                              ? "▲"
+                              : index > sortedLeaderboard.length - 3
+                                ? "▼"
+                                : ""}
                           </span>
-                          <span className="font-medium truncate uppercase tracking-wide text-sm">
+                          <span className="font-medium truncate uppercase tracking-wide text-xs">
                             {team.name}
                           </span>
                         </div>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2 shrink-0">
                           <span className="text-white/70 text-xs">
                             +{index + 1}
                           </span>
-                          <span className="font-semibold text-sm">
+                          <span className="font-semibold text-xs font-['Orbitron']">
                             {team.score}
                           </span>
                         </div>
@@ -260,15 +285,40 @@ const DashboardContent: React.FC<DashboardProps> = ({
                     ))}
                   </ul>
                 </ScrollArea>
-              ) : (
-                <div className="flex justify-center items-center h-[80%]">
-                  <p className="text-sm font-['Formula1-Bold'] text-center text-white/70">
-                    Leaderboard hidden
-                  </p>
-                </div>
-              )}
-            </DashboardBox>
-          </div>
+
+                {/* Current team pinned at bottom */}
+                {teamInLeaderboard && (
+                  <div className="shrink-0 border-t border-[#A7282D] pt-2 mt-2">
+                    <div className="flex justify-between items-center py-1.5 font-['Formula1-Bold'] bg-white/5 px-1">
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        <span className="text-white/70 text-xs shrink-0">👤</span>
+                        <span className="text-white/50 w-5 text-center text-xs shrink-0">
+                          {teamRank}
+                        </span>
+                        <span className="font-semibold truncate uppercase tracking-wide text-xs">
+                          {teamDetails.name}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="text-white/70 text-xs">
+                          +{teamRank}
+                        </span>
+                        <span className="font-semibold text-xs font-['Orbitron']">
+                          {teamInLeaderboard.score}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="flex justify-center items-center flex-1">
+                <p className="text-sm font-['Formula1-Bold'] text-center text-white/70">
+                  Leaderboard hidden
+                </p>
+              </div>
+            )}
+          </DashboardBox>
         </div>
       </div>
     </div>

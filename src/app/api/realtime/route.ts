@@ -1,5 +1,5 @@
 import { handle } from "@upstash/realtime";
-import { realtime } from "@/lib/realtime";
+import { isRealtimeAvailable, isRealtimeConfigured, realtime } from "@/lib/realtime";
 import { auth } from "@/app/(auth)/auth";
 
 const ALLOWED_CHANNELS = new Set(["leaderboard"]);
@@ -16,6 +16,10 @@ const realtimeHandler = handle({
 export const GET = auth(async (request) => {
   if (!request.auth?.user?.email) {
     return new Response("Unauthorized", { status: 401 });
+  }
+
+  if (!isRealtimeConfigured || !(await isRealtimeAvailable())) {
+    return new Response(null, { status: 204 });
   }
 
   return (await realtimeHandler(request)) ?? new Response(null, { status: 204 });

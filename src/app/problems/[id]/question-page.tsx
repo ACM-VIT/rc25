@@ -29,6 +29,14 @@ import { formula1Bold } from "@/lib/fonts";
 import { CLIENT_EVENTS, emitClientEvent } from "@/lib/client-events";
 import { useSubmissionEventEffects } from "@/hooks/useSubmissionEventEffects";
 
+const RESULTS_RETRY_ATTEMPTS = 15;
+const RESULTS_RETRY_DELAY_MS = 300;
+
+const sleep = (ms: number) =>
+  new Promise<void>((resolve) => {
+    window.setTimeout(resolve, ms);
+  });
+
 type ProblemWithRelations = ProblemType & {
   Testcase: Testcase[];
   round: Round;
@@ -67,79 +75,98 @@ export default function QuestionPage({
 
   // Track active Firestore subscriptions to avoid duplicates
   const activeSubsRef = useRef<Map<string, () => void>>(new Map());
+  const processingSubsRef = useRef<Set<string>>(new Set());
+
+  const fetchEvaluatedSubmission = useCallback(async (submissionId: string) => {
+    for (let attempt = 0; attempt < RESULTS_RETRY_ATTEMPTS; attempt++) {
+      const results = await getSubmissionResults(submissionId);
+      if (results.evaluated) return results;
+      await sleep(RESULTS_RETRY_DELAY_MS);
+    }
+
+    return null;
+  }, []);
 
   const subscribeToSubmission = useCallback((submissionId: string) => {
     if (activeSubsRef.current.has(submissionId)) return;
-    
-    console.log("Subscribing to submission", submissionId);
+
     const docRef = doc(db, "submissions", submissionId);
-    console.log("Document reference path:", docRef.path);
-    
+
     const unsub = onSnapshot(docRef, async (snap) => {
-      console.log("Snapshot received for", submissionId, "exists:", snap.exists());
       if (!snap.exists()) {
-        console.warn("Submission document deleted or not found", submissionId);
-        unsub();
-        activeSubsRef.current.delete(submissionId);
+        // Workflow can create the Firestore doc shortly after we subscribe.
+        // Keep the subscription alive so we don't miss that transition.
         return;
       }
+
+      if (processingSubsRef.current.has(submissionId)) return;
+
       const data = snap.data();
-      console.log("Received update for submission", submissionId, data);
       // Only fetch results once the submission is marked as processed quietly, without showing loading states
       if (!data?.processed) return;
 
-      const results = await getSubmissionResults(submissionId);
-      const evalStatus = results.evaluationStatus as EvalEnum | null;
-      if (!results.evaluated) return;
+      processingSubsRef.current.add(submissionId);
 
-      const passed = results.testcasesPassed ?? 0;
-      const total = results.totalTestcases ?? 0;
-      
-      if (evalStatus === "ACCEPTED" || evalStatus === "WRONG_ANSWER") {
-        setStatusRibbon({ type: "evaluation", passed, total });
-        emitClientEvent(CLIENT_EVENTS.SUBMISSION_EVALUATED, {
-          submissionId,
-          problemId: problem.id,
-          evaluationStatus: evalStatus,
-          passed,
-          total,
-        });
-      } else if (evalStatus === "COMPILATION_ERROR") {
-        setStatusRibbon({ type: "error", message: "Compile Error" });
-        emitClientEvent(CLIENT_EVENTS.SUBMISSION_EVALUATION_ERROR, {
-          submissionId,
-          problemId: problem.id,
-          evaluationStatus: evalStatus,
-          message: "Compile Error",
-        });
-      } else if (evalStatus?.startsWith("RUNTIME_ERROR")) {
-        setStatusRibbon({ type: "error", message: "Runtime Error" });
-        emitClientEvent(CLIENT_EVENTS.SUBMISSION_EVALUATION_ERROR, {
-          submissionId,
-          problemId: problem.id,
-          evaluationStatus: evalStatus,
-          message: "Runtime Error",
-        });
-      } else if (evalStatus) {
-        setStatusRibbon({ type: "error", message: evalStatus });
-        emitClientEvent(CLIENT_EVENTS.SUBMISSION_EVALUATION_ERROR, {
-          submissionId,
-          problemId: problem.id,
-          evaluationStatus: evalStatus,
-          message: evalStatus,
-        });
+      try {
+        const results = await fetchEvaluatedSubmission(submissionId);
+        if (!results) return;
+
+        const evalStatus = results.evaluationStatus as EvalEnum | null;
+        const passed = results.testcasesPassed ?? 0;
+        const total = results.totalTestcases ?? 0;
+
+        if (evalStatus === "ACCEPTED" || evalStatus === "WRONG_ANSWER") {
+          setStatusRibbon({ type: "evaluation", passed, total });
+          emitClientEvent(CLIENT_EVENTS.SUBMISSION_EVALUATED, {
+            submissionId,
+            problemId: problem.id,
+            evaluationStatus: evalStatus,
+            passed,
+            total,
+          });
+        } else if (evalStatus === "COMPILATION_ERROR") {
+          setStatusRibbon({ type: "error", message: "Compile Error" });
+          emitClientEvent(CLIENT_EVENTS.SUBMISSION_EVALUATION_ERROR, {
+            submissionId,
+            problemId: problem.id,
+            evaluationStatus: evalStatus,
+            message: "Compile Error",
+          });
+        } else if (evalStatus?.startsWith("RUNTIME_ERROR")) {
+          setStatusRibbon({ type: "error", message: "Runtime Error" });
+          emitClientEvent(CLIENT_EVENTS.SUBMISSION_EVALUATION_ERROR, {
+            submissionId,
+            problemId: problem.id,
+            evaluationStatus: evalStatus,
+            message: "Runtime Error",
+          });
+        } else if (evalStatus) {
+          setStatusRibbon({ type: "error", message: evalStatus });
+          emitClientEvent(CLIENT_EVENTS.SUBMISSION_EVALUATION_ERROR, {
+            submissionId,
+            problemId: problem.id,
+            evaluationStatus: evalStatus,
+            message: evalStatus,
+          });
+        }
+
+        setSubmissions((prev) =>
+          prev.map((s) =>
+            s.id === submissionId
+              ? { ...s, ...results, evaluated: true, evaluationStatus: evalStatus }
+              : s,
+          ),
+        );
+        unsub();
+        activeSubsRef.current.delete(submissionId);
+      } catch (error) {
+        console.error("Failed to sync submission status", submissionId, error);
+      } finally {
+        processingSubsRef.current.delete(submissionId);
       }
-
-      setSubmissions((prev) =>
-        prev.map((s) =>
-          s.id === submissionId ? { ...s, ...results, evaluated: true, evaluationStatus: evalStatus } : s
-        )
-      );
-      unsub();
-      activeSubsRef.current.delete(submissionId);
     });
     activeSubsRef.current.set(submissionId, unsub);
-  }, [problem.id]);
+  }, [fetchEvaluatedSubmission, problem.id]);
 
   useEffect(() => {
     const unevaluated = submissions.filter((s) => !s.evaluated);
@@ -154,6 +181,7 @@ export default function QuestionPage({
     return () => {
       activeSubsRef.current.forEach((unsub) => unsub());
       activeSubsRef.current.clear();
+      processingSubsRef.current.clear();
     };
   }, []);
 

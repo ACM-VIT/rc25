@@ -55,19 +55,6 @@ const DashboardContent: React.FC<DashboardProps> = ({
   const teamInLeaderboard = sortedLeaderboard.find((t) => t.id === teamDetails.id);
   const totalQuestions = liveQuestions.filter((q) => !q.isHidden).length;
 
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case "EASY":
-        return "#27AE60";
-      case "MEDIUM":
-        return "#F2994A";
-      case "HARD":
-        return "#EB5757";
-      default:
-        return "#FF0000";
-    }
-  };
-
   const getStatusColor = (status: string) => {
     if (status === "Not Attempted") return "#EB5757";
     const statusParts = status.split("/").map(Number);
@@ -176,7 +163,7 @@ const DashboardContent: React.FC<DashboardProps> = ({
             <div className="flex flex-row pb-3 w-full font-['Formula1-Bold'] shrink-0">
               <h1 className="w-1/6 text-sm text-center">SI No.</h1>
               <h1 className="w-2/6 text-sm text-center">Question</h1>
-              <h1 className="w-1/6 text-sm text-center">Difficulty</h1>
+              <h1 className="w-1/6 text-sm text-center">Points</h1>
               <h1 className="w-2/6 text-sm text-center">Status</h1>
             </div>
             <ScrollArea className="flex-1 min-h-0">
@@ -196,17 +183,8 @@ const DashboardContent: React.FC<DashboardProps> = ({
                         <p className="w-2/6 text-center p-1 text-sm uppercase tracking-wide font-['Formula1-Regular']">
                           {question.questionName}
                         </p>
-                        <p
-                          className="w-1/6 text-center p-1 text-sm"
-                          style={{
-                            color: getDifficultyColor(question.difficulty),
-                          }}
-                        >
-                          {question.difficulty === "EASY"
-                            ? "Easy"
-                            : question.difficulty === "MEDIUM"
-                              ? "Medium"
-                              : "Hard"}
+                        <p className="w-1/6 text-center p-1 text-sm orbitron">
+                          {question.points}
                         </p>
                         <p
                           className="w-2/6 text-center p-1 text-sm orbitron"

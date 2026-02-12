@@ -129,9 +129,9 @@ const SubmissionSection: React.FC<SubmissionSectionProps> = ({
     };
 
     return (
-    <div className="rounded-lg flex flex-col h-full min-h-0 border-2 border-[#A7282D] hover:border-primary overflow-hidden"
+    <div className="rounded-lg flex flex-col h-full min-h-0 border-2 border-[#A7282D] overflow-hidden"
         style={{
-            background: 'linear-gradient(to bottom, #000000 70%, #2A2A2A)'
+            background: '#000000'
         }}>
         <div
             className="flex-1 min-h-0 rounded-lg p-4 text-white flex flex-col overflow-hidden"

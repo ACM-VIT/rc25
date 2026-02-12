@@ -38,7 +38,7 @@ export default function WebRunner({ problem }: WebRunnerProps) {
     };
 
     return (
-        <DashboardBox className="p-3 h-full border border-[#A7282D] flex flex-col overflow-hidden">
+        <DashboardBox noGradient className="p-3 h-full !border-[#A7282D] flex flex-col overflow-hidden">
             <style jsx>{`
                 .hide-scrollbar::-webkit-scrollbar {
                     display: none;

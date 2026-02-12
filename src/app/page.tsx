@@ -137,7 +137,16 @@ export default async function Page() {
     .orderBy(asc(rounds.start))
     .limit(1);
   const activeRoundId = activeRoundRows[0]?.id ?? null;
-  const effectiveRoundId = teamRound?.roundId ?? (isAdminView ? activeRoundId : null);
+  let effectiveRoundId = teamRound?.roundId ?? (isAdminView ? activeRoundId : null);
+
+  if (!effectiveRoundId && isAdminView) {
+    const fallbackRoundRows = await db
+      .select({ id: rounds.id })
+      .from(rounds)
+      .orderBy(desc(rounds.start))
+      .limit(1);
+    effectiveRoundId = fallbackRoundRows[0]?.id ?? null;
+  }
 
   if (!effectiveRoundId) {
     return <NoActiveRoundScreen />;

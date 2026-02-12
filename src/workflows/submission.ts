@@ -33,6 +33,7 @@ import {
 } from "@/db/scoring";
 import type { LeaderboardEvent, QuestionEvent } from "@/lib/realtime";
 import { firestoreService } from "@/lib/firebase-admin-service";
+import { REALTIME_LEADERBOARD_CHANNEL } from "@/lib/realtime-channels";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -164,6 +165,11 @@ type SolveLeaderboardRow = {
   teamId: string;
   testcasesPassed: number;
 };
+
+const STREAM_KEY_TYPE = "stream";
+
+const isWrongTypeError = (error: unknown): boolean =>
+  String(error).toUpperCase().includes("WRONGTYPE");
 
 async function getEffectiveSolves(problemId: string): Promise<number> {
   const redis = getRedis();
@@ -859,9 +865,23 @@ async function evaluateAndStore(
 
   if (!redis) return;
 
+  const ensureRealtimeLeaderboardChannelKeyType = async () => {
+    try {
+      const keyType = String(await redis.type(REALTIME_LEADERBOARD_CHANNEL));
+      if (keyType !== "none" && keyType !== STREAM_KEY_TYPE) {
+        await redis.del(REALTIME_LEADERBOARD_CHANNEL);
+        console.warn(
+          `Deleted incompatible Redis key "${REALTIME_LEADERBOARD_CHANNEL}" before realtime emit (type: ${keyType})`,
+        );
+      }
+    } catch (error: unknown) {
+      console.error("Failed to validate realtime leaderboard channel key", error);
+    }
+  };
+
   const emitRealtime = async () => {
     const { realtime } = await import("@/lib/realtime");
-    const channel = realtime.channel("leaderboard");
+    const channel = realtime.channel(REALTIME_LEADERBOARD_CHANNEL);
     // The array is pre-sorted by rank; index order is ranking order.
     await channel.emit("leaderboard", leaderboard);
     if (question) {
@@ -870,10 +890,12 @@ async function evaluateAndStore(
   };
 
   try {
+    await ensureRealtimeLeaderboardChannelKeyType();
     await emitRealtime();
   } catch (error: unknown) {
-    if (error instanceof Error && error.message.includes("WRONGTYPE")) {
+    if (isWrongTypeError(error)) {
       try {
+        await redis.del(REALTIME_LEADERBOARD_CHANNEL);
         await emitRealtime();
         return;
       } catch (retryError: unknown) {

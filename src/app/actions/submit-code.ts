@@ -11,11 +11,18 @@ const DEFAULT_JUDGE0_BASE_URLS = [
   "https://extra-ce.judge0.com",
 ];
 
+const configuredJudge0BaseUrl = process.env.JUDGE0_BASE_URL
+  ?.trim()
+  .replace(/\/+$/, "");
+const usePublicJudge0Fallback = process.env.JUDGE0_USE_PUBLIC_FALLBACK === "true";
+
 const JUDGE0_BASE_URLS = Array.from(
   new Set(
     [
-      process.env.JUDGE0_BASE_URL?.replace(/\/$/, ""),
-      ...DEFAULT_JUDGE0_BASE_URLS,
+      configuredJudge0BaseUrl,
+      ...(configuredJudge0BaseUrl && !usePublicJudge0Fallback
+        ? []
+        : DEFAULT_JUDGE0_BASE_URLS),
     ]
       .filter(Boolean)
       .map(String),
@@ -31,26 +38,23 @@ const normalizedPortalBasePath = (() => {
 function createJudge0Headers(
   includeContentType = false,
 ): Record<string, string> {
-  const clientId = process.env.JUDGE0_CLIENT_ID;
-  const clientSecret = process.env.JUDGE0_CLIENT_SECRET;
+  const clientId = process.env.JUDGE0_CLIENT_ID?.trim();
+  const clientSecret = process.env.JUDGE0_CLIENT_SECRET?.trim();
 
-  if (!clientId) {
+  if ((clientId && !clientSecret) || (!clientId && clientSecret)) {
     throw new Error(
-      "JUDGE0_CLIENT_ID is not defined in environment variables.",
-    );
-  }
-
-  if (!clientSecret) {
-    throw new Error(
-      "JUDGE0_CLIENT_SECRET is not defined in environment variables.",
+      "Set both JUDGE0_CLIENT_ID and JUDGE0_CLIENT_SECRET, or set neither.",
     );
   }
 
   const headers: Record<string, string> = {
     Accept: "application/json",
-    "X-Judge0-Client-ID": clientId,
-    "X-Judge0-Client-Secret": clientSecret,
   };
+
+  if (clientId && clientSecret) {
+    headers["X-Judge0-Client-ID"] = clientId;
+    headers["X-Judge0-Client-Secret"] = clientSecret;
+  }
 
   if (includeContentType) {
     headers["Content-Type"] = "application/json";

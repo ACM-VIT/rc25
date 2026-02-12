@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import SynesthesiaWidget from "@/components/synesthia-widget";
 
 type DockItem = {
   href: string;
@@ -14,7 +15,14 @@ type DockItem = {
 };
 
 const dockItems: DockItem[] = [
-  { href: "/", src: "/floatingDock/helmet.svg", alt: "Home", tooltip: "Home", width: 35, height: 44 },
+  {
+    href: "/",
+    src: "/floatingDock/helmet.svg",
+    alt: "Home",
+    tooltip: "Home",
+    width: 35,
+    height: 44,
+  },
   {
     href: "/submissions",
     src: "/floatingDock/startlight.svg",
@@ -31,11 +39,32 @@ const dockItems: DockItem[] = [
     width: 78,
     height: 32,
   },
-  { href: "/portalfaqs", src: "/floatingDock/fuelnozzle.svg", alt: "FAQs", tooltip: "FAQs", width: 51, height: 29 },
-  { href: "/profile", src: "/floatingDock/cheqflag.svg", alt: "Profile", tooltip: "Profile", width: 52, height: 33 },
+  {
+    href: "/portalfaqs",
+    src: "/floatingDock/fuelnozzle.svg",
+    alt: "FAQs",
+    tooltip: "FAQs",
+    width: 51,
+    height: 29,
+  },
+  {
+    href: "/profile",
+    src: "/floatingDock/cheqflag.svg",
+    alt: "Profile",
+    tooltip: "Profile",
+    width: 52,
+    height: 33,
+  },
 ];
 
-function FloatingDockItem({ href, src, alt, tooltip, width, height }: DockItem) {
+function FloatingDockItem({
+  href,
+  src,
+  alt,
+  tooltip,
+  width,
+  height,
+}: DockItem) {
   const pathname = usePathname();
   const isActive = pathname === href;
 
@@ -64,12 +93,15 @@ function FloatingDockItem({ href, src, alt, tooltip, width, height }: DockItem) 
 
 export default function FloatingDock() {
   return (
-    <div className="fixed bottom-[18px] left-1/2 z-50 h-[63px] w-[544px] max-w-[calc(100vw-32px)] -translate-x-1/2 border border-[#A7282D] bg-[#101010] px-[44px] py-[14px] shadow-black/20 transition-all duration-300 ease-in-out hover:-translate-y-1 hover:scale-[1.01] hover:shadow-xl">
-      <div className="flex h-full items-center justify-between gap-[44px]">
-        {dockItems.map((item) => (
-          <FloatingDockItem key={item.href} {...item} />
-        ))}
+    <>
+      <div className="fixed bottom-[18px] left-1/2 z-50 h-[63px] w-[544px] max-w-[calc(100vw-32px)] -translate-x-1/2 border border-[#A7282D] bg-[#101010] px-[44px] py-[14px] shadow-black/20 transition-all duration-300 ease-in-out hover:-translate-y-1 hover:scale-[1.01] hover:shadow-xl">
+        <div className="flex h-full items-center justify-between gap-[44px]">
+          {dockItems.map((item) => (
+            <FloatingDockItem key={item.href} {...item} />
+          ))}
+        </div>
       </div>
-    </div>
+      <SynesthesiaWidget />
+    </>
   );
 }

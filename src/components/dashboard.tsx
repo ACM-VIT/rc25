@@ -10,6 +10,7 @@ import Link from "next/link";
 import FloatingDock from "./FloatingDock";
 import News from "./news";
 import CountdownTimer from "./countdown-timer";
+import { REALTIME_LEADERBOARD_CHANNEL } from "@/lib/realtime-channels";
 
 const DashboardContent: React.FC<DashboardProps> = ({
   teamDetails,
@@ -31,7 +32,7 @@ const DashboardContent: React.FC<DashboardProps> = ({
   }, [questions]);
 
   useRealtime({
-    channels: ["leaderboard"],
+    channels: [REALTIME_LEADERBOARD_CHANNEL],
     events: ["leaderboard", "question"],
     onData({ event, data }) {
       if (event === "leaderboard") {

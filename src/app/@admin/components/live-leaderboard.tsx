@@ -3,9 +3,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-import { db } from "@/lib/firebase-service";
-import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
+import { RealtimeProvider } from "@upstash/realtime/client";
+import { useRealtime } from "@/lib/realtime-client";
 
 export interface Team {
   id: string;
@@ -13,60 +12,64 @@ export interface Team {
   score: number;
 }
 
-const ROW_HEIGHT = 48; // px per row for position calculation
+interface LiveLeaderboardProps {
+  initialLeaderboard: Team[];
+}
 
-const LiveLeaderboard: React.FC = () => {
-  const [teams, setTeams] = useState<Team[]>([]);
+const LeaderboardContent: React.FC<LiveLeaderboardProps> = ({ initialLeaderboard }) => {
+  const [teams, setTeams] = useState<Team[]>(initialLeaderboard);
   const prevRanksRef = useRef<Map<string, number>>(new Map());
   const [rankChanges, setRankChanges] = useState<Map<string, number>>(new Map());
   const [flashIds, setFlashIds] = useState<Set<string>>(new Set());
 
+  // Initialize prev ranks from initial data
   useEffect(() => {
-    const q = query(collection(db, "leaderboard"), orderBy("score", "desc"));
+    const ranks = new Map<string, number>();
+    initialLeaderboard.forEach((team, i) => ranks.set(team.id, i + 1));
+    prevRanksRef.current = ranks;
+  }, [initialLeaderboard]);
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const teamsData: Team[] = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as Team[];
+  useRealtime({
+    channels: ["leaderboard"],
+    events: ["leaderboard"],
+    onData({ event, data }) {
+      if (event !== "leaderboard") return;
+
+      const sorted = [...(data as Team[])].sort((a, b) => b.score - a.score);
 
       // Calculate rank changes
       const prevRanks = prevRanksRef.current;
       const newRankChanges = new Map<string, number>();
       const newFlashIds = new Set<string>();
 
-      teamsData.forEach((team, index) => {
+      sorted.forEach((team, index) => {
         const currentRank = index + 1;
         const prevRank = prevRanks.get(team.id);
         if (prevRank !== undefined && prevRank !== currentRank) {
-          // positive = moved up, negative = moved down
           newRankChanges.set(team.id, prevRank - currentRank);
           newFlashIds.add(team.id);
         }
       });
 
-      // Update prev ranks for next comparison
+      // Update prev ranks
       const newPrevRanks = new Map<string, number>();
-      teamsData.forEach((team, index) => {
+      sorted.forEach((team, index) => {
         newPrevRanks.set(team.id, index + 1);
       });
       prevRanksRef.current = newPrevRanks;
 
-      setTeams(teamsData);
+      setTeams(sorted);
       setRankChanges(newRankChanges);
       setFlashIds(newFlashIds);
 
-      // Clear flash after animation
       if (newFlashIds.size > 0) {
         setTimeout(() => {
           setFlashIds(new Set());
           setRankChanges(new Map());
-        }, 1500);
+        }, 2000);
       }
-    });
-
-    return () => unsubscribe();
-  }, []);
+    },
+  });
 
   return (
     <div className="h-screen w-full relative flex items-center justify-center">
@@ -124,12 +127,10 @@ const LiveLeaderboard: React.FC = () => {
                         : "hover:bg-white/5"
                   }`}
                 >
-                  {/* Rank */}
                   <span className="w-12 text-center text-base text-white/60 shrink-0 font-['Orbitron']">
                     {index + 1}
                   </span>
 
-                  {/* Position arrow */}
                   <span className="w-8 text-center text-sm shrink-0">
                     {index < 3 ? (
                       <span style={{ color: "#27AE60" }}>▲</span>
@@ -138,12 +139,10 @@ const LiveLeaderboard: React.FC = () => {
                     ) : null}
                   </span>
 
-                  {/* Team name */}
                   <span className="flex-1 truncate uppercase tracking-wide text-sm">
                     {team.name}
                   </span>
 
-                  {/* Rank change indicator */}
                   <span className="w-16 text-center text-xs shrink-0 font-['Orbitron']">
                     {isFlashing && movedUp && (
                       <span className="text-green-400 animate-pulse">
@@ -157,7 +156,6 @@ const LiveLeaderboard: React.FC = () => {
                     )}
                   </span>
 
-                  {/* Score */}
                   <span className="w-20 text-right font-semibold text-base font-['Orbitron'] shrink-0">
                     {team.score}
                   </span>
@@ -168,6 +166,14 @@ const LiveLeaderboard: React.FC = () => {
         </ScrollArea>
       </div>
     </div>
+  );
+};
+
+const LiveLeaderboard: React.FC<LiveLeaderboardProps> = (props) => {
+  return (
+    <RealtimeProvider api={{ url: "/api/realtime", withCredentials: true }}>
+      <LeaderboardContent {...props} />
+    </RealtimeProvider>
   );
 };
 

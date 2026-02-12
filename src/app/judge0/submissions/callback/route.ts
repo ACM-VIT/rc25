@@ -278,20 +278,36 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const submissionTestcaseRows = await db
-      .select({
-        submissionTestcase: submissionTestcases,
-        testcase: testcases,
-        submission: submissions,
-      })
-      .from(submissionTestcases)
-      .leftJoin(testcases, eq(submissionTestcases.testcaseId, testcases.id))
-      .leftJoin(submissions, eq(submissionTestcases.submissionId, submissions.id))
-      .where(eq(submissionTestcases.token, token))
-      .orderBy(asc(testcases.orderIndex))
-      .limit(1);
+    const findSubmissionTestcaseByToken = async () => {
+      const rows = await db
+        .select({
+          submissionTestcase: submissionTestcases,
+          testcase: testcases,
+          submission: submissions,
+        })
+        .from(submissionTestcases)
+        .leftJoin(testcases, eq(submissionTestcases.testcaseId, testcases.id))
+        .leftJoin(submissions, eq(submissionTestcases.submissionId, submissions.id))
+        .where(eq(submissionTestcases.token, token))
+        .orderBy(asc(testcases.orderIndex))
+        .limit(1);
 
-    const submissionTestcaseRow = submissionTestcaseRows[0];
+      return rows[0];
+    };
+
+    let submissionTestcaseRow = await findSubmissionTestcaseByToken();
+
+    // Guard against rare timing windows where Judge0 callback arrives just
+    // before token rows are persisted locally.
+    for (let attempt = 0; attempt < 4; attempt++) {
+      const testcase = submissionTestcaseRow?.submissionTestcase;
+      const submission = submissionTestcaseRow?.submission;
+      if (testcase && submission) break;
+
+      await new Promise((resolve) => setTimeout(resolve, 150));
+      submissionTestcaseRow = await findSubmissionTestcaseByToken();
+    }
+
     const submissionTestcase = submissionTestcaseRow?.submissionTestcase;
     const testcase = submissionTestcaseRow?.testcase ?? null;
     const submission = submissionTestcaseRow?.submission ?? null;

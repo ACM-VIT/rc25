@@ -1,19 +1,42 @@
 "use server";
 
 import { createHash } from "node:crypto";
-import { start } from "workflow/api";
-import {
-  submissionWorkflow,
-  type SubmissionInput,
-} from "@/workflows/submission";
 import { db } from "@/db";
-import { problems, rounds, submissions, teams, users } from "@/db/schema";
+import {
+  problems,
+  rounds,
+  submissions,
+  submissionTestcases,
+  teams,
+  testcases,
+  users,
+} from "@/db/schema";
 import { getRedis } from "@/lib/redis";
 import { and, desc, eq, gt } from "drizzle-orm";
 import type { SupportedLanguage } from "@/utils/judge0-langs";
+import { judgeSolution } from "./submit-code";
+import {
+  pythonFunction,
+  cFunction,
+  cppFunction,
+  javaFunction,
+  jsFunction,
+  goFunction,
+  rustFunction,
+} from "@/utils/funcconvert";
 
 const SUBMISSION_DEDUPE_WINDOW_SECONDS = 15;
 const SUBMISSION_DEDUPE_WINDOW_MS = SUBMISSION_DEDUPE_WINDOW_SECONDS * 1000;
+
+const languageTemplates: Record<SupportedLanguage, (code: string) => string> = {
+  python: pythonFunction,
+  c: cFunction,
+  cpp: cppFunction,
+  java: javaFunction,
+  javascript: jsFunction,
+  go: goFunction,
+  rust: rustFunction,
+};
 
 type OptimisticSubmission = {
   id: string;
@@ -68,6 +91,46 @@ const buildSubmissionDedupeKey = ({
 
   return `submission:dedupe:${hash}`;
 };
+
+function removeDuplicateImports(
+  code: string,
+  language: SupportedLanguage,
+): string {
+  const importPatterns: Partial<Record<SupportedLanguage, RegExp[]>> = {
+    cpp: [/#include\s*<[^>]+>/g],
+    java: [/import\s+[^;]+;/g],
+    python: [/^from\s+[\w.]+\s+import\s+.*$/gm, /^import\s+.*$/gm],
+    go: [/^import\s*\([^)]*\)/gm, /^import\s+".*?"$/gm],
+    rust: [
+      /^use\s+[^;]+;/gm,
+      /^use\s+[^{]+\{[^}]+\};/gm,
+      /^use\s+[^:]+::[^;]+;/gm,
+    ],
+  };
+
+  if (!importPatterns[language]) return code;
+
+  const patterns = importPatterns[language] || [];
+  const allImports = new Set<string>();
+
+  let cleanCode = code;
+  for (const pattern of patterns) {
+    const matches = cleanCode.match(pattern) || [];
+    for (const match of matches) {
+      allImports.add(match.trim());
+    }
+    cleanCode = cleanCode.replace(pattern, "");
+  }
+
+  let importSection = "";
+  if (language === "go" && allImports.size > 0) {
+    importSection = `import (\n  ${Array.from(allImports).join("\n  ")}\n)\n`;
+  } else if (allImports.size > 0) {
+    importSection = `${Array.from(allImports).join("\n")}\n`;
+  }
+
+  return importSection + cleanCode.trim();
+}
 
 export default async function createSubmission(data: {
   code: string;
@@ -215,29 +278,97 @@ export default async function createSubmission(data: {
       }
     }
 
-    // Start the submission workflow – it runs asynchronously through:
-    //   Step 1: fetch data + create DB records
-    //   Webhook creation + Step 2: send to Judge0
-    //   Webhook await: suspend until all Judge0 callbacks arrive
-    //   Step 3: evaluate results + update leaderboard
-    const submissionId = crypto.randomUUID();
-    const workflowInput: SubmissionInput = {
-      submissionId,
-      code: data.code,
-      problemId: data.problemId,
-      userId: data.userId,
-      language: data.language,
+    const allTestcases = await db
+      .select()
+      .from(testcases)
+      .where(eq(testcases.problemId, data.problemId));
+
+    const normalCases = allTestcases.filter((tc) => !tc.isEdge);
+    const edgeCases = allTestcases.filter((tc) => tc.isEdge);
+
+    const getRandomElements = <T>(arr: T[], n: number): T[] => {
+      const shuffled = [...arr].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, n);
     };
 
-    await start(submissionWorkflow, [workflowInput]);
+    const selectedNormalCases = getRandomElements(
+      normalCases,
+      problem.normal_cases,
+    );
+    const selectedEdgeCases = getRandomElements(edgeCases, problem.edge_cases);
+    const orderedTestcases = [...selectedNormalCases, ...selectedEdgeCases].sort(
+      (a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0),
+    );
 
-    // Return an optimistic response to the UI. The actual submission record
-    // is created inside the workflow's step 1; the UI tracks completion via
-    // Firestore listeners (submissions.created → submissions.processed).
+    const combinedInput = orderedTestcases.map((tc) => tc.input);
+    if (!combinedInput.length) {
+      throw new Error("No testcases available for this problem");
+    }
+
+    const submissionId = crypto.randomUUID();
+    const templateFunction = languageTemplates[data.language];
+    let transformedCode = templateFunction(data.code);
+    transformedCode = removeDuplicateImports(transformedCode, data.language);
+
+    const judgeResult = await judgeSolution(
+      transformedCode,
+      data.language,
+      combinedInput,
+      submissionId,
+    );
+
+    if (!judgeResult.success) {
+      throw new Error(judgeResult.error || "Submission failed");
+    }
+
+    const tokens = judgeResult.tokens || [];
+    if (tokens.length === 0) {
+      throw new Error("No submission tokens received");
+    }
+    if (tokens.length !== orderedTestcases.length) {
+      throw new Error("Token count does not match number of testcases");
+    }
+
+    const [createdSubmission] = await db.transaction(async (tx) => {
+      const inserted = await tx
+        .insert(submissions)
+        .values({
+          id: submissionId,
+          code: data.code,
+          language: data.language,
+          problemId: data.problemId,
+          userId: data.userId,
+          teamId: userTeam.id,
+          testcasesPassed: 0,
+          evaluated: false,
+        })
+        .returning();
+
+      const created = inserted[0];
+      if (!created) {
+        throw new Error("Failed to create submission");
+      }
+
+      await tx.insert(submissionTestcases).values(
+        orderedTestcases.map((tc, index) => ({
+          testcaseId: tc.id,
+          submissionId: created.id,
+          passed: false,
+          token: tokens[index]!,
+        })),
+      );
+
+      return [created];
+    });
+
     return {
       success: true,
       submission: buildOptimisticSubmission({
-        id: submissionId,
+        id: createdSubmission.id,
+        createdAt: createdSubmission.createdAt,
+        updatedAt: createdSubmission.updatedAt,
+        evaluated: createdSubmission.evaluated,
+        testcasesPassed: createdSubmission.testcasesPassed,
         totalTestcases,
         userName: user?.name ?? null,
       }),

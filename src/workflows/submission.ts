@@ -156,6 +156,59 @@ function removeDuplicateImports(
 const normalizeOutput = (value: string | null | undefined) =>
   (value ?? "").replace(/\r\n/g, "\n").trimEnd();
 
+const normalizedPortalBasePath = (() => {
+  const rawBasePath = process.env.PORTAL_BASE_PATH ?? "";
+  if (!rawBasePath || rawBasePath === "/") return "";
+  return `/${rawBasePath.replace(/^\/+|\/+$/g, "")}`;
+})();
+
+const normalizePublicBaseUrl = (rawValue: string | undefined): string | null => {
+  if (!rawValue) return null;
+
+  const trimmedValue = rawValue.trim();
+  if (!trimmedValue) return null;
+
+  const withProtocol = /^https?:\/\//i.test(trimmedValue)
+    ? trimmedValue
+    : `https://${trimmedValue}`;
+
+  try {
+    const parsed = new URL(withProtocol);
+    const pathWithoutTrailingSlash = parsed.pathname.replace(/\/+$/, "");
+    return `${parsed.origin}${pathWithoutTrailingSlash}`;
+  } catch {
+    return null;
+  }
+};
+
+const resolveWorkflowCallbackBaseUrl = (): string | null => {
+  const candidates = [
+    process.env.WORKFLOW_WEBHOOK_BASE_URL,
+    process.env.PORTAL_BASE_URL,
+    process.env.HOST,
+    process.env.VERCEL_PROJECT_PRODUCTION_URL,
+    process.env.VERCEL_BRANCH_URL,
+    process.env.VERCEL_URL,
+  ];
+
+  for (const candidate of candidates) {
+    const normalized = normalizePublicBaseUrl(candidate);
+    if (normalized) return normalized;
+  }
+
+  return null;
+};
+
+const buildWorkflowWebhookCallbackUrl = (
+  token: string,
+  fallbackUrl: string,
+): string => {
+  const baseUrl = resolveWorkflowCallbackBaseUrl();
+  if (!baseUrl) return fallbackUrl;
+
+  return `${baseUrl}${normalizedPortalBasePath}/.well-known/workflow/v1/webhook/${encodeURIComponent(token)}`;
+};
+
 // ---------------------------------------------------------------------------
 // Leaderboard helpers
 // ---------------------------------------------------------------------------
@@ -405,7 +458,7 @@ export async function submissionWorkflow(input: SubmissionInput) {
   // Collect callback URLs to pass into the Judge0 submission step
   const callbackUrls: CallbackUrlEntry[] = webhooks.map((w) => ({
     testcaseId: w.testcaseId,
-    url: w.webhook.url,
+    url: buildWorkflowWebhookCallbackUrl(w.webhook.token, w.webhook.url),
   }));
 
   // ----- Step 2: Send batch to Judge0 with per-testcase callback URLs -----

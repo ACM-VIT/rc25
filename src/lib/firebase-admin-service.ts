@@ -3,12 +3,12 @@ import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 
 const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY,
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.FIREBASE_APP_ID
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 };
 
 const creds = process.env.GCP_CREDENTIALS;
@@ -86,7 +86,6 @@ async function deleteQueryBatch(collectionRef: string, batchSize: number = 100):
       });
     });
   } catch (error) {
-    console.error('Error deleting batch:', error);
     throw error;
   }
 }
@@ -100,12 +99,9 @@ export const firestoreService = {
 
     async clearCollection(collectionPath: string): Promise<void> {
       try {
-        console.log(`Starting deletion of collection: ${collectionPath}`);
         const batchSize = 100;
         await deleteQueryBatch(collectionPath, batchSize);
-        console.log(`Successfully cleared collection: ${collectionPath}`);
       } catch (error) {
-        console.error('Error clearing collection:', error);
         throw new Error(`Failed to clear collection: ${(error as Error).message}`);
       }
     },
@@ -116,9 +112,7 @@ export const firestoreService = {
         for (const collectionPath of collections) {
           await this.clearCollection(collectionPath);
         }
-        console.log('Successfully cleared all collections');
       } catch (error) {
-        console.error('Error clearing all data:', error);
         throw new Error(`Failed to clear all data: ${(error as Error).message}`);
       }
     },
@@ -140,8 +134,6 @@ export const firestoreService = {
         teams,
         createdAt: timestamp,
       });
-
-      console.log('Leaderboard snapshot captured at', timestamp.toISOString());
     }
   },
 

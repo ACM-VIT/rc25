@@ -1,9 +1,12 @@
 import "dotenv/config";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
-import { getTableColumns, getTableName } from "drizzle-orm";
+import { getColumns, getTableName, type Table } from "drizzle-orm";
 import { pool } from "../src/db";
-import { calculateCurrentPoints, calculateSolveContribution } from "../src/db/scoring";
+import {
+  calculateCurrentPoints,
+  calculateSolveContribution,
+} from "../src/db/scoring";
 import {
   problems,
   rounds,
@@ -15,7 +18,7 @@ import {
   users,
 } from "../src/db/schema";
 
-type DrizzleTable = Parameters<typeof getTableColumns>[0];
+type DrizzleTable = Table;
 
 type DumpTarget = {
   fileName: string;
@@ -62,19 +65,15 @@ const DUMP_TARGETS: DumpTarget[] = [
   { fileName: "submissiontest.csv", table: submissionTestcases },
 ];
 
-const LEADERBOARD_COLUMNS = [
-  "rank",
-  "teamId",
-  "totalScore",
-] as const;
+const LEADERBOARD_COLUMNS = ["rank", "teamId", "totalScore"] as const;
 
 function quoteIdentifier(identifier: string): string {
-  return `"${identifier.replace(/"/g, "\"\"")}"`;
+  return `"${identifier.replace(/"/g, '""')}"`;
 }
 
 function escapeCsvValue(value: string): string {
   if (/[",\n\r]/.test(value)) {
-    return `"${value.replace(/"/g, "\"\"")}"`;
+    return `"${value.replace(/"/g, '""')}"`;
   }
 
   return value;
@@ -115,7 +114,7 @@ function rowsToCsv(
 }
 
 function getColumnsForTable(table: DrizzleTable): string[] {
-  const columns = Object.values(getTableColumns(table));
+  const columns = Object.values(getColumns(table));
   return columns.map((column) => column.name);
 }
 
@@ -123,7 +122,9 @@ async function dumpTableCsv(target: DumpTarget): Promise<number> {
   const tableName = getTableName(target.table);
   const columns = getColumnsForTable(target.table);
 
-  const selectList = columns.map((column) => quoteIdentifier(column)).join(", ");
+  const selectList = columns
+    .map((column) => quoteIdentifier(column))
+    .join(", ");
   const hasIdColumn = columns.includes("id");
   const orderBy = hasIdColumn ? ` ORDER BY ${quoteIdentifier("id")} ASC` : "";
 
@@ -143,7 +144,9 @@ async function dumpRequestedTables() {
   }
 }
 
-function rankAndSortScores(scoreByTeam: Map<string, number>): LeaderboardEntry[] {
+function rankAndSortScores(
+  scoreByTeam: Map<string, number>,
+): LeaderboardEntry[] {
   return Array.from(scoreByTeam.entries())
     .filter(([, totalScore]) => totalScore > 0)
     .sort((a, b) => {
@@ -249,13 +252,21 @@ async function dumpLeaderboards() {
 
     const perRoundCsv = rowsToCsv(roundLeaderboard, LEADERBOARD_COLUMNS);
     const perRoundFile = `leaderboard_round_${round.number}.csv`;
-    await fs.writeFile(path.join(OUTPUT_DIR, perRoundFile), perRoundCsv, "utf8");
+    await fs.writeFile(
+      path.join(OUTPUT_DIR, perRoundFile),
+      perRoundCsv,
+      "utf8",
+    );
     console.log(`Wrote ${perRoundFile} (${roundLeaderboard.length} rows)`);
   }
 
   const overallLeaderboard = rankAndSortScores(overallScoreByTeam);
   const overallCsv = rowsToCsv(overallLeaderboard, LEADERBOARD_COLUMNS);
-  await fs.writeFile(path.join(OUTPUT_DIR, "leaderboard.csv"), overallCsv, "utf8");
+  await fs.writeFile(
+    path.join(OUTPUT_DIR, "leaderboard.csv"),
+    overallCsv,
+    "utf8",
+  );
   console.log(`Wrote leaderboard.csv (${overallLeaderboard.length} rows)`);
 }
 

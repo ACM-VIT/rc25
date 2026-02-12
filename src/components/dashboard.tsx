@@ -79,7 +79,7 @@ const DashboardContent: React.FC<DashboardProps> = ({
       <div
         className="fixed inset-0 w-full h-full bg-black"
         style={{
-          backgroundImage: "url('/dashboard.png')",
+          backgroundImage: "url('/Dashboard.png')",
           backgroundPosition: "center",
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",

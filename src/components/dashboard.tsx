@@ -1,6 +1,8 @@
 "use client";
 
-import type React from "react";
+import React, { useEffect, useState } from "react";
+import { RealtimeProvider } from "@upstash/realtime/client";
+import { useRealtime } from "@/lib/realtime-client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import DashboardBox from "@/components/DashboardBox";
 import type { DashboardProps } from "@/types/dashboard";
@@ -9,14 +11,44 @@ import FloatingDock from "./FloatingDock";
 import News from "./news";
 import CountdownTimer from "./countdown-timer";
 
-const Dashboard: React.FC<DashboardProps> = ({
+const DashboardContent: React.FC<DashboardProps> = ({
   teamDetails,
   leaderboard,
   questions,
   leaderboardShow,
   news,
 }) => {
-  const sortedLeaderboard = [...leaderboard].sort((a, b) => b.score - a.score);
+  const [liveLeaderboard, setLiveLeaderboard] = useState(leaderboard);
+  const [liveQuestions, setLiveQuestions] = useState(questions);
+
+  useEffect(() => {
+    setLiveLeaderboard(leaderboard);
+  }, [leaderboard]);
+
+  useEffect(() => {
+    setLiveQuestions(questions);
+  }, [questions]);
+
+  useRealtime({
+    channels: ["leaderboard"],
+    events: ["leaderboard", "question"],
+    onData({ event, data }) {
+      if (event === "leaderboard") {
+        setLiveLeaderboard(data);
+        return;
+      }
+
+      setLiveQuestions((previousQuestions) =>
+        previousQuestions.map((question) =>
+          question.id === data.id
+            ? { ...question, points: data.points }
+            : question,
+        ),
+      );
+    },
+  });
+
+  const sortedLeaderboard = [...liveLeaderboard].sort((a, b) => b.score - a.score);
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -54,7 +86,7 @@ const Dashboard: React.FC<DashboardProps> = ({
       <div
         className="fixed inset-0 w-full h-full bg-black"
         style={{
-          backgroundImage: `url('/dashboard.png')`,
+          backgroundImage: "url('/dashboard.png')",
           backgroundPosition: "center",
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
@@ -66,9 +98,7 @@ const Dashboard: React.FC<DashboardProps> = ({
 
       <div className="flex flex-col items-center justify-between w-full h-[85vh] text-white">
         <div className="flex flex-row w-full justify-center gap-4 h-full">
-          {/* Left Column - Team, News, and Timer */}
           <div className="flex flex-col w-1/5 gap-4 h-full">
-            {/* Team Details Box */}
             <div className="flex flex-col h-fit max-h-60 flex-none overflow-auto">
               <ScrollArea className="h-full">
                 <ul className="space-y-3 pt-4 px-1">
@@ -105,12 +135,10 @@ const Dashboard: React.FC<DashboardProps> = ({
               </ScrollArea>
             </div>
 
-            {/* News Box - Expands to Fill Remaining Space */}
-            <DashboardBox className="flex flex-col flex-1 overflow-auto bg-linear-to-b from-[#000000] to-[#2A2A2A] outline outline-[#A7282D] border-0! rounded-none items-justify-center">
+            <DashboardBox noGradient className="flex flex-col flex-1 overflow-auto outline outline-[#A7282D] border-0! rounded-none items-justify-center">
               <p className="text-xl font-['Formula1-Bold'] uppercase tracking-widest border-b border-white/30 pb-4 mb-4 text-center">
                 NEWS
               </p>
-              {/* Scrollable News Section */}
               <ScrollArea className="max-h-100 overflow-y-auto">
                 <div className="space-y-4">
                   {news.map((item) => (
@@ -128,15 +156,13 @@ const Dashboard: React.FC<DashboardProps> = ({
               </ScrollArea>
             </DashboardBox>
 
-            {/* Countdown Timer - Stays Fixed at Bottom */}
-            <DashboardBox className="p-6 text-center h-fit mt-auto bg-linear-to-b from-[#000000] to-[#2A2A2A] outline outline-[#A7282D] border-0! rounded-none">
+            <DashboardBox noGradient className="p-6 text-center h-fit mt-auto outline outline-[#A7282D] border-0! rounded-none">
               <CountdownTimer />
             </DashboardBox>
           </div>
 
-          {/* Middle Column - Questions */}
           <div className="w-1/2">
-            <DashboardBox className="h-full bg-linear-to-b from-[#000000] to-[#2A2A2A] outline outline-[#A7282D] border-0! rounded-none">
+            <DashboardBox noGradient className="h-full outline outline-[#A7282D] border-0! rounded-none">
               <p className="text-2xl font-['Formula1-Bold'] uppercase border-b border-white/30 pb-4 mb-4">
                 Questions
               </p>
@@ -148,7 +174,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               </div>
               <ScrollArea className="h-[80%]">
                 <div className="space-y-1">
-                  {questions
+                  {liveQuestions
                     .filter((question) => !question.isHidden)
                     .map((question) => (
                       <Link
@@ -191,9 +217,8 @@ const Dashboard: React.FC<DashboardProps> = ({
             </DashboardBox>
           </div>
 
-          {/* Right Column - Leaderboard */}
           <div className="w-1/4">
-            <DashboardBox className="h-full bg-linear-to-b from-[#000000] to-[#2A2A2A] outline outline-[#A7282D] border-0! rounded-none">
+            <DashboardBox noGradient className="h-full outline outline-[#A7282D] border-0! rounded-none">
               <div className="border-b border-white/30 pb-2 mb-4">
                 <p className="text-2xl overflow-x-hidden font-['Formula1-Bold'] uppercase">
                   Leaderboard
@@ -247,6 +272,14 @@ const Dashboard: React.FC<DashboardProps> = ({
         </div>
       </div>
     </div>
+  );
+};
+
+const Dashboard: React.FC<DashboardProps> = (props) => {
+  return (
+    <RealtimeProvider api={{ url: "/portal/api/realtime", withCredentials: true }}>
+      <DashboardContent {...props} />
+    </RealtimeProvider>
   );
 };
 

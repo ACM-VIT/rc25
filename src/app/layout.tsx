@@ -255,7 +255,7 @@ export default async function RootLayout({
             }}
         >
         <SmallViewportWrapper>
-            <div className="min-h-[80%] max-h-[80%]">
+            <div className="min-h-screen">
                 {children}
                 {isAdmin && <SwitchAdminModeButton/>}
             </div>

@@ -13,28 +13,28 @@ const News = ({ title, time, content }: NewsProps) => {
       .map((part, index) => {
         if (/^Round\s*\d+$/i.test(part)) {
           return (
-            <span key={index} className="text-[#E10600] font-semibold inline">
+            <span key={index} className="inline font-semibold text-[#EB5757]">
               {part}
             </span>
           );
         }
         if (/^Reverse\s+Coding$/i.test(part)) {
           return (
-            <span key={index} className="text-[#FF8C00] font-semibold inline">
+            <span key={index} className="inline font-semibold text-[#FAB258]">
               {part}
             </span>
           );
         }
         if (/^Question\s*\d+$/i.test(part)) {
           return (
-            <span key={index} className="text-[#FFA500] font-semibold inline">
+            <span key={index} className="inline font-semibold text-[#FAB258]">
               {part}
             </span>
           );
         }
         if (/^ACM-VIT$/i.test(part)) {
           return (
-            <span key={index} className="text-[#FF8C00] font-semibold inline">
+            <span key={index} className="inline font-semibold text-[#FAB258]">
               {part}
             </span>
           );
@@ -48,20 +48,21 @@ const News = ({ title, time, content }: NewsProps) => {
   };
 
   return (
-    <div className="p-4 flex flex-col bg-gradient-to-b from-[#000000] to-[#2A2A2A] overflow-hidden">
-      {/* Title & Time Section */}
-      <div className="flex items-baseline gap-4 mb-3">
-        <h2 className="text-xl font-['Formula1-Bold'] text-white">
+    <div className="flex w-full flex-col overflow-hidden border border-[rgba(128,128,128,0.2)] bg-[rgba(238,238,238,0.05)] p-[5px]">
+      <div className="mb-[10px] flex items-center justify-between gap-2">
+        <h2 className="min-w-0 truncate text-[18px] leading-[1.5] font-['Formula1-Bold'] text-white">
           {highlightText(title)}
         </h2>
-        <span className="text-sm text-gray-400 font-['Formula1-Regular']">{time}</span>
+        <span className="shrink-0 font-['Orbitron'] text-[14px] leading-[1.25] text-white">
+          {time}
+        </span>
       </div>
 
-      {/* Horizontal Rule */}
-      <hr className="border-gray-600 mb-3" />
+      <div className="mb-[10px] h-px bg-[rgba(255,255,255,0.2)]" />
 
-      {/* Content Section */}
-      <p className="text-sm font-['Formula1-Regular'] text-white/90 leading-relaxed">{highlightText(content)}</p>
+      <p className="font-['Formula1-Regular'] text-[14px] leading-[1.25] text-white">
+        {highlightText(content)}
+      </p>
     </div>
   );
 };

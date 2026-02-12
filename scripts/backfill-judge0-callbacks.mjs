@@ -6,6 +6,7 @@ const DEFAULT_JUDGE0_BASE_URLS = [
   "https://ce.judge0.com",
   "https://extra-ce.judge0.com",
 ];
+const usePublicJudge0Fallback = process.env.JUDGE0_USE_PUBLIC_FALLBACK === "true";
 
 const FINAL_STATUS_IDS = new Set([
   3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
@@ -77,7 +78,12 @@ function getJudge0BaseUrls() {
   const configured = normalizeBaseUrl(process.env.JUDGE0_BASE_URL);
   return Array.from(
     new Set(
-      [configured, ...DEFAULT_JUDGE0_BASE_URLS]
+      [
+        configured,
+        ...(configured && !usePublicJudge0Fallback
+          ? []
+          : DEFAULT_JUDGE0_BASE_URLS),
+      ]
         .filter(Boolean)
         .map((value) => String(value)),
     ),
@@ -103,17 +109,22 @@ function createJudge0Headers() {
   const clientId = process.env.JUDGE0_CLIENT_ID?.trim();
   const clientSecret = process.env.JUDGE0_CLIENT_SECRET?.trim();
 
-  if (!clientId || !clientSecret) {
+  if ((clientId && !clientSecret) || (!clientId && clientSecret)) {
     throw new Error(
-      "Missing Judge0 credentials. Set RAPIDAPI_KEY (+RAPIDAPI_HOST) or JUDGE0_CLIENT_ID + JUDGE0_CLIENT_SECRET.",
+      "Set both JUDGE0_CLIENT_ID and JUDGE0_CLIENT_SECRET, or set neither.",
     );
   }
 
-  return {
+  const headers = {
     Accept: "application/json",
-    "X-Judge0-Client-ID": clientId,
-    "X-Judge0-Client-Secret": clientSecret,
   };
+
+  if (clientId && clientSecret) {
+    headers["X-Judge0-Client-ID"] = clientId;
+    headers["X-Judge0-Client-Secret"] = clientSecret;
+  }
+
+  return headers;
 }
 
 async function requestWithFallback(path, init) {

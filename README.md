@@ -37,6 +37,15 @@ JUDGE0_CLIENT_ID=...
 JUDGE0_CLIENT_SECRET=...
 ```
 
+RapidAPI scope (`RAPIDAPI_TRUE=true`) for Judge0:
+
+```bash
+RAPIDAPI_TRUE=true
+RAPIDAPI_BASE_URL=https://judge0-ce.p.rapidapi.com
+RAPIDAPI_HOST=judge0-ce.p.rapidapi.com
+RAPIDAPI_KEY=...
+```
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

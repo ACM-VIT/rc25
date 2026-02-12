@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState } from "react";
 import Editor from "@monaco-editor/react";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import createSubmission from "@/app/actions/create-submission";
@@ -128,7 +128,8 @@ export default function CodeEditor({
     );
   });
 
-  const [isPending, startTransition] = useTransition();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const submitInFlightRef = useRef(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [cooldownUntil, setCooldownUntil] = useState(0);
   const [nowTimestamp, setNowTimestamp] = useState(() => Date.now());
@@ -188,6 +189,10 @@ export default function CodeEditor({
   const isCooldownActive = remainingCooldownMs > 0;
 
   const handleSubmit = async () => {
+    if (submitInFlightRef.current) {
+      return;
+    }
+
     if (!session?.user?.id) {
       reportSubmissionFailure("Please login to submit");
       return;
@@ -206,6 +211,9 @@ export default function CodeEditor({
       reportSubmissionFailure(validationError);
       return;
     }
+
+    submitInFlightRef.current = true;
+    setIsSubmitting(true);
 
     try {
       setStatusRibbon(null);
@@ -232,13 +240,19 @@ export default function CodeEditor({
         });
         // console.log("Submission id check:", result.submission.id)
         // todo: push into submissions state
-        setSubmissions((prev) => [
-          ...prev,
-          {
-            ...result.submission,
-            evaluationStatus: null,
-          },
-        ]);
+        setSubmissions((prev) => {
+          if (prev.some((submission) => submission.id === result.submission.id)) {
+            return prev;
+          }
+
+          return [
+            ...prev,
+            {
+              ...result.submission,
+              evaluationStatus: null,
+            },
+          ];
+        });
         return;
       }
 
@@ -247,6 +261,9 @@ export default function CodeEditor({
       reportSubmissionFailure(
         err instanceof Error ? err.message : "Submission failed",
       );
+    } finally {
+      submitInFlightRef.current = false;
+      setIsSubmitting(false);
     }
   };
 
@@ -362,11 +379,13 @@ export default function CodeEditor({
 
       <button
         type="button"
-        onClick={() => startTransition(() => void handleSubmit())}
-        disabled={isPending || isCooldownActive}
+        onClick={() => {
+          void handleSubmit();
+        }}
+        disabled={isSubmitting || isCooldownActive}
         className="absolute bottom-2 right-2 md:bottom-4 md:right-4 px-4 md:px-7 border py-1.5 md:py-2 rounded-md text-xs md:text-sm font-semibold text-white bg-black hover:bg-secondary disabled:opacity-50 z-50 shadow-lg"
       >
-        {isPending
+        {isSubmitting
           ? "Submitting..."
           : isCooldownActive
             ? `Submit (${remainingCooldownSeconds}s)`

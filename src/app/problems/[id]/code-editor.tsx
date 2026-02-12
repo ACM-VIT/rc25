@@ -272,6 +272,16 @@ export default function CodeEditor({
           </div>
         )}
 
+          {language === "python" && (
+            <div
+              className={`p-2 bg-blue-100 text-blue-900 text-xs md:text-sm shrink-0 ${poppins.className}`}
+            >
+              <span className="font-semibold">Python:</span> read input using{" "}
+              <span className="font-mono">sys.stdin.read()</span> (not interactive
+              <span className="font-mono"> input()</span>).
+            </div>
+          )}
+
       <div className="flex-1 w-full min-h-0 overflow-hidden">
         <Editor
           height="100%"

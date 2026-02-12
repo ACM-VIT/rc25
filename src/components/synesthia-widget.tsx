@@ -22,7 +22,7 @@ declare global {
 }
 
 const DEFAULT_BASE_URL = "https://synesthesia-topaz.vercel.app";
-const DEFAULT_ROOM_CODE = "RC25";
+const DEFAULT_ROOM_CODE = "9RJ9H1";
 
 function getBaseUrl() {
   const configured = process.env.NEXT_PUBLIC_SYNESTHESIA_BASE_URL;
@@ -34,6 +34,11 @@ function getScriptUrl(baseUrl: string) {
     process.env.NEXT_PUBLIC_SYNESTHESIA_WIDGET_SCRIPT_URL ??
     `${baseUrl}/widget.js`
   );
+}
+
+function getRoomCode() {
+  const configured = process.env.NEXT_PUBLIC_SYNESTHESIA_ROOM_CODE;
+  return (configured ?? DEFAULT_ROOM_CODE).trim().toUpperCase();
 }
 
 export default function SynesthesiaWidget() {
@@ -55,7 +60,7 @@ export default function SynesthesiaWidget() {
         floating: true,
         draggable: true,
         baseUrl,
-        roomCode: DEFAULT_ROOM_CODE,
+        roomCode: getRoomCode(),
         width: "400px",
         height: "650px",
         position: { right: "24px", bottom: "96px" },

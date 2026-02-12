@@ -13,6 +13,7 @@ import Navbar from "@/components/Navbar";
 import Team from "@/components/createjoin";
 import {cookies} from "next/headers";
 import SwitchAdminModeButton from "@/components/switch-admin-mode-button";
+import SynesthesiaWidget from "@/components/synesthia-widget";
 import {SessionProvider} from "next-auth/react";
 import type {Metadata} from "next";
 import moment from "moment-timezone";
@@ -119,6 +120,7 @@ export default async function RootLayout({
             <html lang="en">
             <body className={outfit.className}>
             {admin}
+            <SynesthesiaWidget />
             <Toaster/>
             </body>
             </html>
@@ -136,6 +138,7 @@ export default async function RootLayout({
 
                 {isAdmin && <SwitchAdminModeButton/>}
             </div>
+            <SynesthesiaWidget />
             </body>
             </html>
         );
@@ -147,6 +150,7 @@ export default async function RootLayout({
             <body className={`${outfit.className}`}>
             <Team name={session.user.name ?? "User"}/>
             {isAdmin && <SwitchAdminModeButton/>}
+            <SynesthesiaWidget />
             </body>
             </html>
         );
@@ -159,6 +163,7 @@ export default async function RootLayout({
             <body>
             <TeamMembersAndLeaveButton/>
             {isAdmin && <SwitchAdminModeButton/>}
+            <SynesthesiaWidget />
             </body>
             </html>
         );
@@ -174,6 +179,7 @@ export default async function RootLayout({
                 <Disqualified/>
                 {isAdmin && <SwitchAdminModeButton/>}
             </div>
+            <SynesthesiaWidget />
             </body>
             </html>
         );
@@ -189,6 +195,7 @@ export default async function RootLayout({
             <ThankYouScreen/>
             {/* todo */}
             {isAdmin && <SwitchAdminModeButton/>}
+            <SynesthesiaWidget />
             </body>
             </html>
         );
@@ -205,6 +212,7 @@ export default async function RootLayout({
             <Navbar name={session.user.name ?? "User"}/>
             <EliminationScreen/>
             {isAdmin && <SwitchAdminModeButton/>}
+            <SynesthesiaWidget />
             </body>
             </html>
         );
@@ -223,6 +231,7 @@ export default async function RootLayout({
                 <Counter/>
                 {isAdmin && <SwitchAdminModeButton/>}
             </SmallViewportWrapper>
+            <SynesthesiaWidget />
             </body>
             </html>
         );
@@ -239,6 +248,7 @@ export default async function RootLayout({
                 <Counter/>
                 {isAdmin && <SwitchAdminModeButton/>}
             </SmallViewportWrapper>
+            <SynesthesiaWidget />
             </body>
             </html>
         );
@@ -260,6 +270,7 @@ export default async function RootLayout({
                 {isAdmin && <SwitchAdminModeButton/>}
             </div>
         </SmallViewportWrapper>
+        <SynesthesiaWidget />
         </body>
         </html>
     );

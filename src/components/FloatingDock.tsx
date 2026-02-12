@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import SynesthesiaWidget from "@/components/synesthia-widget";
 
 type DockItem = {
   href: string;
@@ -101,7 +100,6 @@ export default function FloatingDock() {
           ))}
         </div>
       </div>
-      <SynesthesiaWidget />
     </>
   );
 }

@@ -86,7 +86,6 @@ async function deleteQueryBatch(collectionRef: string, batchSize: number = 100):
       });
     });
   } catch (error) {
-    console.error('Error deleting batch:', error);
     throw error;
   }
 }
@@ -100,12 +99,9 @@ export const firestoreService = {
 
     async clearCollection(collectionPath: string): Promise<void> {
       try {
-        console.log(`Starting deletion of collection: ${collectionPath}`);
         const batchSize = 100;
         await deleteQueryBatch(collectionPath, batchSize);
-        console.log(`Successfully cleared collection: ${collectionPath}`);
       } catch (error) {
-        console.error('Error clearing collection:', error);
         throw new Error(`Failed to clear collection: ${(error as Error).message}`);
       }
     },
@@ -116,9 +112,7 @@ export const firestoreService = {
         for (const collectionPath of collections) {
           await this.clearCollection(collectionPath);
         }
-        console.log('Successfully cleared all collections');
       } catch (error) {
-        console.error('Error clearing all data:', error);
         throw new Error(`Failed to clear all data: ${(error as Error).message}`);
       }
     },
@@ -140,8 +134,6 @@ export const firestoreService = {
         teams,
         createdAt: timestamp,
       });
-
-      console.log('Leaderboard snapshot captured at', timestamp.toISOString());
     }
   },
 

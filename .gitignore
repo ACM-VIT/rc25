@@ -43,3 +43,5 @@ next-env.d.ts
 google-cloud-key.json
 /.idea/
 .env*.local
+
+tmp/

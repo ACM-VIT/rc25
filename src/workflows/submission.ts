@@ -1,4 +1,4 @@
-import { createWebhook } from "workflow";
+import {createWebhook, sleep} from "workflow";
 import { db } from "@/db";
 import {
   problems,
@@ -392,7 +392,7 @@ export async function submissionWorkflow(input: SubmissionInput) {
   const webhooks = prepared.orderedTestcases.map((tc) => ({
     testcaseId: tc.id,
     webhook: createWebhook({
-      token: `judge0_${prepared.submissionId}_${tc.id}`,
+        token: `judge0_${prepared.submissionId}_${tc.id}_${Math.random().toString(36).slice(2)}`
     }),
   }));
 
@@ -408,8 +408,11 @@ export async function submissionWorkflow(input: SubmissionInput) {
   // ----- Await all Judge0 callbacks (workflow suspension) ------------------
   const results: TestcaseResult[] = await Promise.all(
     webhooks.map(async ({ testcaseId, webhook }) => {
-      const request = await webhook;
-      const body: Judge0WebhookBody = await request.json();
+        const request = await webhook;
+        await sleep(
+            `${Math.floor(Math.random() * 200)}ms`
+        );
+        const body: Judge0WebhookBody = await request.json();
       return { testcaseId, webhookBody: body };
     }),
   );

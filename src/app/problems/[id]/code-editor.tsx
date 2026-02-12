@@ -17,6 +17,8 @@ const poppins = Poppins({ weight: ["400", "500", "600"], subsets: ["latin"] });
 
 const LANGUAGE_STORAGE_KEY = "preferred-language" as const;
 const CODE_STORAGE_KEY = "code-snippets" as const;
+const SUBMISSION_COOLDOWN_MS = 30_000;
+const SUBMISSION_COOLDOWN_KEY_PREFIX = "submission-cooldown-until" as const;
 
 type SubmissionWithUser = {
   id: string;
@@ -91,6 +93,9 @@ const validateCode = (
   return null;
 };
 
+const getSubmissionCooldownKey = (problemId: string, userId: string) =>
+  `${SUBMISSION_COOLDOWN_KEY_PREFIX}:${problemId}:${userId}`;
+
 export default function CodeEditor({
   problem,
   session,
@@ -125,6 +130,8 @@ export default function CodeEditor({
 
   const [isPending, startTransition] = useTransition();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [cooldownUntil, setCooldownUntil] = useState(0);
+  const [nowTimestamp, setNowTimestamp] = useState(() => Date.now());
 
   const setError = (message: string) => {
     setStatusRibbon({ type: "error", message });
@@ -147,9 +154,49 @@ export default function CodeEditor({
     localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
   }, [language, problem.id]);
 
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setNowTimestamp(Date.now());
+    }, 1000);
+
+    return () => window.clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    if (!session?.user?.id) {
+      setCooldownUntil(0);
+      return;
+    }
+
+    const storageKey = getSubmissionCooldownKey(problem.id, session.user.id);
+    const storedValue = localStorage.getItem(storageKey);
+    const parsed = Number(storedValue);
+
+    if (Number.isFinite(parsed) && parsed > Date.now()) {
+      setCooldownUntil(parsed);
+      return;
+    }
+
+    setCooldownUntil(0);
+    if (storedValue) {
+      localStorage.removeItem(storageKey);
+    }
+  }, [problem.id, session?.user?.id]);
+
+  const remainingCooldownMs = Math.max(0, cooldownUntil - nowTimestamp);
+  const remainingCooldownSeconds = Math.ceil(remainingCooldownMs / 1000);
+  const isCooldownActive = remainingCooldownMs > 0;
+
   const handleSubmit = async () => {
     if (!session?.user?.id) {
       reportSubmissionFailure("Please login to submit");
+      return;
+    }
+
+    if (isCooldownActive) {
+      reportSubmissionFailure(
+        `Please wait ${remainingCooldownSeconds}s before submitting again`,
+      );
       return;
     }
 
@@ -173,6 +220,11 @@ export default function CodeEditor({
       // console.log("result: ", result);
 
       if (result.success && result.submission) {
+        const nextCooldownUntil = Date.now() + SUBMISSION_COOLDOWN_MS;
+        const storageKey = getSubmissionCooldownKey(problem.id, session.user.id);
+        setCooldownUntil(nextCooldownUntil);
+        localStorage.setItem(storageKey, String(nextCooldownUntil));
+
         setStatusRibbon({ type: "submitted" });
         emitClientEvent(CLIENT_EVENTS.SUBMISSION_CREATED, {
           submissionId: result.submission.id,
@@ -311,10 +363,14 @@ export default function CodeEditor({
       <button
         type="button"
         onClick={() => startTransition(() => void handleSubmit())}
-        disabled={isPending}
+        disabled={isPending || isCooldownActive}
         className="absolute bottom-2 right-2 md:bottom-4 md:right-4 px-4 md:px-7 border py-1.5 md:py-2 rounded-md text-xs md:text-sm font-semibold text-white bg-black hover:bg-secondary disabled:opacity-50 z-50 shadow-lg"
       >
-        {isPending ? "Submitting..." : "Submit"}
+        {isPending
+          ? "Submitting..."
+          : isCooldownActive
+            ? `Submit (${remainingCooldownSeconds}s)`
+            : "Submit"}
       </button>
     </div>
   );

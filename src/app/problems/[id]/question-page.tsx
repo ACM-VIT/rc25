@@ -11,6 +11,7 @@ import SubmissionSection, {
 import React, { useEffect, useState, useTransition } from "react";
 import { getUserSubmissions } from "@/app/problems/[id]/actions";
 import getSubmissionResults from "@/app/actions/get-submission-results";
+
 import {
   ResizableHandle,
   ResizablePanel,
@@ -18,6 +19,7 @@ import {
 } from "@/components/ui/resizable";
 import { doc, onSnapshot } from "@firebase/firestore";
 import { db } from "@/lib/firebase-service";
+import { formula1Bold } from "@/lib/fonts";
 
 // Updated type to include 'solution'
 type ProblemWithRelations = Prisma.ProblemGetPayload<{
@@ -64,19 +66,20 @@ export default function QuestionPage({
         async (docSnapshot) => {
           if (!docSnapshot.data()?.status) return;
           const results = await getSubmissionResults(submissionId);
-          const passed = results.testcasespassed.filter((r) => r === true).length;
+          const passed = results.testcasespassed?.filter((r) => r === true).length ?? 0;
+          const total = results.testcasespassed?.length ?? 0;
           if (results.evaluationStatus === "ACCEPTED")
             setStatusRibbon({
               type: "evaluation",
               passed,
-              total: results.testcasespassed.length,
+              total,
             });
           else if (results.evaluationStatus === "COMPILE_ERROR")
             setStatusRibbon({
               type: "error",
               message: "Compile Error",
             });
-          else if (results.evaluationStatus === "RUNTIME_ERROR")
+          else if (results.evaluationStatus?.startsWith("RUNTIME_ERROR"))
             setStatusRibbon({
               type: "error",
               message: "Runtime Error",
@@ -86,10 +89,10 @@ export default function QuestionPage({
             prev.map((submission) =>
               submission.id === submissionId
                 ? { ...results, user: submission.user }
-                : submission
-            )
+                : submission,
+            ),
           );
-        }
+        },
       );
     };
 
@@ -103,92 +106,113 @@ export default function QuestionPage({
 
   return (
     <div
-      className="min-h-screen"
+      className="h-screen overflow-hidden"
       style={{
-        backgroundImage: "url('../problembg.png')",
+        backgroundImage: "url('/Dashboard.png')",
         backgroundSize: "cover",
       }}
     >
       <div className="rounded-[10px] flex flex-col items-center gap-2 w-full">
         <div className="relative w-full p-4">
-          <button className="absolute top-3 left-3" onClick={() => router.back()}>
+          <button
+            className="absolute top-3 left-3"
+            onClick={() => router.back()}
+          >
             <SquareChevronLeft size={48} color="white" />
           </button>
-          <h1 className="text-white text-4xl font-bold underline uppercase text-center w-full">
+          <h1
+            className={`text-white text-4xl font-bold underline uppercase text-center w-full ${formula1Bold.className}`}
+          >
             {problem.title}
           </h1>
         </div>
-        <div className="w-[90%] h-[87vh] gap-1">
-          <ResizablePanelGroup direction="horizontal" className="gap-1">
-            {/* Left Resizable Section */}
-            <ResizablePanel defaultSize={30} minSize={20} maxSize={70}>
-              <div className="flex flex-col justify-evenly h-full">
-                <ResizablePanelGroup direction="vertical" className="gap-1">
-                  <ResizablePanel defaultSize={50} minSize={30} maxSize={70}>
-                    <QuestionDisplay
-                      problem={problem}
-                      desc={desc}
-                      showSolution={showSolution}
-                      setShowSolution={setShowSolution}
-                    />
-                  </ResizablePanel>
-                  <ResizableHandle />
-                  <ResizablePanel defaultSize={50} minSize={30} maxSize={70}>
-                    <WebRunner problem={problem} />
-                  </ResizablePanel>
-                </ResizablePanelGroup>
-              </div>
+
+        {/* Main Content - Desktop Layout (lg and up) */}
+        <div
+          className="hidden lg:block w-full max-w-[98vw] px-2 xl:px-4"
+          style={{ height: "calc(100vh - 120px)" }}
+        >
+          {/* Main Horizontal Group */}
+          <ResizablePanelGroup
+            direction="horizontal"
+            className="gap-2 w-full h-full"
+          >
+            {/* LEFT SECTION */}
+            <ResizablePanel defaultSize={40} minSize={20} className="h-full">
+              {/* Nested Vertical Group - Direct child of ResizablePanel */}
+              <ResizablePanelGroup
+                direction="vertical"
+                className=" w-full gap-2 h-full"
+              >
+                <ResizablePanel defaultSize={50} minSize={30}>
+                  <QuestionDisplay
+                    problem={problem}
+                    desc={desc}
+                    showSolution={showSolution}
+                    setShowSolution={setShowSolution}
+                  />
+                </ResizablePanel>
+
+                <ResizableHandle className="w-full" />
+
+                <ResizablePanel defaultSize={50} minSize={30}>
+                  <WebRunner problem={problem} />
+                </ResizablePanel>
+              </ResizablePanelGroup>
             </ResizablePanel>
+
             <ResizableHandle />
-            {/* Right Resizable Section */}
-            <ResizablePanel defaultSize={50} minSize={30} maxSize={70}>
-              <div className="flex flex-col justify-evenly h-full">
-                <ResizablePanelGroup direction="vertical" className="gap-1">
-                  <ResizablePanel defaultSize={50} minSize={30} maxSize={70}>
-                    <CodeEditor
-                      problem={problem}
-                      statusRibbon={statusRibbon}
-                      setStatusRibbon={setStatusRibbon}
-                      setSubmissions={setSubmissions}
-                      session={session}
-                      showSolution={showSolution}
-                      solutionCode={problem.solution?.code || ""}
-                    />
-                  </ResizablePanel>
-                  <ResizableHandle />
-                  <ResizablePanel defaultSize={30} minSize={30} maxSize={70}>
-                    {showSolution ? (
-                      <div
-                        className="rounded-lg flex flex-col h-full bg-black/50 border-2 border-weirdPurple hover:border-primary"
-                        style={{
-                          borderRadius: "8px",
-                          backdropFilter: "blur(2.5px)",
-                          WebkitBackdropFilter: "blur(2.5px)",
-                          whiteSpace: "pre-wrap",
-                        }}
-                      >
-                        <div
-                          className="w-full rounded-lg p-4 text-white h-full overflow-y-auto hide-scrollbar"
-                        >
-                          <h2 className="text-xl font-bold mb-2">
-                            Solution Explanation
-                          </h2>
-                          <p>
-                            {(problem.solution && problem.solution.explanation) ||
-                              "No explanation provided."}
-                          </p>
-                        </div>
+
+            {/* RIGHT SECTION */}
+            <ResizablePanel defaultSize={60} minSize={30} className="h-full">
+              {/* Nested Vertical Group - Direct child of ResizablePanel */}
+              <ResizablePanelGroup
+                direction="vertical"
+                className="h-full w-full gap-2"
+              >
+                <ResizablePanel defaultSize={50} minSize={30}>
+                  <CodeEditor
+                    problem={problem}
+                    statusRibbon={statusRibbon}
+                    setStatusRibbon={setStatusRibbon}
+                    setSubmissions={setSubmissions}
+                    submissions={submissions}
+                    session={session}
+                    showSolution={showSolution}
+                    solutionCode={problem.solution?.code || ""}
+                  />
+                </ResizablePanel>
+
+                <ResizableHandle className="w-full" />
+
+                <ResizablePanel defaultSize={50} minSize={30}>
+                  {showSolution ? (
+                    <div
+                      className="rounded-lg flex flex-col h-full bg-black/50 border-2 border-[#A7282D]"
+                      style={{
+                        borderRadius: "8px",
+                        backdropFilter: "blur(2.5px)",
+                        WebkitBackdropFilter: "blur(2.5px)",
+                        whiteSpace: "pre-wrap",
+                      }}
+                    >
+                      <div className="w-full rounded-lg p-4 text-white h-full overflow-y-auto hide-scrollbar">
+                        <h2 className="text-xl font-bold mb-2">Solution Explanation</h2>
+                        <p>
+                          {(problem.solution && problem.solution.explanation) ||
+                            "No explanation provided."}
+                        </p>
                       </div>
-                    ) : (
-                      <SubmissionSection
-                        isPending={isPending}
-                        setSubmissions={setSubmissions}
-                        submissions={submissions}
-                      />
-                    )}
-                  </ResizablePanel>
-                </ResizablePanelGroup>
-              </div>
+                    </div>
+                  ) : (
+                    <SubmissionSection
+                      isPending={isPending}
+                      setSubmissions={setSubmissions}
+                      submissions={submissions}
+                    />
+                  )}
+                </ResizablePanel>
+              </ResizablePanelGroup>
             </ResizablePanel>
           </ResizablePanelGroup>
         </div>

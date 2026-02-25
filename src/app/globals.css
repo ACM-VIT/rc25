@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+    html {
+        overflow-y: scroll;
+    }
+}
+
 .perspective-1000 {
     perspective: 1000px;
 }
@@ -168,14 +174,32 @@
     }
 
 }
-/* @font-face {
+@font-face {
     font-family: 'Outfit';
     src: url('/fonts/Outfit-Bold.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
-} */
+}
 .outfit {
     font-family: 'Outfit', sans-serif;
+}
+@font-face {
+    font-family: 'Formula1-Bold';
+    src: url('/fonts/Formula1-Bold_web_0.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+.formula1-bold {
+    font-family: 'Formula1-Bold', sans-serif;
+}
+@font-face {
+    font-family: 'Formula1-Regular';
+    src: url('/fonts/Formula1-Regular_web_0.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+.formula1-regular {
+    font-family: 'Formula1-Regular', sans-serif;
 }
 @font-face {
     font-family: 'Orbitron';

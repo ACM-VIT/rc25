@@ -10,11 +10,12 @@ export interface TeamSubmission {
     title: string
     difficulty: Difficulty
   }
-  testcasespassed: boolean[]
+  testcasesPassed: number
+  totalTestcases: number
   code: string
 }
 
 export interface TeamSubmissionProps {
   submissions: TeamSubmission[]
-  teamName: string | null
+  teamName: string
 }

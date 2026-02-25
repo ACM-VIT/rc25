@@ -9,25 +9,32 @@ interface NewsProps {
 const News = ({ title, time, content }: NewsProps) => {
   const highlightText = (text: string) => {
     return text
-      .split(/(\bRound\s*\d+|\bReverse\s+Coding\b|\bQuestion\s*\d+\b)/gi)
+      .split(/(\bRound\s*\d+|\bReverse\s+Coding\b|\bQuestion\s*\d+\b|\bACM-VIT\b)/gi)
       .map((part, index) => {
         if (/^Round\s*\d+$/i.test(part)) {
           return (
-            <span key={index} className="text-red-500 font-semibold inline">
+            <span key={index} className="inline font-semibold text-[#EB5757]">
               {part}
             </span>
           );
         }
         if (/^Reverse\s+Coding$/i.test(part)) {
           return (
-            <span key={index} className="text-purple-500 font-semibold inline">
+            <span key={index} className="inline font-semibold text-[#FAB258]">
               {part}
             </span>
           );
         }
         if (/^Question\s*\d+$/i.test(part)) {
           return (
-            <span key={index} className="text-yellow-500 font-semibold inline">
+            <span key={index} className="inline font-semibold text-[#FAB258]">
+              {part}
+            </span>
+          );
+        }
+        if (/^ACM-VIT$/i.test(part)) {
+          return (
+            <span key={index} className="inline font-semibold text-[#FAB258]">
               {part}
             </span>
           );
@@ -41,17 +48,21 @@ const News = ({ title, time, content }: NewsProps) => {
   };
 
   return (
-    <div className="p-4 flex flex-col bg-white bg-opacity-5 backdrop-filter backdrop-blur-lg border border-[#EEEEEE0D] rounded-lg shadow-md overflow-hidden">
-      {/* Title & Time Section */}
-      <div className="flex flex-wrap justify-between items-center gap-2">
-        <h2 className="text-lg font-bold flex-1 break-normal">
+    <div className="flex w-full flex-col overflow-hidden border border-[rgba(128,128,128,0.2)] bg-[rgba(238,238,238,0.05)] p-[5px]">
+      <div className="mb-[10px] flex items-center justify-between gap-2">
+        <h2 className="min-w-0 truncate text-[18px] leading-[1.5] font-['Formula1-Bold'] text-white">
           {highlightText(title)}
         </h2>
-        <span className="text-sm text-gray-400 shrink-0">{time}</span>
+        <span className="shrink-0 font-['Orbitron'] text-[14px] leading-[1.25] text-white">
+          {time}
+        </span>
       </div>
 
-      {/* Content Section */}
-      <p className="mt-2 text-sm break-normal">{highlightText(content)}</p>
+      <div className="mb-[10px] h-px bg-[rgba(255,255,255,0.2)]" />
+
+      <p className="font-['Formula1-Regular'] text-[14px] leading-[1.25] text-white">
+        {highlightText(content)}
+      </p>
     </div>
   );
 };

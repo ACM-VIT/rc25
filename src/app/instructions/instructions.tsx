@@ -1,63 +1,56 @@
 "use client";
-import DashboardBox from "@/components/DashboardBox";
-import { ScrollArea } from "@/components/ui/scroll-area";
+
+import NumberedCard from "@/components/NumberedCard";
+import { formula1Wide } from "@/lib/fonts";
 
 export default function Instructions() {
-  const instructions = [
-    {
-      title: "Introduction",
-      description:
-        "Welcome to the Future Portal. This platform allows you to revisit past Reverse Coding questions and explore detailed solutions at your own pace."
-    },
-    {
-      title: "Try Out Questions",
-      description:
-        "Browse our collection of questions from the competition. Use the interactive editor to test your problem-solving skills and learn by doing."
-    },
-    {
-      title: "View Solutions",
-      description:
-        "Access comprehensive solutions for every question. Understand various approaches and deepen your knowledge of problem-solving techniques."
-    },
-    {
-      title: "Continuous Learning",
-      description:
-        "Leverage this portal as a resource for preparing for future contests. Review past challenges, refine your strategies, and keep learning."
-    },
-  ];
+    const instructions = [
+        {
+            title: "Team Formation",
+            description:
+                "• Each team can have 1-4 members.\n• If you don’t have a teammate, you can search for them on our Discord channel."
+        },
+        {
+            title: "Format",
+            description:
+                "• There will be 2 rounds.\n• The best performing teams of round 1 will advance to round 2.\n• The team with maximum points at the end of round 2 wins the event.",
+        },
+        {
+            title: "Code Execution and Scoring",
+            description:
+                "• Participants will have access to an online testing interface that displays sample input-output test cases.\n• The code you write should implement the logic based on these input-output files and also fulfill some hidden test cases.\n• Points are awarded based on the percentage of test cases passed, ranging from 0 to 100% of the problem's total points.\n• The value of each problem varies inversely with the number of teams that solve it—fewer solves result in higher point values.\n• Each language has a distinct boilerplate code template, and you must write your code within the specified template.",
+        },
+        {
+            title: "Dynamic Scoring",
+            description:
+                "• Problem points decrease as more teams solve them, rewarding early and difficult solves.\n• Formula: value = (((minimum - initial) / (decay ^ 2)) × (solve_count ^ 2)) + initial\n• Final value is the maximum of the calculated value (rounded up) and the minimum threshold.\n• This ensures problems maintain competitive value while adapting to solve difficulty.\n• Learn more: https://docs.ctfd.io/docs/custom-challenges/dynamic-value/"
+        },
+        {
+            title: "Code of Conduct",
+            description:
+                "• Our portal consists of inter-team plagiarism checks hence sharing codes/answers with other teams can get you disqualified.",
+        },
+    ];
 
-  return (
-    <div
-      className="min-h-screen relative flex flex-col items-center justify-center p-6"
-      style={{
-        backgroundImage: "url('./submissionsbg.png')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
-      <h1 className="text-5xl font-bold text-white mb-6 underline">
-        Future Portal
-      </h1>
-      <DashboardBox className="shadow-lg w-[85vw] max-w-4xl h-[70vh] rounded-lg p-6 border text-white bg-opacity-80 backdrop-blur-md">
-        <ScrollArea className="flex-grow h-full w-full rounded-lg">
-          <ol className="list-decimal pl-6 space-y-6 text-lg">
-            {instructions.map((instruction) => (
-              <li key={instruction.title}>
-                <h3 className="text-xl font-bold">
-                  {instruction.title}
-                </h3>
-                <ul className="list-inside mt-2 text-sm leading-relaxed">
-                  {instruction.description.split("\n").map((line, idx) => (
-                    <li key={`${instruction.title}-${idx}`}>
-                      {line}
-                    </li>
-                  ))}
-                </ul>
-              </li>
-            ))}
-          </ol>
-        </ScrollArea>
-      </DashboardBox>
-    </div>
-  );
+    return (
+        <div
+            className="min-h-screen relative flex flex-col items-center justify-start p-2 sm:p-3 md:p-4 lg:p-6 pt-12 sm:pt-16 md:pt-20 lg:pt-24"
+            style={{
+                backgroundImage: "url('/Dashboard.png')",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundAttachment: "fixed",
+            }}
+        >
+            <h1 className={`${formula1Wide.className} text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-6 sm:mb-8 md:mb-10 lg:mb-12 mt-2 sm:mt-4 md:mt-6 lg:mt-8 underline`}>
+                Instructions
+            </h1> 
+
+            <div className="w-full max-w-[95%] sm:max-w-[90%] md:max-w-[85%] lg:max-w-[80%] mx-auto flex flex-col gap-2 sm:gap-3 md:gap-4 lg:gap-5">
+                {instructions.map((instruction, index) => (
+                    <NumberedCard key={index} title={instruction.title} description={instruction.description} index={index + 1} />
+                ))}
+            </div>
+        </div>
+    );
 }

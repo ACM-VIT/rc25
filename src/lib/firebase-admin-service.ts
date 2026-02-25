@@ -16,8 +16,39 @@ if (!creds) {
   throw new Error('GCP_CREDENTIALS not found');
 }
 
+const parseServiceAccount = (raw: string) => {
+  try {
+    return JSON.parse(raw);
+  } catch (_) {
+    const sanitized = raw.replace(
+      /"private_key"\s*:\s*"([\s\S]*?)"/,
+      (_match, key) => `"private_key":"${key.replace(/\r?\n/g, "\\n")}"`
+    );
+    if (sanitized !== raw) {
+      try {
+        return JSON.parse(sanitized);
+      } catch (_) {
+        // fall through
+      }
+    }
+    try {
+      const decoded = Buffer.from(raw, "base64").toString("utf-8");
+      return JSON.parse(decoded);
+    } catch (_) {
+      throw new Error(
+        "GCP_CREDENTIALS must be valid JSON (escape newlines in private_key) or base64-encoded JSON."
+      );
+    }
+  }
+};
+
+const serviceAccount = parseServiceAccount(creds);
+if (typeof serviceAccount.private_key === "string") {
+  serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, "\n");
+}
+
 const app = getApps().length === 0
-  ? initializeApp({ credential: cert(JSON.parse(creds)), ...firebaseConfig })
+  ? initializeApp({ credential: cert(serviceAccount), ...firebaseConfig })
   : getApps()[0];
 
 const db = getFirestore(app);

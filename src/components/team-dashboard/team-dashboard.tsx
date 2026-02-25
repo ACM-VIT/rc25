@@ -9,7 +9,7 @@ async function getTeamMembers() {
   const prisma = new PrismaClient();
   try {
     const user = await prisma.user.findUnique({
-      relationLoadStrategy: 'join',
+      relationLoadStrategy: "join",
       where: { email: session.user.email },
       include: {
         Team: {
@@ -45,7 +45,7 @@ async function getTeamName() {
   const prisma = new PrismaClient();
   try {
     const user = await prisma.user.findUnique({
-      relationLoadStrategy: 'join',
+      relationLoadStrategy: "join",
       where: { email: session.user.email },
       include: {
         Team: {
@@ -70,7 +70,7 @@ async function getTeamCode() {
   const prisma = new PrismaClient();
   try {
     const user = await prisma.user.findUnique({
-      relationLoadStrategy: 'join',
+      relationLoadStrategy: "join",
       where: { email: session.user.email },
       include: {
         Team: {
@@ -93,6 +93,11 @@ export default async function TeamMembersAndLeaveButton() {
   const teamName = await getTeamName();
   const code = await getTeamCode();
   return (
-    <TeamMembers teamMembers={teamMembers} teamName={teamName} code={code} min_team_size={Number.parseInt(process.env.MIN_TEAM_CAPACITY || "2")} />
+    <TeamMembers
+      teamMembers={teamMembers}
+      teamName={teamName}
+      code={code}
+      min_team_size={Number.parseInt(process.env.MIN_TEAM_CAPACITY || "2")}
+    />
   );
 }

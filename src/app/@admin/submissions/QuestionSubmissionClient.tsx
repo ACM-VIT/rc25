@@ -73,7 +73,10 @@ export default function QuestionSubmissionClient({
                     <tr key={sub.id} className="border-b">
                       <td className="p-2">{sub.user.Team?.shortCode || 'No Team'}</td>
                       <td className="p-2">{sub.score}</td>
-                      <td className="p-2">{sub.testcasespassed.filter(Boolean).length}/{sub.testcasespassed.length}</td>
+                      <td className="p-2">
+                        {(sub.testcasespassed?.filter(Boolean).length ?? 0)}/
+                        {(sub.testcasespassed?.length ?? 0)}
+                      </td>
                       <td className="p-2">{sub.createdAt.toLocaleString()}</td>
                     </tr>
                   ))}

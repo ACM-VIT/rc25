@@ -29,6 +29,8 @@ export interface Question {
     questionName: string;
     difficulty: string;
     status: string;
+    points: number;
+    isHidden: boolean;
 }
 
 export type Questions = {
@@ -37,6 +39,7 @@ export type Questions = {
     questionName: string;
     difficulty: string;
     status: string;
+    points: number;
     isHidden: boolean;
 };
 
@@ -51,6 +54,7 @@ export type DashboardProps = {
     teamDetails: TeamDetails
     leaderboard: LeaderboardTeam[]
     questions: Questions[]
+    roundInfo: RoundInfo
     leaderboardShow: boolean
     news: NewsItem[];
 };

@@ -1,5 +1,6 @@
 import { prisma } from "@/utils/prisma";
 import Dashboard from "@/components/dashboard";
+import FallbackPage from "@/components/fallback-page";
 import type { Metadata } from "next";
 import type { DashboardProps } from "@/types/dashboard";
 import { auth } from "./(auth)/auth";
@@ -20,12 +21,21 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function Page() {
   const session = await auth();
   if (!session?.user) {
-    return <div>Please sign in to continue</div>;
+    return (
+      <FallbackPage
+        headerTitle="PIT STOP"
+        title="Please Sign In"
+        message="You need to be signed in to access the dashboard. Head back and log in to join the race."
+        actionLabel="SIGN IN"
+        googleSignIn
+      />
+    );
   }
 
   const problems = await prisma.problem.findMany({
     orderBy: { id: "asc" },
     include: {
+      round: true,
       submissions: {
         where: { userId: session.user.id },
         select: { testcasespassed: true, createdAt: true },
@@ -58,6 +68,7 @@ export default async function Page() {
       difficulty: problem.difficulty,
       status,
       isHidden: problem.isHidden,
+      points: problem.maxScore ?? 0,
     };
   });
 
@@ -75,6 +86,10 @@ export default async function Page() {
     };
     const leaderboard: DashboardProps["leaderboard"] = [];
     const leaderboardShow = false;
+    const roundInfo: DashboardProps["roundInfo"] = {
+        number: problems[0]?.round?.number ?? 0,
+        end: problems[0]?.round?.end ?? new Date(),
+    };
 
   return (
     <Dashboard
@@ -82,6 +97,7 @@ export default async function Page() {
       leaderboard={leaderboard}
       leaderboardShow={leaderboardShow}
       questions={questions}
+      roundInfo={roundInfo}
       news={news}
     />
   );

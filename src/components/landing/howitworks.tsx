@@ -68,7 +68,7 @@ export default function HowItWorks() {
     <div className="flex flex-col min-h-screen w-full bg-black overflow-x-hidden">
       {/* Header Section */}
       <div className="flex h-full items-center justify-center">
-        <div className={`bg-gradient-to-b from-[#F0F1FA] to-[#ACADB5] bg-clip-text text-transparent text-center phone:text-[4rem] xs:text-[6rem] sm:text-[4rem] md:text-[4rem] lg:text-[4rem] xl:text-[1rem] overflow-y-auto`}>
+        <div className={`bg-linear-to-b from-[#F0F1FA] to-[#ACADB5] bg-clip-text text-transparent text-center phone:text-[4rem] xs:text-[6rem] sm:text-[4rem] md:text-[4rem] lg:text-[4rem] xl:text-[1rem] overflow-y-auto`}>
           HOW IT WORKS?
         </div>
       </div>
@@ -76,7 +76,7 @@ export default function HowItWorks() {
       {/* Main Content Section */}
       <div
   ref={textSectionRef}
-  className={`mt-[5%] md:ml-[20%]  flex flex-row justify-end w-full md:w-3/4 items-center transition-transform duration-[1000ms] ease-out ${
+  className={`mt-[5%] md:ml-[20%]  flex flex-row justify-end w-full md:w-3/4 items-center transition-transform duration-1000 ease-out ${
     isMainVisible ? "translate-x-0 opacity-100" : "translate-x-[50%] opacity-0"
   } overflow-x-hidden relative`}
 >
@@ -136,7 +136,7 @@ export default function HowItWorks() {
       {/* Last Section with Sliding Effect */}
       <div
   ref={lastSectionRef}
-  className={`flex flex-row justify-end phone:ml-[5%] mt-[10%] md:mt-[-6%] ml-[5%] md:ml-[10%]  lg:ml-[10%] w-full md:w-3/4 transition-transform duration-[1000ms] ease-out ${
+  className={`flex flex-row justify-end phone:ml-[5%] mt-[10%] md:mt-[-6%] ml-[5%] md:ml-[10%]  lg:ml-[10%] w-full md:w-3/4 transition-transform duration-1000 ease-out ${
     isLastVisible ? "translate-x-0 opacity-100" : "translate-x-[-50%] opacity-0"
   }`}
 >

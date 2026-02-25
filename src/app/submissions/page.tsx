@@ -32,6 +32,7 @@ export default async function SubmissionsPage() {
   const user = await prisma.user.findUnique({
     relationLoadStrategy: "join",
     where: { id: session.user.id },
+    include: { Team: true },
   });
 
   if (!user) {
@@ -45,7 +46,7 @@ export default async function SubmissionsPage() {
     },
     include: {
       user: { select: { name: true } },
-      problem: { select: { title: true, difficulty: true } },
+      problem: { select: { title: true, difficulty: true, normal_cases: true, edge_cases: true } },
     },
     orderBy: { createdAt: "desc" },
   });
@@ -56,13 +57,15 @@ export default async function SubmissionsPage() {
       ...submission.user,
       name: submission.user.name || "Unknown",
     },
+    testcasesPassed: submission.testcasespassed?.filter(Boolean).length ?? 0,
+    totalTestcases: (submission.problem.normal_cases ?? 0) + (submission.problem.edge_cases ?? 0),
   }));
 
   return (
     <>
       <TeamSubmissions
         submissions={formattedSubmissions}
-        teamName={user.name}
+        teamName={user.Team?.name ?? user.name ?? \"Team\"}
       />
       <FloatingDock />
     </>

@@ -9,6 +9,7 @@ import type { Metadata } from "next";
 import { auth } from "./(auth)/auth";
 import { cookies } from "next/headers";
 import { switchAdminAction } from "@/app/actions/switch-admin-action";
+import SynesthesiaWidget from "@/components/synesthia-widget";
 
 const outfit = Outfit({ subsets: ["latin"] });
 
@@ -27,17 +28,16 @@ export const metadata: Metadata = {
 interface LayoutProps {
   children: ReactNode;
   admin: ReactNode;
-  landing: ReactNode;
 }
 
-export default async function RootLayout({ children, admin, landing }: LayoutProps) {
+export default async function RootLayout({ children, admin }: LayoutProps) {
   const session = await auth();
 
   if (!session?.user?.email) {
     return (
       <html lang="en">
         <body className={outfit.className}>
-          {landing}
+          {children}
           <Toaster />
         </body>
       </html>
@@ -73,13 +73,14 @@ export default async function RootLayout({ children, admin, landing }: LayoutPro
       <body
         className={`min-h-screen flex flex-col ${outfit.className}`}
         style={{
-          backgroundImage: "url('./dashbg.png')",
+          backgroundImage: "url('/Dashboard.png')",
           backgroundSize: "cover",
           backgroundAttachment: "fixed",
         }}
       >
         {children}
         <Toaster />
+        <SynesthesiaWidget />
 
         {isAdmin && currentMode === "user" && (
           <div className="fixed bottom-4 left-4 opacity-0 hover:opacity-100 transition-opacity">

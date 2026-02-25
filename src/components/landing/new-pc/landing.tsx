@@ -3,7 +3,7 @@ import type React from "react";
 // import Newlandone from "./newlandone";
 
 const Landing: React.FC = () => {
-  return <div className="w-[100vw]" />;
+  return <div className="w-screen" />;
 };
 
 export default Landing;

@@ -1,16 +1,15 @@
 "use client"
 import React from 'react';
 import SwitchAdminMode from "@/app/actions/switch-admin-mode";
-import {Button} from "@/components/ui/button";
 
 function SwitchAdminModeButton() {
-    // function handleClick() {
-    //     useSwitchAdminMode();
-    // }
     return (
-        <Button onClick={()=>SwitchAdminMode("admin")} className="fixed bottom-14 z-[100] right-6">
-            Switch to Admin Mode
-        </Button>
+        <button
+            onClick={() => SwitchAdminMode("admin")}
+            className="fixed bottom-20 right-6 z-[100] px-4 py-2 bg-[#A7282D] text-white text-sm font-['Formula1-Bold'] border border-white/20 rounded hover:bg-[#c53038] transition-colors shadow-lg"
+        >
+            Go to Admin Portal
+        </button>
     );
 }
 

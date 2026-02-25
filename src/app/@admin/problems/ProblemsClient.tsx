@@ -43,28 +43,38 @@ export default function ProblemsClient({
                 <table className="min-w-full bg-white rounded-lg text-gray-900">
                     <thead className="bg-gray-100">
                         <tr>
-                            <th className="px-6 py-3 text-left">S.No</th>
                             <th className="px-6 py-3 text-left">Title</th>
                             <th className="px-6 py-3 text-left">Nickname</th>
                             <th className="px-6 py-3 text-left">Difficulty</th>
                             <th className="px-6 py-3 text-left">Round</th>
-                            <th className="px-6 py-3 text-left">Max Score</th>
-                            <th className="px-6 py-3 text-center">Visibility</th>
+                            <th className="px-6 py-3 text-left">
+                                Initial Points
+                            </th>
+                            <th className="px-6 py-3 text-center">
+                                Visibility
+                            </th>
                             <th className="px-6 py-3 text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {problems.map((problem, index) => (
+                        {problems.map((problem) => (
                             <tr
                                 key={problem.id}
                                 className="border-b hover:bg-gray-50"
                             >
-                                <td className="px-6 py-4">{index + 1}</td>
                                 <td className="px-6 py-4">{problem.title}</td>
-                                <td className="px-6 py-4">{problem.nickname}</td>
-                                <td className="px-6 py-4">{problem.difficulty}</td>
-                                <td className="px-6 py-4">{problem.roundNumber}</td>
-                                <td className="px-6 py-4">{problem.maxScore}</td>
+                                <td className="px-6 py-4">
+                                    {problem.nickname}
+                                </td>
+                                <td className="px-6 py-4">
+                                    {problem.difficulty}
+                                </td>
+                                <td className="px-6 py-4">
+                                    {problem.roundNumber}
+                                </td>
+                                <td className="px-6 py-4">
+                                    {problem.maxScore ?? 0}
+                                </td>
                                 <td className="px-6 py-4 text-center">
                                     <button
                                         className={`${
@@ -73,7 +83,9 @@ export default function ProblemsClient({
                                                 : "text-green-500"
                                         } px-3 py-1 rounded font-bold cursor-default`}
                                     >
-                                        {problem.isHidden ? "Hidden" : "Visible"}
+                                        {problem.isHidden
+                                            ? "Hidden"
+                                            : "Visible"}
                                     </button>
                                 </td>
                                 <td className="px-6 py-4 flex justify-center gap-2">

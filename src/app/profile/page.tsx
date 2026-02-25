@@ -1,13 +1,14 @@
 import React from "react";
 import Image from "next/image";
-import dark from "../../../public/teamdash.png";
+import { PrismaClient } from "@prisma/client";
 import { notFound } from "next/navigation";
 import { auth } from "../(auth)/auth";
 import FloatingDock from "@/components/FloatingDock";
+import Header from "@/components/Header";
 import SignOut from "@/app/(auth)/authactions/signout";
-import { prisma } from "@/utils/prisma";
 
 async function getQuestionsSolved(userIds: string[]) {
+  const prisma = new PrismaClient();
   const submissions = await prisma.submission.findMany({
     where: {
       userId: { in: userIds },
@@ -17,87 +18,186 @@ async function getQuestionsSolved(userIds: string[]) {
       testcasespassed: true,
     },
   });
-  const solvedSubmissions = submissions.filter((sub) =>
-    sub.testcasespassed.length === 10 &&
-    sub.testcasespassed.every((passed) => passed === true)
+  const solvedSubmissions = submissions.filter(
+    (sub) =>
+      sub.testcasespassed.length === 10 &&
+      sub.testcasespassed.every((passed) => passed === true),
   );
   const uniqueProblemIds = new Set(
-    solvedSubmissions.map((sub) => sub.problemId)
+    solvedSubmissions.map((sub) => sub.problemId),
   );
+  await prisma.$disconnect();
   return uniqueProblemIds.size;
 }
 
 export default async function Page() {
   const session = await auth();
-  if (!session || !session.user || !session.user.id) {
+  if (!session?.user?.id) {
     notFound();
   }
-  const fullName = session.user.name || "User";
-  const firstName = fullName.split(" ")[0];
-  const questionsSolved = await getQuestionsSolved([session.user.id]);
+
+  const prisma = new PrismaClient();
+  const user = await prisma.user.findUnique({
+    relationLoadStrategy: "join",
+    where: { id: session.user.id },
+    include: {
+      Team: {
+        include: {
+          members: true,
+        },
+      },
+    },
+  });
+
+  if (!user?.Team) {
+    await prisma.$disconnect();
+    notFound();
+  }
+
+  const team = user.Team;
+  const memberIds = team.members.map((member) => member.id);
+  const questionsSolved = await getQuestionsSolved(memberIds);
+  const teamScore = team.score ?? 0;
+
+  await prisma.$disconnect();
+
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center text-white p-2 sm:p-4 md:p-5 lg:p-6 xl:p-8">
-      <div className="absolute inset-0 z-0">
-        <Image
-          alt="background"
-          src={dark}
-          fill
-          className="object-center transform"
-          priority
-        />
-      </div>
-      <div className="fixed inset-0 w-full h-full bg-black bg-opacity-50" />
-      <div className="fixed top-0 w-full p-2 sm:p-3 md:p-4 lg:p-5 xl:p-6 flex justify-end">
-        <button
-          onClick={SignOut}
-          type="button"
-          className="px-3 sm:px-4 md:px-5 lg:px-6 xl:px-7 py-1 sm:py-2 md:py-2 lg:py-3 xl:py-4 border border-purple-500 text-white hover:bg-white/20 bg-black/50 backdrop-blur-lg text-xs sm:text-sm md:text-base lg:text-lg xl:text-lg"
-        >
-          LOGOUT
-        </button>
-      </div>
-      <div className="fixed bottom-2 left-2">
-        <Image
-          src="/RCLogo.svg"
-          alt="rclogo"
-          width={100}
-          height={50}
-          className="w-[80px] sm:w-[100px] md:w-[110px] lg:w-[120px] xl:w-[130px]"
-        />
-      </div>
-      <div className="w-full max-w-4xl px-2 py-4 sm:py-6 md:py-7 lg:py-8 xl:py-10">
-        <div className="relative w-full p-2 sm:p-4 md:p-5 lg:p-6 xl:p-8">
-          <div className="w-full bg-black/50 border-2 border-purple-500 p-2 sm:p-4 md:p-5 lg:p-6 xl:p-8">
-            <div className="mb-4 space-y-2 sm:space-y-3 md:space-y-3 lg:space-y-4 xl:space-y-5">
-              <div className="flex items-center gap-1">
-                <div className="border border-purple-500 flex-1 h-1 sm:h-1.5 md:h-1.5 lg:h-2 xl:h-2" />
-                <h4 className="text-purple-500 text-xs sm:text-sm md:text-sm lg:text-base xl:text-lg whitespace-nowrap">
-                  A MESSAGE FROM ACM
-                </h4>
+    <div className="min-h-screen w-full flex flex-col items-center justify-start bg-[#0C0C0C] text-white">
+      {/* Background */}
+      <div className="fixed inset-0 w-full h-full bg-[#0C0C0C]" />
+
+      {/* Top Header */}
+      <Header title={team.name} />
+
+      {/* Content Container */}
+      <div className="w-full max-w-[1400px] p-8 z-10 space-y-8 flex flex-col items-center">
+        <div className="relative w-full space-y-8">
+          {/* Team Members Grid - 2x2 */}
+          <div
+            className={`grid grid-cols-2 gap-x-80 gap-y-8 mb-12 ${team.members.length > 4 ? "max-h-[240px] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" : ""}`}
+          >
+            {team.members.map((member) => (
+              <div key={member.id} className="relative w-full mx-auto">
+                <div className="flex justify-between items-center bg-[#080A0D] py-4 px-4 border-b-[3px] border-[#A7282D]">
+                  <div className="flex items-center gap-3">
+                    <Image
+                      src="/pokeball.svg"
+                      alt="Pokeball"
+                      width={28}
+                      height={28}
+                      className="w-7 h-7 flex-shrink-0 -mt-3"
+                    />
+                    <div className="flex flex-col">
+                      <p className="font-['Formula1-Bold'] text-white">
+                        {member.name?.slice(0, member.name.lastIndexOf(" ")) ||
+                          member.name ||
+                          "Anonymous"}
+                      </p>
+                      <p className="text-sm text-gray-400 font-['Formula1-Regular']">
+                        {team.name}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="font-['Orbitron'] text-4xl text-white opacity-45 ">
+                    {Math.floor(Math.random() * 91) + 10}
+                  </p>
+                </div>
+                <div className="h-[7px] bg-black"></div>
+                <div className="h-[9px] bg-[#222221]"></div>
               </div>
-              <h1 className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-purple-300 text-center text-lg sm:text-2xl md:text-2xl lg:text-3xl xl:text-4xl how-it-works-heading">
-                HELLO {firstName}!
-              </h1>
-              <div className="flex items-center gap-1">
-                <h4 className="text-purple-500 text-xs sm:text-sm md:text-sm lg:text-base xl:text-lg whitespace-nowrap"></h4>
-                <div className="border border-purple-500 flex-1 h-1 sm:h-1.5 md:h-1.5 lg:h-2 xl:h-2" />
+            ))}
+          </div>
+
+          {/* Stats Section */}
+          <div className="grid grid-cols-2 gap-24 max-w-5xl mx-auto">
+            {/* Points Earned */}
+            <div className="flex flex-col items-center">
+              <div className="flex items-center gap-3 mb-8">
+                <Image
+                  src="/cheqflag.svg"
+                  alt="Checkered Flag"
+                  width={50}
+                  height={50}
+                />
+                <h3 className="text-xl font-['Formula1-Bold'] uppercase text-white">
+                  Points<br />Earned
+                </h3>
+              </div>
+
+              {/* Frame Structure */}
+              <div className="w-full max-w-[400px] relative">
+                <div className="absolute top-0 left-4 right-4 h-3 bg-[#A7282D] rounded-full z-10"></div>
+                <div className="absolute top-1 left-[-24px] w-12 h-[63px] border-l-[5px] border-t-[5px] border-b-[5px] border-[#ADADAD]"></div>
+                <div className="absolute top-1 right-[-24px] w-12 h-[63px] border-r-[5px] border-t-[5px] border-b-[5px] border-[#ADADAD]"></div>
+
+                <div className="flex gap-4 justify-center pt-16 pb-6">
+                  {String(teamScore).padStart(3, "0").split("").map((digit, index) => (
+                    <div
+                      key={index}
+                      className="relative w-32 h-40 border-2 border-[#A7282D] outline outline-2 outline-[#A7282D] flex items-center justify-center bg-[#0C0C0C] overflow-hidden"
+                    >
+                      <span
+                        className="text-8xl text-white font-bold relative z-10"
+                        style={{ fontFamily: "Orbitron, monospace" }}
+                      >
+                        {digit}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row justify-between gap-4 md:gap-5 lg:gap-6 xl:gap-7">
-              <div className="flex-1">
-                <div className="text-base sm:text-xl md:text-xl lg:text-2xl xl:text-3xl text-purple-500 mb-2 md:mb-2 lg:mb-3 xl:mb-4 text-center">
-                  QUESTIONS SOLVED
-                </div>
-                <div className="bg-black/30 border border-purple-500 p-2 sm:p-3 md:p-3 lg:p-4 xl:p-5 text-center">
-                  <div className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl font-bold">
-                    {questionsSolved}
-                  </div>
+
+            {/* Questions Solved */}
+            <div className="flex flex-col items-center">
+              <div className="flex items-center gap-3 mb-8">
+                <Image
+                  src="/cheqflag.svg"
+                  alt="Checkered Flag"
+                  width={50}
+                  height={50}
+                />
+                <h3 className="text-xl font-['Formula1-Bold'] uppercase text-white">
+                  Questions<br />Solved
+                </h3>
+              </div>
+
+              <div className="w-full max-w-[320px] relative">
+                <div className="absolute top-0 left-4 right-4 h-3 bg-[#A7282D] rounded-full z-10"></div>
+                <div className="absolute top-1 left-0 w-6 h-[64px] border-l-[5px] border-t-[5px] border-b-[5px] border-[#ADADAD]"></div>
+                <div className="absolute top-1 right-0 w-6 h-[64px] border-r-[5px] border-t-[5px] border-b-[5px] border-[#ADADAD]"></div>
+
+                <div className="flex gap-4 justify-center pt-16 pb-6">
+                  {String(questionsSolved).padStart(2, "0").split("").map((digit, index) => (
+                    <div
+                      key={index}
+                      className="relative w-32 h-40 border-2 border-[#A7282D] outline outline-2 outline-[#A7282D] flex items-center justify-center bg-[#0C0C0C] overflow-hidden"
+                    >
+                      <span
+                        className="text-8xl text-white font-bold relative z-10"
+                        style={{ fontFamily: "Orbitron, monospace" }}
+                      >
+                        {digit}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Log Out Button */}
+      <button
+        onClick={SignOut}
+        type="button"
+        className="fixed bottom-8 right-8 px-8 py-3 bg-[#A7282D] text-white font-['Formula1-Bold'] text-lg hover:bg-[#8a1f24] transition-colors z-50 rounded-full"
+      >
+        Log Out
+      </button>
+
+      {/* Floating Dock */}
       <FloatingDock />
     </div>
   );

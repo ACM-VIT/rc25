@@ -103,7 +103,7 @@ export default function PrizePool() {
   return (
     <div className="min-h-screen bg-black flex flex-col items-center justify-center p-4 relative overflow-hidden">
       {/* Rock decorations */}
-      <div className="absolute top-[-20%] hidden md:block right-[-55%] xs:right-[-130%] sm:right-[-100%] md:right-[-73%] lg:right-[-55%] xl:right-[-45%] z-0 animate-float">
+      <div className="absolute top-[-20%] hidden md:block right-[-55%] xs:right-[-130%] sm:-right-full md:right-[-73%] lg:right-[-55%] xl:right-[-45%] z-0 animate-float">
         <Image
           src={rock}
           alt="Rock decoration"
@@ -136,10 +136,10 @@ export default function PrizePool() {
           <motion.div
             key={index}
             className={`absolute top-1/2 ${
-              screenSize === 'phone' ? 'w-[30%] h-[22%] aspect-[2/3]' : // Adjusted aspect ratio for phone
-              screenSize === 'small' ? 'w-[40%] aspect-[2/3]' : // Adjusted aspect ratio for small
-              screenSize === 'medium' ? 'w-[33%] aspect-[3/4]' : 
-              'w-[18%] aspect-[3/4]'
+              screenSize === 'phone' ? 'w-[30%] h-[22%] aspect-2/3' : // Adjusted aspect ratio for phone
+              screenSize === 'small' ? 'w-[40%] aspect-2/3' : // Adjusted aspect ratio for small
+              screenSize === 'medium' ? 'w-[33%] aspect-3/4' : 
+              'w-[18%] aspect-3/4'
             }`}
             initial={{ 
               x: '-50%',
@@ -177,7 +177,7 @@ export default function PrizePool() {
                 }}>?</h2>
               </div>
               {/* Card back */}
-              <div className="absolute w-full h-full rounded-xl border-4 border-purple-700 shadow-xl shadow-purple-500 flex flex-col items-center justify-center p-2 [transform:rotateY(180deg)]" style={{
+              <div className="absolute w-full h-full rounded-xl border-4 border-purple-700 shadow-xl shadow-purple-500 flex flex-col items-center justify-center p-2 transform-[rotateY(180deg)]" style={{
                 backfaceVisibility: 'hidden',
                 backgroundImage: "url('/paper.png')",
                 backgroundSize: 'cover',
